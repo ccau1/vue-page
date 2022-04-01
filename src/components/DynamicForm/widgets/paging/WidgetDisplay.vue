@@ -43,7 +43,7 @@ export default defineComponent({
     formState: Object,
     setWidgetState: Function,
   },
-  inject: ["t", "onFormStateChange"],
+  inject: ["t"],
   computed: {
     currentPageIndex() {
       return (

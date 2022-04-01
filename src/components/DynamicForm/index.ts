@@ -1,4 +1,6 @@
 import { VueConstructor } from "vue";
+import { NestedCondition } from "json-rules-engine";
+import { FormState } from "./models/FormState";
 
 export { default as DynamicForm } from "./DynamicForm.vue";
 
@@ -26,6 +28,7 @@ export type FormStepperPosition =
 export interface Widget<Data = {}> {
   type: string;
   parent?: string;
+  reflexives?: NestedCondition[];
   data: Data;
 }
 
@@ -34,6 +37,13 @@ export interface WidgetControl<Data = {}> {
   display: VueConstructor<Vue>;
   form: VueConstructor<Vue>;
   formControl: VueConstructor<Vue>;
+  handleReflexives?: (options: {
+    widget: Widget<Data>;
+    widgetId: string;
+    formWidgets: FormWidgets;
+    formState: FormState;
+    setFormState: (newFormState: FormState) => void;
+  }) => boolean;
   removeChild?: (options: {
     child: Widget;
     childId: string;

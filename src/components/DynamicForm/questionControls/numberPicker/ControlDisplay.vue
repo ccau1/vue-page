@@ -1,13 +1,13 @@
 <template>
   <div>
-    <button @click="() => changeValue(-step)">-</button>
+    <button @click="() => changeValue(numValue - step)">-</button>
     <input
       type="number"
       :value="numValue"
       :step="step"
-      @change="(ev) => changeValue(parseInt(ev.target.value, 10))"
+      @keyup="(ev) => changeValue(ev.target.value)"
     />
-    <button @click="() => changeValue(step)">+</button>
+    <button @click="() => changeValue(numValue + step)">+</button>
   </div>
 </template>
 
@@ -33,14 +33,24 @@ import { Component, Vue } from "vue-property-decorator";
     },
   },
   methods: {
-    changeValue(diff: number) {
-      let newNum = (this as any).numValue + diff;
-      if (this.$props.data?.min !== undefined && newNum < this.$props.data?.min)
-        newNum = this.$props.data.min;
-      if (this.$props.data?.max !== undefined && newNum > this.$props.data?.max)
-        newNum = this.$props.data.max;
+    changeValue(newNum: number | string) {
+      if (/^[^0-9]+$/.test(newNum.toString())) return;
 
-      this.$props.onChange?.({ num: newNum });
+      let _newNum = parseInt(newNum.toString(), 10);
+
+      if (
+        this.$props.data?.min !== undefined &&
+        _newNum < this.$props.data?.min
+      )
+        _newNum = this.$props.data.min;
+      if (
+        this.$props.data?.max !== undefined &&
+        _newNum > this.$props.data?.max
+      )
+        _newNum = this.$props.data.max;
+      console.log("updating num", _newNum);
+
+      this.$props.onChange?.({ num: _newNum });
     },
   },
 })

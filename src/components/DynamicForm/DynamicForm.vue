@@ -115,7 +115,7 @@ import WidgetsDisplay from "./WidgetsDisplay.vue";
       t: (this as any).t,
       languages: this.$props.languages,
       getFormState: () => this.$props.state,
-      onFormStateChange: (newFormState: FormState) => {
+      setFormState: (newFormState: FormState) => {
         this.$emit("onStateChange", newFormState);
       },
       widgetControls: this.$data.combWidgetControls,

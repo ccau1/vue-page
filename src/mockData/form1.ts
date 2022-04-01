@@ -48,6 +48,7 @@ export default {
         data: {
           responseType: "TEXT",
           control: "radio",
+          code: "gender",
           // labelKey can be standardized in languages json
           // labelKey: "__label",
           controlData: {
@@ -61,11 +62,11 @@ export default {
       "cf155c9c-05c9-4e98-8d4e-ad6baf066e88": {
         type: "question",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        reflexives: [{ fact: "gender", operator: "equal", value: "F" }],
         data: {
           responseType: "BOOLEAN",
+          code: "isPregnant",
           control: "checkbox",
-          // labelKey can be standardized in languages json
-          // labelKey: "__label",
           controlData: {},
         },
       },
@@ -102,6 +103,7 @@ export default {
         parent: "ea28032b-b29c-4812-a60f-da34eb341a42",
         data: {
           responseType: "NUMBER",
+          code: "age",
           control: "numberPicker",
           controlData: {
             min: 0,

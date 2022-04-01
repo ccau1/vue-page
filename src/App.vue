@@ -17,7 +17,7 @@
         <a
           :class="{ active: formView === 'display' }"
           v-on:click="() => setFormView('display')"
-          >Customer Form</a
+          >Customer Display</a
         >
         <a
           :class="{ active: formView === 'form' }"
@@ -27,7 +27,7 @@
         <a
           :class="{ active: formView === 'readOnly' }"
           v-on:click="() => setFormView('readOnly')"
-          >View Only</a
+          >Read Only</a
         >
       </div>
     </div>
@@ -89,6 +89,8 @@ export default defineComponent({
       this.$data.formView = view;
     },
     onStateChange(newState: any) {
+      // FIXME: creating new FormState is the only
+      // way to keep state reactive. Better way?
       this.$data.state = new FormState(newState);
     },
     onFormChange(newForm: Form) {

@@ -42,7 +42,7 @@ export default defineComponent({
     excludeWidgetIds: arrayOf(String),
     forParent: String,
   },
-  inject: ["widgetControls", "getFormState", "getView", "onFormStateChange"],
+  inject: ["widgetControls", "getFormState", "getView", "setFormState"],
   computed: {
     view() {
       return this.getView();
@@ -79,7 +79,7 @@ export default defineComponent({
           formState.widgetState[widget.id] = {};
         formState.widgetState[widget.id][key] = value;
       }
-      this.onFormStateChange(formState);
+      this.setFormState(formState);
     },
     getWidgetState(key, widget) {
       return this.formState.widgetState[widget.id]?.[key];

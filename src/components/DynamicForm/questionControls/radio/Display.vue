@@ -8,7 +8,7 @@
       <input
         type="radio"
         v-on:change="onSelect"
-        :checked="value && value.value === option.value"
+        :checked="value === option.value"
         :value="option.value"
         :name="widget.id"
       />
@@ -25,12 +25,12 @@ import { Component, Vue } from "vue-property-decorator";
     data: Object,
     widget: Object,
     onChange: Function,
-    value: Object,
+    value: String,
   },
   inject: ["t"],
   methods: {
     onSelect(ev) {
-      this.$props.onChange({ value: ev.target.value });
+      this.$props.onChange(ev.target.value);
     },
   },
 })

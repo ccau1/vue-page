@@ -42,7 +42,7 @@ export default defineComponent({
     formWidgets: Object,
     formState: Object,
   },
-  inject: ["t", "onFormStateChange"],
+  inject: ["t", "setFormState"],
   computed: {
     currentPageIndex() {
       return (
@@ -71,7 +71,7 @@ export default defineComponent({
           formState.widgetState[this.$props.widget.id] = {};
         formState.widgetState[this.$props.widget.id][key] = value;
       }
-      this.onFormStateChange(formState);
+      this.setFormState(formState);
     },
   },
 });
