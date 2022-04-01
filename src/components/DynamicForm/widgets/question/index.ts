@@ -1,6 +1,7 @@
 import { WidgetControl } from "../..";
 import Display from "./WidgetDisplay.vue";
 import Form from "./WidgetForm.vue";
+import ReadOnly from "./WidgetReadOnly.vue";
 import { Engine, ConditionProperties } from "json-rules-engine";
 
 export interface PagingData {}
@@ -8,6 +9,7 @@ export interface PagingData {}
 export default {
   display: Display,
   form: Form,
+  readOnly: ReadOnly,
   handleReflexives({ widget, widgetId, formState, setFormState }) {
     if (!widget.reflexives?.length) {
       return;

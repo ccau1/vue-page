@@ -57,13 +57,15 @@ export default defineComponent({
       }));
     },
     filteredFormWidgetsArr() {
-      const filteredArr = this.formWidgetsArr.filter((f) => {
-        return (
-          f.parent === this.forParent &&
-          (!(this.excludeWidgetIds || []).length ||
-            !this.excludeWidgetIds.includes(f.id))
-        );
-      });
+      const filteredArr = this.formWidgetsArr
+        .filter((f) => {
+          return (
+            f.parent === this.forParent &&
+            (!(this.excludeWidgetIds || []).length ||
+              !this.excludeWidgetIds.includes(f.id))
+          );
+        })
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
 
       return filteredArr;
     },

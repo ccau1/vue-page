@@ -17,7 +17,7 @@ import { Component, Vue } from "vue-property-decorator";
 @Component({
   props: {
     data: Object,
-    value: Object,
+    value: Number,
     onChange: Function,
   },
   computed: {
@@ -25,7 +25,7 @@ import { Component, Vue } from "vue-property-decorator";
       return this.$props.data.step || 1;
     },
     numValue() {
-      if (this.$props.value?.num !== undefined) return this.$props.value.num;
+      if (this.$props.value !== undefined) return this.$props.value;
       if (this.$props.data.default !== undefined)
         return this.$props.data.default;
       if (this.$props.data.min !== undefined) return this.$props.data.min;
@@ -50,7 +50,7 @@ import { Component, Vue } from "vue-property-decorator";
         _newNum = this.$props.data.max;
       console.log("updating num", _newNum);
 
-      this.$props.onChange?.({ num: _newNum });
+      this.$props.onChange?.(_newNum);
     },
   },
 })

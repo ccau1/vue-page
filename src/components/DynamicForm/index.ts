@@ -29,6 +29,7 @@ export interface Widget<Data = {}> {
   type: string;
   parent?: string;
   reflexives?: NestedCondition[];
+  order?: number;
   data: Data;
 }
 

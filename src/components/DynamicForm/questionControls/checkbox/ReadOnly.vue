@@ -1,14 +1,6 @@
 <template>
   <div>
-    <label>
-      <input
-        type="checkbox"
-        :checked="value"
-        :name="widget.id"
-        v-on:click="onToggle"
-      />
-      {{ t("__checkboxLabel", widget.id) }}
-    </label>
+    {{ !!value }}
   </div>
 </template>
 
@@ -23,11 +15,6 @@ import { Component, Vue } from "vue-property-decorator";
     value: Boolean,
   },
   inject: ["t"],
-  methods: {
-    onToggle(ev) {
-      this.$props.onChange(ev.target.checked);
-    },
-  },
 })
 export default class CheckboxControl extends Vue {}
 </script>

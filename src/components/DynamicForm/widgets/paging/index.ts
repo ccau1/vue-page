@@ -1,6 +1,7 @@
 import { Widget, WidgetControl } from "../..";
 import Display from "./WidgetDisplay.vue";
 import Form from "./WidgetForm.vue";
+import ReadOnly from "./WidgetReadOnly.vue";
 
 export interface PagingDataPage {
   labelKey: string;
@@ -15,6 +16,7 @@ export interface PagingData {
 export default {
   display: Display,
   form: Form,
+  readOnly: ReadOnly,
   getChildren: (opts) => {
     const { widget, formWidgets, widgetControls, deep } = opts;
     return widget.data.pages.reduce<Widget[]>((arr, page) => {
