@@ -157,6 +157,7 @@ export default [
     locale: "en",
     message: {
       __label: "Age",
+      err1: "not in range",
     },
   },
   {
@@ -167,6 +168,7 @@ export default [
     locale: "zh_hk",
     message: {
       __label: "年齡",
+      err1: "不在數字範圍內",
     },
   },
 ] as {

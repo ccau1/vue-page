@@ -14,6 +14,12 @@
           :view="view"
           :t="t"
         />
+        <span
+          class="error"
+          v-for="errorKey in getWidgetState('errors')"
+          :key="errorKey"
+          >{{ t(errorKey, widget.id) }}</span
+        >
       </div>
     </div>
   </div>
@@ -26,6 +32,7 @@ import {
   registerReflexives,
   unregisterReflexives,
 } from "../../reflexiveUtils";
+import { validateWidget } from "../../validateUtils";
 
 export default defineComponent({
   props: {
@@ -74,6 +81,15 @@ export default defineComponent({
           setFormState: this.setFormState,
         }
       );
+
+      (async () => {
+        const errors = await validateWidget({
+          widget: this.$props.widget,
+          response,
+        });
+
+        this.setWidgetState("errors", errors);
+      })();
     },
   },
 });
@@ -95,5 +111,10 @@ export default defineComponent({
 .question-wrapper > div {
   flex: 2;
   padding: 10px 20px;
+}
+
+.error {
+  display: block;
+  color: red;
 }
 </style>

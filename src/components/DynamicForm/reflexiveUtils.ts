@@ -128,11 +128,7 @@ export const handleReflexives = ({
     const engine = new Engine();
     engine.addRule({
       conditions: {
-        any: [
-          {
-            all: widget.reflexives,
-          },
-        ],
+        all: widget.reflexives,
       },
       event: {
         type: "isReflexive",

@@ -110,6 +110,15 @@ export default {
         type: "question",
         code: "age",
         parent: "ea28032b-b29c-4812-a60f-da34eb341a42",
+        validations: [
+          {
+            conditions: [
+              { fact: "response", operator: "greaterThanInclusive", value: 0 },
+              { fact: "response", operator: "lessThanInclusive", value: 10 },
+            ],
+            error: "err1",
+          },
+        ],
         data: {
           responseType: "NUMBER",
           control: "numberPicker",

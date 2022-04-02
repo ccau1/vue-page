@@ -31,6 +31,7 @@ export interface Widget<Data = any> {
   code?: string;
   parent?: string;
   reflexives?: NestedCondition[];
+  validations?: Array<{ conditions: NestedCondition[]; error: string }>;
   order?: number;
   data: Data;
 }
