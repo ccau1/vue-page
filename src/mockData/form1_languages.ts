@@ -17,8 +17,8 @@ export default [
     version: 1,
     locale: "zh_hk",
     message: {
-      step_1: "第1步",
-      step_2: "第2步",
+      step_1: "第 1 步",
+      step_2: "第 2 步",
     },
   },
   {

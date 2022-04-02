@@ -25,26 +25,21 @@ export type FormStepperPosition =
 //   pages: Array<FormPageSetPage>;
 // }
 
-export interface Widget<Data = {}> {
+export interface Widget<Data = any> {
+  id: string;
   type: string;
+  code?: string;
   parent?: string;
   reflexives?: NestedCondition[];
   order?: number;
   data: Data;
 }
 
-export interface WidgetControl<Data = {}> {
+export interface WidgetControl<Data = any> {
   readOnly: VueConstructor<Vue>;
   display: VueConstructor<Vue>;
   form: VueConstructor<Vue>;
   formControl: VueConstructor<Vue>;
-  handleReflexives?: (options: {
-    widget: Widget<Data>;
-    widgetId: string;
-    formWidgets: FormWidgets;
-    formState: FormState;
-    setFormState: (newFormState: FormState) => void;
-  }) => boolean;
   removeChild?: (options: {
     child: Widget;
     childId: string;

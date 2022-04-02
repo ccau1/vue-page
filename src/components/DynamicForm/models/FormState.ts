@@ -1,5 +1,5 @@
 export interface WidgetState {
-  [widgetId: string]: object;
+  [widgetId: string]: any;
 }
 
 export interface FormStateCreate {
