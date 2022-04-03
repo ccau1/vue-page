@@ -21,17 +21,12 @@
 
 <script>
 import { defineComponent } from "@vue/composition-api";
-import {
-  handleReflexivesByWidgetIds,
-  registerReflexives,
-  unregisterReflexives,
-} from "../../reflexiveUtils";
 
 export default defineComponent({
   props: {
     widget: Object,
     widgetControls: Object,
-    formWidgets: Object,
+    widgetItems: Object,
     setWidgetState: Function,
     getWidgetState: Function,
     view: String,
@@ -43,23 +38,8 @@ export default defineComponent({
     "getFormState",
     "setFormState",
   ],
-  created() {
-    // setup mapping for code and reflexives watches
-    // and call initial reflexive check for this widget
-    registerReflexives({
-      widget: this.$props.widget,
-      formState: this.getFormState(),
-      setFormState: this.setFormState,
-    });
-  },
-  unmounted() {
-    // remove mapping for code and reflexives watches
-    unregisterReflexives({
-      formState: this.$props.formState,
-      widget: this.$props.widget,
-      setFormState: this.setFormState,
-    });
-  },
+  created() {},
+  unmounted() {},
   computed: {
     formState() {
       return this.getFormState();
@@ -68,15 +48,6 @@ export default defineComponent({
   methods: {
     onChange(response) {
       this.setWidgetState("response", response);
-
-      handleReflexivesByWidgetIds(
-        this.formState.widgetState.__qReflexiveWatch?.[this.$props.widget.code],
-        {
-          formWidgets: this.$props.formWidgets,
-          formState: this.formState,
-          setFormState: this.setFormState,
-        }
-      );
     },
   },
 });

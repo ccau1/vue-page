@@ -25,7 +25,7 @@ export default defineComponent({
   props: {
     widget: Object,
     widgetControls: Object,
-    formWidgets: Object,
+    widgetItems: Object,
     setWidgetState: Function,
     getWidgetState: Function,
     view: String,

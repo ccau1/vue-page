@@ -20,7 +20,7 @@
         <div v-for="(child, childIndex) in page.children" :key="childIndex">
           <widgets-display
             :widgets="widgets"
-            :formWidgets="formWidgets"
+            :widgetItems="widgetItems"
             :excludeWidgetIds="[widget.id]"
             :forParent="widget.id"
           />
@@ -39,7 +39,7 @@ export default defineComponent({
   props: {
     widget: Object,
     widgets: Object,
-    formWidgets: Object,
+    widgetItems: Object,
     formState: Object,
   },
   inject: ["t", "setFormState"],
@@ -54,7 +54,6 @@ export default defineComponent({
   watch: {
     formStateCurrentPageIndex: {
       handler(newPageIndex) {
-        console.log("updated currentPageIndex", newPageIndex);
         this.$data.currentPageIndex = newPageIndex;
       },
       deep: true,

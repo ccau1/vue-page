@@ -20,6 +20,14 @@ import { Component, Vue } from "vue-property-decorator";
     value: Number,
     onChange: Function,
   },
+  created() {
+    // if value has not been set and default is set, set value to default
+    if (
+      this.$props.value === undefined &&
+      this.$props.data.default !== undefined
+    )
+      (this as any).changeValue(this.$props.data.default, true);
+  },
   computed: {
     step() {
       return this.$props.data.step || 1;
@@ -33,7 +41,7 @@ import { Component, Vue } from "vue-property-decorator";
     },
   },
   methods: {
-    changeValue(newNum: number | string) {
+    changeValue(newNum: number | string, ignoreChecks?: boolean) {
       if (/^[^0-9]+$/.test(newNum.toString())) return;
 
       let _newNum = parseInt(newNum.toString(), 10);
@@ -48,9 +56,8 @@ import { Component, Vue } from "vue-property-decorator";
         _newNum > this.$props.data?.max
       )
         _newNum = this.$props.data.max;
-      console.log("updating num", _newNum);
 
-      this.$props.onChange?.(_newNum);
+      this.$props.onChange?.(_newNum, ignoreChecks);
     },
   },
 })

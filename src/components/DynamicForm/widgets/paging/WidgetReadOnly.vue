@@ -3,28 +3,30 @@
     <div class="paging-menu-wrapper">
       <a
         class="paging-menu-item"
-        :class="{ active: currentPageIndex === pageIndex }"
-        v-for="(page, pageIndex) in widget.data.pages"
+        :class="{
+          active: currentPageIndex === pageIndex,
+          errors: pageIndexHasErrors(pageIndex),
+        }"
+        v-for="(page, pageIndex) in sortedPages"
         :key="pageIndex"
-        v-on:click="() => setWidgetState('currentPageIndex', pageIndex)"
+        v-on:click="() => widget.setState('currentPageIndex', pageIndex)"
       >
         {{ t(page.labelKey, widget.id) }}
       </a>
     </div>
     <div
       class="paging-content-item"
-      v-for="(page, pageIndex) in widget.data.pages"
+      v-for="(page, pageIndex) in sortedPages"
       :key="pageIndex"
     >
       <div v-if="currentPageIndex === pageIndex">
-        <div v-for="(child, childIndex) in page.children" :key="childIndex">
-          <widgets-display
-            :widgets="widgets"
-            :formWidgets="formWidgets"
-            :excludeWidgetIds="[widget.id]"
-            :forParent="widget.id"
-          />
-        </div>
+        <widgets-display
+          :widgets="widgets"
+          :widgetItems="widgetItems"
+          :excludeWidgetIds="[widget.id]"
+          :onlyIncludeWidgetIds="page.children"
+          :forParent="widget.id"
+        />
       </div>
     </div>
   </div>
@@ -39,9 +41,14 @@ export default defineComponent({
   props: {
     widget: Object,
     widgets: Object,
-    formWidgets: Object,
+    widgetItems: Object,
     formState: Object,
     setWidgetState: Function,
+  },
+  data() {
+    return {
+      sortedPages: [],
+    };
   },
   inject: ["t"],
   computed: {
@@ -53,12 +60,22 @@ export default defineComponent({
     },
   },
   watch: {
-    formStateCurrentPageIndex: {
-      handler(newPageIndex) {
-        console.log("updated currentPageIndex", newPageIndex);
-        this.$data.currentPageIndex = newPageIndex;
+    "widget.data.pages": {
+      handler() {
+        this.$data.sortedPages = this.$props.widget.getSortedPages();
       },
-      deep: true,
+      immediate: true,
+    },
+  },
+  methods: {
+    pageIndexHasErrors(idx) {
+      // get child errors
+      const childErrors = this.$props.widget.getState("pageIdxErrors") || {};
+      // if no childErrors, just return false
+      if (!Object.keys(childErrors).length) return false;
+      // map child error widget ids to paging children index
+      // const children = this.$props.widget.getChildren();
+      return Object.keys(childErrors[idx] || {}).length;
     },
   },
 });
@@ -75,10 +92,15 @@ export default defineComponent({
   display: inline-block;
   padding: 10px 20px;
   cursor: pointer;
+  border: 1px solid transparent;
 }
 
 .paging-menu-item.active {
   background-color: #e8e8e8;
+}
+
+.paging-menu-item.errors {
+  border-color: red;
 }
 
 /* .paging-content-item {

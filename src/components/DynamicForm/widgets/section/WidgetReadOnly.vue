@@ -3,7 +3,7 @@
     <label v-if="!!label">{{ label }}</label>
     <widgets-display
       :widgetControls="widgetControls"
-      :formWidgets="formWidgets"
+      :widgetItems="widgetItems"
       :forParent="widget.id"
     />
   </section>
@@ -17,7 +17,7 @@ export default defineComponent({
   components: { WidgetsDisplay },
   props: {
     widget: Object,
-    formWidgets: Object,
+    widgetItems: Object,
     widgetControls: Object,
   },
   inject: ["t"],

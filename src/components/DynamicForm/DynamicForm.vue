@@ -2,7 +2,7 @@
   <div>
     <widgets-display
       :widgetControls="combWidgetControls"
-      :formWidgets="form.widgets"
+      :widgetItems="widgetItems"
     />
   </div>
 </template>
@@ -16,9 +16,10 @@ import {
 import { widgets as sysWidgets } from "./widgets";
 // import DynamicFormLayout from "./DynamicFormLayout.vue";
 import { shape, arrayOf, string, bool, instanceOf } from "vue-types";
-import { Form } from ".";
+import { Form, Widget } from ".";
 import { FormState } from "./models/FormState";
 import WidgetsDisplay from "./WidgetsDisplay.vue";
+import WidgetItem from "./models/WidgetItem";
 
 @Component({
   components: { WidgetsDisplay },
@@ -57,14 +58,12 @@ import WidgetsDisplay from "./WidgetsDisplay.vue";
     return {
       combQuestionControls: sysQuestionControls,
       combWidgetControls: sysWidgets,
+      widgetItems: {},
     };
   },
   computed: {
-    formWidgetsArr() {
-      return Object.keys(this.$props.form.widgets).map((k) => ({
-        ...this.$props.form.widgets[k],
-        id: k,
-      }));
+    widgetItemsArr() {
+      return this.$props.form.widgets;
     },
     widgetsHandlerWatch() {
       return {
@@ -96,6 +95,31 @@ import WidgetsDisplay from "./WidgetsDisplay.vue";
           : {}),
         ...this.$props.questionControls,
       };
+    },
+    "form.widgets": {
+      handler(newFormWidgetArr) {
+        this.$data.widgetItems = newFormWidgetArr.reduce(
+          (obj: { [widgetId: string]: WidgetItem }, widget: Widget) => {
+            const WidgetItemClass =
+              this.$data.combWidgetControls[widget.type]?.widgetItem ||
+              WidgetItem;
+            obj[widget.id] = new WidgetItemClass({
+              widget,
+              getState: () => this.$props.state,
+              setState: (newFormState: FormState) => {
+                this.$emit("onStateChange", newFormState);
+              },
+            });
+            return obj;
+          },
+          {}
+        );
+        Object.values(this.$data.widgetItems).forEach((widgetItem) => {
+          (widgetItem as WidgetItem).setWidgetItems(this.$data.widgetItems);
+        });
+      },
+      immediate: true,
+      deep: true,
     },
   },
   methods: {

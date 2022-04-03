@@ -1,6 +1,11 @@
 <template>
   <div>
-    {{ value }}
+    {{
+      t(
+        widget.data.controlData.options.find((f) => f.value === value).labelKey,
+        widget.id
+      )
+    }}
   </div>
 </template>
 

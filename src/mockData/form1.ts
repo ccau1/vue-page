@@ -4,8 +4,8 @@ import { FormState } from "@/components/DynamicForm/models/FormState";
 export default {
   form: {
     id: "7347ef09-7778-4c5c-898d-bede667f4c0b",
-    widgets: {
-      "1f2ad689-74e0-422c-b4d6-ea6a1f90b5ee": {
+    widgets: [
+      {
         id: "1f2ad689-74e0-422c-b4d6-ea6a1f90b5ee",
         type: "paging",
         data: {
@@ -25,7 +25,7 @@ export default {
           stepperPosition: ["top", "center"],
         },
       },
-      "4420fbc2-0e12-46d0-8dac-b55e8d685f3e": {
+      {
         id: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         type: "paging",
         parent: "1f2ad689-74e0-422c-b4d6-ea6a1f90b5ee",
@@ -34,7 +34,12 @@ export default {
             {
               labelKey: "page_1",
               idx: 0,
-              children: ["8946731a-c5e1-43b2-850d-d542990067bf"],
+              children: [
+                "8946731a-c5e1-43b2-850d-d542990067bf",
+                "cf155c9c-05c9-4e98-8d4e-ad6baf066e88",
+                "be059ba0-326a-4985-84e7-c20ef4f447f7",
+                "ea28032b-b29c-4812-a60f-da34eb341a42",
+              ],
             },
             {
               labelKey: "page_2",
@@ -44,7 +49,7 @@ export default {
           ],
         },
       },
-      "8946731a-c5e1-43b2-850d-d542990067bf": {
+      {
         id: "8946731a-c5e1-43b2-850d-d542990067bf",
         type: "question",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
@@ -62,7 +67,7 @@ export default {
           },
         },
       },
-      "cf155c9c-05c9-4e98-8d4e-ad6baf066e88": {
+      {
         id: "cf155c9c-05c9-4e98-8d4e-ad6baf066e88",
         type: "question",
         code: "isPregnant",
@@ -74,7 +79,7 @@ export default {
           controlData: {},
         },
       },
-      "be059ba0-326a-4985-84e7-c20ef4f447f7": {
+      {
         id: "be059ba0-326a-4985-84e7-c20ef4f447f7",
         type: "separator",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
@@ -84,18 +89,18 @@ export default {
           labelPosition: "start",
         },
       },
-      "ea28032b-b29c-4812-a60f-da34eb341a42": {
+      {
         id: "ea28032b-b29c-4812-a60f-da34eb341a42",
         type: "section",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         data: {
           children: [
-            "ea28032b-b29c-4812-a60f-da34eb341a42",
-            "ea28032b-b29c-4812-a60f-da34eb341a42",
+            "d1440655-4257-4b03-9693-df53def669ae",
+            "4831a778-4c87-471e-a33f-71feaf343d57",
           ],
         },
       },
-      "d1440655-4257-4b03-9693-df53def669ae": {
+      {
         id: "d1440655-4257-4b03-9693-df53def669ae",
         type: "separator",
         parent: "ea28032b-b29c-4812-a60f-da34eb341a42",
@@ -105,7 +110,7 @@ export default {
           labelPosition: "start",
         },
       },
-      "4831a778-4c87-471e-a33f-71feaf343d57": {
+      {
         id: "4831a778-4c87-471e-a33f-71feaf343d57",
         type: "question",
         code: "age",
@@ -114,7 +119,7 @@ export default {
           {
             conditions: [
               { fact: "response", operator: "greaterThanInclusive", value: 0 },
-              { fact: "response", operator: "lessThanInclusive", value: 10 },
+              { fact: "response", operator: "lessThanInclusive", value: 25 },
             ],
             error: "err1",
           },
@@ -130,7 +135,7 @@ export default {
           },
         },
       },
-    },
+    ],
   } as Form,
   configs: {},
   state: new FormState({}),

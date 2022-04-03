@@ -17,7 +17,7 @@ import { Component, Vue } from "vue-property-decorator";
 @Component({
   props: {
     data: Object,
-    value: Object,
+    value: Number,
     onChange: Function,
   },
   computed: {

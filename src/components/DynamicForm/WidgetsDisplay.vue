@@ -2,7 +2,7 @@
   <div>
     <div
       class="widget-container"
-      v-for="widget in filteredFormWidgetsArr"
+      v-for="widget in filteredWidgetItemsArr"
       :key="widget.id"
     >
       <div class="widget-form-control" v-if="view === 'form'">
@@ -10,7 +10,7 @@
           :is="widgetControls[widget.type].formControl"
           :widget="widget"
           :widgetControls="widgetControls"
-          :formWidgets="formWidgets"
+          :widgetItems="widgetItems"
           :formState="formState"
           :setWidgetState="(key, value) => setWidgetState(key, value, widget)"
           :getWidgetState="(key) => getWidgetState(key, widget)"
@@ -21,7 +21,7 @@
         :is="widgetControls[widget.type][view || 'display']"
         :widget="widget"
         :widgetControls="widgetControls"
-        :formWidgets="formWidgets"
+        :widgetItems="widgetItems"
         :formState="formState"
         :setWidgetState="(key, value) => setWidgetState(key, value, widget)"
         :getWidgetState="(key) => getWidgetState(key, widget)"
@@ -38,8 +38,9 @@ import { arrayOf } from "vue-types";
 export default defineComponent({
   props: {
     widgetControls: Object,
-    formWidgets: Object,
+    widgetItems: Object,
     excludeWidgetIds: arrayOf(String),
+    onlyIncludeWidgetIds: arrayOf(String),
     forParent: String,
   },
   inject: ["widgetControls", "getFormState", "getView", "setFormState"],
@@ -50,23 +51,27 @@ export default defineComponent({
     formState() {
       return this.getFormState();
     },
-    formWidgetsArr() {
-      return Object.keys(this.$props.formWidgets).map((formId) => ({
-        ...this.$props.formWidgets[formId],
-        id: formId,
-      }));
+    widgetItemsArr() {
+      return Object.values(this.$props.widgetItems);
     },
-    filteredFormWidgetsArr() {
-      const filteredArr = this.formWidgetsArr
+    filteredWidgetItemsArr() {
+      console.log(
+        "this.$props.onlyIncludeWidgetIds",
+        this.$props.onlyIncludeWidgetIds,
+        this.widgetItemsArr
+      );
+      const filteredArr = this.widgetItemsArr
         .filter((f) => {
           return (
-            f.parent === this.forParent &&
+            f.parentId === this.forParent &&
+            (!this.$props.onlyIncludeWidgetIds ||
+              this.$props.onlyIncludeWidgetIds.includes(f.id)) &&
             (!(this.excludeWidgetIds || []).length ||
               !this.excludeWidgetIds.includes(f.id))
           );
         })
         .sort((a, b) => (a.order || 0) - (b.order || 0));
-
+      console.log("filteredArr", filteredArr);
       return filteredArr;
     },
   },

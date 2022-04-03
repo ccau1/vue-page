@@ -40,6 +40,16 @@
       @onFormChange="onFormChange"
       @onStateChange="onStateChange"
     />
+    <div style="display: flex; flex-direction: row; padding: 10px">
+      <div style="flex: 1">
+        <h4>state</h4>
+        <vue-json-pretty :path="'res'" :data="state" />
+      </div>
+      <div style="flex: 1">
+        <h4>Form</h4>
+        <vue-json-pretty :path="'res'" :data="form" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -47,6 +57,8 @@
 import { defineComponent } from "@vue/composition-api";
 import { DynamicForm, Form } from "./components/DynamicForm";
 import { FormState } from "./components/DynamicForm/models/FormState";
+import VueJsonPretty from "vue-json-pretty";
+import "vue-json-pretty/lib/styles.css";
 
 // mock data
 import formData from "./mockData/form1";
@@ -55,6 +67,7 @@ import languages from "./mockData/form1_languages";
 export default defineComponent({
   components: {
     DynamicForm,
+    VueJsonPretty,
   },
   data() {
     return {

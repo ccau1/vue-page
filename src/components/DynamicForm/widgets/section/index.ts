@@ -1,16 +1,16 @@
 import { WidgetControl } from "../..";
+import SectionWidgetItem from "./SectionWidgetItem";
 import Display from "./WidgetDisplay.vue";
 import Form from "./WidgetForm.vue";
 import ReadOnly from "./WidgetReadOnly.vue";
 
-export interface SeparatorData {
-  dir: "vertical" | "horizontal";
-  hasLabel?: boolean;
-  labelPosition: "start" | "center" | "end";
+export interface SectionData {
+  children: string[];
 }
 
 export default {
   display: Display,
   form: Form,
   readOnly: ReadOnly,
-} as WidgetControl<SeparatorData>;
+  widgetItem: SectionWidgetItem,
+} as WidgetControl<SectionData>;

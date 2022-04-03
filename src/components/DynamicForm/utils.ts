@@ -1,23 +1,24 @@
-import { FormWidgets, Widget, WidgetControls } from ".";
+import { WidgetItems, Widget, WidgetControls } from ".";
 import { FormState } from "./models/FormState";
+import WidgetItem from "./models/WidgetItem";
 
 export const getParents = ({
   widget,
-  formWidgets,
+  widgetItems,
   widgetControls,
 }: {
-  widget: Widget;
-  formWidgets: FormWidgets;
+  widget: WidgetItem;
+  widgetItems: WidgetItems;
   widgetControls: WidgetControls;
-}): Widget[] => {
+}): WidgetItem[] => {
   // if no widget parent found, just return empty
-  if (!widget.parent) return [];
+  if (!widget.parentId) return [];
   // get parent widget
-  const parentWidget = formWidgets[widget.parent];
+  const parentWidget = widgetItems[widget.parentId];
   // build array with parent widget and its ancestors
   const arr = [
     parentWidget,
-    ...getParents({ widget: parentWidget, formWidgets, widgetControls }),
+    ...getParents({ widget: parentWidget, widgetItems, widgetControls }),
   ];
   // return array
   return arr;
@@ -29,7 +30,7 @@ export const registerWidgetCode = ({
   setFormState,
 }: {
   formState: FormState;
-  widget: Widget;
+  widget: WidgetItem;
   setFormState?: (newFormState: FormState) => void;
 }) => {
   const _formState = new FormState(formState);

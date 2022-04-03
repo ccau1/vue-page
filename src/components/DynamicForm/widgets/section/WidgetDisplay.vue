@@ -1,9 +1,9 @@
 <template>
-  <section class="section-wrapper">
+  <section class="section-wrapper" :class="{ errors: hasChildErrors }">
     <label v-if="!!label">{{ label }}</label>
     <widgets-display
       :widgetControls="widgetControls"
-      :formWidgets="formWidgets"
+      :widgetItems="widgetItems"
       :forParent="widget.id"
     />
   </section>
@@ -11,13 +11,14 @@
 
 <script>
 import { defineComponent } from "@vue/composition-api";
+import WidgetItem from "../../models/WidgetItem";
 import WidgetsDisplay from "../../WidgetsDisplay.vue";
 
 export default defineComponent({
   components: { WidgetsDisplay },
   props: {
-    widget: Object,
-    formWidgets: Object,
+    widget: WidgetItem,
+    widgetItems: Object,
     widgetControls: Object,
   },
   inject: ["t"],
@@ -25,6 +26,12 @@ export default defineComponent({
   computed: {
     label() {
       return this.t("__label", this.$props.widget.id);
+    },
+    childErrors() {
+      return this.$props.widget.getState()?.childErrors;
+    },
+    hasChildErrors() {
+      return this.$props.widget.hasChildErrors();
     },
   },
   methods: {
@@ -54,5 +61,8 @@ export default defineComponent({
   transform: translateY(-50%);
   background-color: #fff;
   padding: 10px;
+}
+.section-wrapper.errors {
+  border-color: #f00;
 }
 </style>
