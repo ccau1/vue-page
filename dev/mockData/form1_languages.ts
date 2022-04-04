@@ -213,6 +213,30 @@ export default [
       __label: "副標題 1",
     },
   },
+  {
+    id: "865d9986-9161-40d0-a75d-5a2759b17b5b",
+    refId: "7a9f4686-f41b-4bce-a7ff-c5f6fbfe8d34",
+    type: "formItem",
+    version: 1,
+    locale: "en",
+    message: {
+      __title: "You won the 1 million dollar prize!",
+      __text:
+        "Be careful of scams, but this one definitely isn't one! Come down to your trusty dark alley you so love and adore and get your free voucher to a million dollar mansion now! While supplies lasts!",
+    },
+  },
+  {
+    id: "a2fd3a1a-2164-4f21-aff7-927921026304",
+    refId: "7a9f4686-f41b-4bce-a7ff-c5f6fbfe8d34",
+    type: "formItem",
+    version: 1,
+    locale: "zh_hk",
+    message: {
+      __title: "你贏得了100萬美元的獎金!",
+      __text:
+        "小心詐騙，但這絕對不是騙局！ 來到你如此喜愛和崇拜的可信賴的黑暗小巷，立即獲得百萬美元豪宅的免費代金券！ 送完為止！",
+    },
+  },
 ] as {
   id: string;
   refId: string;

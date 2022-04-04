@@ -38,6 +38,7 @@ export default {
               children: [
                 "aa104b5b-1a13-47b8-8590-7fa5b9927d97",
                 "4036afd0-0d81-4b99-b862-4e1f3d44509a",
+                "7a9f4686-f41b-4bce-a7ff-c5f6fbfe8d34",
                 "8946731a-c5e1-43b2-850d-d542990067bf",
                 "cf155c9c-05c9-4e98-8d4e-ad6baf066e88",
                 "be059ba0-326a-4985-84e7-c20ef4f447f7",
@@ -68,6 +69,18 @@ export default {
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         data: {
           tagType: "h2",
+        },
+      },
+      {
+        id: "7a9f4686-f41b-4bce-a7ff-c5f6fbfe8d34",
+        type: "alert",
+        parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        data: {
+          type: "default",
+          customBackgroundColor: "#f00",
+          customBorderColor: "#ff0",
+          customTextColor: "green",
+          showCloseBtn: false,
         },
       },
       {
