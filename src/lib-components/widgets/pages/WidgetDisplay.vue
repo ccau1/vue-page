@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="pages-menu-wrapper" v-if="widget.data.tabsVisible">
+    <div class="pages-menu-wrapper" v-if="widget.properties.tabsVisible">
       <a
         class="pages-menu-item"
         :class="{
@@ -39,7 +39,10 @@
         />
       </div>
     </div>
-    <div class="back-forward-wrapper" v-if="widget.data.navigationVisible">
+    <div
+      class="back-forward-wrapper"
+      v-if="widget.properties.navigationVisible"
+    >
       <div>
         <button
           class="back-forward-button"
@@ -101,7 +104,7 @@ export default defineComponent({
       },
       immediate: true,
     },
-    "widget.data.pages": {
+    "widget.properties.pages": {
       handler() {
         this.$data.sortedPages = this.$props.widget.getSortedPages();
       },
@@ -115,13 +118,13 @@ export default defineComponent({
       this.$props.widget.setState("currentPageIndex", toIndex);
     },
     onPreviousPage() {
-      // TODO: use widget.data.navigationIntegrateParentPaging
+      // TODO: use widget.properties.navigationIntegrateParentPaging
       // to check whether previous should jump to parent
       // previous page
       this.onChangePageIndex(this.currentPageIndex - 1);
     },
     onNextPage() {
-      // TODO: use widget.data.navigationIntegrateParentPaging
+      // TODO: use widget.properties.navigationIntegrateParentPaging
       // to check whether next should jump to parent
       // next page
       (async () => {
@@ -162,6 +165,7 @@ export default defineComponent({
   display: inline-block;
   padding: 10px 20px;
   cursor: pointer;
+  text-align: center;
 }
 .pages-menu-item.unopened {
   opacity: 0.3;

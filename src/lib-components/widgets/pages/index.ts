@@ -22,16 +22,4 @@ export default {
   form: Form,
   readOnly: ReadOnly,
   widgetItem: PagesWidgetItem,
-  // removeChild: ({ child, childId, widget }) => {
-  //   // remove child's id in pages
-  //   widget.data.pages = widget.data.pages.map((page) => ({
-  //     ...page,
-  //     children: page.children.filter((c) => c !== childId),
-  //   }));
-
-  //   // return widget to signify require for update
-  //   // in widgetItems object
-  //   return widget;
-  // },
-  // addChild: ({ child, childId, widget }) => {},
 } as WidgetControl<PagesData>;

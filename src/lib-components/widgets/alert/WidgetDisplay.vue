@@ -3,14 +3,14 @@
     class="alert"
     v-if="isOpen"
     :style="alertStyles"
-    :class="{ [widget.data.type]: true }"
+    :class="{ [widget.properties.type]: true }"
   >
     <h3>{{ t("__title", widget.id) }}</h3>
     <p>{{ t("__text", widget.id) }}</p>
     <a
       class="close-button"
       @click="onCloseAlert"
-      v-if="widget.data.showCloseBtn"
+      v-if="widget.properties.showCloseBtn"
       >x</a
     >
   </div>
@@ -36,13 +36,16 @@ export default defineComponent({
   },
   computed: {
     alertStyles() {
-      if (this.widget.data.type !== "custom" || this.widget.data.customColor)
+      if (
+        this.widget.properties.type !== "custom" ||
+        this.widget.properties.customColor
+      )
         return {};
       return {
-        backgroundColor: this.widget.data.customBackgroundColor,
-        borderColor: this.widget.data.customBorderColor || "transparent",
-        ...(this.widget.data.customTextColor
-          ? { color: this.widget.data.customTextColor }
+        backgroundColor: this.widget.properties.customBackgroundColor,
+        borderColor: this.widget.properties.customBorderColor || "transparent",
+        ...(this.widget.properties.customTextColor
+          ? { color: this.widget.properties.customTextColor }
           : {}),
       };
     },

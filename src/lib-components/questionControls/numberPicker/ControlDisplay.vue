@@ -16,7 +16,7 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   props: {
-    data: Object,
+    properties: Object,
     value: Number,
     onChange: Function,
   },
@@ -24,19 +24,20 @@ import { Component, Vue } from "vue-property-decorator";
     // if value has not been set and default is set, set value to default
     if (
       this.$props.value === undefined &&
-      this.$props.data.default !== undefined
+      this.$props.properties.default !== undefined
     )
-      (this as any).changeValue(this.$props.data.default, true);
+      (this as any).changeValue(this.$props.properties.default, true);
   },
   computed: {
     step() {
-      return this.$props.data.step || 1;
+      return this.$props.properties.step || 1;
     },
     numValue() {
       if (this.$props.value !== undefined) return this.$props.value;
-      if (this.$props.data.default !== undefined)
-        return this.$props.data.default;
-      if (this.$props.data.min !== undefined) return this.$props.data.min;
+      if (this.$props.properties.default !== undefined)
+        return this.$props.properties.default;
+      if (this.$props.properties.min !== undefined)
+        return this.$props.properties.min;
       return 0;
     },
   },
@@ -47,15 +48,15 @@ import { Component, Vue } from "vue-property-decorator";
       let _newNum = parseInt(newNum.toString(), 10);
 
       if (
-        this.$props.data?.min !== undefined &&
-        _newNum < this.$props.data?.min
+        this.$props.properties?.min !== undefined &&
+        _newNum < this.$props.properties?.min
       )
-        _newNum = this.$props.data.min;
+        _newNum = this.$props.properties.min;
       if (
-        this.$props.data?.max !== undefined &&
-        _newNum > this.$props.data?.max
+        this.$props.properties?.max !== undefined &&
+        _newNum > this.$props.properties?.max
       )
-        _newNum = this.$props.data.max;
+        _newNum = this.$props.properties.max;
 
       this.$props.onChange?.(_newNum, ignoreChecks);
     },

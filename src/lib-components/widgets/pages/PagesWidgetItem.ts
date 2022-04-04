@@ -14,8 +14,8 @@ export default class PagingWidgetItem extends WidgetItem<PagesData> {
 
   getSortedPages() {
     // FIXME: should be sorted, but this creates loop in UI
-    return this.data.pages;
-    // return this.data.pages.sort((a, b) => (a.idx || 0) - (b.idx || 0));
+    return this.properties.pages;
+    // return this.properties.pages.sort((a, b) => (a.idx || 0) - (b.idx || 0));
   }
 
   isWidgetIdInWidgetIds(widgetId: string, inWidgetIds: string[]): boolean {
@@ -40,7 +40,7 @@ export default class PagingWidgetItem extends WidgetItem<PagesData> {
     opts?: { deep?: boolean },
     meta?: { pageIdx: number }
   ): string[] {
-    return this.data.pages
+    return this.properties.pages
       .filter((p) => meta?.pageIdx === undefined || p)
       .reduce<string[]>((arr, page) => {
         return [
@@ -96,7 +96,7 @@ export default class PagingWidgetItem extends WidgetItem<PagesData> {
     meta?: { pageIdx: number; childIdx: number }
   ): void {
     super.addChild(childWidget, meta);
-    this._widget.data.pages[meta?.pageIdx || 0].children.splice(
+    this._widget.properties.pages[meta?.pageIdx || 0].children.splice(
       meta?.childIdx || 0,
       0,
       childWidget.id
@@ -105,7 +105,7 @@ export default class PagingWidgetItem extends WidgetItem<PagesData> {
 
   removeChild(childWidget: WidgetItem<any>): void {
     super.removeChild(childWidget);
-    this._widget.data.pages.forEach((page) => {
+    this._widget.properties.pages.forEach((page) => {
       page.children = page.children.filter((c) => c !== childWidget.id);
     });
   }

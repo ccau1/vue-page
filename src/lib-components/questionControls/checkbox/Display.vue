@@ -17,7 +17,7 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   props: {
-    data: Object,
+    properties: Object,
     widget: Object,
     onChange: Function,
     value: Boolean,

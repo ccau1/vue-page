@@ -2,7 +2,7 @@
   <div>
     <label
       class="radio-item"
-      v-for="option in data.options"
+      v-for="option in properties.options"
       :key="option.value"
     >
       <input
@@ -22,7 +22,7 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   props: {
-    data: Object,
+    properties: Object,
     widget: Object,
     onChange: Function,
     value: Object,

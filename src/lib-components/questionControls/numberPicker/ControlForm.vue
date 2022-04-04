@@ -16,19 +16,19 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   props: {
-    data: Object,
+    properties: Object,
     value: Number,
     onChange: Function,
   },
   computed: {
     step() {
-      return this.$props.data.step || 1;
+      return this.$props.properties.step || 1;
     },
     numValue() {
       return (
         this.$props.value?.num ||
-        this.$props.data.default ||
-        this.$props.data.min ||
+        this.$props.properties.default ||
+        this.$props.properties.min ||
         0
       );
     },
@@ -36,10 +36,16 @@ import { Component, Vue } from "vue-property-decorator";
   methods: {
     changeValue(diff: number) {
       let newNum = (this as any).numValue + diff;
-      if (this.$props.data?.min !== undefined && newNum < this.$props.data?.min)
-        newNum = this.$props.data.min;
-      if (this.$props.data?.max !== undefined && newNum > this.$props.data?.max)
-        newNum = this.$props.data.max;
+      if (
+        this.$props.properties?.min !== undefined &&
+        newNum < this.$props.properties?.min
+      )
+        newNum = this.$props.properties.min;
+      if (
+        this.$props.properties?.max !== undefined &&
+        newNum > this.$props.properties?.max
+      )
+        newNum = this.$props.properties.max;
 
       this.$props.onChange?.({ num: newNum });
     },

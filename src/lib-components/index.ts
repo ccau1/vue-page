@@ -11,7 +11,7 @@ export type FormStepperPosition =
   | "left"
   | "center";
 
-export interface Widget<Data = any> {
+export interface Widget<WidgetProperties = any> {
   id: string;
   type: string;
   code?: string;
@@ -20,7 +20,7 @@ export interface Widget<Data = any> {
   reflexiveRules?: ConditionProperties[];
   validationRules?: Array<{ conditions: ConditionProperties[]; error: string }>;
   order?: number;
-  data: Data;
+  properties: WidgetProperties;
 }
 
 export interface WidgetControl<Data = any> {

@@ -2,8 +2,8 @@ import { Widget, WidgetItems } from "..";
 import { FormState } from "./FormState";
 import { Engine, ConditionProperties } from "json-rules-engine";
 
-export default class WidgetItem<Data = any> {
-  protected _widget: Widget<Data>;
+export default class WidgetItem<Properties = any> {
+  protected _widget: Widget<Properties>;
   protected _getFormState: () => FormState;
   protected _setFormState: (newState: FormState) => void;
   protected _widgetItems: WidgetItems = {};
@@ -96,7 +96,7 @@ export default class WidgetItem<Data = any> {
       await Promise.all(
         this.validationRules.map(async (validation) => {
           const isValid = await this.validate(validation.conditions, {
-            data: this.data,
+            data: this.properties,
             response,
           });
           if (!isValid) return validation.error;
@@ -224,8 +224,8 @@ export default class WidgetItem<Data = any> {
     return this._widget.style;
   }
 
-  get data() {
-    return this._widget.data;
+  get properties() {
+    return this._widget.properties;
   }
 
   get parentId() {

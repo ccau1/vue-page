@@ -1,11 +1,6 @@
 <template>
   <div>
-    {{
-      t(
-        widget.data.controlData.options.find((f) => f.value === value).labelKey,
-        widget.id
-      )
-    }}
+    {{ label }}
   </div>
 </template>
 
@@ -14,12 +9,23 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   props: {
-    data: Object,
+    properties: Object,
     widget: Object,
     onChange: Function,
     value: String,
   },
   inject: ["t"],
+  computed: {
+    label() {
+      const selectedOption =
+        this.$props.widget.properties.controlData.options.find(
+          (f: { value: any; labelKey: string }) => f.value === this.$props.value
+        );
+      return selectedOption?.labelKey
+        ? (this as any).t(selectedOption.labelKey, this.$props.widget.id)
+        : "";
+    },
+  },
 })
 export default class RadioControl extends Vue {}
 </script>

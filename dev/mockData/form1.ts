@@ -8,7 +8,7 @@ export default {
       {
         id: "1f2ad689-74e0-422c-b4d6-ea6a1f90b5ee",
         type: "pages",
-        data: {
+        properties: {
           pages: [
             {
               labelKey: "step_1",
@@ -30,7 +30,7 @@ export default {
         id: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         type: "pages",
         parent: "1f2ad689-74e0-422c-b4d6-ea6a1f90b5ee",
-        data: {
+        properties: {
           pages: [
             {
               labelKey: "page_1",
@@ -59,7 +59,7 @@ export default {
         id: "aa104b5b-1a13-47b8-8590-7fa5b9927d97",
         type: "header",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
-        data: {
+        properties: {
           tagType: "h1",
         },
       },
@@ -67,7 +67,7 @@ export default {
         id: "4036afd0-0d81-4b99-b862-4e1f3d44509a",
         type: "header",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
-        data: {
+        properties: {
           tagType: "h2",
         },
       },
@@ -75,12 +75,12 @@ export default {
         id: "7a9f4686-f41b-4bce-a7ff-c5f6fbfe8d34",
         type: "alert",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
-        data: {
+        properties: {
           type: "default",
           customBackgroundColor: "#f00",
           customBorderColor: "#ff0",
           customTextColor: "green",
-          showCloseBtn: false,
+          showCloseBtn: true,
         },
       },
       {
@@ -97,7 +97,7 @@ export default {
           },
         ],
         // style: ".question-wrapper { background-color: blue; }",
-        data: {
+        properties: {
           responseType: "TEXT",
           control: "radio",
           controlData: {
@@ -114,7 +114,7 @@ export default {
         code: "isPregnant",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         reflexiveRules: [{ fact: "gender", operator: "equal", value: "F" }],
-        data: {
+        properties: {
           responseType: "BOOLEAN",
           control: "checkbox",
           controlData: {},
@@ -124,7 +124,7 @@ export default {
         id: "be059ba0-326a-4985-84e7-c20ef4f447f7",
         type: "separator",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
-        data: {
+        properties: {
           dir: "horizontal",
           hasLabel: true,
           labelPosition: "start",
@@ -134,7 +134,7 @@ export default {
         id: "ea28032b-b29c-4812-a60f-da34eb341a42",
         type: "section",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
-        data: {
+        properties: {
           children: [
             "d1440655-4257-4b03-9693-df53def669ae",
             "4831a778-4c87-471e-a33f-71feaf343d57",
@@ -145,7 +145,7 @@ export default {
         id: "d1440655-4257-4b03-9693-df53def669ae",
         type: "separator",
         parent: "ea28032b-b29c-4812-a60f-da34eb341a42",
-        data: {
+        properties: {
           dir: "horizontal",
           hasLabel: true,
           labelPosition: "start",
@@ -165,7 +165,7 @@ export default {
             error: "err1",
           },
         ],
-        data: {
+        properties: {
           responseType: "NUMBER",
           control: "numberPicker",
           controlData: {

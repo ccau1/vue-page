@@ -4,8 +4,8 @@
       <label>{{ t("__label", widget.id) }}</label>
       <div>
         <component
-          :is="questionControls[widget.data.control].readOnly"
-          :data="widget.data.controlData"
+          :is="questionControls[widget.properties.control].readOnly"
+          :properties="widget.properties.controlData"
           :widget="widget"
           :onChange="onChange"
           :value="getWidgetState('response')"

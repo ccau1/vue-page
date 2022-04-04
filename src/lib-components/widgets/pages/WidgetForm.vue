@@ -4,7 +4,7 @@
       <a
         class="paging-menu-item"
         :class="{ active: currentPageIndex === pageIndex }"
-        v-for="(page, pageIndex) in widget.data.pages"
+        v-for="(page, pageIndex) in widget.properties.pages"
         :key="pageIndex"
         v-on:click="() => setState('currentPageIndex', pageIndex)"
       >
@@ -13,7 +13,7 @@
     </div>
     <div
       class="paging-content-item"
-      v-for="(page, pageIndex) in widget.data.pages"
+      v-for="(page, pageIndex) in widget.properties.pages"
       :key="pageIndex"
     >
       <div v-if="currentPageIndex === pageIndex">

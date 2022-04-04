@@ -37,8 +37,8 @@ export default defineComponent({
   methods: {
     isShowLabel(pos) {
       return (
-        this.$props.widget.data.hasLabel &&
-        this.$props.widget.data.labelPosition === pos
+        this.$props.widget.properties.hasLabel &&
+        this.$props.widget.properties.labelPosition === pos
       );
     },
   },

@@ -1,5 +1,5 @@
 <template>
-  <component class="header" :is="widget.data.tagType">{{
+  <component class="header" :is="widget.properties.tagType">{{
     t("__label", widget.id)
   }}</component>
 </template>

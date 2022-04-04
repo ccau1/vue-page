@@ -1,23 +1,23 @@
 <template>
   <div
     class="line-wrapper"
-    :class="{ vertical: widget.data.dir === 'vertical' }"
+    :class="{ vertical: widget.properties.dir === 'vertical' }"
   >
     <label
       v-if="isShowLabel('start')"
-      :class="{ [widget.data.labelPosition || 'start']: true }"
+      :class="{ [widget.properties.labelPosition || 'start']: true }"
       >{{ label }}</label
     >
     <div class="line" />
     <label
       v-if="isShowLabel('center')"
-      :class="{ [widget.data.labelPosition || 'start']: true }"
+      :class="{ [widget.properties.labelPosition || 'start']: true }"
       >{{ label }}</label
     >
     <div class="line" />
     <label
       v-if="isShowLabel('end')"
-      :class="{ [widget.data.labelPosition || 'start']: true }"
+      :class="{ [widget.properties.labelPosition || 'start']: true }"
       >{{ label }}</label
     >
   </div>
@@ -40,8 +40,8 @@ export default defineComponent({
   methods: {
     isShowLabel(pos) {
       return (
-        this.$props.widget.data.hasLabel &&
-        this.$props.widget.data.labelPosition === pos
+        this.$props.widget.properties.hasLabel &&
+        this.$props.widget.properties.labelPosition === pos
       );
     },
   },

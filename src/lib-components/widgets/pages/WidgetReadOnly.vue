@@ -60,7 +60,7 @@ export default defineComponent({
     },
   },
   watch: {
-    "widget.data.pages": {
+    "widget.properties.pages": {
       handler() {
         this.$data.sortedPages = this.$props.widget.getSortedPages();
       },
