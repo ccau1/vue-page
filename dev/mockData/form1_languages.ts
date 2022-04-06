@@ -249,6 +249,37 @@ export default [
         "小心詐騙，但這絕對不是騙局！ 來到你如此喜愛和崇拜的可信賴的黑暗小巷，立即獲得百萬美元豪宅的免費代金券！ 送完為止！",
     },
   },
+  {
+    id: "3591af66-988c-4f6c-a7a6-50ec70be6580",
+    refId: "1e6e8ead-591c-43cc-bc44-f99ad76062ef",
+    type: "formItem",
+    version: 1,
+    locale: "en",
+    message: {
+      __label: "Terms & Conditions",
+    },
+  },
+  {
+    id: "e18e0140-7244-4ffa-b9ca-cd5d6f0548a6",
+    refId: "1e6e8ead-591c-43cc-bc44-f99ad76062ef",
+    type: "formItem",
+    version: 1,
+    locale: "zh_hk",
+    message: {
+      __label: "條款和條件",
+    },
+  },
+  {
+    id: "f41b04e2-7a70-4ac1-8eb6-69b6aa332759",
+    refId: "010f664f-bf1d-4abe-8782-957cc024c414",
+    type: "formItem",
+    version: 1,
+    locale: "en",
+    message: {
+      __checkboxLabel: "I agree with the above terms and conditions",
+      err1: "Please agree to the conditions before proceeding",
+    },
+  },
 ] as {
   id: string;
   refId: string;

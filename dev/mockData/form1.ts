@@ -37,6 +37,14 @@ export default {
               labelKey: "page_1",
               idx: 0,
               children: [
+                "1e6e8ead-591c-43cc-bc44-f99ad76062ef",
+                "010f664f-bf1d-4abe-8782-957cc024c414",
+              ],
+            },
+            {
+              labelKey: "page_2",
+              idx: 1,
+              children: [
                 "aa104b5b-1a13-47b8-8590-7fa5b9927d97",
                 "4036afd0-0d81-4b99-b862-4e1f3d44509a",
                 "7a9f4686-f41b-4bce-a7ff-c5f6fbfe8d34",
@@ -46,15 +54,35 @@ export default {
                 "ea28032b-b29c-4812-a60f-da34eb341a42",
               ],
             },
-            {
-              labelKey: "page_2",
-              idx: 1,
-              children: [],
-            },
           ],
           tabsVisible: true,
           navigationVisible: false,
           detachParentIntegration: false,
+        },
+      },
+      {
+        id: "1e6e8ead-591c-43cc-bc44-f99ad76062ef",
+        type: "header",
+        parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        properties: {
+          tagType: "h1",
+        },
+      },
+      {
+        id: "010f664f-bf1d-4abe-8782-957cc024c414",
+        type: "question",
+        parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        validationRules: [
+          {
+            conditions: [{ fact: "response", operator: "equal", value: true }],
+            error: "err1",
+          },
+        ],
+        properties: {
+          responseType: "BOOLEAN",
+          control: "checkbox",
+          hideLabel: true,
+          controlProperties: {},
         },
       },
       {

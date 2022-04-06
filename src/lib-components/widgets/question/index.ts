@@ -6,6 +6,7 @@ import QuestionWidgetItem from "./QuestionWidgetItem";
 
 export interface QuestionProperties {
   responseType: string;
+  hideLabel?: boolean;
   control: string;
   controlProperties: { [key: string]: any };
 }
