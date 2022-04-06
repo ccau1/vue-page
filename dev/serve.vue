@@ -65,6 +65,10 @@
         <h4>Form</h4>
         <vue-json-pretty :path="'res'" :data="form" />
       </div>
+      <div style="flex: 1; padding: 10px; background-color: #f8f8f8">
+        <h4>Languages</h4>
+        <vue-json-pretty :path="'res'" :data="languages" />
+      </div>
     </div>
   </div>
 </template>

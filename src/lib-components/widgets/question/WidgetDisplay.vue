@@ -100,10 +100,11 @@ export default defineComponent({
   max-width: 300px;
   border-right: 1px solid #393939;
   padding: 20px 0;
+  margin-right: 20px;
 }
 .question-wrapper > div {
   flex: 2;
-  padding: 20px 0px 20px 20px;
+  padding: 20px 0px;
 }
 
 .error {
