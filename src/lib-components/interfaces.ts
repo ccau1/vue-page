@@ -57,6 +57,5 @@ export interface WidgetItems {
 }
 
 export interface Form {
-  // pageSet: FormPageSet;
   widgets: Widget[];
 }
