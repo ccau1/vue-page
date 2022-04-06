@@ -1,34 +1,46 @@
 <template>
   <div>
-    <div class="appBar">
-      <div class="locale-switcher">
-        <a
-          :class="{ active: locale === 'en' }"
-          v-on:click="() => setLocale('en')"
-          >EN</a
-        >
-        <a
-          :class="{ active: locale === 'zh_hk' }"
-          v-on:click="() => setLocale('zh_hk')"
-          >HK</a
+    <div class="app-bar">
+      <div class="app-bar-left-side">
+        <div class="locale-switcher">
+          <a
+            :class="{ active: locale === 'en' }"
+            v-on:click="() => setLocale('en')"
+            >EN</a
+          >
+          <a
+            :class="{ active: locale === 'zh_hk' }"
+            v-on:click="() => setLocale('zh_hk')"
+            >HK</a
+          >
+        </div>
+        <label>
+          <input
+            type="checkbox"
+            :checked="isPersistState"
+            @change="togglePersistState"
+          />
+          Persist State</label
         >
       </div>
-      <div class="view-switcher">
-        <a
-          :class="{ active: formView === 'display' }"
-          v-on:click="() => setFormView('display')"
-          >Customer Display</a
-        >
-        <!-- <a
+      <div class="app-bar-right-side">
+        <div class="view-switcher">
+          <a
+            :class="{ active: formView === 'display' }"
+            v-on:click="() => setFormView('display')"
+            >Customer Display</a
+          >
+          <!-- <a
           :class="{ active: formView === 'form' }"
           v-on:click="() => setFormView('form')"
           >Builder</a
         > -->
-        <a
-          :class="{ active: formView === 'readOnly' }"
-          v-on:click="() => setFormView('readOnly')"
-          >Read Only</a
-        >
+          <a
+            :class="{ active: formView === 'readOnly' }"
+            v-on:click="() => setFormView('readOnly')"
+            >Read Only</a
+          >
+        </div>
       </div>
     </div>
 
@@ -80,11 +92,17 @@ export default defineComponent({
     VueJsonPretty,
   },
   data() {
+    const persistedStateRaw = localStorage.getItem("pageState");
+
     return {
       locale: "en",
       formView: "display",
+      isPersistState: !!persistedStateRaw,
       responses: [] as Response[],
       ...formData,
+      state: !!persistedStateRaw
+        ? FormState.from(JSON.parse(persistedStateRaw))
+        : formData.state,
     };
   },
   computed: {
@@ -124,9 +142,16 @@ export default defineComponent({
           ];
         }, []);
       },
+      immediate: true,
     },
   },
   methods: {
+    togglePersistState() {
+      this.$data.isPersistState = !this.$data.isPersistState;
+
+      if (!this.$data.isPersistState) localStorage.removeItem("pageState");
+      else localStorage.setItem("pageState", JSON.stringify(this.$data.state));
+    },
     setLocale(locale: string) {
       this.$data.locale = locale;
     },
@@ -136,7 +161,10 @@ export default defineComponent({
     onStateChange(newState: any) {
       // FIXME: creating new FormState is the only
       // way to keep state reactive. Better way?
-      this.$data.state = new FormState(newState);
+      this.$data.state = FormState.from(newState);
+
+      this.$data.isPersistState &&
+        localStorage.setItem("pageState", JSON.stringify(newState));
     },
     onFormChange(newForm: Form) {
       this.$data.form = newForm;
@@ -179,11 +207,21 @@ html {
 .view-switcher a.active {
   background-color: #e9e9e9;
 }
-.appBar {
+.app-bar {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   padding: 5px 10px;
   background: #a9a9a9;
+}
+.app-bar-left-side {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.app-bar-right-side {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>

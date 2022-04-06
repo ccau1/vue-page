@@ -8,10 +8,35 @@ export interface FormStateCreate {
   reflexCodeToIdsMap?: { [widgetCode: string]: string[] };
 }
 
+export interface FormStateRawObject {
+  _widgetState: WidgetState;
+  _widgetCodeToIdMap: { [widgetCode: string]: string };
+  _reflexCodeToIdsMap: { [widgetCode: string]: string[] };
+}
+
 export class FormState {
   protected _widgetState: WidgetState = {};
   protected _widgetCodeToIdMap: { [widgetCode: string]: string } = {};
   protected _reflexCodeToIdsMap: { [widgetCode: string]: string[] } = {};
+
+  static from(formState: FormState | FormStateRawObject) {
+    if (formState instanceof FormState) {
+      // from an object, use their public getters
+      return new FormState({
+        widgetState: formState.widgetState,
+        widgetCodeToIdMap: formState.widgetCodeToIdMap,
+        reflexCodeToIdsMap: formState.reflexCodeToIdsMap,
+      });
+    } else {
+      // assume it is just a plain object, fetch its protected
+      // field
+      return new FormState({
+        widgetState: formState._widgetState,
+        widgetCodeToIdMap: formState._widgetCodeToIdMap,
+        reflexCodeToIdsMap: formState._reflexCodeToIdsMap,
+      });
+    }
+  }
 
   constructor({
     widgetState,
