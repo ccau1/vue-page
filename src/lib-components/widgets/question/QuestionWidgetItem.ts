@@ -3,7 +3,7 @@ import { Widget } from "../..";
 import { FormState } from "../../models/FormState";
 import WidgetItem from "../../models/WidgetItem";
 
-export default class PagingWidgetItem extends WidgetItem<QuestionProperties> {
+export default class QuestionWidgetItem extends WidgetItem<QuestionProperties> {
   constructor(opts: {
     widget: Widget;
     getState: () => FormState;

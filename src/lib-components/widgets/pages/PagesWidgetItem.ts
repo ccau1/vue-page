@@ -39,12 +39,17 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
 
   getChildrenIds(
     opts?: { deep?: boolean },
-    meta?: { inPageIndices: number[] }
+    meta?: { inPageIndices?: number[]; currentPageIndexOnly?: boolean }
   ): string[] {
     return this.getSortedPages()
-      .filter((p, pIndex) =>
-        meta?.inPageIndices?.length ? meta.inPageIndices.includes(pIndex) : p
-      )
+      .filter((p, pIndex) => {
+        if (meta?.inPageIndices?.length) {
+          return meta.inPageIndices.includes(pIndex);
+        } else if (meta?.currentPageIndexOnly) {
+          return pIndex === this.currentPageIndex;
+        }
+        return p;
+      })
       .reduce<string[]>((arr, page) => {
         return [
           ...arr,
@@ -147,7 +152,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   async toNextPage() {
     const children = this.getChildren(
       { deep: true },
-      { inPageIndices: [this.currentPageIndex] }
+      { currentPageIndexOnly: true }
     );
     const hasErrors = (
       await Promise.all(
@@ -156,6 +161,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
         })
       )
     ).some((err) => err);
+
     if (!hasErrors) {
       // update current pages or, if
       // navigationIntegrateParentPage is true,
