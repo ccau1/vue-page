@@ -100,7 +100,7 @@ export default {
         properties: {
           responseType: "TEXT",
           control: "radio",
-          controlData: {
+          controlProperties: {
             options: [
               { labelKey: "opt1", value: "M" },
               { labelKey: "opt2", value: "F" },
@@ -117,7 +117,7 @@ export default {
         properties: {
           responseType: "BOOLEAN",
           control: "checkbox",
-          controlData: {},
+          controlProperties: {},
         },
       },
       {
@@ -168,7 +168,7 @@ export default {
         properties: {
           responseType: "NUMBER",
           control: "numberPicker",
-          controlData: {
+          controlProperties: {
             min: 0,
             max: 150,
             default: 20,

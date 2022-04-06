@@ -121,25 +121,13 @@ export default defineComponent({
       // TODO: use widget.properties.navigationIntegrateParentPaging
       // to check whether previous should jump to parent
       // previous page
-      this.onChangePageIndex(this.currentPageIndex - 1);
+      this.$props.widget.toPreviousPage();
     },
     onNextPage() {
       // TODO: use widget.properties.navigationIntegrateParentPaging
       // to check whether next should jump to parent
       // next page
-      (async () => {
-        const children = this.$props.widget.getChildren({ deep: true });
-        const hasErrors = (
-          await Promise.all(
-            children.map(async (child) => {
-              return child.runValidations();
-            })
-          )
-        ).some((err) => err);
-        if (!hasErrors) {
-          this.onChangePageIndex(this.currentPageIndex + 1);
-        }
-      })();
+      this.$props.widget.toNextPage();
     },
     pageIndexHasErrors(idx) {
       // get child errors

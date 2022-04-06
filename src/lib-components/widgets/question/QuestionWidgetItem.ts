@@ -1,13 +1,14 @@
-import { QuestionData } from ".";
+import { QuestionProperties } from ".";
 import { Widget } from "../..";
 import { FormState } from "../../models/FormState";
 import WidgetItem from "../../models/WidgetItem";
 
-export default class PagingWidgetItem extends WidgetItem<QuestionData> {
+export default class PagingWidgetItem extends WidgetItem<QuestionProperties> {
   constructor(opts: {
     widget: Widget;
     getState: () => FormState;
     setState: (newState: FormState) => void;
+    onUpdate: (newWidget: Widget<QuestionProperties>) => void;
   }) {
     super(opts);
   }

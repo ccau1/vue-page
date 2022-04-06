@@ -18,7 +18,7 @@ import { Component, Vue } from "vue-property-decorator";
   computed: {
     label() {
       const selectedOption =
-        this.$props.widget.properties.controlData.options.find(
+        this.$props.widget.properties.controlProperties.options.find(
           (f: { value: any; labelKey: string }) => f.value === this.$props.value
         );
       return selectedOption?.labelKey

@@ -5,7 +5,7 @@
       <div>
         <component
           :is="questionControls[widget.properties.control].display"
-          :properties="widget.properties.controlData"
+          :properties="widget.properties.controlProperties"
           :widget="widget"
           :onChange="onChange"
           :value="widget.getState('response')"

@@ -7,6 +7,7 @@ export default class WidgetItem<Properties = any> {
   protected _getFormState: () => FormState;
   protected _setFormState: (newState: FormState) => void;
   protected _widgetItems: WidgetItems = {};
+  protected _onUpdate: (newWidget: Widget<Properties>) => void;
 
   static getParentIds(widgetId: string, widgetItems: WidgetItems): string[] {
     const widget = widgetItems[widgetId];
@@ -21,14 +22,17 @@ export default class WidgetItem<Properties = any> {
     widget,
     getState,
     setState,
+    onUpdate,
   }: {
     widget: Widget;
     getState: () => FormState;
     setState: (newState: FormState) => void;
+    onUpdate: (newWidget: Widget) => void;
   }) {
     this._widget = widget;
     this._getFormState = getState;
     this._setFormState = setState;
+    this._onUpdate = onUpdate;
 
     if (this.code) this.formState.registerWidgetCode(this.code, this.id);
     if (this.reflexiveRules?.length) {

@@ -109,6 +109,14 @@ import WidgetItem from "./models/WidgetItem";
               setState: (newFormState: FormState) => {
                 this.$emit("onStateChange", newFormState);
               },
+              onUpdate: (newWidget: Widget) => {
+                this.$props.onFormChange(
+                  Object.values({
+                    ...this.$data.widgetItems,
+                    [newWidget.id]: newWidget,
+                  })
+                );
+              },
             });
             return obj;
           },

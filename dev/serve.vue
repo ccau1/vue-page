@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <DynamicForm
+    <vue-page
       :form="form"
       :state="state"
       :languages="languages"
@@ -59,7 +59,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import { DynamicForm, Form } from "../src/lib-components";
+import { VuePage, Form } from "../src/lib-components";
 import { FormState } from "../src/lib-components/models/FormState";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
@@ -76,7 +76,7 @@ interface Response {
 
 export default defineComponent({
   components: {
-    DynamicForm,
+    VuePage,
     VueJsonPretty,
   },
   data() {

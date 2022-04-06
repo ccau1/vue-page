@@ -4,7 +4,7 @@ import Display from "./WidgetDisplay.vue";
 import Form from "./WidgetForm.vue";
 import ReadOnly from "./WidgetReadOnly.vue";
 
-export interface SectionData {
+export interface SectionProperties {
   children: string[];
 }
 
@@ -13,4 +13,4 @@ export default {
   form: Form,
   readOnly: ReadOnly,
   widgetItem: SectionWidgetItem,
-} as WidgetControl<SectionData>;
+} as WidgetControl<SectionProperties>;

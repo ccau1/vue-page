@@ -4,10 +4,10 @@ import Form from "./WidgetForm.vue";
 import ReadOnly from "./WidgetReadOnly.vue";
 import QuestionWidgetItem from "./QuestionWidgetItem";
 
-export interface QuestionData {
+export interface QuestionProperties {
   responseType: string;
   control: string;
-  controlData: { [key: string]: any };
+  controlProperties: { [key: string]: any };
 }
 
 export default {
@@ -15,4 +15,4 @@ export default {
   form: Form,
   readOnly: ReadOnly,
   widgetItem: QuestionWidgetItem,
-} as WidgetControl<QuestionData>;
+} as WidgetControl<QuestionProperties>;

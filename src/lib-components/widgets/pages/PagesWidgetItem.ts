@@ -1,13 +1,14 @@
-import { PagesData } from ".";
+import { PagesProperties } from ".";
 import { Widget } from "../..";
 import { FormState } from "../../models/FormState";
 import WidgetItem from "../../models/WidgetItem";
 
-export default class PagingWidgetItem extends WidgetItem<PagesData> {
+export default class PagingWidgetItem extends WidgetItem<PagesProperties> {
   constructor(opts: {
     widget: Widget;
     getState: () => FormState;
     setState: (newState: FormState) => void;
+    onUpdate: (newWidget: Widget<PagesProperties>) => void;
   }) {
     super(opts);
   }
@@ -108,5 +109,32 @@ export default class PagingWidgetItem extends WidgetItem<PagesData> {
     this._widget.properties.pages.forEach((page) => {
       page.children = page.children.filter((c) => c !== childWidget.id);
     });
+  }
+
+  onChangePageIndex(toIndex: number) {
+    const sortedPages = this.getSortedPages();
+    if (toIndex < 0) return;
+    if (toIndex > sortedPages.length - 1) return;
+    this.setState("currentPageIndex", toIndex);
+  }
+
+  async toNextPage() {
+    const children = this.getChildren({ deep: true });
+    const currentPageIndex = this.getState("currentPageIndex") || 0;
+    const hasErrors = (
+      await Promise.all(
+        children.map(async (child) => {
+          return child.runValidations();
+        })
+      )
+    ).some((err) => err);
+    if (!hasErrors) {
+      this.onChangePageIndex(currentPageIndex + 1);
+    }
+  }
+
+  toPreviousPage() {
+    const currentPageIndex = this.getState("currentPageIndex");
+    this.onChangePageIndex(currentPageIndex - 1);
   }
 }

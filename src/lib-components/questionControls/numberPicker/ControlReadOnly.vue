@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ value || widget.properties.controlData.default }}
+    {{ value || widget.properties.controlProperties.default }}
   </div>
 </template>
 

@@ -1,13 +1,14 @@
-import { SectionData } from ".";
+import { SectionProperties } from ".";
 import { Widget } from "../..";
 import { FormState } from "../../models/FormState";
 import WidgetItem from "../../models/WidgetItem";
 
-export default class SectionWidgetItem extends WidgetItem<SectionData> {
+export default class SectionWidgetItem extends WidgetItem<SectionProperties> {
   constructor(opts: {
     widget: Widget;
     getState: () => FormState;
     setState: (newState: FormState) => void;
+    onUpdate: (newWidget: Widget<SectionProperties>) => void;
   }) {
     super(opts);
   }

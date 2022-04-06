@@ -4,14 +4,14 @@ import Form from "./WidgetForm.vue";
 import ReadOnly from "./WidgetReadOnly.vue";
 import PagesWidgetItem from "./PagesWidgetItem";
 
-export interface PagesDataPage {
+export interface PagesPropertiesPage {
   labelKey: string;
   idx?: number;
   children: string[];
 }
 
-export interface PagesData {
-  pages: PagesDataPage[];
+export interface PagesProperties {
+  pages: PagesPropertiesPage[];
   navigationVisible?: boolean;
   navigationIntegrateParentPage?: boolean;
   tabsVisible?: boolean;
@@ -22,4 +22,4 @@ export default {
   form: Form,
   readOnly: ReadOnly,
   widgetItem: PagesWidgetItem,
-} as WidgetControl<PagesData>;
+} as WidgetControl<PagesProperties>;
