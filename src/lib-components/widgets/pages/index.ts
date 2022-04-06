@@ -15,6 +15,7 @@ export interface PagesProperties {
   navigationVisible?: boolean;
   navigationIntegrateParentPage?: boolean;
   tabsVisible?: boolean;
+  hasCompleteButton?: boolean;
 }
 
 export default {

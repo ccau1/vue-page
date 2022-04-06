@@ -53,6 +53,7 @@ export default {
           ],
           tabsVisible: true,
           navigationVisible: true,
+          navigationIntegrateParentPage: true,
         },
       },
       {

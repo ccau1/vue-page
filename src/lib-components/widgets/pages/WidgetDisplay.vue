@@ -18,7 +18,7 @@
         v-on:click="
           () =>
             (widget.getState('viewedIndices') || []).includes(pageIndex) &&
-            onChangePageIndex(pageIndex)
+            widget.onChangePageIndex(pageIndex)
         "
       >
         {{ t(page.labelKey, widget.id) }}
@@ -46,10 +46,10 @@
       <div>
         <button
           class="back-forward-button"
-          v-if="currentPageIndex > 0"
-          @click="onPreviousPage"
+          v-if="widget.hasPreviousButton()"
+          @click="() => widget.toPreviousPage()"
         >
-          Back
+          {{ t(`__${widget.previousButtonType()}`, widget.id) }}
         </button>
       </div>
       <div>
@@ -57,10 +57,10 @@
           class="back-forward-button"
           :class="{ errors: pageIndexHasErrors(currentPageIndex) }"
           :disabled="pageIndexHasErrors(currentPageIndex)"
-          v-if="currentPageIndex < sortedPages.length - 1"
-          @click="onNextPage"
+          v-if="widget.hasNextButton()"
+          @click="() => widget.toNextPage()"
         >
-          Next
+          {{ t(`__${widget.nextButtonType()}`, widget.id) }}
         </button>
       </div>
     </div>
@@ -112,23 +112,6 @@ export default defineComponent({
     },
   },
   methods: {
-    onChangePageIndex(toIndex) {
-      if (toIndex < 0) return;
-      if (toIndex > this.$data.sortedPages.length - 1) return;
-      this.$props.widget.setState("currentPageIndex", toIndex);
-    },
-    onPreviousPage() {
-      // TODO: use widget.properties.navigationIntegrateParentPaging
-      // to check whether previous should jump to parent
-      // previous page
-      this.$props.widget.toPreviousPage();
-    },
-    onNextPage() {
-      // TODO: use widget.properties.navigationIntegrateParentPaging
-      // to check whether next should jump to parent
-      // next page
-      this.$props.widget.toNextPage();
-    },
     pageIndexHasErrors(idx) {
       // get child errors
       const childErrors = this.$props.widget.getState("pageIdxErrors") || {};

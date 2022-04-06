@@ -3,7 +3,7 @@ import { Widget } from "../..";
 import { FormState } from "../../models/FormState";
 import WidgetItem from "../../models/WidgetItem";
 
-export default class PagingWidgetItem extends WidgetItem<PagesProperties> {
+export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   constructor(opts: {
     widget: Widget;
     getState: () => FormState;
@@ -118,6 +118,19 @@ export default class PagingWidgetItem extends WidgetItem<PagesProperties> {
     this.setState("currentPageIndex", toIndex);
   }
 
+  get currentPageIndex() {
+    return this.getState("currentPageIndex") || 0;
+  }
+
+  getParentPagesWidgets(opts?: {
+    first?: boolean;
+  }): PagesWidgetItem[] | PagesWidgetItem {
+    const parentPages = this.getParents().filter(
+      (w) => w.type === "pages"
+    ) as PagesWidgetItem[];
+    return opts?.first ? parentPages[0] : parentPages;
+  }
+
   async toNextPage() {
     const children = this.getChildren({ deep: true });
     const currentPageIndex = this.getState("currentPageIndex") || 0;
@@ -129,12 +142,97 @@ export default class PagingWidgetItem extends WidgetItem<PagesProperties> {
       )
     ).some((err) => err);
     if (!hasErrors) {
-      this.onChangePageIndex(currentPageIndex + 1);
+      // update current pages or, if
+      // navigationIntegrateParentPage is true,
+      // update parent's instead
+
+      // get next type first to determine which to update
+      const nextType = this.nextButtonType();
+      if (nextType === "complete") {
+        // TODO: trigger complete button.
+      } else if (nextType === "none") {
+        // wasn't suppose to show, just skip it
+        return;
+      } else {
+        // do a check to see if current is at its end
+        const isCurrentPageAtEnd =
+          this.currentPageIndex >= this._widget.properties.pages.length - 1;
+        if (!isCurrentPageAtEnd) {
+          // current pages still not at its end yet, update
+          // current pages
+          this.onChangePageIndex(currentPageIndex + 1);
+        } else {
+          // current pages at end, so update parent's
+          const parentPagesWidget = this.getParentPagesWidgets({
+            first: true,
+          }) as PagesWidgetItem;
+          parentPagesWidget.toNextPage();
+        }
+      }
     }
   }
 
   toPreviousPage() {
-    const currentPageIndex = this.getState("currentPageIndex");
-    this.onChangePageIndex(currentPageIndex - 1);
+    this.onChangePageIndex(this.currentPageIndex - 1);
+  }
+
+  previousButtonType(): "previous" | "none" {
+    // check whether this pages widget is at its end
+    const isCurrentPageAtEnd = this.currentPageIndex <= 0;
+    // check if there is any parents. Just get the immediate one
+    const parentPages = this.getParentPagesWidgets({
+      first: true,
+    }) as PagesWidgetItem;
+    // if we don't need to integrate with parent pages or
+    // current pages is not at its end yet, just return
+    // based on current pages' state
+    if (
+      !this.properties.navigationIntegrateParentPage ||
+      !parentPages ||
+      !isCurrentPageAtEnd
+    ) {
+      if (isCurrentPageAtEnd) {
+        return "none";
+      }
+      return "previous";
+    }
+    // return whether parent should be at its end
+    return parentPages.previousButtonType();
+  }
+
+  nextButtonType(): "next" | "complete" | "none" {
+    // check whether this pages widget is at its end
+    const isCurrentPageAtEnd =
+      this.currentPageIndex >= this._widget.properties.pages.length - 1;
+    // check if there is any parents. Just get the immediate one
+    const parentPages = this.properties.navigationIntegrateParentPage
+      ? (this.getParentPagesWidgets({
+          first: true,
+        }) as PagesWidgetItem)
+      : null;
+
+    // if we don't need to integrate with parent pages or
+    // current pages is not at its end yet, just return
+    // based on current pages' state
+    if (
+      !this.properties.navigationIntegrateParentPage ||
+      !parentPages ||
+      !isCurrentPageAtEnd
+    ) {
+      if (isCurrentPageAtEnd) {
+        return this.properties.hasCompleteButton ? "complete" : "none";
+      }
+      return "next";
+    }
+    // return whether parent should be at its end
+    return parentPages.nextButtonType();
+  }
+
+  hasPreviousButton(): boolean {
+    return this.previousButtonType() !== "none";
+  }
+
+  hasNextButton(): boolean {
+    return this.nextButtonType() !== "none";
   }
 }

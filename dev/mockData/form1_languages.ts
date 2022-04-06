@@ -8,6 +8,9 @@ export default [
     message: {
       step_1: "Step 1",
       step_2: "Step 2",
+      __next: "Next",
+      __previous: "Back",
+      __complete: "Complete",
     },
   },
   {
@@ -19,6 +22,9 @@ export default [
     message: {
       step_1: "第 1 步",
       step_2: "第 2 步",
+      __next: "下一頁",
+      __previous: "上一頁",
+      __complete: "提交",
     },
   },
   {
@@ -30,6 +36,9 @@ export default [
     message: {
       page_1: "Page 1",
       page_2: "Page 2",
+      __next: "Next",
+      __previous: "Back",
+      __complete: "Complete",
     },
   },
   {
@@ -41,6 +50,9 @@ export default [
     message: {
       page_1: "第 1 頁",
       page_2: "第 2 頁",
+      __next: "下一頁",
+      __previous: "上一頁",
+      __complete: "提交",
     },
   },
   {
