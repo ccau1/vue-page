@@ -38,6 +38,7 @@ export default {
               idx: 0,
               children: [
                 "1e6e8ead-591c-43cc-bc44-f99ad76062ef",
+                "24d84b9f-19e6-49d4-9123-6fbda60361ec",
                 "010f664f-bf1d-4abe-8782-957cc024c414",
               ],
             },
@@ -66,6 +67,14 @@ export default {
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         properties: {
           tagType: "h1",
+        },
+      },
+      {
+        id: "24d84b9f-19e6-49d4-9123-6fbda60361ec",
+        type: "html",
+        parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        properties: {
+          from: "default",
         },
       },
       {

@@ -280,6 +280,37 @@ export default [
       err1: "Please agree to the conditions before proceeding",
     },
   },
+  {
+    id: "81914b1d-97ce-4777-8cd4-5342ab24c084",
+    refId: "010f664f-bf1d-4abe-8782-957cc024c414",
+    type: "formItem",
+    version: 1,
+    locale: "zh_hk",
+    message: {
+      __checkboxLabel: "我同意上述條款和條件",
+      err1: "請在繼續之前同意這些條件",
+    },
+  },
+  {
+    id: "253c9c07-28e7-4488-8799-84a70bbad623",
+    refId: "24d84b9f-19e6-49d4-9123-6fbda60361ec",
+    type: "formItem",
+    version: 1,
+    locale: "en",
+    message: {
+      __html: "<h1>testing</h1><p>some details down here</p>",
+    },
+  },
+  {
+    id: "68f380f5-65af-40f3-9fed-cbdc003eeb5d",
+    refId: "24d84b9f-19e6-49d4-9123-6fbda60361ec",
+    type: "formItem",
+    version: 1,
+    locale: "zh_hk",
+    message: {
+      __html: "<h1>測試</h1><p>一些細節在這裡</p>",
+    },
+  },
 ] as {
   id: string;
   refId: string;

@@ -1,7 +1,5 @@
 <template>
-  <component class="header" :is="widget.properties.tagType">{{
-    t("__label", widget.id)
-  }}</component>
+  <div v-html="widget.properties.html" />
 </template>
 
 <script>
@@ -10,12 +8,10 @@ import { defineComponent } from "@vue/composition-api";
 export default defineComponent({
   props: {
     widget: Object,
+    widgets: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function,
   },
-  inject: ["t"],
 });
 </script>
-
-<style scoped>
-.header {
-}
-</style>

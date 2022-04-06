@@ -94,7 +94,6 @@ export default defineComponent({
   width: 100%;
   display: flex;
   flex-direction: row;
-  padding: 0 10px;
 }
 .question-wrapper > label {
   flex: 1;

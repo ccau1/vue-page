@@ -1,7 +1,9 @@
 <template>
   <div v-if="!getWidgetState('reflexiveHide')">
     <div class="question-wrapper">
-      <label>{{ t("__label", widget.id) }}</label>
+      <label v-if="!widget.properties.hideLabel">{{
+        t("__label", widget.id)
+      }}</label>
       <div>
         <component
           :is="questionControls[widget.properties.control].readOnly"

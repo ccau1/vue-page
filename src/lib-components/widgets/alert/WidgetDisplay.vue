@@ -56,7 +56,7 @@ export default defineComponent({
 <style scoped>
 .alert {
   padding: 10px;
-  margin: 10px;
+  margin: 10px 0;
   border-radius: 10px;
   background-color: #f4f6f8;
   border: 1px solid #e5e9ed;

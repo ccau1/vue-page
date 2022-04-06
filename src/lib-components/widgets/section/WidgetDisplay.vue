@@ -51,7 +51,7 @@ export default defineComponent({
   border: 1px solid #a9a9a9;
   min-height: 30px;
   padding: 10px;
-  margin: 10px;
+  margin: 10px 0;
   border-radius: 8px;
 }
 .section-wrapper > label {

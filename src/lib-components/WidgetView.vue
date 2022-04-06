@@ -46,3 +46,9 @@ export default defineComponent({
   setup() {},
 });
 </script>
+
+<style scoped>
+.widget-wrapper {
+  padding: 0 10px;
+}
+</style>

@@ -53,15 +53,15 @@
       @onStateChange="onStateChange"
     />
     <div style="display: flex; flex-direction: row; padding: 10px">
-      <div style="flex: 1">
+      <div style="flex: 1; padding: 10px">
         <h4>State</h4>
         <vue-json-pretty :path="'res'" :data="state" />
       </div>
-      <div style="flex: 1">
+      <div style="flex: 1; padding: 10px; background-color: #f8f8f8">
         <h4>Responses</h4>
         <vue-json-pretty :path="'res'" :data="responses" />
       </div>
-      <div style="flex: 1">
+      <div style="flex: 1; padding: 10px">
         <h4>Form</h4>
         <vue-json-pretty :path="'res'" :data="form" />
       </div>
