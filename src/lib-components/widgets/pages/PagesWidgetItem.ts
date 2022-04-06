@@ -39,10 +39,12 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
 
   getChildrenIds(
     opts?: { deep?: boolean },
-    meta?: { pageIdx: number }
+    meta?: { inPageIndices: number[] }
   ): string[] {
-    return this.properties.pages
-      .filter((p) => meta?.pageIdx === undefined || p)
+    return this.getSortedPages()
+      .filter((p, pIndex) =>
+        meta?.inPageIndices?.length ? meta.inPageIndices.includes(pIndex) : p
+      )
       .reduce<string[]>((arr, page) => {
         return [
           ...arr,
@@ -51,7 +53,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
             ? page.children.reduce<string[]>((childArr, childId) => {
                 return [
                   ...childArr,
-                  ...this._widgetItems[childId].getChildrenIds(opts),
+                  ...this._widgetItems[childId].getChildrenIds(opts, meta),
                 ];
               }, [])
             : []),
@@ -131,9 +133,22 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     return opts?.first ? parentPages[0] : parentPages;
   }
 
+  getChildrenPagesWidgets(opts?: {
+    first?: boolean;
+    inPageIndices?: number[];
+  }): PagesWidgetItem[] | PagesWidgetItem {
+    const childrenPages = this.getChildren(
+      { deep: true },
+      { inPageIndices: opts?.inPageIndices }
+    ).filter((w) => w.type === "pages") as PagesWidgetItem[];
+    return opts?.first ? childrenPages[0] : childrenPages;
+  }
+
   async toNextPage() {
-    const children = this.getChildren({ deep: true });
-    const currentPageIndex = this.getState("currentPageIndex") || 0;
+    const children = this.getChildren(
+      { deep: true },
+      { inPageIndices: [this.currentPageIndex] }
+    );
     const hasErrors = (
       await Promise.all(
         children.map(async (child) => {
@@ -154,41 +169,66 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
         // wasn't suppose to show, just skip it
         return;
       } else {
-        // do a check to see if current is at its end
-        const isCurrentPageAtEnd =
-          this.currentPageIndex >= this._widget.properties.pages.length - 1;
-        if (!isCurrentPageAtEnd) {
-          // current pages still not at its end yet, update
-          // current pages
-          this.onChangePageIndex(currentPageIndex + 1);
+        // current pages at end, so update parent's
+        const childPagesWidget = this.properties
+          .navigationIntegrateChildrenPages
+          ? (this.getChildrenPagesWidgets({
+              first: true,
+              inPageIndices: [this.currentPageIndex],
+            }) as PagesWidgetItem)
+          : null;
+
+        if (
+          !childPagesWidget?.properties.detachParentIntegration &&
+          childPagesWidget?.hasNextButton()
+        ) {
+          childPagesWidget.toNextPage();
         } else {
-          // current pages at end, so update parent's
-          const parentPagesWidget = this.getParentPagesWidgets({
-            first: true,
-          }) as PagesWidgetItem;
-          parentPagesWidget.toNextPage();
+          this.onChangePageIndex(this.currentPageIndex + 1);
         }
       }
     }
   }
 
   toPreviousPage() {
-    this.onChangePageIndex(this.currentPageIndex - 1);
+    // get previous type first to determine which to update
+    const previousType = this.previousButtonType();
+    if (previousType === "none") {
+      // wasn't suppose to be clicked, so just ignore
+      return;
+    }
+
+    const childPagesWidget = this.properties.navigationIntegrateChildrenPages
+      ? (this.getChildrenPagesWidgets({
+          first: true,
+          inPageIndices: [this.currentPageIndex],
+        }) as PagesWidgetItem)
+      : null;
+
+    if (
+      !childPagesWidget?.properties.detachParentIntegration &&
+      childPagesWidget?.hasPreviousButton()
+    ) {
+      childPagesWidget.toPreviousPage();
+    } else {
+      this.onChangePageIndex(this.currentPageIndex - 1);
+    }
   }
 
   previousButtonType(): "previous" | "none" {
     // check whether this pages widget is at its end
     const isCurrentPageAtEnd = this.currentPageIndex <= 0;
     // check if there is any parents. Just get the immediate one
-    const parentPages = this.getParentPagesWidgets({
+    const childPages = this.getChildrenPagesWidgets({
       first: true,
     }) as PagesWidgetItem;
     // if we don't need to integrate with parent pages or
     // current pages is not at its end yet, just return
     // based on current pages' state
     if (
-      !this.properties.navigationIntegrateParentPage ||
-      !parentPages ||
+      !this.properties.navigationIntegrateChildrenPages ||
+      !childPages ||
+      childPages.properties.detachParentIntegration ||
       !isCurrentPageAtEnd
     ) {
       if (isCurrentPageAtEnd) {
@@ -197,7 +237,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
       return "previous";
     }
     // return whether parent should be at its end
-    return parentPages.previousButtonType();
+    return childPages.previousButtonType();
   }
 
   nextButtonType(): "next" | "complete" | "none" {
@@ -205,8 +245,8 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     const isCurrentPageAtEnd =
       this.currentPageIndex >= this._widget.properties.pages.length - 1;
     // check if there is any parents. Just get the immediate one
-    const parentPages = this.properties.navigationIntegrateParentPage
-      ? (this.getParentPagesWidgets({
+    const childPages = this.properties.navigationIntegrateChildrenPages
+      ? (this.getChildrenPagesWidgets({
           first: true,
         }) as PagesWidgetItem)
       : null;
@@ -215,8 +255,9 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     // current pages is not at its end yet, just return
     // based on current pages' state
     if (
-      !this.properties.navigationIntegrateParentPage ||
-      !parentPages ||
+      !this.properties.navigationIntegrateChildrenPages ||
+      !childPages ||
+      childPages.properties.detachParentIntegration ||
       !isCurrentPageAtEnd
     ) {
       if (isCurrentPageAtEnd) {
@@ -225,7 +266,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
       return "next";
     }
     // return whether parent should be at its end
-    return parentPages.nextButtonType();
+    return childPages.nextButtonType();
   }
 
   hasPreviousButton(): boolean {

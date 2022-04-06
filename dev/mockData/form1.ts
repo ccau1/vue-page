@@ -24,6 +24,7 @@ export default {
           tabsVisible: true,
           // tabsPosition: ["top", "center"],
           navigationVisible: true,
+          navigationIntegrateChildrenPages: true,
         },
       },
       {
@@ -52,8 +53,8 @@ export default {
             },
           ],
           tabsVisible: true,
-          navigationVisible: true,
-          navigationIntegrateParentPage: true,
+          navigationVisible: false,
+          detachParentIntegration: false,
         },
       },
       {

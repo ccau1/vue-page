@@ -189,13 +189,19 @@ export default class WidgetItem<Properties = any> {
     return this._widgetItems[this.parentId || ""] || null;
   }
 
-  getChildrenIds(_opts?: { deep?: boolean }): string[] {
+  getChildrenIds(
+    _opts?: { deep?: boolean },
+    _meta?: { [key: string]: any }
+  ): string[] {
     // this can be used if overridden in widget control
     return [];
   }
 
-  getChildren(opts?: { deep?: boolean }): WidgetItem[] {
-    return this.getChildrenIds(opts).map((c) => this._widgetItems[c]);
+  getChildren(
+    opts?: { deep?: boolean },
+    meta?: { [key: string]: any }
+  ): WidgetItem[] {
+    return this.getChildrenIds(opts, meta).map((c) => this._widgetItems[c]);
   }
 
   addChild(childWidget: WidgetItem, _meta?: {}) {
