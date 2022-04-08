@@ -5,7 +5,7 @@ export default class FormControl<_Options = {}> {
   public display: VueConstructor<Vue>;
   public readOnly: VueConstructor<Vue>;
   // public meta: { platforms: ["web", "fb"] };
-  public tags: string[] = [];
+  public tags: string[];
 
   constructor({
     form,
@@ -19,5 +19,6 @@ export default class FormControl<_Options = {}> {
     this.form = form;
     this.display = display;
     this.readOnly = readOnly;
+    this.tags = [];
   }
 }

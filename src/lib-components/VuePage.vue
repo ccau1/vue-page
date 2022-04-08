@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { defineComponent } from "@vue/composition-api";
 import {
   default as sysQuestionControls,
   FormControl,
@@ -20,8 +20,40 @@ import { Form, Widget } from ".";
 import { FormState } from "./models/FormState";
 import WidgetsLayout from "./WidgetsLayout.vue";
 import WidgetItem from "./models/WidgetItem";
+import { WidgetControl, WidgetItems } from "@/entry.esm";
 
-@Component({
+interface VuePageProps {
+  languages: { [widgetId: string]: { [key: string]: string } };
+  form: Form;
+  onFormChange: (newForm: Form) => void;
+  state: FormState;
+  onStateChange: (newState: FormState) => void;
+  widgets?: WidgetItems;
+  questionControls?: FormControl;
+  view?: "display" | "readOnly";
+  configs: {
+    widgets: {
+      disableInternalControls: boolean;
+      blacklist: string[];
+      whitelist: string[];
+      filters: { [key: string]: any };
+    };
+    questionControls: {
+      disableInternalControls: boolean;
+      blacklist: string[];
+      whitelist: string[];
+      filters: { [key: string]: any };
+    };
+  };
+}
+
+interface VuePageData {
+  combWidgetControls: { [key: string]: WidgetControl<any> };
+  combQuestionControls: { [key: string]: FormControl };
+  widgetItems: WidgetItems;
+}
+
+export default defineComponent<VuePageProps, any, VuePageData>({
   components: { WidgetsLayout },
   // components: { DynamicFormLayout },
   props: {
@@ -39,7 +71,7 @@ import WidgetItem from "./models/WidgetItem";
     configs: shape({
       widgets: shape({
         // whether or not to use controls
-        useInternalControls: bool(),
+        disableInternalControls: bool(),
         blacklist: arrayOf(string()),
         whitelist: arrayOf(string()),
         filters: Object,
@@ -47,7 +79,7 @@ import WidgetItem from "./models/WidgetItem";
       questionControls: shape({
         // whether or not to use controls
         //
-        useInternalControls: bool(),
+        disableInternalControls: bool(),
         blacklist: arrayOf(string()),
         whitelist: arrayOf(string()),
         filters: Object,
@@ -59,6 +91,10 @@ import WidgetItem from "./models/WidgetItem";
       combQuestionControls: sysQuestionControls,
       combWidgetControls: sysWidgets,
       widgetItems: {},
+    } as {
+      combQuestionControls: { [key: string]: FormControl };
+      combWidgetControls: { [key: string]: WidgetControl };
+      widgetItems: WidgetItems;
     };
   },
   computed: {
@@ -82,19 +118,25 @@ import WidgetItem from "./models/WidgetItem";
     },
   },
   watch: {
-    widgetsHandlerWatch() {
-      this.$data.combWidgetControls = {
-        ...(this.$props.configs.widgets.useInternalControls ? sysWidgets : {}),
-        ...this.$props.widgets,
-      };
+    widgetsHandlerWatch: {
+      handler({ widgets, configs }) {
+        this.$data.combWidgetControls = {
+          ...(configs?.widgets?.disableInternalControls ? {} : sysWidgets),
+          ...(widgets || {}),
+        };
+      },
+      immediate: true,
     },
-    questionControlsHandlerWatch() {
-      this.$data.combQuestionControls = {
-        ...(this.$props.configs.questionControls.useInternalControls
-          ? sysQuestionControls
-          : {}),
-        ...this.$props.questionControls,
-      };
+    questionControlsHandlerWatch: {
+      handler({ questionControls, configs }) {
+        this.$data.combQuestionControls = {
+          ...(configs?.questionControls?.disableInternalControls
+            ? {}
+            : sysQuestionControls),
+          ...(questionControls || {}),
+        } as { [key: string]: FormControl };
+      },
+      immediate: true,
     },
     "form.widgets": {
       handler(newFormWidgetArr) {
@@ -109,13 +151,14 @@ import WidgetItem from "./models/WidgetItem";
               setState: (newFormState: FormState) => {
                 this.$emit("onStateChange", newFormState);
               },
-              onUpdate: (newWidget: Widget) => {
-                this.$props.onFormChange(
-                  Object.values({
+              onUpdate: (newWidget: WidgetItem) => {
+                this.$props.onFormChange?.({
+                  ...this.$props.form,
+                  widgets: Object.values({
                     ...this.$data.widgetItems,
                     [newWidget.id]: newWidget,
-                  })
-                );
+                  }),
+                });
               },
             });
             return obj;
@@ -154,8 +197,7 @@ import WidgetItem from "./models/WidgetItem";
       questionControls: this.$data.combQuestionControls,
     };
   },
-})
-export default class DynamicForm extends Vue {}
+});
 </script>
 
 <style scoped>

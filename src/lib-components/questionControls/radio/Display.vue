@@ -18,9 +18,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { defineComponent } from "@vue/composition-api";
+import { QuestionControlProps } from "../index";
 
-@Component({
+export default defineComponent<QuestionControlProps>({
   props: {
     properties: Object,
     widget: Object,
@@ -29,12 +30,11 @@ import { Component, Vue } from "vue-property-decorator";
   },
   inject: ["t"],
   methods: {
-    onSelect(ev) {
-      this.$props.onChange(ev.target.value);
+    onSelect(ev: Event) {
+      this.$props.onChange((ev.target as HTMLInputElement).value);
     },
   },
-})
-export default class RadioControl extends Vue {}
+});
 </script>
 
 <style scoped>

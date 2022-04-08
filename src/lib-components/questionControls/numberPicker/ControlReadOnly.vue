@@ -5,9 +5,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { defineComponent } from "@vue/composition-api";
+import { QuestionControlProps } from "../index";
 
-@Component({
+export default defineComponent<QuestionControlProps>({
   props: {
     properties: Object,
     widget: Object,
@@ -15,6 +16,5 @@ import { Component, Vue } from "vue-property-decorator";
     value: Number,
   },
   inject: ["t"],
-})
-export default class NumberPickerControl extends Vue {}
+});
 </script>

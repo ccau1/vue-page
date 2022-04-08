@@ -6,7 +6,7 @@ import header from "./header";
 import alert from "./alert";
 import html from "./html";
 
-export const widgets = {
+export let widgets = {
   alert,
   header,
   html,

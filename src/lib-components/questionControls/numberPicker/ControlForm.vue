@@ -12,9 +12,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { defineComponent } from "@vue/composition-api";
+import { QuestionControlProps } from "../index";
 
-@Component({
+export default defineComponent<QuestionControlProps>({
   props: {
     properties: Object,
     value: Number,
@@ -50,8 +51,7 @@ import { Component, Vue } from "vue-property-decorator";
       this.$props.onChange?.({ num: newNum });
     },
   },
-})
-export default class NumberPickerControl extends Vue {}
+});
 </script>
 
 <style scoped>

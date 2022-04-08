@@ -3,14 +3,14 @@ import Form from "./ControlForm.vue";
 import Display from "./ControlDisplay.vue";
 import ReadOnly from "./ControlReadOnly.vue";
 
-interface NumberPickerData {
+export interface NumberPickerProperties {
   min?: number;
   max?: number;
   step?: number;
   default?: number;
 }
 
-export default new FormControl<NumberPickerData>({
+export default new FormControl<NumberPickerProperties>({
   form: Form,
   display: Display,
   readOnly: ReadOnly,

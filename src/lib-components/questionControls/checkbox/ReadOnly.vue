@@ -5,9 +5,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { defineComponent } from "@vue/composition-api";
 
-@Component({
+export default defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -15,6 +15,5 @@ import { Component, Vue } from "vue-property-decorator";
     value: Boolean,
   },
   inject: ["t"],
-})
-export default class CheckboxControl extends Vue {}
+});
 </script>

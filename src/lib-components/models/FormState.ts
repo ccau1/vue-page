@@ -15,9 +15,9 @@ export interface FormStateRawObject {
 }
 
 export class FormState {
-  protected _widgetState: WidgetState = {};
-  protected _widgetCodeToIdMap: { [widgetCode: string]: string } = {};
-  protected _reflexCodeToIdsMap: { [widgetCode: string]: string[] } = {};
+  protected _widgetState: WidgetState;
+  protected _widgetCodeToIdMap: { [widgetCode: string]: string };
+  protected _reflexCodeToIdsMap: { [widgetCode: string]: string[] };
 
   static from(formState: FormState | FormStateRawObject) {
     if (formState instanceof FormState) {

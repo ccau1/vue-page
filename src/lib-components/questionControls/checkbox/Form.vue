@@ -1,22 +1,32 @@
 <template>
   <div>
     <label>
-      <input type="checkbox" :name="widget.id" />
+      <input
+        type="checkbox"
+        :checked="value"
+        :name="widget.id"
+        v-on:click="onToggle"
+      />
       {{ t("__checkboxLabel", widget.id) }}
     </label>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { defineComponent } from "@vue/composition-api";
 
-@Component({
+export default defineComponent({
   props: {
     properties: Object,
     widget: Object,
+    onChange: Function,
+    value: Boolean,
   },
-  created() {},
   inject: ["t"],
-})
-export default class CheckboxControl extends Vue {}
+  methods: {
+    onToggle(ev: Event) {
+      this.$props.onChange?.((ev.target as HTMLInputElement).checked);
+    },
+  },
+});
 </script>

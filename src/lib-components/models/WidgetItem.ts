@@ -6,8 +6,8 @@ export default class WidgetItem<Properties = any> {
   protected _widget: Widget<Properties>;
   protected _getFormState: () => FormState;
   protected _setFormState: (newState: FormState) => void;
-  protected _widgetItems: WidgetItems = {};
-  protected _onUpdate: (newWidget: Widget<Properties>) => void;
+  protected _widgetItems: WidgetItems;
+  protected _onUpdate: (newWidgetItem: WidgetItem<Properties>) => void;
 
   static getParentIds(widgetId: string, widgetItems: WidgetItems): string[] {
     const widget = widgetItems[widgetId];
@@ -16,6 +16,46 @@ export default class WidgetItem<Properties = any> {
       widget.parentId,
       ...(WidgetItem.getParentIds(widget.parentId, widgetItems) || []),
     ];
+  }
+
+  get formState() {
+    return this._getFormState();
+  }
+
+  get id() {
+    return this._widget.id;
+  }
+
+  get type() {
+    return this._widget.type;
+  }
+
+  get code() {
+    return this._widget.code;
+  }
+
+  get style() {
+    return this._widget.style;
+  }
+
+  get properties() {
+    return this._widget.properties;
+  }
+
+  get parentId() {
+    return this._widget.parent;
+  }
+
+  set parent(parentId: string | undefined) {
+    this._widget.parent = parentId;
+  }
+
+  get reflexiveRules() {
+    return this._widget.reflexiveRules;
+  }
+
+  get validationRules() {
+    return this._widget.validationRules;
   }
 
   constructor({
@@ -27,14 +67,15 @@ export default class WidgetItem<Properties = any> {
     widget: Widget;
     getState: () => FormState;
     setState: (newState: FormState) => void;
-    onUpdate: (newWidget: Widget) => void;
+    onUpdate: (newWidgetItem: WidgetItem) => void;
   }) {
+    this._widgetItems = {};
     this._widget = widget;
     this._getFormState = getState;
     this._setFormState = setState;
     this._onUpdate = onUpdate;
 
-    if (this.code) this.formState.registerWidgetCode(this.code, this.id);
+    if (this.code) getState().registerWidgetCode(this.code, this.id);
     if (this.reflexiveRules?.length) {
       this.formState.registerReflexWatch(
         this.id,
@@ -212,45 +253,5 @@ export default class WidgetItem<Properties = any> {
   removeChild(childWidget: WidgetItem) {
     // to be overridden to handle removing in this widget
     childWidget.parent = undefined;
-  }
-
-  get formState() {
-    return this._getFormState();
-  }
-
-  get id() {
-    return this._widget.id;
-  }
-
-  get type() {
-    return this._widget.type;
-  }
-
-  get code() {
-    return this._widget.code;
-  }
-
-  get style() {
-    return this._widget.style;
-  }
-
-  get properties() {
-    return this._widget.properties;
-  }
-
-  get parentId() {
-    return this._widget.parent;
-  }
-
-  set parent(parentId: string | undefined) {
-    this._widget.parent = parentId;
-  }
-
-  get reflexiveRules() {
-    return this._widget.reflexiveRules;
-  }
-
-  get validationRules() {
-    return this._widget.validationRules;
   }
 }
