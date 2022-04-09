@@ -2236,7 +2236,6 @@ var WidgetsLayout = __vue_component__$n;var script$l = defineComponent({
   },
   props: {
     widget: Object,
-    widgets: Object,
     widgetItems: Object,
     formState: Object,
     setWidgetState: Function
@@ -2268,18 +2267,18 @@ var WidgetsLayout = __vue_component__$n;var script$l = defineComponent({
       },
       immediate: true
     }
-  },
-  methods: {
-    pageIndexHasErrors: function pageIndexHasErrors(idx) {
-      // get child errors
-      var childErrors = this.$props.widget.getState("pageIdxErrors") || {}; // if no childErrors, just return false
+  } // methods: {
+  //   pageIndexHasErrors(idx) {
+  //     // get child errors
+  //     const childErrors = this.$props.widget.getState("pageIdxErrors") || {};
+  //     // if no childErrors, just return false
+  //     if (!Object.keys(childErrors).length) return false;
+  //     // map child error widget ids to pages children index
+  //     // const children = this.$props.widget.getChildren();
+  //     return Object.keys(childErrors[idx] || {}).length;
+  //   },
+  // },
 
-      if (!Object.keys(childErrors).length) return false; // map child error widget ids to pages children index
-      // const children = this.$props.widget.getChildren();
-
-      return Object.keys(childErrors[idx] || {}).length;
-    }
-  }
 });/* script */
 var __vue_script__$l = script$l;
 /* template */
@@ -2291,25 +2290,26 @@ var __vue_render__$l = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode((_vm.widget.properties.tabsVisible ? "<div class=\"pages-menu-wrapper\" data-v-44e02d66>" + _vm._ssrList(_vm.sortedPages, function (page, pageIndex) {
+  return _c('div', [_vm._ssrNode((_vm.widget.properties.tabsVisible ? "<div class=\"pages-menu-wrapper\" data-v-53700efa>" + _vm._ssrList(_vm.sortedPages, function (page, pageIndex) {
     return "<a" + _vm._ssrAttr("disabled", !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)) + _vm._ssrClass("pages-menu-item", {
       active: _vm.currentPageIndex === pageIndex,
-      errors: _vm.pageIndexHasErrors(pageIndex),
+      errors: _vm.widget.pageIndexHasErrors(pageIndex, {
+        allChildPages: true
+      }),
       unopened: !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)
-    }) + " data-v-44e02d66>" + _vm._ssrEscape("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ") + "</a>";
+    }) + " data-v-53700efa>" + _vm._ssrEscape("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ") + "</a>";
   }) + "</div>" : "<!---->") + " "), _vm._l(_vm.sortedPages, function (page, pageIndex) {
-    return _vm._ssrNode("<div class=\"pages-content-item\" data-v-44e02d66>", "</div>", [_vm.currentPageIndex === pageIndex ? _vm._ssrNode("<div data-v-44e02d66>", "</div>", [_c('widgets-layout', {
+    return _vm._ssrNode("<div class=\"pages-content-item\" data-v-53700efa>", "</div>", [_vm.currentPageIndex === pageIndex ? _vm._ssrNode("<div data-v-53700efa>", "</div>", [_c('widgets-layout', {
       attrs: {
-        "widgets": _vm.widgets,
         "widgetItems": _vm.widgetItems,
         "excludeWidgetIds": [_vm.widget.id],
         "onlyIncludeWidgetIds": page.children,
         "forParent": _vm.widget.id
       }
     })], 1) : _vm._e()]);
-  }), _vm._ssrNode(" " + (_vm.widget.properties.navigationVisible ? "<div class=\"back-forward-wrapper\" data-v-44e02d66><div data-v-44e02d66>" + (_vm.widget.hasPreviousButton() ? "<button class=\"back-forward-button\" data-v-44e02d66>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.previousButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div> <div data-v-44e02d66>" + (_vm.widget.hasNextButton() ? "<button" + _vm._ssrAttr("disabled", _vm.pageIndexHasErrors(_vm.currentPageIndex)) + _vm._ssrClass("back-forward-button", {
-    errors: _vm.pageIndexHasErrors(_vm.currentPageIndex)
-  }) + " data-v-44e02d66>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.nextButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div></div>" : "<!---->"))], 2);
+  }), _vm._ssrNode(" " + (_vm.widget.properties.navigationVisible ? "<div class=\"back-forward-wrapper\" data-v-53700efa><div data-v-53700efa>" + (_vm.widget.hasPreviousButton() ? "<button class=\"back-forward-button\" data-v-53700efa>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.previousButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div> <div data-v-53700efa>" + (_vm.widget.hasNextButton() ? "<button" + _vm._ssrAttr("disabled", _vm.widget.pageIndexHasErrors(_vm.currentPageIndex)) + _vm._ssrClass("back-forward-button", {
+    errors: _vm.widget.pageIndexHasErrors(_vm.currentPageIndex)
+  }) + " data-v-53700efa>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.nextButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div></div>" : "<!---->"))], 2);
 };
 
 var __vue_staticRenderFns__$l = [];
@@ -2317,8 +2317,8 @@ var __vue_staticRenderFns__$l = [];
 
 var __vue_inject_styles__$l = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-44e02d66_0", {
-    source: ".pages-menu-wrapper[data-v-44e02d66]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-44e02d66]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-44e02d66]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-44e02d66]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-44e02d66]{border-color:red}.back-forward-wrapper[data-v-44e02d66]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-44e02d66]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-44e02d66]{background-color:red;color:#fff;opacity:.2;cursor:default}",
+  inject("data-v-53700efa_0", {
+    source: ".pages-menu-wrapper[data-v-53700efa]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-53700efa]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-53700efa]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-53700efa]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-53700efa]{border-color:red}.back-forward-wrapper[data-v-53700efa]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-53700efa]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-53700efa]{background-color:red;color:#fff;opacity:.2;cursor:default}",
     map: undefined,
     media: undefined
   });
@@ -2326,10 +2326,10 @@ var __vue_inject_styles__$l = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$l = "data-v-44e02d66";
+var __vue_scope_id__$l = "data-v-53700efa";
 /* module identifier */
 
-var __vue_module_identifier__$l = "data-v-44e02d66";
+var __vue_module_identifier__$l = "data-v-53700efa";
 /* functional template */
 
 var __vue_is_functional_template__$l = false;
@@ -7799,6 +7799,36 @@ exports.Engine = _engine2.default;
       return opts !== null && opts !== void 0 && opts.first ? childrenPages[0] : childrenPages;
     }
   }, {
+    key: "pageIndexHasErrors",
+    value: function pageIndexHasErrors(idx, opts) {
+      var pageIdxErrors = this.getState("pageIdxErrors") || {}; // if no pageIdxErrors, just return false
+
+      if (!Object.keys(pageIdxErrors).length) return false; // if current index doesn't have issues, that means
+      // neither this page idx nor its children have any
+      // errors, so just return false
+
+      if (!Object.keys(pageIdxErrors[idx] || {}).length) return false; // if navigation integrate children pages, then check if
+      // child pages has error in its CURRENT page idx
+
+      var childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
+        first: true,
+        inPageIndices: [this.currentPageIndex]
+      }) : null;
+
+      if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
+        return opts !== null && opts !== void 0 && opts.allChildPages ? childPagesWidget.hasChildErrors() : childPagesWidget.currentPageIndexHasErrors();
+      } // since don't need to handle child pages widget and
+      // current page idx has errors, return true
+
+
+      return true;
+    }
+  }, {
+    key: "currentPageIndexHasErrors",
+    value: function currentPageIndexHasErrors() {
+      return this.pageIndexHasErrors(this.currentPageIndex);
+    }
+  }, {
     key: "toNextPage",
     value: function () {
       var _toNextPage = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
@@ -7873,7 +7903,7 @@ exports.Engine = _engine2.default;
                   inPageIndices: [this.currentPageIndex]
                 }) : null;
 
-                if (!(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.hasNextButton()) {
+                if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
                   childPagesWidget.toNextPage();
                 } else {
                   this.onChangePageIndex(this.currentPageIndex + 1);
@@ -7909,7 +7939,7 @@ exports.Engine = _engine2.default;
         inPageIndices: [this.currentPageIndex]
       }) : null;
 
-      if (!(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.hasPreviousButton()) {
+      if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.previousButtonType()) !== "none") {
         childPagesWidget.toPreviousPage();
       } else {
         this.onChangePageIndex(this.currentPageIndex - 1);
@@ -7964,12 +7994,12 @@ exports.Engine = _engine2.default;
   }, {
     key: "hasPreviousButton",
     value: function hasPreviousButton() {
-      return this.previousButtonType() !== "none";
+      return !!this.properties.navigationVisible && this.previousButtonType() !== "none";
     }
   }, {
     key: "hasNextButton",
     value: function hasNextButton() {
-      return this.nextButtonType() !== "none";
+      return !!this.properties.navigationVisible && this.nextButtonType() !== "none";
     }
   }]);
 
@@ -9001,7 +9031,7 @@ var __vue_render__$6 = function __vue_render__() {
     staticClass: "alert",
     class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
     style: _vm.alertStyles
-  }, [_vm._ssrNode("<h3 data-v-decea27a>" + _vm._ssrEscape(_vm._s(_vm.t("__title", _vm.widget.id))) + "</h3> <p data-v-decea27a>" + _vm._ssrEscape(_vm._s(_vm.t("__text", _vm.widget.id))) + "</p> " + (_vm.widget.properties.showCloseBtn ? "<a class=\"close-button\" data-v-decea27a>x</a>" : "<!---->"))]) : _vm._e();
+  }, [_vm._ssrNode("<h3 class=\"title\" data-v-6fdc1ae4>" + _vm._ssrEscape(_vm._s(_vm.t("__title", _vm.widget.id))) + "</h3> <p data-v-6fdc1ae4>" + _vm._ssrEscape(_vm._s(_vm.t("__text", _vm.widget.id))) + "</p> " + (_vm.widget.properties.showCloseBtn ? "<a class=\"close-button\" data-v-6fdc1ae4>x</a>" : "<!---->"))]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$6 = [];
@@ -9009,8 +9039,8 @@ var __vue_staticRenderFns__$6 = [];
 
 var __vue_inject_styles__$6 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-decea27a_0", {
-    source: ".alert[data-v-decea27a]{padding:10px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-decea27a]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-decea27a]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-decea27a]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-decea27a]{background-color:#fef8ea;border-color:#f4eada}.alert>.close-button[data-v-decea27a]{position:absolute;top:0;right:0;padding:10px 15px;cursor:pointer;transform:scaleX(1.2)}",
+  inject("data-v-6fdc1ae4_0", {
+    source: ".alert[data-v-6fdc1ae4]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-6fdc1ae4]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-6fdc1ae4]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-6fdc1ae4]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-6fdc1ae4]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-6fdc1ae4]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-6fdc1ae4]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}",
     map: undefined,
     media: undefined
   });
@@ -9018,10 +9048,10 @@ var __vue_inject_styles__$6 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$6 = "data-v-decea27a";
+var __vue_scope_id__$6 = "data-v-6fdc1ae4";
 /* module identifier */
 
-var __vue_module_identifier__$6 = "data-v-decea27a";
+var __vue_module_identifier__$6 = "data-v-6fdc1ae4";
 /* functional template */
 
 var __vue_is_functional_template__$6 = false;
@@ -9482,7 +9512,7 @@ var ReadOnly = __vue_component__$2;var html = {
     // eslint-disable-next-line no-unused-vars
     onStateChange: Function,
     // func<(state: FormState) => void>().isRequired,
-    widgets: C({}),
+    widgets: Object,
     // shape(FormControl),
     questionControls: R(FormControl),
     // display | form | readOnly
@@ -9651,8 +9681,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-515b2db8_0", {
-    source: ".main-wrapper[data-v-515b2db8]{font-family:Arial,Helvetica,sans-serif}",
+  inject("data-v-1fd6f641_0", {
+    source: ".main-wrapper[data-v-1fd6f641]{font-family:Arial,Helvetica,sans-serif}",
     map: undefined,
     media: undefined
   });
@@ -9660,10 +9690,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-515b2db8";
+var __vue_scope_id__ = "data-v-1fd6f641";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-515b2db8";
+var __vue_module_identifier__ = "data-v-1fd6f641";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
@@ -9674,7 +9704,7 @@ var __vue_component__ = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, undefined, createInjectorSSR, undefined);
 
-var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object.freeze({__proto__:null,VuePage:__vue_component__$1,FormState:FormState,widgets:widgets});var install = function installVuePage(Vue) {
+var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object.freeze({__proto__:null,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets});var install = function installVuePage(Vue) {
   Object.entries(components$1).forEach(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         componentName = _ref2[0],
@@ -9683,7 +9713,7 @@ var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object
     Vue.component(componentName, component);
   });
 }; // Create module definition for Vue.use()
-var components=/*#__PURE__*/Object.freeze({__proto__:null,'default':install,VuePage:__vue_component__$1,FormState:FormState,widgets:widgets});// only expose one global var, with component exports exposed as properties of
+var components=/*#__PURE__*/Object.freeze({__proto__:null,'default':install,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets});// only expose one global var, with component exports exposed as properties of
 // that global var (eg. plugin.component)
 
 Object.entries(components).forEach(function (_ref) {

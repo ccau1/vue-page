@@ -64,7 +64,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     state: instanceOf(FormState).isRequired,
     // eslint-disable-next-line no-unused-vars
     onStateChange: Function, // func<(state: FormState) => void>().isRequired,
-    widgets: shape({}), // shape(FormControl),
+    widgets: Object, // shape(FormControl),
     questionControls: arrayOf(FormControl),
     // display | form | readOnly
     view: String,

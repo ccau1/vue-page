@@ -149,6 +149,41 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     return opts?.first ? childrenPages[0] : childrenPages;
   }
 
+  pageIndexHasErrors(idx: number, opts?: { allChildPages?: boolean }): boolean {
+    const pageIdxErrors = this.getState("pageIdxErrors") || {};
+    // if no pageIdxErrors, just return false
+    if (!Object.keys(pageIdxErrors).length) return false;
+    // if current index doesn't have issues, that means
+    // neither this page idx nor its children have any
+    // errors, so just return false
+    if (!Object.keys(pageIdxErrors[idx] || {}).length) return false;
+    // if navigation integrate children pages, then check if
+    // child pages has error in its CURRENT page idx
+    const childPagesWidget = this.properties.navigationIntegrateChildrenPages
+      ? (this.getChildrenPagesWidgets({
+          first: true,
+          inPageIndices: [this.currentPageIndex],
+        }) as PagesWidgetItem)
+      : null;
+    if (
+      childPagesWidget &&
+      !childPagesWidget?.properties.detachParentIntegration &&
+      childPagesWidget?.nextButtonType() !== "none"
+    ) {
+      return opts?.allChildPages
+        ? childPagesWidget.hasChildErrors()
+        : childPagesWidget.currentPageIndexHasErrors();
+    }
+
+    // since don't need to handle child pages widget and
+    // current page idx has errors, return true
+    return true;
+  }
+
+  currentPageIndexHasErrors(): boolean {
+    return this.pageIndexHasErrors(this.currentPageIndex);
+  }
+
   async toNextPage() {
     const children = this.getChildren(
       { deep: true },
@@ -185,8 +220,9 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
           : null;
 
         if (
+          childPagesWidget &&
           !childPagesWidget?.properties.detachParentIntegration &&
-          childPagesWidget?.hasNextButton()
+          childPagesWidget?.nextButtonType() !== "none"
         ) {
           childPagesWidget.toNextPage();
         } else {
@@ -212,8 +248,9 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
       : null;
 
     if (
+      childPagesWidget &&
       !childPagesWidget?.properties.detachParentIntegration &&
-      childPagesWidget?.hasPreviousButton()
+      childPagesWidget?.previousButtonType() !== "none"
     ) {
       childPagesWidget.toPreviousPage();
     } else {
@@ -276,10 +313,15 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   }
 
   hasPreviousButton(): boolean {
-    return this.previousButtonType() !== "none";
+    return (
+      !!this.properties.navigationVisible &&
+      this.previousButtonType() !== "none"
+    );
   }
 
   hasNextButton(): boolean {
-    return this.nextButtonType() !== "none";
+    return (
+      !!this.properties.navigationVisible && this.nextButtonType() !== "none"
+    );
   }
 }

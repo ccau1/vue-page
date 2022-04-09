@@ -5,7 +5,7 @@
         class="pages-menu-item"
         :class="{
           active: currentPageIndex === pageIndex,
-          errors: pageIndexHasErrors(pageIndex),
+          errors: widget.pageIndexHasErrors(pageIndex, { allChildPages: true }),
           unopened: !(widget.getState('viewedIndices') || []).includes(
             pageIndex
           ),
@@ -31,7 +31,6 @@
     >
       <div v-if="currentPageIndex === pageIndex">
         <widgets-layout
-          :widgets="widgets"
           :widgetItems="widgetItems"
           :excludeWidgetIds="[widget.id]"
           :onlyIncludeWidgetIds="page.children"
@@ -55,8 +54,8 @@
       <div>
         <button
           class="back-forward-button"
-          :class="{ errors: pageIndexHasErrors(currentPageIndex) }"
-          :disabled="pageIndexHasErrors(currentPageIndex)"
+          :class="{ errors: widget.pageIndexHasErrors(currentPageIndex) }"
+          :disabled="widget.pageIndexHasErrors(currentPageIndex)"
           v-if="widget.hasNextButton()"
           @click="() => widget.toNextPage()"
         >
@@ -75,7 +74,6 @@ export default defineComponent({
   components: { WidgetsLayout },
   props: {
     widget: Object,
-    widgets: Object,
     widgetItems: Object,
     formState: Object,
     setWidgetState: Function,
@@ -111,17 +109,17 @@ export default defineComponent({
       immediate: true,
     },
   },
-  methods: {
-    pageIndexHasErrors(idx) {
-      // get child errors
-      const childErrors = this.$props.widget.getState("pageIdxErrors") || {};
-      // if no childErrors, just return false
-      if (!Object.keys(childErrors).length) return false;
-      // map child error widget ids to pages children index
-      // const children = this.$props.widget.getChildren();
-      return Object.keys(childErrors[idx] || {}).length;
-    },
-  },
+  // methods: {
+  //   pageIndexHasErrors(idx) {
+  //     // get child errors
+  //     const childErrors = this.$props.widget.getState("pageIdxErrors") || {};
+  //     // if no childErrors, just return false
+  //     if (!Object.keys(childErrors).length) return false;
+  //     // map child error widget ids to pages children index
+  //     // const children = this.$props.widget.getChildren();
+  //     return Object.keys(childErrors[idx] || {}).length;
+  //   },
+  // },
 });
 </script>
 

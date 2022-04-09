@@ -33,6 +33,10 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
         first?: boolean;
         inPageIndices?: number[];
     }): PagesWidgetItem[] | PagesWidgetItem;
+    pageIndexHasErrors(idx: number, opts?: {
+        allChildPages?: boolean;
+    }): boolean;
+    currentPageIndexHasErrors(): boolean;
     toNextPage(): Promise<void>;
     toPreviousPage(): void;
     previousButtonType(): "previous" | "none";

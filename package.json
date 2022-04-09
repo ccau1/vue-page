@@ -1,6 +1,6 @@
 {
   "name": "vue-page-kabob",
-  "version": "0.0.10",
+  "version": "0.0.14",
   "description": "",
   "main": "dist/vue-page.ssr.js",
   "browser": "dist/vue-page.esm.js",

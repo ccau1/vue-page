@@ -5,7 +5,7 @@
     :style="alertStyles"
     :class="{ [widget.properties.type]: true }"
   >
-    <h3>{{ t("__title", widget.id) }}</h3>
+    <h3 class="title">{{ t("__title", widget.id) }}</h3>
     <p>{{ t("__text", widget.id) }}</p>
     <a
       class="close-button"
@@ -55,7 +55,7 @@ export default defineComponent({
 
 <style scoped>
 .alert {
-  padding: 10px;
+  padding: 18px 18px;
   margin: 10px 0;
   border-radius: 10px;
   background-color: #f4f6f8;
@@ -78,12 +78,16 @@ export default defineComponent({
   background-color: #fef8ea;
   border-color: #f4eada;
 }
+.alert .title {
+  margin: 0 0 10px 0;
+  font-weight: bold;
+}
 
 .alert > .close-button {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 10px 15px;
+  padding: 18px 18px;
   cursor: pointer;
   transform: scaleX(1.2);
 }

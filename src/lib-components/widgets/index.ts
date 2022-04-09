@@ -6,6 +6,14 @@ import header from "./header";
 import alert from "./alert";
 import html from "./html";
 
+export * from "./alert";
+export * from "./header";
+export * from "./html";
+export * from "./pages";
+export * from "./question";
+export * from "./section";
+export * from "./separator";
+
 export let widgets = {
   alert,
   header,

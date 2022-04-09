@@ -2161,7 +2161,6 @@ var script$l = defineComponent({
   },
   props: {
     widget: Object,
-    widgets: Object,
     widgetItems: Object,
     formState: Object,
     setWidgetState: Function
@@ -2198,19 +2197,18 @@ var script$l = defineComponent({
 
       immediate: true
     }
-  },
-  methods: {
-    pageIndexHasErrors(idx) {
-      // get child errors
-      const childErrors = this.$props.widget.getState("pageIdxErrors") || {}; // if no childErrors, just return false
+  } // methods: {
+  //   pageIndexHasErrors(idx) {
+  //     // get child errors
+  //     const childErrors = this.$props.widget.getState("pageIdxErrors") || {};
+  //     // if no childErrors, just return false
+  //     if (!Object.keys(childErrors).length) return false;
+  //     // map child error widget ids to pages children index
+  //     // const children = this.$props.widget.getChildren();
+  //     return Object.keys(childErrors[idx] || {}).length;
+  //   },
+  // },
 
-      if (!Object.keys(childErrors).length) return false; // map child error widget ids to pages children index
-      // const children = this.$props.widget.getChildren();
-
-      return Object.keys(childErrors[idx] || {}).length;
-    }
-
-  }
 });
 
 /* script */
@@ -2232,7 +2230,9 @@ var __vue_render__$l = function () {
       staticClass: "pages-menu-item",
       class: {
         active: _vm.currentPageIndex === pageIndex,
-        errors: _vm.pageIndexHasErrors(pageIndex),
+        errors: _vm.widget.pageIndexHasErrors(pageIndex, {
+          allChildPages: true
+        }),
         unopened: !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)
       },
       attrs: {
@@ -2250,7 +2250,6 @@ var __vue_render__$l = function () {
       staticClass: "pages-content-item"
     }, [_vm.currentPageIndex === pageIndex ? _c('div', [_c('widgets-layout', {
       attrs: {
-        "widgets": _vm.widgets,
         "widgetItems": _vm.widgetItems,
         "excludeWidgetIds": [_vm.widget.id],
         "onlyIncludeWidgetIds": page.children,
@@ -2269,10 +2268,10 @@ var __vue_render__$l = function () {
   }, [_vm._v("\n        " + _vm._s(_vm.t("__" + _vm.widget.previousButtonType(), _vm.widget.id)) + "\n      ")]) : _vm._e()]), _vm._v(" "), _c('div', [_vm.widget.hasNextButton() ? _c('button', {
     staticClass: "back-forward-button",
     class: {
-      errors: _vm.pageIndexHasErrors(_vm.currentPageIndex)
+      errors: _vm.widget.pageIndexHasErrors(_vm.currentPageIndex)
     },
     attrs: {
-      "disabled": _vm.pageIndexHasErrors(_vm.currentPageIndex)
+      "disabled": _vm.widget.pageIndexHasErrors(_vm.currentPageIndex)
     },
     on: {
       "click": function () {
@@ -2287,8 +2286,8 @@ var __vue_staticRenderFns__$l = [];
 
 const __vue_inject_styles__$l = function (inject) {
   if (!inject) return;
-  inject("data-v-44e02d66_0", {
-    source: ".pages-menu-wrapper[data-v-44e02d66]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-44e02d66]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-44e02d66]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-44e02d66]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-44e02d66]{border-color:red}.back-forward-wrapper[data-v-44e02d66]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-44e02d66]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-44e02d66]{background-color:red;color:#fff;opacity:.2;cursor:default}",
+  inject("data-v-53700efa_0", {
+    source: ".pages-menu-wrapper[data-v-53700efa]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-53700efa]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-53700efa]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-53700efa]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-53700efa]{border-color:red}.back-forward-wrapper[data-v-53700efa]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-53700efa]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-53700efa]{background-color:red;color:#fff;opacity:.2;cursor:default}",
     map: undefined,
     media: undefined
   });
@@ -2296,7 +2295,7 @@ const __vue_inject_styles__$l = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$l = "data-v-44e02d66";
+const __vue_scope_id__$l = "data-v-53700efa";
 /* module identifier */
 
 const __vue_module_identifier__$l = undefined;
@@ -7634,6 +7633,34 @@ class PagesWidgetItem extends WidgetItem {
     return opts !== null && opts !== void 0 && opts.first ? childrenPages[0] : childrenPages;
   }
 
+  pageIndexHasErrors(idx, opts) {
+    const pageIdxErrors = this.getState("pageIdxErrors") || {}; // if no pageIdxErrors, just return false
+
+    if (!Object.keys(pageIdxErrors).length) return false; // if current index doesn't have issues, that means
+    // neither this page idx nor its children have any
+    // errors, so just return false
+
+    if (!Object.keys(pageIdxErrors[idx] || {}).length) return false; // if navigation integrate children pages, then check if
+    // child pages has error in its CURRENT page idx
+
+    const childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
+      first: true,
+      inPageIndices: [this.currentPageIndex]
+    }) : null;
+
+    if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
+      return opts !== null && opts !== void 0 && opts.allChildPages ? childPagesWidget.hasChildErrors() : childPagesWidget.currentPageIndexHasErrors();
+    } // since don't need to handle child pages widget and
+    // current page idx has errors, return true
+
+
+    return true;
+  }
+
+  currentPageIndexHasErrors() {
+    return this.pageIndexHasErrors(this.currentPageIndex);
+  }
+
   async toNextPage() {
     const children = this.getChildren({
       deep: true
@@ -7661,7 +7688,7 @@ class PagesWidgetItem extends WidgetItem {
           inPageIndices: [this.currentPageIndex]
         }) : null;
 
-        if (!(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.hasNextButton()) {
+        if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
           childPagesWidget.toNextPage();
         } else {
           this.onChangePageIndex(this.currentPageIndex + 1);
@@ -7684,7 +7711,7 @@ class PagesWidgetItem extends WidgetItem {
       inPageIndices: [this.currentPageIndex]
     }) : null;
 
-    if (!(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.hasPreviousButton()) {
+    if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.previousButtonType()) !== "none") {
       childPagesWidget.toPreviousPage();
     } else {
       this.onChangePageIndex(this.currentPageIndex - 1);
@@ -7736,11 +7763,11 @@ class PagesWidgetItem extends WidgetItem {
   }
 
   hasPreviousButton() {
-    return this.previousButtonType() !== "none";
+    return !!this.properties.navigationVisible && this.previousButtonType() !== "none";
   }
 
   hasNextButton() {
-    return this.nextButtonType() !== "none";
+    return !!this.properties.navigationVisible && this.nextButtonType() !== "none";
   }
 
 }
@@ -8859,7 +8886,9 @@ var __vue_render__$6 = function () {
     staticClass: "alert",
     class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
     style: _vm.alertStyles
-  }, [_c('h3', [_vm._v(_vm._s(_vm.t("__title", _vm.widget.id)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.t("__text", _vm.widget.id)))]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
+  }, [_c('h3', {
+    staticClass: "title"
+  }, [_vm._v(_vm._s(_vm.t("__title", _vm.widget.id)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.t("__text", _vm.widget.id)))]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
     staticClass: "close-button",
     on: {
       "click": _vm.onCloseAlert
@@ -8872,8 +8901,8 @@ var __vue_staticRenderFns__$6 = [];
 
 const __vue_inject_styles__$6 = function (inject) {
   if (!inject) return;
-  inject("data-v-decea27a_0", {
-    source: ".alert[data-v-decea27a]{padding:10px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-decea27a]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-decea27a]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-decea27a]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-decea27a]{background-color:#fef8ea;border-color:#f4eada}.alert>.close-button[data-v-decea27a]{position:absolute;top:0;right:0;padding:10px 15px;cursor:pointer;transform:scaleX(1.2)}",
+  inject("data-v-6fdc1ae4_0", {
+    source: ".alert[data-v-6fdc1ae4]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-6fdc1ae4]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-6fdc1ae4]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-6fdc1ae4]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-6fdc1ae4]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-6fdc1ae4]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-6fdc1ae4]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}",
     map: undefined,
     media: undefined
   });
@@ -8881,7 +8910,7 @@ const __vue_inject_styles__$6 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$6 = "data-v-decea27a";
+const __vue_scope_id__$6 = "data-v-6fdc1ae4";
 /* module identifier */
 
 const __vue_module_identifier__$6 = undefined;
@@ -9378,7 +9407,7 @@ var script = defineComponent({
     state: $(FormState).isRequired,
     // eslint-disable-next-line no-unused-vars
     onStateChange: Function,
-    widgets: C({}),
+    widgets: Object,
     questionControls: R(FormControl),
     // display | form | readOnly
     view: String,
@@ -9560,8 +9589,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-515b2db8_0", {
-    source: ".main-wrapper[data-v-515b2db8]{font-family:Arial,Helvetica,sans-serif}",
+  inject("data-v-1fd6f641_0", {
+    source: ".main-wrapper[data-v-1fd6f641]{font-family:Arial,Helvetica,sans-serif}",
     map: undefined,
     media: undefined
   });
@@ -9569,7 +9598,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-515b2db8";
+const __vue_scope_id__ = "data-v-1fd6f641";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
@@ -9590,6 +9619,8 @@ var __vue_component__$1 = __vue_component__;
 var components = /*#__PURE__*/Object.freeze({
     __proto__: null,
     VuePage: __vue_component__$1,
+    WidgetsLayout: WidgetsLayout,
+    WidgetView: WidgetView,
     FormState: FormState,
     widgets: widgets
 });
@@ -9603,4 +9634,4 @@ const install = function installVuePage(Vue) {
   });
 }; // Create module definition for Vue.use()
 
-export { FormState, __vue_component__$1 as VuePage, install as default, widgets };
+export { FormState, __vue_component__$1 as VuePage, WidgetView, WidgetsLayout, install as default, widgets };
