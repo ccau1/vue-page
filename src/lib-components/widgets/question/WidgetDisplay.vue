@@ -1,9 +1,11 @@
 <template>
   <div v-if="!widget.getState('reflexiveHide')">
     <div class="question-wrapper">
-      <label v-if="!widget.properties.hideLabel">{{
-        t("__label", widget.id)
-      }}</label>
+      <label
+        :for="widget.code || widget.id"
+        v-if="!widget.properties.hideLabel"
+        >{{ t("__label", widget.id) }}</label
+      >
       <div>
         <component
           :is="questionControls[widget.properties.control].display"

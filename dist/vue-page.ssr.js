@@ -1350,19 +1350,19 @@ function FormControl(_ref) {
   this.display = display;
   this.readOnly = readOnly;
   this.tags = [];
-});var script$w = defineComponent({
+});var script$A = defineComponent({
   props: {
     properties: Object,
     widget: Object,
     onChange: Function,
-    value: Object
+    value: Boolean
   },
   inject: ["t"],
   methods: {
-    onSelect: function onSelect(ev) {
-      this.$props.onChange({
-        value: ev.target.value
-      });
+    onToggle: function onToggle(ev) {
+      var _this$$props$onChange, _this$$props;
+
+      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
     }
   }
 });function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier /* server only */, shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
@@ -1438,7 +1438,244 @@ function FormControl(_ref) {
         }
     }
     return script;
-}function createInjectorSSR(context) {
+}/* script */
+var __vue_script__$A = script$A;
+/* template */
+
+var __vue_render__$A = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ") + "</label>")]);
+};
+
+var __vue_staticRenderFns__$A = [];
+/* style */
+
+var __vue_inject_styles__$A = undefined;
+/* scoped */
+
+var __vue_scope_id__$A = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$A = "data-v-4ee0eb82";
+/* functional template */
+
+var __vue_is_functional_template__$A = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+var __vue_component__$B = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$A,
+  staticRenderFns: __vue_staticRenderFns__$A
+}, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, false, undefined, undefined, undefined);
+
+var Form$9 = __vue_component__$B;var script$z = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: Boolean
+  },
+  inject: ["t"],
+  methods: {
+    onToggle: function onToggle(ev) {
+      var _this$$props$onChange, _this$$props;
+
+      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
+    }
+  }
+});/* script */
+var __vue_script__$z = script$z;
+/* template */
+
+var __vue_render__$z = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ") + "</label>")]);
+};
+
+var __vue_staticRenderFns__$z = [];
+/* style */
+
+var __vue_inject_styles__$z = undefined;
+/* scoped */
+
+var __vue_scope_id__$z = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$z = "data-v-7e6315ed";
+/* functional template */
+
+var __vue_is_functional_template__$z = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+var __vue_component__$A = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$z,
+  staticRenderFns: __vue_staticRenderFns__$z
+}, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, false, undefined, undefined, undefined);
+
+var Display$b = __vue_component__$A;var script$y = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: Boolean
+  },
+  inject: ["t"]
+});/* script */
+var __vue_script__$y = script$y;
+/* template */
+
+var __vue_render__$y = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(!!_vm.value) + "\n"))]);
+};
+
+var __vue_staticRenderFns__$y = [];
+/* style */
+
+var __vue_inject_styles__$y = undefined;
+/* scoped */
+
+var __vue_scope_id__$y = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$y = "data-v-711b0fdb";
+/* functional template */
+
+var __vue_is_functional_template__$y = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+var __vue_component__$z = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$y,
+  staticRenderFns: __vue_staticRenderFns__$y
+}, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, undefined, undefined, undefined);
+
+var ReadOnly$b = __vue_component__$z;var checkbox = new FormControl({
+  form: Form$9,
+  display: Display$b,
+  readOnly: ReadOnly$b
+});var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function createCommonjsModule(fn, basedir, module) {
+	return module = {
+	  path: basedir,
+	  exports: {},
+	  require: function (path, base) {
+      return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
+    }
+	}, fn(module, module.exports), module.exports;
+}
+
+function getCjsExportFromNamespace (n) {
+	return n && n['default'] || n;
+}
+
+function commonjsRequire () {
+	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+}var dayjs_min = createCommonjsModule(function (module, exports) {
+!function(t,e){module.exports=e();}(commonjsGlobal,(function(){var t=1e3,e=6e4,n=36e5,r="millisecond",i="second",s="minute",u="hour",a="day",o="week",f="month",h="quarter",c="year",d="date",$="Invalid Date",l=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,y=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,M={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},m=function(t,e,n){var r=String(t);return !r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},g={s:m,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return (e<=0?"+":"-")+m(r,2,"0")+":"+m(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return -t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,f),s=n-i<0,u=e.clone().add(r+(s?-1:1),f);return +(-(r+(n-i)/(s?i-u:u-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(t){return {M:f,y:c,w:o,d:a,D:d,h:u,m:s,s:i,ms:r,Q:h}[t]||String(t||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},v="en",D={};D[v]=M;var p=function(t){return t instanceof _},S=function t(e,n,r){var i;if(!e)return v;if("string"==typeof e){var s=e.toLowerCase();D[s]&&(i=s),n&&(D[s]=n,i=s);var u=e.split("-");if(!i&&u.length>1)return t(u[0])}else {var a=e.name;D[a]=e,i=a;}return !r&&i&&(v=i),i||!r&&v},w=function(t,e){if(p(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new _(n)},O=g;O.l=S,O.i=p,O.w=function(t,e){return w(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var _=function(){function M(t){this.$L=S(t.locale,null,!0),this.parse(t);}var m=M.prototype;return m.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(O.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(l);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init();},m.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds();},m.$utils=function(){return O},m.isValid=function(){return !(this.$d.toString()===$)},m.isSame=function(t,e){var n=w(t);return this.startOf(e)<=n&&n<=this.endOf(e)},m.isAfter=function(t,e){return w(t)<this.startOf(e)},m.isBefore=function(t,e){return this.endOf(e)<w(t)},m.$g=function(t,e,n){return O.u(t)?this[e]:this.set(n,t)},m.unix=function(){return Math.floor(this.valueOf()/1e3)},m.valueOf=function(){return this.$d.getTime()},m.startOf=function(t,e){var n=this,r=!!O.u(e)||e,h=O.p(t),$=function(t,e){var i=O.w(n.$u?Date.UTC(n.$y,e,t):new Date(n.$y,e,t),n);return r?i:i.endOf(a)},l=function(t,e){return O.w(n.toDate()[t].apply(n.toDate("s"),(r?[0,0,0,0]:[23,59,59,999]).slice(e)),n)},y=this.$W,M=this.$M,m=this.$D,g="set"+(this.$u?"UTC":"");switch(h){case c:return r?$(1,0):$(31,11);case f:return r?$(1,M):$(0,M+1);case o:var v=this.$locale().weekStart||0,D=(y<v?y+7:y)-v;return $(r?m-D:m+(6-D),M);case a:case d:return l(g+"Hours",0);case u:return l(g+"Minutes",1);case s:return l(g+"Seconds",2);case i:return l(g+"Milliseconds",3);default:return this.clone()}},m.endOf=function(t){return this.startOf(t,!1)},m.$set=function(t,e){var n,o=O.p(t),h="set"+(this.$u?"UTC":""),$=(n={},n[a]=h+"Date",n[d]=h+"Date",n[f]=h+"Month",n[c]=h+"FullYear",n[u]=h+"Hours",n[s]=h+"Minutes",n[i]=h+"Seconds",n[r]=h+"Milliseconds",n)[o],l=o===a?this.$D+(e-this.$W):e;if(o===f||o===c){var y=this.clone().set(d,1);y.$d[$](l),y.init(),this.$d=y.set(d,Math.min(this.$D,y.daysInMonth())).$d;}else $&&this.$d[$](l);return this.init(),this},m.set=function(t,e){return this.clone().$set(t,e)},m.get=function(t){return this[O.p(t)]()},m.add=function(r,h){var d,$=this;r=Number(r);var l=O.p(h),y=function(t){var e=w($);return O.w(e.date(e.date()+Math.round(t*r)),$)};if(l===f)return this.set(f,this.$M+r);if(l===c)return this.set(c,this.$y+r);if(l===a)return y(1);if(l===o)return y(7);var M=(d={},d[s]=e,d[u]=n,d[i]=t,d)[l]||1,m=this.$d.getTime()+r*M;return O.w(m,this)},m.subtract=function(t,e){return this.add(-1*t,e)},m.format=function(t){var e=this,n=this.$locale();if(!this.isValid())return n.invalidDate||$;var r=t||"YYYY-MM-DDTHH:mm:ssZ",i=O.z(this),s=this.$H,u=this.$m,a=this.$M,o=n.weekdays,f=n.months,h=function(t,n,i,s){return t&&(t[n]||t(e,r))||i[n].substr(0,s)},c=function(t){return O.s(s%12||12,t,"0")},d=n.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:O.s(a+1,2,"0"),MMM:h(n.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:O.s(this.$D,2,"0"),d:String(this.$W),dd:h(n.weekdaysMin,this.$W,o,2),ddd:h(n.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:O.s(s,2,"0"),h:c(1),hh:c(2),a:d(s,u,!0),A:d(s,u,!1),m:String(u),mm:O.s(u,2,"0"),s:String(this.$s),ss:O.s(this.$s,2,"0"),SSS:O.s(this.$ms,3,"0"),Z:i};return r.replace(y,(function(t,e){return e||l[t]||i.replace(":","")}))},m.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},m.diff=function(r,d,$){var l,y=O.p(d),M=w(r),m=(M.utcOffset()-this.utcOffset())*e,g=this-M,v=O.m(this,M);return v=(l={},l[c]=v/12,l[f]=v,l[h]=v/3,l[o]=(g-m)/6048e5,l[a]=(g-m)/864e5,l[u]=g/n,l[s]=g/e,l[i]=g/t,l)[y]||g,$?v:O.a(v)},m.daysInMonth=function(){return this.endOf(f).$D},m.$locale=function(){return D[this.$L]},m.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=S(t,e,!0);return r&&(n.$L=r),n},m.clone=function(){return O.w(this.$d,this)},m.toDate=function(){return new Date(this.valueOf())},m.toJSON=function(){return this.isValid()?this.toISOString():null},m.toISOString=function(){return this.$d.toISOString()},m.toString=function(){return this.$d.toUTCString()},M}(),b=_.prototype;return w.prototype=b,[["$ms",r],["$s",i],["$m",s],["$H",u],["$W",a],["$M",f],["$y",c],["$D",d]].forEach((function(t){b[t[1]]=function(e){return this.$g(e,t[0],t[1])};})),w.extend=function(t,e){return t.$i||(t(e,_,w),t.$i=!0),w},w.locale=S,w.isDayjs=p,w.unix=function(t){return w(1e3*t)},w.en=D[v],w.Ls=D,w.p={},w}));
+});var formatDateString = function formatDateString(date) {
+  if (!date) return undefined; // NOTE: does not handle timezone, but we don't want to
+  // because admin timezone cause different output in
+  // client side
+
+  return date.toISOString().split("T")[0];
+};
+var getDateByPropertyValue = function getDateByPropertyValue(date) {
+  if (!date) {
+    return undefined;
+  }
+
+  if (date instanceof Date) {
+    return date;
+  }
+
+  var parsedDate = Date.parse(date);
+
+  if (!isNaN(parsedDate)) {
+    // is a proper date timestamp, return date with it
+    return new Date(parsedDate);
+  } // if date string === Date.now or new Date, return current date
+
+
+  if (/^Date.now(\(\))*$/.test(date) || /^new Date(\(\))*$/.test(date)) {
+    return new Date();
+  } // if it is a dayjs handling, run it through dayjs
+
+
+  if (/(^dayjs|^[\w]+\([^\)]*\))/.test(date)) {
+    return date.split(".").reduce(function (accDate, part) {
+      var _ref;
+
+      var parts = part.match(/([\w]+)\(([^\)]*)\)/);
+      if (!parts) return accDate;
+
+      switch (parts[1]) {
+        case "dayjs":
+          if (parts[2]) return dayjs_min(parts[2]);
+          return accDate;
+
+        default:
+          return (_ref = accDate)[parts[1]].apply(_ref, _toConsumableArray(parts[2].split(/\s*,\s*/).map(function (a) {
+            var parsedNum = parseFloat(a);
+
+            if (isNaN(parsedNum)) {
+              return a.replaceAll(/[\'\"]+/g, "");
+            } else {
+              return parsedNum;
+            }
+          })));
+      }
+    }, dayjs_min()).toDate();
+  }
+
+  return undefined;
+};var script$x = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: String
+  },
+  inject: ["t"],
+  data: function data() {
+    return {
+      defaultDate: formatDateString(getDateByPropertyValue(this.$props.properties.defaultDate)),
+      minDate: formatDateString(getDateByPropertyValue(this.$props.properties.minDate)),
+      maxDate: formatDateString(getDateByPropertyValue(this.$props.properties.maxDate))
+    };
+  },
+  methods: {
+    onDateChange: function onDateChange(newDate) {
+      this.$props.onChange(newDate.target.value);
+    }
+  }
+});function createInjectorSSR(context) {
     if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
         context = __VUE_SSR_CONTEXT__;
     }
@@ -1479,28 +1716,26 @@ function renderStyles(styles) {
     }
     return css;
 }/* script */
-var __vue_script__$w = script$w;
+var __vue_script__$x = script$x;
 /* template */
 
-var __vue_render__$w = function __vue_render__() {
+var __vue_render__$x = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode(_vm._ssrList(_vm.properties.options, function (option) {
-    return "<label class=\"radio-item\" data-v-31ad933e><input type=\"radio\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value && _vm.value.value === option.value) + _vm._ssrAttr("value", option.value) + " data-v-31ad933e>" + _vm._ssrEscape("\n    " + _vm._s(_vm.t(option.labelKey, _vm.widget.id)) + "\n  ") + "</label>";
-  }))]);
+  return _c('div', [_vm._ssrNode("<input type=\"date\"" + _vm._ssrAttr("min", _vm.minDate) + _vm._ssrAttr("max", _vm.maxDate) + _vm._ssrAttr("value", _vm.value || _vm.defaultDate) + " data-v-1aa94aed>")]);
 };
 
-var __vue_staticRenderFns__$w = [];
+var __vue_staticRenderFns__$x = [];
 /* style */
 
-var __vue_inject_styles__$w = function __vue_inject_styles__(inject) {
+var __vue_inject_styles__$x = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-31ad933e_0", {
-    source: ".radio-item[data-v-31ad933e]{margin-right:10px}",
+  inject("data-v-1aa94aed_0", {
+    source: ".radio-item[data-v-1aa94aed]{margin-right:10px}",
     map: undefined,
     media: undefined
   });
@@ -1508,78 +1743,21 @@ var __vue_inject_styles__$w = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$w = "data-v-31ad933e";
+var __vue_scope_id__$x = "data-v-1aa94aed";
 /* module identifier */
 
-var __vue_module_identifier__$w = "data-v-31ad933e";
+var __vue_module_identifier__$x = "data-v-1aa94aed";
 /* functional template */
 
-var __vue_is_functional_template__$w = false;
+var __vue_is_functional_template__$x = false;
 /* style inject shadow dom */
 
-var __vue_component__$x = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$w,
-  staticRenderFns: __vue_staticRenderFns__$w
-}, __vue_inject_styles__$w, __vue_script__$w, __vue_scope_id__$w, __vue_is_functional_template__$w, __vue_module_identifier__$w, false, undefined, createInjectorSSR, undefined);
+var __vue_component__$y = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$x,
+  staticRenderFns: __vue_staticRenderFns__$x
+}, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, false, undefined, createInjectorSSR, undefined);
 
-var Form$9 = __vue_component__$x;var script$v = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String
-  },
-  inject: ["t"],
-  methods: {
-    onSelect: function onSelect(ev) {
-      this.$props.onChange(ev.target.value);
-    }
-  }
-});/* script */
-var __vue_script__$v = script$v;
-/* template */
-
-var __vue_render__$v = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_vm._ssrNode(_vm._ssrList(_vm.properties.options, function (option) {
-    return "<label class=\"radio-item\" data-v-4b1138df><input type=\"radio\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value === option.value) + _vm._ssrAttr("value", option.value) + " data-v-4b1138df>" + _vm._ssrEscape("\n    " + _vm._s(_vm.t(option.labelKey, _vm.widget.id)) + "\n  ") + "</label>";
-  }))]);
-};
-
-var __vue_staticRenderFns__$v = [];
-/* style */
-
-var __vue_inject_styles__$v = function __vue_inject_styles__(inject) {
-  if (!inject) return;
-  inject("data-v-4b1138df_0", {
-    source: ".radio-item[data-v-4b1138df]{margin-right:10px}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-var __vue_scope_id__$v = "data-v-4b1138df";
-/* module identifier */
-
-var __vue_module_identifier__$v = "data-v-4b1138df";
-/* functional template */
-
-var __vue_is_functional_template__$v = false;
-/* style inject shadow dom */
-
-var __vue_component__$w = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$v,
-  staticRenderFns: __vue_staticRenderFns__$v
-}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, undefined, createInjectorSSR, undefined);
-
-var Display$9 = __vue_component__$w;var script$u = defineComponent({
+var Display$a = __vue_component__$y;var script$w = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -1598,10 +1776,10 @@ var Display$9 = __vue_component__$w;var script$u = defineComponent({
     }
   }
 });/* script */
-var __vue_script__$u = script$u;
+var __vue_script__$w = script$w;
 /* template */
 
-var __vue_render__$u = function __vue_render__() {
+var __vue_render__$w = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1611,191 +1789,34 @@ var __vue_render__$u = function __vue_render__() {
   return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(_vm.label) + "\n"))]);
 };
 
-var __vue_staticRenderFns__$u = [];
+var __vue_staticRenderFns__$w = [];
 /* style */
 
-var __vue_inject_styles__$u = undefined;
+var __vue_inject_styles__$w = undefined;
 /* scoped */
 
-var __vue_scope_id__$u = undefined;
+var __vue_scope_id__$w = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$u = "data-v-42704d7f";
+var __vue_module_identifier__$w = "data-v-42704d7f";
 /* functional template */
 
-var __vue_is_functional_template__$u = false;
+var __vue_is_functional_template__$w = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-var __vue_component__$v = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$u,
-  staticRenderFns: __vue_staticRenderFns__$u
-}, __vue_inject_styles__$u, __vue_script__$u, __vue_scope_id__$u, __vue_is_functional_template__$u, __vue_module_identifier__$u, false, undefined, undefined, undefined);
+var __vue_component__$x = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$w,
+  staticRenderFns: __vue_staticRenderFns__$w
+}, __vue_inject_styles__$w, __vue_script__$w, __vue_scope_id__$w, __vue_is_functional_template__$w, __vue_module_identifier__$w, false, undefined, undefined, undefined);
 
-var ReadOnly$9 = __vue_component__$v;var radio = new FormControl({
-  form: Form$9,
-  display: Display$9,
-  readOnly: ReadOnly$9
-});var script$t = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: Boolean
-  },
-  inject: ["t"],
-  methods: {
-    onToggle: function onToggle(ev) {
-      var _this$$props$onChange, _this$$props;
-
-      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
-    }
-  }
-});/* script */
-var __vue_script__$t = script$t;
-/* template */
-
-var __vue_render__$t = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ") + "</label>")]);
-};
-
-var __vue_staticRenderFns__$t = [];
-/* style */
-
-var __vue_inject_styles__$t = undefined;
-/* scoped */
-
-var __vue_scope_id__$t = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$t = "data-v-4ee0eb82";
-/* functional template */
-
-var __vue_is_functional_template__$t = false;
-/* style inject */
-
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-var __vue_component__$u = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$t,
-  staticRenderFns: __vue_staticRenderFns__$t
-}, __vue_inject_styles__$t, __vue_script__$t, __vue_scope_id__$t, __vue_is_functional_template__$t, __vue_module_identifier__$t, false, undefined, undefined, undefined);
-
-var Form$8 = __vue_component__$u;var script$s = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: Boolean
-  },
-  inject: ["t"],
-  methods: {
-    onToggle: function onToggle(ev) {
-      var _this$$props$onChange, _this$$props;
-
-      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
-    }
-  }
-});/* script */
-var __vue_script__$s = script$s;
-/* template */
-
-var __vue_render__$s = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ") + "</label>")]);
-};
-
-var __vue_staticRenderFns__$s = [];
-/* style */
-
-var __vue_inject_styles__$s = undefined;
-/* scoped */
-
-var __vue_scope_id__$s = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$s = "data-v-7e6315ed";
-/* functional template */
-
-var __vue_is_functional_template__$s = false;
-/* style inject */
-
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-var __vue_component__$t = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$s,
-  staticRenderFns: __vue_staticRenderFns__$s
-}, __vue_inject_styles__$s, __vue_script__$s, __vue_scope_id__$s, __vue_is_functional_template__$s, __vue_module_identifier__$s, false, undefined, undefined, undefined);
-
-var Display$8 = __vue_component__$t;var script$r = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: Boolean
-  },
-  inject: ["t"]
-});/* script */
-var __vue_script__$r = script$r;
-/* template */
-
-var __vue_render__$r = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(!!_vm.value) + "\n"))]);
-};
-
-var __vue_staticRenderFns__$r = [];
-/* style */
-
-var __vue_inject_styles__$r = undefined;
-/* scoped */
-
-var __vue_scope_id__$r = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$r = "data-v-711b0fdb";
-/* functional template */
-
-var __vue_is_functional_template__$r = false;
-/* style inject */
-
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-var __vue_component__$s = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$r,
-  staticRenderFns: __vue_staticRenderFns__$r
-}, __vue_inject_styles__$r, __vue_script__$r, __vue_scope_id__$r, __vue_is_functional_template__$r, __vue_module_identifier__$r, false, undefined, undefined, undefined);
-
-var ReadOnly$8 = __vue_component__$s;var checkbox = new FormControl({
-  form: Form$8,
-  display: Display$8,
-  readOnly: ReadOnly$8
-});var script$q = defineComponent({
+var ReadOnly$a = __vue_component__$x;var datePicker = new FormControl({
+  display: Display$a,
+  readOnly: ReadOnly$a
+});var script$v = defineComponent({
   props: {
     properties: Object,
     value: Number,
@@ -1824,10 +1845,10 @@ var ReadOnly$8 = __vue_component__$s;var checkbox = new FormControl({
     }
   }
 });/* script */
-var __vue_script__$q = script$q;
+var __vue_script__$v = script$v;
 /* template */
 
-var __vue_render__$q = function __vue_render__() {
+var __vue_render__$v = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1837,10 +1858,10 @@ var __vue_render__$q = function __vue_render__() {
   return _c('div', [_vm._ssrNode("<button data-v-b41eccf2>-</button> <input type=\"number\"" + _vm._ssrAttr("step", _vm.step) + _vm._ssrAttr("value", _vm.numValue) + " data-v-b41eccf2> <button data-v-b41eccf2>+</button>")]);
 };
 
-var __vue_staticRenderFns__$q = [];
+var __vue_staticRenderFns__$v = [];
 /* style */
 
-var __vue_inject_styles__$q = function __vue_inject_styles__(inject) {
+var __vue_inject_styles__$v = function __vue_inject_styles__(inject) {
   if (!inject) return;
   inject("data-v-b41eccf2_0", {
     source: "input[data-v-b41eccf2]::-webkit-inner-spin-button,input[data-v-b41eccf2]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
@@ -1851,21 +1872,21 @@ var __vue_inject_styles__$q = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$q = "data-v-b41eccf2";
+var __vue_scope_id__$v = "data-v-b41eccf2";
 /* module identifier */
 
-var __vue_module_identifier__$q = "data-v-b41eccf2";
+var __vue_module_identifier__$v = "data-v-b41eccf2";
 /* functional template */
 
-var __vue_is_functional_template__$q = false;
+var __vue_is_functional_template__$v = false;
 /* style inject shadow dom */
 
-var __vue_component__$r = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$q,
-  staticRenderFns: __vue_staticRenderFns__$q
-}, __vue_inject_styles__$q, __vue_script__$q, __vue_scope_id__$q, __vue_is_functional_template__$q, __vue_module_identifier__$q, false, undefined, createInjectorSSR, undefined);
+var __vue_component__$w = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$v,
+  staticRenderFns: __vue_staticRenderFns__$v
+}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, undefined, createInjectorSSR, undefined);
 
-var Form$7 = __vue_component__$r;var script$p = defineComponent({
+var Form$8 = __vue_component__$w;var script$u = defineComponent({
   props: {
     properties: Object,
     value: Number,
@@ -1904,10 +1925,10 @@ var Form$7 = __vue_component__$r;var script$p = defineComponent({
     }
   }
 });/* script */
-var __vue_script__$p = script$p;
+var __vue_script__$u = script$u;
 /* template */
 
-var __vue_render__$p = function __vue_render__() {
+var __vue_render__$u = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1917,10 +1938,10 @@ var __vue_render__$p = function __vue_render__() {
   return _c('div', [_vm._ssrNode("<button data-v-1a52acb6>-</button> <input type=\"number\"" + _vm._ssrAttr("step", _vm.step) + _vm._ssrAttr("value", _vm.numValue) + " data-v-1a52acb6> <button data-v-1a52acb6>+</button>")]);
 };
 
-var __vue_staticRenderFns__$p = [];
+var __vue_staticRenderFns__$u = [];
 /* style */
 
-var __vue_inject_styles__$p = function __vue_inject_styles__(inject) {
+var __vue_inject_styles__$u = function __vue_inject_styles__(inject) {
   if (!inject) return;
   inject("data-v-1a52acb6_0", {
     source: "input[data-v-1a52acb6]::-webkit-inner-spin-button,input[data-v-1a52acb6]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
@@ -1931,10 +1952,308 @@ var __vue_inject_styles__$p = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$p = "data-v-1a52acb6";
+var __vue_scope_id__$u = "data-v-1a52acb6";
 /* module identifier */
 
-var __vue_module_identifier__$p = "data-v-1a52acb6";
+var __vue_module_identifier__$u = "data-v-1a52acb6";
+/* functional template */
+
+var __vue_is_functional_template__$u = false;
+/* style inject shadow dom */
+
+var __vue_component__$v = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$u,
+  staticRenderFns: __vue_staticRenderFns__$u
+}, __vue_inject_styles__$u, __vue_script__$u, __vue_scope_id__$u, __vue_is_functional_template__$u, __vue_module_identifier__$u, false, undefined, createInjectorSSR, undefined);
+
+var Display$9 = __vue_component__$v;var script$t = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: Number
+  },
+  inject: ["t"]
+});/* script */
+var __vue_script__$t = script$t;
+/* template */
+
+var __vue_render__$t = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(_vm.value || _vm.widget.properties.controlProperties.default) + "\n"))]);
+};
+
+var __vue_staticRenderFns__$t = [];
+/* style */
+
+var __vue_inject_styles__$t = undefined;
+/* scoped */
+
+var __vue_scope_id__$t = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$t = "data-v-8e0d9334";
+/* functional template */
+
+var __vue_is_functional_template__$t = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+var __vue_component__$u = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$t,
+  staticRenderFns: __vue_staticRenderFns__$t
+}, __vue_inject_styles__$t, __vue_script__$t, __vue_scope_id__$t, __vue_is_functional_template__$t, __vue_module_identifier__$t, false, undefined, undefined, undefined);
+
+var ReadOnly$9 = __vue_component__$u;var numberPicker = new FormControl({
+  form: Form$8,
+  display: Display$9,
+  readOnly: ReadOnly$9
+});var script$s = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: Object
+  },
+  inject: ["t"],
+  methods: {
+    onSelect: function onSelect(ev) {
+      this.$props.onChange({
+        value: ev.target.value
+      });
+    }
+  }
+});/* script */
+var __vue_script__$s = script$s;
+/* template */
+
+var __vue_render__$s = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode(_vm._ssrList(_vm.properties.options, function (option) {
+    return "<label class=\"radio-item\" data-v-31ad933e><input type=\"radio\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value && _vm.value.value === option.value) + _vm._ssrAttr("value", option.value) + " data-v-31ad933e>" + _vm._ssrEscape("\n    " + _vm._s(_vm.t(option.labelKey, _vm.widget.id)) + "\n  ") + "</label>";
+  }))]);
+};
+
+var __vue_staticRenderFns__$s = [];
+/* style */
+
+var __vue_inject_styles__$s = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-31ad933e_0", {
+    source: ".radio-item[data-v-31ad933e]{margin-right:10px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$s = "data-v-31ad933e";
+/* module identifier */
+
+var __vue_module_identifier__$s = "data-v-31ad933e";
+/* functional template */
+
+var __vue_is_functional_template__$s = false;
+/* style inject shadow dom */
+
+var __vue_component__$t = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$s,
+  staticRenderFns: __vue_staticRenderFns__$s
+}, __vue_inject_styles__$s, __vue_script__$s, __vue_scope_id__$s, __vue_is_functional_template__$s, __vue_module_identifier__$s, false, undefined, createInjectorSSR, undefined);
+
+var Form$7 = __vue_component__$t;var script$r = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: String
+  },
+  inject: ["t"],
+  methods: {
+    onSelect: function onSelect(ev) {
+      this.$props.onChange(ev.target.value);
+    }
+  }
+});/* script */
+var __vue_script__$r = script$r;
+/* template */
+
+var __vue_render__$r = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode(_vm._ssrList(_vm.properties.options, function (option) {
+    return "<label class=\"radio-item\" data-v-4b1138df><input type=\"radio\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value === option.value) + _vm._ssrAttr("value", option.value) + " data-v-4b1138df>" + _vm._ssrEscape("\n    " + _vm._s(_vm.t(option.labelKey, _vm.widget.id)) + "\n  ") + "</label>";
+  }))]);
+};
+
+var __vue_staticRenderFns__$r = [];
+/* style */
+
+var __vue_inject_styles__$r = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-4b1138df_0", {
+    source: ".radio-item[data-v-4b1138df]{margin-right:10px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$r = "data-v-4b1138df";
+/* module identifier */
+
+var __vue_module_identifier__$r = "data-v-4b1138df";
+/* functional template */
+
+var __vue_is_functional_template__$r = false;
+/* style inject shadow dom */
+
+var __vue_component__$s = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$r,
+  staticRenderFns: __vue_staticRenderFns__$r
+}, __vue_inject_styles__$r, __vue_script__$r, __vue_scope_id__$r, __vue_is_functional_template__$r, __vue_module_identifier__$r, false, undefined, createInjectorSSR, undefined);
+
+var Display$8 = __vue_component__$s;var script$q = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: String
+  },
+  inject: ["t"],
+  computed: {
+    label: function label() {
+      var _this = this;
+
+      var selectedOption = this.$props.widget.properties.controlProperties.options.find(function (f) {
+        return f.value === _this.$props.value;
+      });
+      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, this.$props.widget.id) : "";
+    }
+  }
+});/* script */
+var __vue_script__$q = script$q;
+/* template */
+
+var __vue_render__$q = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(_vm.label) + "\n"))]);
+};
+
+var __vue_staticRenderFns__$q = [];
+/* style */
+
+var __vue_inject_styles__$q = undefined;
+/* scoped */
+
+var __vue_scope_id__$q = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$q = "data-v-42704d7f";
+/* functional template */
+
+var __vue_is_functional_template__$q = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+var __vue_component__$r = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$q,
+  staticRenderFns: __vue_staticRenderFns__$q
+}, __vue_inject_styles__$q, __vue_script__$q, __vue_scope_id__$q, __vue_is_functional_template__$q, __vue_module_identifier__$q, false, undefined, undefined, undefined);
+
+var ReadOnly$8 = __vue_component__$r;var radio = new FormControl({
+  form: Form$7,
+  display: Display$8,
+  readOnly: ReadOnly$8
+});var script$p = defineComponent({
+  props: {
+    properties: Object,
+    value: String,
+    onChange: Function
+  },
+  created: function created() {
+    var _this$$props$properti;
+
+    // if value has not been set and default is set, set value to default
+    if (this.$props.value === undefined && ((_this$$props$properti = this.$props.properties) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.default) !== undefined) this.changeValue(this.$props.properties.default, true);
+  },
+  computed: {
+    step: function step() {
+      return this.$props.properties.step || 1;
+    },
+    numValue: function numValue() {
+      var _this$$props$properti2, _this$$props$properti3;
+
+      if (this.$props.value !== undefined) return this.$props.value;
+      if (((_this$$props$properti2 = this.$props.properties) === null || _this$$props$properti2 === void 0 ? void 0 : _this$$props$properti2.default) !== undefined) return this.$props.properties.default;
+      if (((_this$$props$properti3 = this.$props.properties) === null || _this$$props$properti3 === void 0 ? void 0 : _this$$props$properti3.min) !== undefined) return this.$props.properties.min;
+      return 0;
+    }
+  },
+  methods: {
+    onTextChange: function onTextChange(ev) {
+      this.$props.onChange(ev.target.value);
+    }
+  }
+});/* script */
+var __vue_script__$p = script$p;
+/* template */
+
+var __vue_render__$p = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode((!_vm.properties.multiline ? "<input type=\"text\"" + _vm._ssrAttr("value", _vm.value) + " data-v-66b5dc24>" : "<!---->") + " " + (_vm.properties.multiline ? "<textarea" + _vm._ssrAttr("value", _vm.value) + " data-v-66b5dc24></textarea>" : "<!---->"))]);
+};
+
+var __vue_staticRenderFns__$p = [];
+/* style */
+
+var __vue_inject_styles__$p = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-66b5dc24_0", {
+    source: "input[data-v-66b5dc24]::-webkit-inner-spin-button,input[data-v-66b5dc24]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$p = "data-v-66b5dc24";
+/* module identifier */
+
+var __vue_module_identifier__$p = "data-v-66b5dc24";
 /* functional template */
 
 var __vue_is_functional_template__$p = false;
@@ -1976,7 +2295,7 @@ var __vue_inject_styles__$o = undefined;
 var __vue_scope_id__$o = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$o = "data-v-8e0d9334";
+var __vue_module_identifier__$o = "data-v-65611795";
 /* functional template */
 
 var __vue_is_functional_template__$o = false;
@@ -1991,14 +2310,15 @@ var __vue_component__$p = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$o
 }, __vue_inject_styles__$o, __vue_script__$o, __vue_scope_id__$o, __vue_is_functional_template__$o, __vue_module_identifier__$o, false, undefined, undefined, undefined);
 
-var ReadOnly$7 = __vue_component__$p;var numberPicker = new FormControl({
-  form: Form$7,
+var ReadOnly$7 = __vue_component__$p;var text = new FormControl({
   display: Display$7,
   readOnly: ReadOnly$7
-});var sysQuestionControls = {
-  radio: radio,
+});var questionControls = {
   checkbox: checkbox,
-  numberPicker: numberPicker
+  datePicker: datePicker,
+  numberPicker: numberPicker,
+  radio: radio,
+  text: text
 };/*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
@@ -2540,23 +2860,7 @@ var __vue_component__$k = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$j
 }, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, false, undefined, createInjectorSSR, undefined);
 
-var ReadOnly$6 = __vue_component__$k;function createCommonjsModule(fn, basedir, module) {
-	return module = {
-	  path: basedir,
-	  exports: {},
-	  require: function (path, base) {
-      return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
-    }
-	}, fn(module, module.exports), module.exports;
-}
-
-function getCjsExportFromNamespace (n) {
-	return n && n['default'] || n;
-}
-
-function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
-}/**
+var ReadOnly$6 = __vue_component__$k;/**
  * based on string passed, get the integer hash value
  * through bitwise operation (based on spinoff of dbj2
  * with enhancements for reduced collisions)
@@ -8102,7 +8406,7 @@ var __vue_render__$i = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return !_vm.widget.getState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-6bfea85e>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label data-v-6bfea85e>" + _vm._ssrEscape(_vm._s(_vm.t("__label", _vm.widget.id))) + "</label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-6bfea85e>", "</div>", [_c(_vm.questionControls[_vm.widget.properties.control].display, {
+  return !_vm.widget.getState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-72d55c0a>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label" + _vm._ssrAttr("for", _vm.widget.code || _vm.widget.id) + " data-v-72d55c0a>" + _vm._ssrEscape(_vm._s(_vm.t("__label", _vm.widget.id))) + "</label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-72d55c0a>", "</div>", [_c(_vm.questionControls[_vm.widget.properties.control].display, {
     tag: "component",
     attrs: {
       "properties": _vm.widget.properties.controlProperties,
@@ -8115,7 +8419,7 @@ var __vue_render__$i = function __vue_render__() {
       "t": _vm.t
     }
   }), _vm._ssrNode(" " + _vm._ssrList(_vm.getWidgetState('errors'), function (errorKey) {
-    return "<span class=\"error\" data-v-6bfea85e>" + _vm._ssrEscape(_vm._s(_vm.t(errorKey, _vm.widget.id))) + "</span>";
+    return "<span class=\"error\" data-v-72d55c0a>" + _vm._ssrEscape(_vm._s(_vm.t(errorKey, _vm.widget.id))) + "</span>";
   }))], 2)], 2)]) : _vm._e();
 };
 
@@ -8124,8 +8428,8 @@ var __vue_staticRenderFns__$i = [];
 
 var __vue_inject_styles__$i = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-6bfea85e_0", {
-    source: ".question-wrapper[data-v-6bfea85e]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-6bfea85e]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>div[data-v-6bfea85e]{flex:2;padding:20px 0}.error[data-v-6bfea85e]{display:block;color:red;margin-top:10px}",
+  inject("data-v-72d55c0a_0", {
+    source: ".question-wrapper[data-v-72d55c0a]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-72d55c0a]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>div[data-v-72d55c0a]{flex:2;padding:20px 0}.error[data-v-72d55c0a]{display:block;color:red;margin-top:10px}",
     map: undefined,
     media: undefined
   });
@@ -8133,10 +8437,10 @@ var __vue_inject_styles__$i = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$i = "data-v-6bfea85e";
+var __vue_scope_id__$i = "data-v-72d55c0a";
 /* module identifier */
 
-var __vue_module_identifier__$i = "data-v-6bfea85e";
+var __vue_module_identifier__$i = "data-v-72d55c0a";
 /* functional template */
 
 var __vue_is_functional_template__$i = false;
@@ -9537,7 +9841,7 @@ var ReadOnly = __vue_component__$2;var html = {
   },
   data: function data() {
     return {
-      combQuestionControls: sysQuestionControls,
+      combQuestionControls: questionControls,
       combWidgetControls: widgets,
       widgetItems: {}
     };
@@ -9581,9 +9885,9 @@ var ReadOnly = __vue_component__$2;var html = {
       handler: function handler(_ref2) {
         var _configs$questionCont;
 
-        var questionControls = _ref2.questionControls,
+        var questionControls$1 = _ref2.questionControls,
             configs = _ref2.configs;
-        this.$data.combQuestionControls = _objectSpread2(_objectSpread2({}, configs !== null && configs !== void 0 && (_configs$questionCont = configs.questionControls) !== null && _configs$questionCont !== void 0 && _configs$questionCont.disableInternalControls ? {} : sysQuestionControls), questionControls || {});
+        this.$data.combQuestionControls = _objectSpread2(_objectSpread2({}, configs !== null && configs !== void 0 && (_configs$questionCont = configs.questionControls) !== null && _configs$questionCont !== void 0 && _configs$questionCont.disableInternalControls ? {} : questionControls), questionControls$1 || {});
       },
       immediate: true
     },
@@ -9681,8 +9985,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-1fd6f641_0", {
-    source: ".main-wrapper[data-v-1fd6f641]{font-family:Arial,Helvetica,sans-serif}",
+  inject("data-v-20e02914_0", {
+    source: ".main-wrapper[data-v-20e02914]{font-family:Arial,Helvetica,sans-serif}",
     map: undefined,
     media: undefined
   });
@@ -9690,10 +9994,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-1fd6f641";
+var __vue_scope_id__ = "data-v-20e02914";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-1fd6f641";
+var __vue_module_identifier__ = "data-v-20e02914";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
@@ -9704,7 +10008,7 @@ var __vue_component__ = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, undefined, createInjectorSSR, undefined);
 
-var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object.freeze({__proto__:null,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets});var install = function installVuePage(Vue) {
+var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object.freeze({__proto__:null,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets,FormControl:FormControl,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,questionControls:questionControls});var install = function installVuePage(Vue) {
   Object.entries(components$1).forEach(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         componentName = _ref2[0],
@@ -9713,7 +10017,7 @@ var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object
     Vue.component(componentName, component);
   });
 }; // Create module definition for Vue.use()
-var components=/*#__PURE__*/Object.freeze({__proto__:null,'default':install,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets});// only expose one global var, with component exports exposed as properties of
+var components=/*#__PURE__*/Object.freeze({__proto__:null,'default':install,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets,FormControl:FormControl,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,questionControls:questionControls});// only expose one global var, with component exports exposed as properties of
 // that global var (eg. plugin.component)
 
 Object.entries(components).forEach(function (_ref) {

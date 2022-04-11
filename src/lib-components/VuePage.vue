@@ -10,7 +10,7 @@
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
 import {
-  default as sysQuestionControls,
+  questionControls as sysQuestionControls,
   FormControl,
 } from "./questionControls";
 import { widgets as sysWidgets } from "./widgets";
@@ -29,7 +29,7 @@ interface VuePageProps {
   state: FormState;
   onStateChange: (newState: FormState) => void;
   widgets?: WidgetItems;
-  questionControls?: FormControl;
+  questionControls?: Object;
   view?: "display" | "readOnly";
   configs: {
     widgets: {

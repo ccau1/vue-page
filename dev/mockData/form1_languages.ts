@@ -311,6 +311,26 @@ export default [
       __html: "<h1>測試</h1><p>一些細節在這裡</p>",
     },
   },
+  {
+    id: "c92841f5-ac47-4fcd-9557-81e81298d489",
+    refId: "d42e770d-a753-41c6-96d7-0c61c3d3b29f",
+    type: "formItem",
+    version: 1,
+    locale: "en",
+    message: {
+      __label: "Date of accident",
+    },
+  },
+  {
+    id: "d5ee0749-3997-4113-9d7d-b7947b16e521",
+    refId: "d42e770d-a753-41c6-96d7-0c61c3d3b29f",
+    type: "formItem",
+    version: 1,
+    locale: "zh_hk",
+    message: {
+      __label: "事故日期",
+    },
+  },
 ] as {
   id: string;
   refId: string;

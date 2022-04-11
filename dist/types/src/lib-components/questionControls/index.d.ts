@@ -8,9 +8,15 @@ export interface QuestionControlProps<Properties = {
     widget: WidgetItem;
     onChange: (newVal: Value, ignoreChecks?: boolean) => void;
 }
-declare const _default: {
-    radio: import("./FormControl").default<import("./radio").RadioProperties>;
+export * from "./checkbox";
+export * from "./datePicker";
+export * from "./numberPicker";
+export * from "./radio";
+export * from "./text";
+export declare let questionControls: {
     checkbox: import("./FormControl").default<import("./checkbox").CheckboxProperties>;
+    datePicker: import("./FormControl").default<import("./datePicker").DatePickerProperties>;
     numberPicker: import("./FormControl").default<import("./numberPicker").NumberPickerProperties>;
+    radio: import("./FormControl").default<import("./radio").RadioProperties>;
+    text: import("./FormControl").default<import("./text").TextProperties>;
 };
-export default _default;

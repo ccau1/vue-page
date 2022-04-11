@@ -53,6 +53,8 @@ export default {
                 "cf155c9c-05c9-4e98-8d4e-ad6baf066e88",
                 "be059ba0-326a-4985-84e7-c20ef4f447f7",
                 "ea28032b-b29c-4812-a60f-da34eb341a42",
+                "d42e770d-a753-41c6-96d7-0c61c3d3b29f",
+                "ecaae14f-2c0c-42e5-adf3-85277ec0b448",
               ],
             },
           ],
@@ -80,6 +82,7 @@ export default {
       {
         id: "010f664f-bf1d-4abe-8782-957cc024c414",
         type: "question",
+        code: "isAgreedTerms",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         validationRules: [
           {
@@ -212,6 +215,35 @@ export default {
             max: 150,
             default: 20,
             step: 1,
+          },
+        },
+      },
+      {
+        id: "d42e770d-a753-41c6-96d7-0c61c3d3b29f",
+        type: "question",
+        code: "incidentDate",
+        parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        properties: {
+          responseType: "DATE",
+          control: "datePicker",
+          controlProperties: {
+            defaultDate: "Date.now()",
+            minDate: "Date.now()",
+            maxDate: "add(7, 'day')",
+          },
+        },
+      },
+      {
+        id: "ecaae14f-2c0c-42e5-adf3-85277ec0b448",
+        type: "question",
+        code: "incidentLocation",
+        parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        properties: {
+          responseType: "TEXT",
+          control: "text",
+          controlProperties: {
+            multiline: false,
+            maxLen: 300,
           },
         },
       },

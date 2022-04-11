@@ -1,7 +1,7 @@
 import { VueConstructor } from "vue";
 
 export default class FormControl<_Options = {}> {
-  public form: VueConstructor<Vue>;
+  public form?: VueConstructor<Vue>;
   public display: VueConstructor<Vue>;
   public readOnly: VueConstructor<Vue>;
   // public meta: { platforms: ["web", "fb"] };
@@ -12,7 +12,7 @@ export default class FormControl<_Options = {}> {
     display,
     readOnly,
   }: {
-    form: VueConstructor<Vue>;
+    form?: VueConstructor<Vue>;
     display: VueConstructor<Vue>;
     readOnly: VueConstructor<Vue>;
   }) {
