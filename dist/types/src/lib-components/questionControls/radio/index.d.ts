@@ -1,4 +1,4 @@
-import FormControl from "../FormControl";
+import QuestionControl from "../QuestionControl";
 export interface RadioProperties {
     multiple?: boolean;
     values: Array<{
@@ -6,5 +6,5 @@ export interface RadioProperties {
         value: string;
     }>;
 }
-declare const _default: FormControl<RadioProperties>;
+declare const _default: QuestionControl<RadioProperties>;
 export default _default;

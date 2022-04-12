@@ -1,4 +1,4 @@
-import FormControl from "../FormControl";
+import QuestionControl from "../QuestionControl";
 import Display from "./Display.vue";
 import ReadOnly from "./ReadOnly.vue";
 
@@ -7,7 +7,7 @@ export interface TextProperties {
   maxLen?: number;
 }
 
-export default new FormControl<TextProperties>({
+export default new QuestionControl<TextProperties>({
   display: Display,
   readOnly: ReadOnly,
 });

@@ -23,6 +23,9 @@ export default defineComponent<QuestionControlProps>({
     value: String,
   },
   inject: ["t"],
+  created() {
+    if (!this.$props.value) this.$props.onChange(this.$data.defaultDate);
+  },
   data() {
     return {
       defaultDate: formatDateString(

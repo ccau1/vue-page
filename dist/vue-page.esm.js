@@ -1053,7 +1053,7 @@ if (typeof window !== 'undefined' && window.Vue) {
     window.Vue.use(Plugin);
 }
 
-class FormControl {
+class QuestionControl {
   // public meta: { platforms: ["web", "fb"] };
   constructor(_ref) {
     let {
@@ -1069,19 +1069,43 @@ class FormControl {
 
 }
 
-var script$A = defineComponent({
+var script$E = defineComponent({
   props: {
     properties: Object,
     widget: Object,
     onChange: Function,
-    value: Boolean
+    value: String
   },
   inject: ["t"],
-  methods: {
-    onToggle(ev) {
-      var _this$$props$onChange, _this$$props;
 
-      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
+  data() {
+    return {
+      options: []
+    };
+  },
+
+  watch: {
+    ["properties.options"]: {
+      handler() {
+        // FIXME: need to handle on locale switch as well
+        this.$data.options = this.$props.properties.options.map(opt => ({
+          value: opt.value,
+          label: this.t(opt.labelKey, this.$props.widget.id)
+        }));
+      },
+
+      immediate: true
+    }
+  },
+  computed: {
+    selectedValue() {
+      return this.$data.options.find(o => o.value === this.$props.value);
+    }
+
+  },
+  methods: {
+    onSelectChange(value) {
+      this.$props.onChange(value);
     }
 
   }
@@ -1162,11 +1186,222 @@ function normalizeComponent(template, style, script, scopeId, isFunctionalTempla
     return script;
 }
 
+const isOldIE = typeof navigator !== 'undefined' &&
+    /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+function createInjector(context) {
+    return (id, style) => addStyle(id, style);
+}
+let HEAD;
+const styles = {};
+function addStyle(id, css) {
+    const group = isOldIE ? css.media || 'default' : id;
+    const style = styles[group] || (styles[group] = { ids: new Set(), styles: [] });
+    if (!style.ids.has(id)) {
+        style.ids.add(id);
+        let code = css.source;
+        if (css.map) {
+            // https://developer.chrome.com/devtools/docs/javascript-debugging
+            // this makes source maps inside style tags work properly in Chrome
+            code += '\n/*# sourceURL=' + css.map.sources[0] + ' */';
+            // http://stackoverflow.com/a/26603875
+            code +=
+                '\n/*# sourceMappingURL=data:application/json;base64,' +
+                    btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) +
+                    ' */';
+        }
+        if (!style.element) {
+            style.element = document.createElement('style');
+            style.element.type = 'text/css';
+            if (css.media)
+                style.element.setAttribute('media', css.media);
+            if (HEAD === undefined) {
+                HEAD = document.head || document.getElementsByTagName('head')[0];
+            }
+            HEAD.appendChild(style.element);
+        }
+        if ('styleSheet' in style.element) {
+            style.styles.push(code);
+            style.element.styleSheet.cssText = style.styles
+                .filter(Boolean)
+                .join('\n');
+        }
+        else {
+            const index = style.ids.size - 1;
+            const textNode = document.createTextNode(code);
+            const nodes = style.element.childNodes;
+            if (nodes[index])
+                style.element.removeChild(nodes[index]);
+            if (nodes.length)
+                style.element.insertBefore(textNode, nodes[index]);
+            else
+                style.element.appendChild(textNode);
+        }
+    }
+}
+
 /* script */
-const __vue_script__$A = script$A;
+const __vue_script__$E = script$E;
 /* template */
 
-var __vue_render__$A = function () {
+var __vue_render__$E = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "button-group-wrapper"
+  }, _vm._l(_vm.options, function (option, index) {
+    return _c('button', {
+      key: option.value,
+      class: {
+        isLast: index === _vm.options.length - 1,
+        selected: _vm.value === option.value
+      },
+      on: {
+        "click": function () {
+          return _vm.onSelectChange(option.value);
+        }
+      }
+    }, [_vm._v("\n    " + _vm._s(option.label) + "\n  ")]);
+  }), 0);
+};
+
+var __vue_staticRenderFns__$E = [];
+/* style */
+
+const __vue_inject_styles__$E = function (inject) {
+  if (!inject) return;
+  inject("data-v-531591b8_0", {
+    source: ".button-group-wrapper[data-v-531591b8]{display:inline-flex;flex-direction:row;border:1px solid #000;border-radius:8px;overflow:hidden}button[data-v-531591b8]{border:1px solid transparent;cursor:pointer;background-color:#fff}button[data-v-531591b8]:not(.isLast){border-right-color:#000}button.selected[data-v-531591b8]{background-color:#03a9f4;color:#fff}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$E = "data-v-531591b8";
+/* module identifier */
+
+const __vue_module_identifier__$E = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$E = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$F = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$E,
+  staticRenderFns: __vue_staticRenderFns__$E
+}, __vue_inject_styles__$E, __vue_script__$E, __vue_scope_id__$E, __vue_is_functional_template__$E, __vue_module_identifier__$E, false, createInjector, undefined, undefined);
+
+var Display$d = __vue_component__$F;
+
+var script$D = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: String
+  },
+  inject: ["t"],
+
+  data() {
+    return {
+      translatedLabel: ""
+    };
+  },
+
+  methods: {
+    getLabelByValue(value) {
+      var _this$$props$properti;
+
+      return this.t(((_this$$props$properti = this.$props.properties.options.find(o => o.value === value)) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.labelKey) || "", this.$props.widget.id);
+    }
+
+  },
+  watch: {
+    value: {
+      handler(value) {
+        this.$data.translatedLabel = this.getLabelByValue(value);
+      },
+
+      immediate: true
+    }
+  }
+});
+
+/* script */
+const __vue_script__$D = script$D;
+/* template */
+
+var __vue_render__$D = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._v("\n  " + _vm._s(_vm.translatedLabel) + "\n")]);
+};
+
+var __vue_staticRenderFns__$D = [];
+/* style */
+
+const __vue_inject_styles__$D = undefined;
+/* scoped */
+
+const __vue_scope_id__$D = undefined;
+/* module identifier */
+
+const __vue_module_identifier__$D = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$D = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$E = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$D,
+  staticRenderFns: __vue_staticRenderFns__$D
+}, __vue_inject_styles__$D, __vue_script__$D, __vue_scope_id__$D, __vue_is_functional_template__$D, __vue_module_identifier__$D, false, undefined, undefined, undefined);
+
+var ReadOnly$d = __vue_component__$E;
+
+var buttonGroup = new QuestionControl({
+  display: Display$d,
+  readOnly: ReadOnly$d
+});
+
+var script$C = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: Boolean
+  },
+  inject: ["t"],
+  methods: {
+    onToggle(ev) {
+      var _this$$props$onChange, _this$$props;
+
+      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$C = script$C;
+/* template */
+
+var __vue_render__$C = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1185,6 +1420,125 @@ var __vue_render__$A = function () {
       "click": _vm.onToggle
     }
   }), _vm._v("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ")])]);
+};
+
+var __vue_staticRenderFns__$C = [];
+/* style */
+
+const __vue_inject_styles__$C = undefined;
+/* scoped */
+
+const __vue_scope_id__$C = undefined;
+/* module identifier */
+
+const __vue_module_identifier__$C = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$C = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$D = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$C,
+  staticRenderFns: __vue_staticRenderFns__$C
+}, __vue_inject_styles__$C, __vue_script__$C, __vue_scope_id__$C, __vue_is_functional_template__$C, __vue_module_identifier__$C, false, undefined, undefined, undefined);
+
+var Form$9 = __vue_component__$D;
+
+var script$B = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: Boolean
+  },
+  inject: ["t"],
+  methods: {
+    onToggle(ev) {
+      var _this$$props$onChange, _this$$props;
+
+      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$B = script$B;
+/* template */
+
+var __vue_render__$B = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_c('label', [_c('input', {
+    attrs: {
+      "type": "checkbox",
+      "name": _vm.widget.id
+    },
+    domProps: {
+      "checked": _vm.value
+    },
+    on: {
+      "click": _vm.onToggle
+    }
+  }), _vm._v("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ")])]);
+};
+
+var __vue_staticRenderFns__$B = [];
+/* style */
+
+const __vue_inject_styles__$B = undefined;
+/* scoped */
+
+const __vue_scope_id__$B = undefined;
+/* module identifier */
+
+const __vue_module_identifier__$B = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$B = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$C = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$B,
+  staticRenderFns: __vue_staticRenderFns__$B
+}, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, undefined, undefined, undefined);
+
+var Display$c = __vue_component__$C;
+
+var script$A = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: Boolean
+  },
+  inject: ["t"]
+});
+
+/* script */
+const __vue_script__$A = script$A;
+/* template */
+
+var __vue_render__$A = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._v("\n  " + _vm._s(!!_vm.value) + "\n")]);
 };
 
 var __vue_staticRenderFns__$A = [];
@@ -1211,131 +1565,12 @@ const __vue_component__$B = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$A
 }, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, false, undefined, undefined, undefined);
 
-var Form$9 = __vue_component__$B;
+var ReadOnly$c = __vue_component__$B;
 
-var script$z = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: Boolean
-  },
-  inject: ["t"],
-  methods: {
-    onToggle(ev) {
-      var _this$$props$onChange, _this$$props;
-
-      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
-    }
-
-  }
-});
-
-/* script */
-const __vue_script__$z = script$z;
-/* template */
-
-var __vue_render__$z = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_c('label', [_c('input', {
-    attrs: {
-      "type": "checkbox",
-      "name": _vm.widget.id
-    },
-    domProps: {
-      "checked": _vm.value
-    },
-    on: {
-      "click": _vm.onToggle
-    }
-  }), _vm._v("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ")])]);
-};
-
-var __vue_staticRenderFns__$z = [];
-/* style */
-
-const __vue_inject_styles__$z = undefined;
-/* scoped */
-
-const __vue_scope_id__$z = undefined;
-/* module identifier */
-
-const __vue_module_identifier__$z = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$z = false;
-/* style inject */
-
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$A = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$z,
-  staticRenderFns: __vue_staticRenderFns__$z
-}, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, false, undefined, undefined, undefined);
-
-var Display$b = __vue_component__$A;
-
-var script$y = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: Boolean
-  },
-  inject: ["t"]
-});
-
-/* script */
-const __vue_script__$y = script$y;
-/* template */
-
-var __vue_render__$y = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_vm._v("\n  " + _vm._s(!!_vm.value) + "\n")]);
-};
-
-var __vue_staticRenderFns__$y = [];
-/* style */
-
-const __vue_inject_styles__$y = undefined;
-/* scoped */
-
-const __vue_scope_id__$y = undefined;
-/* module identifier */
-
-const __vue_module_identifier__$y = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$y = false;
-/* style inject */
-
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$z = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$y,
-  staticRenderFns: __vue_staticRenderFns__$y
-}, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, undefined, undefined, undefined);
-
-var ReadOnly$b = __vue_component__$z;
-
-var checkbox = new FormControl({
+var checkbox = new QuestionControl({
   form: Form$9,
-  display: Display$b,
-  readOnly: ReadOnly$b
+  display: Display$c,
+  readOnly: ReadOnly$c
 });
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -1418,7 +1653,7 @@ let getDateByPropertyValue = date => {
   return undefined;
 };
 
-var script$x = defineComponent({
+var script$z = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -1426,6 +1661,10 @@ var script$x = defineComponent({
     value: String
   },
   inject: ["t"],
+
+  created() {
+    if (!this.$props.value) this.$props.onChange(this.$data.defaultDate);
+  },
 
   data() {
     return {
@@ -1443,64 +1682,11 @@ var script$x = defineComponent({
   }
 });
 
-const isOldIE = typeof navigator !== 'undefined' &&
-    /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
-function createInjector(context) {
-    return (id, style) => addStyle(id, style);
-}
-let HEAD;
-const styles = {};
-function addStyle(id, css) {
-    const group = isOldIE ? css.media || 'default' : id;
-    const style = styles[group] || (styles[group] = { ids: new Set(), styles: [] });
-    if (!style.ids.has(id)) {
-        style.ids.add(id);
-        let code = css.source;
-        if (css.map) {
-            // https://developer.chrome.com/devtools/docs/javascript-debugging
-            // this makes source maps inside style tags work properly in Chrome
-            code += '\n/*# sourceURL=' + css.map.sources[0] + ' */';
-            // http://stackoverflow.com/a/26603875
-            code +=
-                '\n/*# sourceMappingURL=data:application/json;base64,' +
-                    btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) +
-                    ' */';
-        }
-        if (!style.element) {
-            style.element = document.createElement('style');
-            style.element.type = 'text/css';
-            if (css.media)
-                style.element.setAttribute('media', css.media);
-            if (HEAD === undefined) {
-                HEAD = document.head || document.getElementsByTagName('head')[0];
-            }
-            HEAD.appendChild(style.element);
-        }
-        if ('styleSheet' in style.element) {
-            style.styles.push(code);
-            style.element.styleSheet.cssText = style.styles
-                .filter(Boolean)
-                .join('\n');
-        }
-        else {
-            const index = style.ids.size - 1;
-            const textNode = document.createTextNode(code);
-            const nodes = style.element.childNodes;
-            if (nodes[index])
-                style.element.removeChild(nodes[index]);
-            if (nodes.length)
-                style.element.insertBefore(textNode, nodes[index]);
-            else
-                style.element.appendChild(textNode);
-        }
-    }
-}
-
 /* script */
-const __vue_script__$x = script$x;
+const __vue_script__$z = script$z;
 /* template */
 
-var __vue_render__$x = function () {
+var __vue_render__$z = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1522,13 +1708,13 @@ var __vue_render__$x = function () {
   })]);
 };
 
-var __vue_staticRenderFns__$x = [];
+var __vue_staticRenderFns__$z = [];
 /* style */
 
-const __vue_inject_styles__$x = function (inject) {
+const __vue_inject_styles__$z = function (inject) {
   if (!inject) return;
-  inject("data-v-1aa94aed_0", {
-    source: ".radio-item[data-v-1aa94aed]{margin-right:10px}",
+  inject("data-v-5a5d677c_0", {
+    source: ".radio-item[data-v-5a5d677c]{margin-right:10px}",
     map: undefined,
     media: undefined
   });
@@ -1536,7 +1722,184 @@ const __vue_inject_styles__$x = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$x = "data-v-1aa94aed";
+const __vue_scope_id__$z = "data-v-5a5d677c";
+/* module identifier */
+
+const __vue_module_identifier__$z = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$z = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$A = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$z,
+  staticRenderFns: __vue_staticRenderFns__$z
+}, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, false, createInjector, undefined, undefined);
+
+var Display$b = __vue_component__$A;
+
+var script$y = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: String
+  },
+  inject: ["t"],
+  computed: {
+    label() {
+      const selectedOption = this.$props.widget.properties.controlProperties.options.find(f => f.value === this.$props.value);
+      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, this.$props.widget.id) : "";
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$y = script$y;
+/* template */
+
+var __vue_render__$y = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._v("\n  " + _vm._s(_vm.value) + "\n")]);
+};
+
+var __vue_staticRenderFns__$y = [];
+/* style */
+
+const __vue_inject_styles__$y = undefined;
+/* scoped */
+
+const __vue_scope_id__$y = undefined;
+/* module identifier */
+
+const __vue_module_identifier__$y = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$y = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$z = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$y,
+  staticRenderFns: __vue_staticRenderFns__$y
+}, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, undefined, undefined, undefined);
+
+var ReadOnly$b = __vue_component__$z;
+
+var datePicker = new QuestionControl({
+  display: Display$b,
+  readOnly: ReadOnly$b
+});
+
+// import "vue-multiselect/dist/vue-multiselect.min.css";
+
+var script$x = defineComponent({
+  // components: { Multiselect },
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: String
+  },
+  inject: ["t"],
+
+  data() {
+    return {
+      options: []
+    };
+  },
+
+  watch: {
+    ["properties.options"]: {
+      handler() {
+        // FIXME: need to handle on locale switch as well
+        this.$data.options = this.$props.properties.options.map(opt => ({
+          value: opt.value,
+          label: this.t(opt.labelKey, this.$props.widget.id)
+        }));
+      },
+
+      immediate: true
+    }
+  },
+  computed: {
+    selectedValue() {
+      return this.$data.options.find(o => o.value === this.$props.value);
+    }
+
+  },
+  methods: {
+    onSelectChange(ev) {
+      this.$props.onChange(ev.target.value);
+    } // onSelectChange(selectedValue: { value: string; label: string }) {
+    //   if (!selectedValue) return;
+    //   this.$props.onChange(selectedValue.value);
+    // },
+
+
+  }
+});
+
+/* script */
+const __vue_script__$x = script$x;
+/* template */
+
+var __vue_render__$x = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_c('select', {
+    domProps: {
+      "value": _vm.value || ''
+    },
+    on: {
+      "change": _vm.onSelectChange
+    }
+  }, [_c('option', {
+    attrs: {
+      "value": "",
+      "disabled": ""
+    }
+  }, [_vm._v(_vm._s(_vm.t("__placeholder", _vm.widget.id)))]), _vm._v(" "), _vm._l(_vm.options, function (option) {
+    return _c('option', {
+      key: option.value,
+      domProps: {
+        "value": option.value,
+        "selected": _vm.value === option.value
+      }
+    }, [_vm._v("\n      " + _vm._s(option.label) + "\n    ")]);
+  })], 2)]);
+};
+
+var __vue_staticRenderFns__$x = [];
+/* style */
+
+const __vue_inject_styles__$x = function (inject) {
+  if (!inject) return;
+  inject("data-v-2bf2f5b8_0", {
+    source: ".radio-item[data-v-2bf2f5b8]{margin-right:10px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$x = "data-v-2bf2f5b8";
 /* module identifier */
 
 const __vue_module_identifier__$x = undefined;
@@ -1562,12 +1925,29 @@ var script$w = defineComponent({
     value: String
   },
   inject: ["t"],
-  computed: {
-    label() {
-      const selectedOption = this.$props.widget.properties.controlProperties.options.find(f => f.value === this.$props.value);
-      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, this.$props.widget.id) : "";
+
+  data() {
+    return {
+      translatedLabel: ""
+    };
+  },
+
+  methods: {
+    getLabelByValue(value) {
+      var _this$$props$properti;
+
+      return this.t(((_this$$props$properti = this.$props.properties.options.find(o => o.value === value)) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.labelKey) || "", this.$props.widget.id);
     }
 
+  },
+  watch: {
+    value: {
+      handler(value) {
+        this.$data.translatedLabel = this.getLabelByValue(value);
+      },
+
+      immediate: true
+    }
   }
 });
 
@@ -1582,7 +1962,7 @@ var __vue_render__$w = function () {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._v("\n  " + _vm._s(_vm.label) + "\n")]);
+  return _c('div', [_vm._v("\n  " + _vm._s(_vm.translatedLabel) + "\n")]);
 };
 
 var __vue_staticRenderFns__$w = [];
@@ -1611,7 +1991,7 @@ const __vue_component__$x = /*#__PURE__*/normalizeComponent({
 
 var ReadOnly$a = __vue_component__$x;
 
-var datePicker = new FormControl({
+var dropdown = new QuestionControl({
   display: Display$a,
   readOnly: ReadOnly$a
 });
@@ -1886,7 +2266,7 @@ const __vue_component__$u = /*#__PURE__*/normalizeComponent({
 
 var ReadOnly$9 = __vue_component__$u;
 
-var numberPicker = new FormControl({
+var numberPicker = new QuestionControl({
   form: Form$8,
   display: Display$9,
   readOnly: ReadOnly$9
@@ -2109,7 +2489,7 @@ const __vue_component__$r = /*#__PURE__*/normalizeComponent({
 
 var ReadOnly$8 = __vue_component__$r;
 
-var radio = new FormControl({
+var radio = new QuestionControl({
   form: Form$7,
   display: Display$8,
   readOnly: ReadOnly$8
@@ -2120,29 +2500,6 @@ var script$p = defineComponent({
     properties: Object,
     value: String,
     onChange: Function
-  },
-
-  created() {
-    var _this$$props$properti;
-
-    // if value has not been set and default is set, set value to default
-    if (this.$props.value === undefined && ((_this$$props$properti = this.$props.properties) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.default) !== undefined) this.changeValue(this.$props.properties.default, true);
-  },
-
-  computed: {
-    step() {
-      return this.$props.properties.step || 1;
-    },
-
-    numValue() {
-      var _this$$props$properti2, _this$$props$properti3;
-
-      if (this.$props.value !== undefined) return this.$props.value;
-      if (((_this$$props$properti2 = this.$props.properties) === null || _this$$props$properti2 === void 0 ? void 0 : _this$$props$properti2.default) !== undefined) return this.$props.properties.default;
-      if (((_this$$props$properti3 = this.$props.properties) === null || _this$$props$properti3 === void 0 ? void 0 : _this$$props$properti3.min) !== undefined) return this.$props.properties.min;
-      return 0;
-    }
-
   },
   methods: {
     onTextChange(ev) {
@@ -2188,8 +2545,8 @@ var __vue_staticRenderFns__$p = [];
 
 const __vue_inject_styles__$p = function (inject) {
   if (!inject) return;
-  inject("data-v-66b5dc24_0", {
-    source: "input[data-v-66b5dc24]::-webkit-inner-spin-button,input[data-v-66b5dc24]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
+  inject("data-v-abfcf24a_0", {
+    source: "input[data-v-abfcf24a]::-webkit-inner-spin-button,input[data-v-abfcf24a]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
     map: undefined,
     media: undefined
   });
@@ -2197,7 +2554,7 @@ const __vue_inject_styles__$p = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$p = "data-v-66b5dc24";
+const __vue_scope_id__$p = "data-v-abfcf24a";
 /* module identifier */
 
 const __vue_module_identifier__$p = undefined;
@@ -2265,14 +2622,16 @@ const __vue_component__$p = /*#__PURE__*/normalizeComponent({
 
 var ReadOnly$7 = __vue_component__$p;
 
-var text = new FormControl({
+var text = new QuestionControl({
   display: Display$7,
   readOnly: ReadOnly$7
 });
 
 let questionControls = {
+  buttonGroup,
   checkbox,
   datePicker,
+  dropdown,
   numberPicker,
   radio,
   text
@@ -8213,6 +8572,9 @@ var __vue_render__$i = function () {
   return !_vm.widget.getState('reflexiveHide') ? _c('div', [_c('div', {
     staticClass: "question-wrapper"
   }, [!_vm.widget.properties.hideLabel ? _c('label', {
+    class: {
+      errors: (_vm.getWidgetState('errors') || []).length
+    },
     attrs: {
       "for": _vm.widget.code || _vm.widget.id
     }
@@ -8226,6 +8588,7 @@ var __vue_render__$i = function () {
       "setWidgetState": _vm.setWidgetState,
       "getWidgetState": _vm.getWidgetState,
       "view": _vm.view,
+      "errors": _vm.getWidgetState('errors'),
       "t": _vm.t
     }
   }), _vm._v(" "), _vm._l(_vm.getWidgetState('errors'), function (errorKey) {
@@ -8241,8 +8604,8 @@ var __vue_staticRenderFns__$i = [];
 
 const __vue_inject_styles__$i = function (inject) {
   if (!inject) return;
-  inject("data-v-72d55c0a_0", {
-    source: ".question-wrapper[data-v-72d55c0a]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-72d55c0a]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>div[data-v-72d55c0a]{flex:2;padding:20px 0}.error[data-v-72d55c0a]{display:block;color:red;margin-top:10px}",
+  inject("data-v-4be50d3a_0", {
+    source: ".question-wrapper[data-v-4be50d3a]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-4be50d3a]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-4be50d3a]{color:red}.question-wrapper>div[data-v-4be50d3a]{flex:2;padding:20px 0}.error[data-v-4be50d3a]{display:block;color:red;margin-top:10px}",
     map: undefined,
     media: undefined
   });
@@ -8250,7 +8613,7 @@ const __vue_inject_styles__$i = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$i = "data-v-72d55c0a";
+const __vue_scope_id__$i = "data-v-4be50d3a";
 /* module identifier */
 
 const __vue_module_identifier__$i = undefined;
@@ -9776,7 +10139,7 @@ var script = defineComponent({
     // eslint-disable-next-line no-unused-vars
     onStateChange: Function,
     widgets: Object,
-    questionControls: R(FormControl),
+    questionControls: Object,
     // display | form | readOnly
     view: String,
     configs: C({
@@ -9957,8 +10320,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-20e02914_0", {
-    source: ".main-wrapper[data-v-20e02914]{font-family:Arial,Helvetica,sans-serif}",
+  inject("data-v-23117f3b_0", {
+    source: ".main-wrapper[data-v-23117f3b]{font-family:Arial,Helvetica,sans-serif}",
     map: undefined,
     media: undefined
   });
@@ -9966,7 +10329,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-20e02914";
+const __vue_scope_id__ = "data-v-23117f3b";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
@@ -9991,7 +10354,7 @@ var components = /*#__PURE__*/Object.freeze({
     WidgetView: WidgetView,
     FormState: FormState,
     widgets: widgets,
-    FormControl: FormControl,
+    QuestionControl: QuestionControl,
     formatDateString: formatDateString,
     getDateByPropertyValue: getDateByPropertyValue,
     questionControls: questionControls
@@ -10006,4 +10369,4 @@ const install = function installVuePage(Vue) {
   });
 }; // Create module definition for Vue.use()
 
-export { FormControl, FormState, __vue_component__$1 as VuePage, WidgetView, WidgetsLayout, install as default, formatDateString, getDateByPropertyValue, questionControls, widgets };
+export { FormState, QuestionControl, __vue_component__$1 as VuePage, WidgetView, WidgetsLayout, install as default, formatDateString, getDateByPropertyValue, questionControls, widgets };

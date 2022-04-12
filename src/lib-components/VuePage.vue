@@ -11,7 +11,7 @@
 import { defineComponent } from "@vue/composition-api";
 import {
   questionControls as sysQuestionControls,
-  FormControl,
+  QuestionControl,
 } from "./questionControls";
 import { widgets as sysWidgets } from "./widgets";
 // import DynamicFormLayout from "./DynamicFormLayout.vue";
@@ -49,7 +49,7 @@ interface VuePageProps {
 
 interface VuePageData {
   combWidgetControls: { [key: string]: WidgetControl<any> };
-  combQuestionControls: { [key: string]: FormControl };
+  combQuestionControls: { [key: string]: QuestionControl };
   widgetItems: WidgetItems;
 }
 
@@ -64,8 +64,8 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     state: instanceOf(FormState).isRequired,
     // eslint-disable-next-line no-unused-vars
     onStateChange: Function, // func<(state: FormState) => void>().isRequired,
-    widgets: Object, // shape(FormControl),
-    questionControls: arrayOf(FormControl),
+    widgets: Object, // shape(QuestionControl),
+    questionControls: Object,
     // display | form | readOnly
     view: String,
     configs: shape({
@@ -92,7 +92,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       combWidgetControls: sysWidgets,
       widgetItems: {},
     } as {
-      combQuestionControls: { [key: string]: FormControl };
+      combQuestionControls: { [key: string]: QuestionControl };
       combWidgetControls: { [key: string]: WidgetControl };
       widgetItems: WidgetItems;
     };
@@ -134,7 +134,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
             ? {}
             : sysQuestionControls),
           ...(questionControls || {}),
-        } as { [key: string]: FormControl };
+        } as { [key: string]: QuestionControl };
       },
       immediate: true,
     },

@@ -4,6 +4,7 @@
       <label
         :for="widget.code || widget.id"
         v-if="!widget.properties.hideLabel"
+        :class="{ errors: (getWidgetState('errors') || []).length }"
         >{{ t("__label", widget.id) }}</label
       >
       <div>
@@ -16,6 +17,7 @@
           :setWidgetState="setWidgetState"
           :getWidgetState="getWidgetState"
           :view="view"
+          :errors="getWidgetState('errors')"
           :t="t"
         />
         <span
@@ -104,6 +106,10 @@ export default defineComponent({
   padding: 20px 0;
   margin-right: 20px;
 }
+.question-wrapper > label.errors {
+  color: #f00;
+}
+
 .question-wrapper > div {
   flex: 2;
   padding: 20px 0px;

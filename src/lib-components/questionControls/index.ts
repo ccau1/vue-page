@@ -1,11 +1,13 @@
+import buttonGroup from "./buttonGroup";
 import checkbox from "./checkbox";
 import datePicker from "./datePicker";
+import dropdown from "./dropdown";
 import numberPicker from "./numberPicker";
 import radio from "./radio";
 import text from "./text";
 import WidgetItem from "../models/WidgetItem";
 
-export { default as FormControl } from "./FormControl";
+export { default as QuestionControl } from "./QuestionControl";
 
 export interface QuestionControlProps<
   Properties = {
@@ -19,15 +21,19 @@ export interface QuestionControlProps<
   onChange: (newVal: Value, ignoreChecks?: boolean) => void;
 }
 
+export * from "./buttonGroup";
 export * from "./checkbox";
 export * from "./datePicker";
+export * from "./dropdown";
 export * from "./numberPicker";
 export * from "./radio";
 export * from "./text";
 
 export let questionControls = {
+  buttonGroup,
   checkbox,
   datePicker,
+  dropdown,
   numberPicker,
   radio,
   text,

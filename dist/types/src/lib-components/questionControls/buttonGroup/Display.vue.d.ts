@@ -1,16 +1,4 @@
-import { QuestionControl } from "./questionControls";
-import WidgetsLayout from "./WidgetsLayout.vue";
-import { WidgetControl, WidgetItems } from "../entry.esm";
-interface VuePageData {
-    combWidgetControls: {
-        [key: string]: WidgetControl<any>;
-    };
-    combQuestionControls: {
-        [key: string]: QuestionControl;
-    };
-    widgetItems: WidgetItems;
-}
-declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@vue/composition-api").ShallowUnwrapRef<any> & VuePageData, {}, {}, import("@vue/composition-api").ComponentPropsOptions<import("@vue/composition-api").Data>, ({
+declare const _default: import("vue").ComponentOptions<import("vue").default, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & import("@vue/composition-api").Data, {}, {}, import("@vue/composition-api").ComponentPropsOptions<import("@vue/composition-api").Data>, ({
     [x: number]: string;
 } & {
     [Symbol.iterator]?: IterableIterator<string> | undefined;
@@ -23,9 +11,6 @@ declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@v
         keys: boolean;
         values: boolean;
     } | undefined;
-    keys?: IterableIterator<number> | undefined;
-    values?: IterableIterator<string> | undefined;
-    entries?: IterableIterator<[number, string]> | undefined;
     concat?: string[] | undefined;
     indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
     lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
@@ -33,6 +18,9 @@ declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@v
     length?: number | undefined;
     includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
     at?: ((index: number) => string | undefined) | undefined;
+    keys?: IterableIterator<number> | undefined;
+    values?: IterableIterator<string> | undefined;
+    entries?: IterableIterator<[number, string]> | undefined;
     filter?: {
         <S extends string>(predicate: (value: string, index: number, array: string[]) => value is S, thisArg?: any): S[];
         (predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any): string[];
@@ -79,7 +67,7 @@ declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@v
 }) | ({} & {
     [x: string]: any;
     [x: number]: any;
-})> & Omit<import("vue").VueConstructor<WidgetsLayout>, never> & (new (...args: any[]) => import("@vue/composition-api").ComponentRenderProxy<(({
+})> & Omit<import("vue").VueConstructor<import("vue").default>, never> & (new (...args: any[]) => import("@vue/composition-api").ComponentRenderProxy<(({
     [x: number]: string;
 } & {
     [Symbol.iterator]?: IterableIterator<string> | undefined;
@@ -92,9 +80,6 @@ declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@v
         keys: boolean;
         values: boolean;
     } | undefined;
-    keys?: IterableIterator<number> | undefined;
-    values?: IterableIterator<string> | undefined;
-    entries?: IterableIterator<[number, string]> | undefined;
     concat?: string[] | undefined;
     indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
     lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
@@ -102,6 +87,9 @@ declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@v
     length?: number | undefined;
     includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
     at?: ((index: number) => string | undefined) | undefined;
+    keys?: IterableIterator<number> | undefined;
+    values?: IterableIterator<string> | undefined;
+    entries?: IterableIterator<[number, string]> | undefined;
     filter?: {
         <S extends string>(predicate: (value: string, index: number, array: string[]) => value is S, thisArg?: any): S[];
         (predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any): string[];
@@ -148,7 +136,7 @@ declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@v
 }) | ({} & {
     [x: string]: any;
     [x: number]: any;
-})) & {}, import("@vue/composition-api").ShallowUnwrapRef<any>, VuePageData, {}, {}, {}, {}, {}, (({
+})) & {}, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data>, import("@vue/composition-api").Data, {}, {}, {}, {}, {}, (({
     [x: number]: string;
 } & {
     [Symbol.iterator]?: IterableIterator<string> | undefined;
@@ -161,9 +149,6 @@ declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@v
         keys: boolean;
         values: boolean;
     } | undefined;
-    keys?: IterableIterator<number> | undefined;
-    values?: IterableIterator<string> | undefined;
-    entries?: IterableIterator<[number, string]> | undefined;
     concat?: string[] | undefined;
     indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
     lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
@@ -171,6 +156,9 @@ declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@v
     length?: number | undefined;
     includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
     at?: ((index: number) => string | undefined) | undefined;
+    keys?: IterableIterator<number> | undefined;
+    values?: IterableIterator<string> | undefined;
+    entries?: IterableIterator<[number, string]> | undefined;
     filter?: {
         <S extends string>(predicate: (value: string, index: number, array: string[]) => value is S, thisArg?: any): S[];
         (predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any): string[];

@@ -331,6 +331,60 @@ export default [
       __label: "事故日期",
     },
   },
+  {
+    id: "df5ea4ec-76f0-4f8b-a4db-50ee79fe7af2",
+    refId: "da07bc99-88ef-460d-824e-24972e2bebe1",
+    type: "formItem",
+    version: 1,
+    locale: "en",
+    message: {
+      __label: "Injury",
+      __placeholder: "select injury part",
+      opt1: "Knee",
+      opt2: "Shoulder",
+      opt3: "Arm",
+    },
+  },
+  {
+    id: "6efce4e6-4b6e-418d-a36c-cffcac72b63c",
+    refId: "da07bc99-88ef-460d-824e-24972e2bebe1",
+    type: "formItem",
+    version: 1,
+    locale: "zh_hk",
+    message: {
+      __label: "受傷部位",
+      __placeholder: "受傷部位",
+      opt1: "膝蓋",
+      opt2: "肩膀",
+      opt3: "手臂",
+    },
+  },
+  {
+    id: "c4d936e0-f972-4eb3-9bb5-59f6cbb05e70",
+    refId: "14f4c2d4-2cb0-488a-b39a-063292d6bb77",
+    type: "formItem",
+    version: 1,
+    locale: "en",
+    message: {
+      __label: "Injury",
+      opt1: "Knee",
+      opt2: "Shoulder",
+      opt3: "Arm",
+    },
+  },
+  {
+    id: "db87cc7b-3506-4cba-aa16-5be3b1c75955",
+    refId: "14f4c2d4-2cb0-488a-b39a-063292d6bb77",
+    type: "formItem",
+    version: 1,
+    locale: "zh_hk",
+    message: {
+      __label: "受傷部位",
+      opt1: "膝蓋",
+      opt2: "肩膀",
+      opt3: "手臂",
+    },
+  },
 ] as {
   id: string;
   refId: string;

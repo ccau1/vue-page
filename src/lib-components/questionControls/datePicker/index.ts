@@ -1,4 +1,4 @@
-import FormControl from "../FormControl";
+import QuestionControl from "../QuestionControl";
 import Display from "./Display.vue";
 import ReadOnly from "./ReadOnly.vue";
 
@@ -16,7 +16,7 @@ export interface DatePickerProperties {
 
 export * from "./utils";
 
-export default new FormControl<DatePickerProperties>({
+export default new QuestionControl<DatePickerProperties>({
   display: Display,
   readOnly: ReadOnly,
 });

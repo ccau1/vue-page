@@ -1,6 +1,6 @@
 import { VueConstructor } from "vue";
 
-export default class FormControl<_Options = {}> {
+export default class QuestionControl<_Options = {}> {
   public form?: VueConstructor<Vue>;
   public display: VueConstructor<Vue>;
   public readOnly: VueConstructor<Vue>;

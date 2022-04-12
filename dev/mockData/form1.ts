@@ -55,6 +55,8 @@ export default {
                 "ea28032b-b29c-4812-a60f-da34eb341a42",
                 "d42e770d-a753-41c6-96d7-0c61c3d3b29f",
                 "ecaae14f-2c0c-42e5-adf3-85277ec0b448",
+                "da07bc99-88ef-460d-824e-24972e2bebe1",
+                "14f4c2d4-2cb0-488a-b39a-063292d6bb77",
               ],
             },
           ],
@@ -244,6 +246,41 @@ export default {
           controlProperties: {
             multiline: false,
             maxLen: 300,
+          },
+        },
+      },
+      {
+        id: "da07bc99-88ef-460d-824e-24972e2bebe1",
+        type: "question",
+        code: "injury",
+        parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        properties: {
+          responseType: "TEXT",
+          control: "dropdown",
+          controlProperties: {
+            options: [
+              { labelKey: "opt1", value: "knee" },
+              { labelKey: "opt2", value: "shoulder" },
+              { labelKey: "opt3", value: "arm" },
+            ],
+            maxLen: 300,
+          },
+        },
+      },
+      {
+        id: "14f4c2d4-2cb0-488a-b39a-063292d6bb77",
+        type: "question",
+        code: "isPaidRoomFees",
+        parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        properties: {
+          responseType: "TEXT",
+          control: "buttonGroup",
+          controlProperties: {
+            options: [
+              { labelKey: "opt1", value: "knee" },
+              { labelKey: "opt2", value: "shoulder" },
+              { labelKey: "opt3", value: "arm" },
+            ],
           },
         },
       },

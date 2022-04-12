@@ -1338,31 +1338,57 @@ function defineComponent(options) {
 // auto install when using CDN
 if (typeof window !== 'undefined' && window.Vue) {
     window.Vue.use(Plugin);
-}var FormControl = /*#__PURE__*/_createClass( // public meta: { platforms: ["web", "fb"] };
-function FormControl(_ref) {
+}var QuestionControl = /*#__PURE__*/_createClass( // public meta: { platforms: ["web", "fb"] };
+function QuestionControl(_ref) {
   var form = _ref.form,
       display = _ref.display,
       readOnly = _ref.readOnly;
 
-  _classCallCheck(this, FormControl);
+  _classCallCheck(this, QuestionControl);
 
   this.form = form;
   this.display = display;
   this.readOnly = readOnly;
   this.tags = [];
-});var script$A = defineComponent({
+});var script$E = defineComponent({
   props: {
     properties: Object,
     widget: Object,
     onChange: Function,
-    value: Boolean
+    value: String
   },
   inject: ["t"],
-  methods: {
-    onToggle: function onToggle(ev) {
-      var _this$$props$onChange, _this$$props;
+  data: function data() {
+    return {
+      options: []
+    };
+  },
+  watch: _defineProperty({}, "properties.options", {
+    handler: function handler() {
+      var _this = this;
 
-      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
+      // FIXME: need to handle on locale switch as well
+      this.$data.options = this.$props.properties.options.map(function (opt) {
+        return {
+          value: opt.value,
+          label: _this.t(opt.labelKey, _this.$props.widget.id)
+        };
+      });
+    },
+    immediate: true
+  }),
+  computed: {
+    selectedValue: function selectedValue() {
+      var _this2 = this;
+
+      return this.$data.options.find(function (o) {
+        return o.value === _this2.$props.value;
+      });
+    }
+  },
+  methods: {
+    onSelectChange: function onSelectChange(value) {
+      this.$props.onChange(value);
     }
   }
 });function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier /* server only */, shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
@@ -1438,45 +1464,167 @@ function FormControl(_ref) {
         }
     }
     return script;
+}function createInjectorSSR(context) {
+    if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__;
+    }
+    if (!context)
+        return () => { };
+    if (!('styles' in context)) {
+        context._styles = context._styles || {};
+        Object.defineProperty(context, 'styles', {
+            enumerable: true,
+            get: () => context._renderStyles(context._styles)
+        });
+        context._renderStyles = context._renderStyles || renderStyles;
+    }
+    return (id, style) => addStyle(id, style, context);
+}
+function addStyle(id, css, context) {
+    const group = css.media || 'default' ;
+    const style = context._styles[group] || (context._styles[group] = { ids: [], css: '' });
+    if (!style.ids.includes(id)) {
+        style.media = css.media;
+        style.ids.push(id);
+        let code = css.source;
+        style.css += code + '\n';
+    }
+}
+function renderStyles(styles) {
+    let css = '';
+    for (const key in styles) {
+        const style = styles[key];
+        css +=
+            '<style data-vue-ssr-id="' +
+                Array.from(style.ids).join(' ') +
+                '"' +
+                (style.media ? ' media="' + style.media + '"' : '') +
+                '>' +
+                style.css +
+                '</style>';
+    }
+    return css;
 }/* script */
-var __vue_script__$A = script$A;
+var __vue_script__$E = script$E;
 /* template */
 
-var __vue_render__$A = function __vue_render__() {
+var __vue_render__$E = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ") + "</label>")]);
+  return _c('div', {
+    staticClass: "button-group-wrapper"
+  }, [_vm._ssrNode(_vm._ssrList(_vm.options, function (option, index) {
+    return "<button" + _vm._ssrClass(null, {
+      isLast: index === _vm.options.length - 1,
+      selected: _vm.value === option.value
+    }) + " data-v-531591b8>" + _vm._ssrEscape("\n    " + _vm._s(option.label) + "\n  ") + "</button>";
+  }))]);
 };
 
-var __vue_staticRenderFns__$A = [];
+var __vue_staticRenderFns__$E = [];
 /* style */
 
-var __vue_inject_styles__$A = undefined;
+var __vue_inject_styles__$E = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-531591b8_0", {
+    source: ".button-group-wrapper[data-v-531591b8]{display:inline-flex;flex-direction:row;border:1px solid #000;border-radius:8px;overflow:hidden}button[data-v-531591b8]{border:1px solid transparent;cursor:pointer;background-color:#fff}button[data-v-531591b8]:not(.isLast){border-right-color:#000}button.selected[data-v-531591b8]{background-color:#03a9f4;color:#fff}",
+    map: undefined,
+    media: undefined
+  });
+};
 /* scoped */
 
-var __vue_scope_id__$A = undefined;
+
+var __vue_scope_id__$E = "data-v-531591b8";
 /* module identifier */
 
-var __vue_module_identifier__$A = "data-v-4ee0eb82";
+var __vue_module_identifier__$E = "data-v-531591b8";
 /* functional template */
 
-var __vue_is_functional_template__$A = false;
+var __vue_is_functional_template__$E = false;
+/* style inject shadow dom */
+
+var __vue_component__$F = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$E,
+  staticRenderFns: __vue_staticRenderFns__$E
+}, __vue_inject_styles__$E, __vue_script__$E, __vue_scope_id__$E, __vue_is_functional_template__$E, __vue_module_identifier__$E, false, undefined, createInjectorSSR, undefined);
+
+var Display$d = __vue_component__$F;var script$D = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: String
+  },
+  inject: ["t"],
+  data: function data() {
+    return {
+      translatedLabel: ""
+    };
+  },
+  methods: {
+    getLabelByValue: function getLabelByValue(value) {
+      var _options$find;
+
+      return this.t(((_options$find = this.$props.properties.options.find(function (o) {
+        return o.value === value;
+      })) === null || _options$find === void 0 ? void 0 : _options$find.labelKey) || "", this.$props.widget.id);
+    }
+  },
+  watch: {
+    value: {
+      handler: function handler(value) {
+        this.$data.translatedLabel = this.getLabelByValue(value);
+      },
+      immediate: true
+    }
+  }
+});/* script */
+var __vue_script__$D = script$D;
+/* template */
+
+var __vue_render__$D = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(_vm.translatedLabel) + "\n"))]);
+};
+
+var __vue_staticRenderFns__$D = [];
+/* style */
+
+var __vue_inject_styles__$D = undefined;
+/* scoped */
+
+var __vue_scope_id__$D = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$D = "data-v-46e2d98f";
+/* functional template */
+
+var __vue_is_functional_template__$D = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-var __vue_component__$B = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$A,
-  staticRenderFns: __vue_staticRenderFns__$A
-}, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, false, undefined, undefined, undefined);
+var __vue_component__$E = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$D,
+  staticRenderFns: __vue_staticRenderFns__$D
+}, __vue_inject_styles__$D, __vue_script__$D, __vue_scope_id__$D, __vue_is_functional_template__$D, __vue_module_identifier__$D, false, undefined, undefined, undefined);
 
-var Form$9 = __vue_component__$B;var script$z = defineComponent({
+var ReadOnly$d = __vue_component__$E;var buttonGroup = new QuestionControl({
+  display: Display$d,
+  readOnly: ReadOnly$d
+});var script$C = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -1492,10 +1640,10 @@ var Form$9 = __vue_component__$B;var script$z = defineComponent({
     }
   }
 });/* script */
-var __vue_script__$z = script$z;
+var __vue_script__$C = script$C;
 /* template */
 
-var __vue_render__$z = function __vue_render__() {
+var __vue_render__$C = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1505,31 +1653,84 @@ var __vue_render__$z = function __vue_render__() {
   return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ") + "</label>")]);
 };
 
-var __vue_staticRenderFns__$z = [];
+var __vue_staticRenderFns__$C = [];
 /* style */
 
-var __vue_inject_styles__$z = undefined;
+var __vue_inject_styles__$C = undefined;
 /* scoped */
 
-var __vue_scope_id__$z = undefined;
+var __vue_scope_id__$C = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$z = "data-v-7e6315ed";
+var __vue_module_identifier__$C = "data-v-4ee0eb82";
 /* functional template */
 
-var __vue_is_functional_template__$z = false;
+var __vue_is_functional_template__$C = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-var __vue_component__$A = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$z,
-  staticRenderFns: __vue_staticRenderFns__$z
-}, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, false, undefined, undefined, undefined);
+var __vue_component__$D = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$C,
+  staticRenderFns: __vue_staticRenderFns__$C
+}, __vue_inject_styles__$C, __vue_script__$C, __vue_scope_id__$C, __vue_is_functional_template__$C, __vue_module_identifier__$C, false, undefined, undefined, undefined);
 
-var Display$b = __vue_component__$A;var script$y = defineComponent({
+var Form$9 = __vue_component__$D;var script$B = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: Boolean
+  },
+  inject: ["t"],
+  methods: {
+    onToggle: function onToggle(ev) {
+      var _this$$props$onChange, _this$$props;
+
+      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, ev.target.checked);
+    }
+  }
+});/* script */
+var __vue_script__$B = script$B;
+/* template */
+
+var __vue_render__$B = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ") + "</label>")]);
+};
+
+var __vue_staticRenderFns__$B = [];
+/* style */
+
+var __vue_inject_styles__$B = undefined;
+/* scoped */
+
+var __vue_scope_id__$B = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$B = "data-v-7e6315ed";
+/* functional template */
+
+var __vue_is_functional_template__$B = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+var __vue_component__$C = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$B,
+  staticRenderFns: __vue_staticRenderFns__$B
+}, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, undefined, undefined, undefined);
+
+var Display$c = __vue_component__$C;var script$A = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -1538,10 +1739,10 @@ var Display$b = __vue_component__$A;var script$y = defineComponent({
   },
   inject: ["t"]
 });/* script */
-var __vue_script__$y = script$y;
+var __vue_script__$A = script$A;
 /* template */
 
-var __vue_render__$y = function __vue_render__() {
+var __vue_render__$A = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1551,34 +1752,34 @@ var __vue_render__$y = function __vue_render__() {
   return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(!!_vm.value) + "\n"))]);
 };
 
-var __vue_staticRenderFns__$y = [];
+var __vue_staticRenderFns__$A = [];
 /* style */
 
-var __vue_inject_styles__$y = undefined;
+var __vue_inject_styles__$A = undefined;
 /* scoped */
 
-var __vue_scope_id__$y = undefined;
+var __vue_scope_id__$A = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$y = "data-v-711b0fdb";
+var __vue_module_identifier__$A = "data-v-711b0fdb";
 /* functional template */
 
-var __vue_is_functional_template__$y = false;
+var __vue_is_functional_template__$A = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-var __vue_component__$z = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$y,
-  staticRenderFns: __vue_staticRenderFns__$y
-}, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, undefined, undefined, undefined);
+var __vue_component__$B = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$A,
+  staticRenderFns: __vue_staticRenderFns__$A
+}, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, false, undefined, undefined, undefined);
 
-var ReadOnly$b = __vue_component__$z;var checkbox = new FormControl({
+var ReadOnly$c = __vue_component__$B;var checkbox = new QuestionControl({
   form: Form$9,
-  display: Display$b,
-  readOnly: ReadOnly$b
+  display: Display$c,
+  readOnly: ReadOnly$c
 });var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function createCommonjsModule(fn, basedir, module) {
@@ -1655,7 +1856,7 @@ var getDateByPropertyValue = function getDateByPropertyValue(date) {
   }
 
   return undefined;
-};var script$x = defineComponent({
+};var script$z = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -1663,6 +1864,9 @@ var getDateByPropertyValue = function getDateByPropertyValue(date) {
     value: String
   },
   inject: ["t"],
+  created: function created() {
+    if (!this.$props.value) this.$props.onChange(this.$data.defaultDate);
+  },
   data: function data() {
     return {
       defaultDate: formatDateString(getDateByPropertyValue(this.$props.properties.defaultDate)),
@@ -1675,67 +1879,27 @@ var getDateByPropertyValue = function getDateByPropertyValue(date) {
       this.$props.onChange(newDate.target.value);
     }
   }
-});function createInjectorSSR(context) {
-    if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__;
-    }
-    if (!context)
-        return () => { };
-    if (!('styles' in context)) {
-        context._styles = context._styles || {};
-        Object.defineProperty(context, 'styles', {
-            enumerable: true,
-            get: () => context._renderStyles(context._styles)
-        });
-        context._renderStyles = context._renderStyles || renderStyles;
-    }
-    return (id, style) => addStyle(id, style, context);
-}
-function addStyle(id, css, context) {
-    const group = css.media || 'default' ;
-    const style = context._styles[group] || (context._styles[group] = { ids: [], css: '' });
-    if (!style.ids.includes(id)) {
-        style.media = css.media;
-        style.ids.push(id);
-        let code = css.source;
-        style.css += code + '\n';
-    }
-}
-function renderStyles(styles) {
-    let css = '';
-    for (const key in styles) {
-        const style = styles[key];
-        css +=
-            '<style data-vue-ssr-id="' +
-                Array.from(style.ids).join(' ') +
-                '"' +
-                (style.media ? ' media="' + style.media + '"' : '') +
-                '>' +
-                style.css +
-                '</style>';
-    }
-    return css;
-}/* script */
-var __vue_script__$x = script$x;
+});/* script */
+var __vue_script__$z = script$z;
 /* template */
 
-var __vue_render__$x = function __vue_render__() {
+var __vue_render__$z = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<input type=\"date\"" + _vm._ssrAttr("min", _vm.minDate) + _vm._ssrAttr("max", _vm.maxDate) + _vm._ssrAttr("value", _vm.value || _vm.defaultDate) + " data-v-1aa94aed>")]);
+  return _c('div', [_vm._ssrNode("<input type=\"date\"" + _vm._ssrAttr("min", _vm.minDate) + _vm._ssrAttr("max", _vm.maxDate) + _vm._ssrAttr("value", _vm.value || _vm.defaultDate) + " data-v-5a5d677c>")]);
 };
 
-var __vue_staticRenderFns__$x = [];
+var __vue_staticRenderFns__$z = [];
 /* style */
 
-var __vue_inject_styles__$x = function __vue_inject_styles__(inject) {
+var __vue_inject_styles__$z = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-1aa94aed_0", {
-    source: ".radio-item[data-v-1aa94aed]{margin-right:10px}",
+  inject("data-v-5a5d677c_0", {
+    source: ".radio-item[data-v-5a5d677c]{margin-right:10px}",
     map: undefined,
     media: undefined
   });
@@ -1743,21 +1907,21 @@ var __vue_inject_styles__$x = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$x = "data-v-1aa94aed";
+var __vue_scope_id__$z = "data-v-5a5d677c";
 /* module identifier */
 
-var __vue_module_identifier__$x = "data-v-1aa94aed";
+var __vue_module_identifier__$z = "data-v-5a5d677c";
 /* functional template */
 
-var __vue_is_functional_template__$x = false;
+var __vue_is_functional_template__$z = false;
 /* style inject shadow dom */
 
-var __vue_component__$y = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$x,
-  staticRenderFns: __vue_staticRenderFns__$x
-}, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, false, undefined, createInjectorSSR, undefined);
+var __vue_component__$A = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$z,
+  staticRenderFns: __vue_staticRenderFns__$z
+}, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, false, undefined, createInjectorSSR, undefined);
 
-var Display$a = __vue_component__$y;var script$w = defineComponent({
+var Display$b = __vue_component__$A;var script$y = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -1776,6 +1940,169 @@ var Display$a = __vue_component__$y;var script$w = defineComponent({
     }
   }
 });/* script */
+var __vue_script__$y = script$y;
+/* template */
+
+var __vue_render__$y = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(_vm.value) + "\n"))]);
+};
+
+var __vue_staticRenderFns__$y = [];
+/* style */
+
+var __vue_inject_styles__$y = undefined;
+/* scoped */
+
+var __vue_scope_id__$y = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$y = "data-v-cc2454bc";
+/* functional template */
+
+var __vue_is_functional_template__$y = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+var __vue_component__$z = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$y,
+  staticRenderFns: __vue_staticRenderFns__$y
+}, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, undefined, undefined, undefined);
+
+var ReadOnly$b = __vue_component__$z;var datePicker = new QuestionControl({
+  display: Display$b,
+  readOnly: ReadOnly$b
+});// import Multiselect from "vue-multiselect";
+// import "vue-multiselect/dist/vue-multiselect.min.css";
+var script$x = defineComponent({
+  // components: { Multiselect },
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: String
+  },
+  inject: ["t"],
+  data: function data() {
+    return {
+      options: []
+    };
+  },
+  watch: _defineProperty({}, "properties.options", {
+    handler: function handler() {
+      var _this = this;
+
+      // FIXME: need to handle on locale switch as well
+      this.$data.options = this.$props.properties.options.map(function (opt) {
+        return {
+          value: opt.value,
+          label: _this.t(opt.labelKey, _this.$props.widget.id)
+        };
+      });
+    },
+    immediate: true
+  }),
+  computed: {
+    selectedValue: function selectedValue() {
+      var _this2 = this;
+
+      return this.$data.options.find(function (o) {
+        return o.value === _this2.$props.value;
+      });
+    }
+  },
+  methods: {
+    onSelectChange: function onSelectChange(ev) {
+      this.$props.onChange(ev.target.value);
+    } // onSelectChange(selectedValue: { value: string; label: string }) {
+    //   if (!selectedValue) return;
+    //   this.$props.onChange(selectedValue.value);
+    // },
+
+  }
+});/* script */
+var __vue_script__$x = script$x;
+/* template */
+
+var __vue_render__$x = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode("<select" + _vm._ssrAttr("value", _vm.value || '') + " data-v-2bf2f5b8><option value disabled=\"disabled\" data-v-2bf2f5b8>" + _vm._ssrEscape(_vm._s(_vm.t("__placeholder", _vm.widget.id))) + "</option> " + _vm._ssrList(_vm.options, function (option) {
+    return "<option" + _vm._ssrAttr("value", option.value) + _vm._ssrAttr("selected", _vm.value === option.value) + " data-v-2bf2f5b8>" + _vm._ssrEscape("\n      " + _vm._s(option.label) + "\n    ") + "</option>";
+  }) + "</select>")]);
+};
+
+var __vue_staticRenderFns__$x = [];
+/* style */
+
+var __vue_inject_styles__$x = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-2bf2f5b8_0", {
+    source: ".radio-item[data-v-2bf2f5b8]{margin-right:10px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$x = "data-v-2bf2f5b8";
+/* module identifier */
+
+var __vue_module_identifier__$x = "data-v-2bf2f5b8";
+/* functional template */
+
+var __vue_is_functional_template__$x = false;
+/* style inject shadow dom */
+
+var __vue_component__$y = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$x,
+  staticRenderFns: __vue_staticRenderFns__$x
+}, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, false, undefined, createInjectorSSR, undefined);
+
+var Display$a = __vue_component__$y;var script$w = defineComponent({
+  props: {
+    properties: Object,
+    widget: Object,
+    onChange: Function,
+    value: String
+  },
+  inject: ["t"],
+  data: function data() {
+    return {
+      translatedLabel: ""
+    };
+  },
+  methods: {
+    getLabelByValue: function getLabelByValue(value) {
+      var _options$find;
+
+      return this.t(((_options$find = this.$props.properties.options.find(function (o) {
+        return o.value === value;
+      })) === null || _options$find === void 0 ? void 0 : _options$find.labelKey) || "", this.$props.widget.id);
+    }
+  },
+  watch: {
+    value: {
+      handler: function handler(value) {
+        this.$data.translatedLabel = this.getLabelByValue(value);
+      },
+      immediate: true
+    }
+  }
+});/* script */
 var __vue_script__$w = script$w;
 /* template */
 
@@ -1786,7 +2113,7 @@ var __vue_render__$w = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(_vm.label) + "\n"))]);
+  return _c('div', [_vm._ssrNode(_vm._ssrEscape("\n  " + _vm._s(_vm.translatedLabel) + "\n"))]);
 };
 
 var __vue_staticRenderFns__$w = [];
@@ -1798,7 +2125,7 @@ var __vue_inject_styles__$w = undefined;
 var __vue_scope_id__$w = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$w = "data-v-42704d7f";
+var __vue_module_identifier__$w = "data-v-73211a23";
 /* functional template */
 
 var __vue_is_functional_template__$w = false;
@@ -1813,7 +2140,7 @@ var __vue_component__$x = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$w
 }, __vue_inject_styles__$w, __vue_script__$w, __vue_scope_id__$w, __vue_is_functional_template__$w, __vue_module_identifier__$w, false, undefined, undefined, undefined);
 
-var ReadOnly$a = __vue_component__$x;var datePicker = new FormControl({
+var ReadOnly$a = __vue_component__$x;var dropdown = new QuestionControl({
   display: Display$a,
   readOnly: ReadOnly$a
 });var script$v = defineComponent({
@@ -2012,7 +2339,7 @@ var __vue_component__$u = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$t
 }, __vue_inject_styles__$t, __vue_script__$t, __vue_scope_id__$t, __vue_is_functional_template__$t, __vue_module_identifier__$t, false, undefined, undefined, undefined);
 
-var ReadOnly$9 = __vue_component__$u;var numberPicker = new FormControl({
+var ReadOnly$9 = __vue_component__$u;var numberPicker = new QuestionControl({
   form: Form$8,
   display: Display$9,
   readOnly: ReadOnly$9
@@ -2188,7 +2515,7 @@ var __vue_component__$r = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$q
 }, __vue_inject_styles__$q, __vue_script__$q, __vue_scope_id__$q, __vue_is_functional_template__$q, __vue_module_identifier__$q, false, undefined, undefined, undefined);
 
-var ReadOnly$8 = __vue_component__$r;var radio = new FormControl({
+var ReadOnly$8 = __vue_component__$r;var radio = new QuestionControl({
   form: Form$7,
   display: Display$8,
   readOnly: ReadOnly$8
@@ -2197,25 +2524,6 @@ var ReadOnly$8 = __vue_component__$r;var radio = new FormControl({
     properties: Object,
     value: String,
     onChange: Function
-  },
-  created: function created() {
-    var _this$$props$properti;
-
-    // if value has not been set and default is set, set value to default
-    if (this.$props.value === undefined && ((_this$$props$properti = this.$props.properties) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.default) !== undefined) this.changeValue(this.$props.properties.default, true);
-  },
-  computed: {
-    step: function step() {
-      return this.$props.properties.step || 1;
-    },
-    numValue: function numValue() {
-      var _this$$props$properti2, _this$$props$properti3;
-
-      if (this.$props.value !== undefined) return this.$props.value;
-      if (((_this$$props$properti2 = this.$props.properties) === null || _this$$props$properti2 === void 0 ? void 0 : _this$$props$properti2.default) !== undefined) return this.$props.properties.default;
-      if (((_this$$props$properti3 = this.$props.properties) === null || _this$$props$properti3 === void 0 ? void 0 : _this$$props$properti3.min) !== undefined) return this.$props.properties.min;
-      return 0;
-    }
   },
   methods: {
     onTextChange: function onTextChange(ev) {
@@ -2233,7 +2541,7 @@ var __vue_render__$p = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode((!_vm.properties.multiline ? "<input type=\"text\"" + _vm._ssrAttr("value", _vm.value) + " data-v-66b5dc24>" : "<!---->") + " " + (_vm.properties.multiline ? "<textarea" + _vm._ssrAttr("value", _vm.value) + " data-v-66b5dc24></textarea>" : "<!---->"))]);
+  return _c('div', [_vm._ssrNode((!_vm.properties.multiline ? "<input type=\"text\"" + _vm._ssrAttr("value", _vm.value) + " data-v-abfcf24a>" : "<!---->") + " " + (_vm.properties.multiline ? "<textarea" + _vm._ssrAttr("value", _vm.value) + " data-v-abfcf24a></textarea>" : "<!---->"))]);
 };
 
 var __vue_staticRenderFns__$p = [];
@@ -2241,8 +2549,8 @@ var __vue_staticRenderFns__$p = [];
 
 var __vue_inject_styles__$p = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-66b5dc24_0", {
-    source: "input[data-v-66b5dc24]::-webkit-inner-spin-button,input[data-v-66b5dc24]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
+  inject("data-v-abfcf24a_0", {
+    source: "input[data-v-abfcf24a]::-webkit-inner-spin-button,input[data-v-abfcf24a]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
     map: undefined,
     media: undefined
   });
@@ -2250,10 +2558,10 @@ var __vue_inject_styles__$p = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$p = "data-v-66b5dc24";
+var __vue_scope_id__$p = "data-v-abfcf24a";
 /* module identifier */
 
-var __vue_module_identifier__$p = "data-v-66b5dc24";
+var __vue_module_identifier__$p = "data-v-abfcf24a";
 /* functional template */
 
 var __vue_is_functional_template__$p = false;
@@ -2310,12 +2618,14 @@ var __vue_component__$p = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$o
 }, __vue_inject_styles__$o, __vue_script__$o, __vue_scope_id__$o, __vue_is_functional_template__$o, __vue_module_identifier__$o, false, undefined, undefined, undefined);
 
-var ReadOnly$7 = __vue_component__$p;var text = new FormControl({
+var ReadOnly$7 = __vue_component__$p;var text = new QuestionControl({
   display: Display$7,
   readOnly: ReadOnly$7
 });var questionControls = {
+  buttonGroup: buttonGroup,
   checkbox: checkbox,
   datePicker: datePicker,
+  dropdown: dropdown,
   numberPicker: numberPicker,
   radio: radio,
   text: text
@@ -8406,7 +8716,9 @@ var __vue_render__$i = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return !_vm.widget.getState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-72d55c0a>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label" + _vm._ssrAttr("for", _vm.widget.code || _vm.widget.id) + " data-v-72d55c0a>" + _vm._ssrEscape(_vm._s(_vm.t("__label", _vm.widget.id))) + "</label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-72d55c0a>", "</div>", [_c(_vm.questionControls[_vm.widget.properties.control].display, {
+  return !_vm.widget.getState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-4be50d3a>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label" + _vm._ssrAttr("for", _vm.widget.code || _vm.widget.id) + _vm._ssrClass(null, {
+    errors: (_vm.getWidgetState('errors') || []).length
+  }) + " data-v-4be50d3a>" + _vm._ssrEscape(_vm._s(_vm.t("__label", _vm.widget.id))) + "</label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-4be50d3a>", "</div>", [_c(_vm.questionControls[_vm.widget.properties.control].display, {
     tag: "component",
     attrs: {
       "properties": _vm.widget.properties.controlProperties,
@@ -8416,10 +8728,11 @@ var __vue_render__$i = function __vue_render__() {
       "setWidgetState": _vm.setWidgetState,
       "getWidgetState": _vm.getWidgetState,
       "view": _vm.view,
+      "errors": _vm.getWidgetState('errors'),
       "t": _vm.t
     }
   }), _vm._ssrNode(" " + _vm._ssrList(_vm.getWidgetState('errors'), function (errorKey) {
-    return "<span class=\"error\" data-v-72d55c0a>" + _vm._ssrEscape(_vm._s(_vm.t(errorKey, _vm.widget.id))) + "</span>";
+    return "<span class=\"error\" data-v-4be50d3a>" + _vm._ssrEscape(_vm._s(_vm.t(errorKey, _vm.widget.id))) + "</span>";
   }))], 2)], 2)]) : _vm._e();
 };
 
@@ -8428,8 +8741,8 @@ var __vue_staticRenderFns__$i = [];
 
 var __vue_inject_styles__$i = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-72d55c0a_0", {
-    source: ".question-wrapper[data-v-72d55c0a]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-72d55c0a]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>div[data-v-72d55c0a]{flex:2;padding:20px 0}.error[data-v-72d55c0a]{display:block;color:red;margin-top:10px}",
+  inject("data-v-4be50d3a_0", {
+    source: ".question-wrapper[data-v-4be50d3a]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-4be50d3a]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-4be50d3a]{color:red}.question-wrapper>div[data-v-4be50d3a]{flex:2;padding:20px 0}.error[data-v-4be50d3a]{display:block;color:red;margin-top:10px}",
     map: undefined,
     media: undefined
   });
@@ -8437,10 +8750,10 @@ var __vue_inject_styles__$i = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$i = "data-v-72d55c0a";
+var __vue_scope_id__$i = "data-v-4be50d3a";
 /* module identifier */
 
-var __vue_module_identifier__$i = "data-v-72d55c0a";
+var __vue_module_identifier__$i = "data-v-4be50d3a";
 /* functional template */
 
 var __vue_is_functional_template__$i = false;
@@ -9817,8 +10130,8 @@ var ReadOnly = __vue_component__$2;var html = {
     onStateChange: Function,
     // func<(state: FormState) => void>().isRequired,
     widgets: Object,
-    // shape(FormControl),
-    questionControls: R(FormControl),
+    // shape(QuestionControl),
+    questionControls: Object,
     // display | form | readOnly
     view: String,
     configs: C({
@@ -9985,8 +10298,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-20e02914_0", {
-    source: ".main-wrapper[data-v-20e02914]{font-family:Arial,Helvetica,sans-serif}",
+  inject("data-v-23117f3b_0", {
+    source: ".main-wrapper[data-v-23117f3b]{font-family:Arial,Helvetica,sans-serif}",
     map: undefined,
     media: undefined
   });
@@ -9994,10 +10307,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-20e02914";
+var __vue_scope_id__ = "data-v-23117f3b";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-20e02914";
+var __vue_module_identifier__ = "data-v-23117f3b";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
@@ -10008,7 +10321,7 @@ var __vue_component__ = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, undefined, createInjectorSSR, undefined);
 
-var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object.freeze({__proto__:null,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets,FormControl:FormControl,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,questionControls:questionControls});var install = function installVuePage(Vue) {
+var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object.freeze({__proto__:null,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets,QuestionControl:QuestionControl,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,questionControls:questionControls});var install = function installVuePage(Vue) {
   Object.entries(components$1).forEach(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         componentName = _ref2[0],
@@ -10017,7 +10330,7 @@ var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object
     Vue.component(componentName, component);
   });
 }; // Create module definition for Vue.use()
-var components=/*#__PURE__*/Object.freeze({__proto__:null,'default':install,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets,FormControl:FormControl,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,questionControls:questionControls});// only expose one global var, with component exports exposed as properties of
+var components=/*#__PURE__*/Object.freeze({__proto__:null,'default':install,VuePage:__vue_component__$1,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,FormState:FormState,widgets:widgets,QuestionControl:QuestionControl,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,questionControls:questionControls});// only expose one global var, with component exports exposed as properties of
 // that global var (eg. plugin.component)
 
 Object.entries(components).forEach(function (_ref) {

@@ -45,14 +45,24 @@ import {VuePageBuilder} from 'vue-page';
 
 ### Props
 
-| Property      | Type                          | Default | Description                                                                |
-| :------------ | :---------------------------- | :------ | :------------------------------------------------------------------------- |
-| form          | Form                          |         | The structure of the page including all the widgets and its configurations |
-| state         | FormState                     |         | The state of the form and all its widgets                                  |
-| languages     | Languages                     |         | A JSON containing all locale key-values for each widget                    |
-| view          | FormView                      |         | The view to display                                                        |
-| onFormChange  | (newForm: Form) => void       |         |                                                                            |
-| onStateChange | (newState: FormState) => void |         |                                                                            |
+| Property         | Type                               | Default | Description                                                                |
+| :--------------- | :--------------------------------- | :------ | :------------------------------------------------------------------------- |
+| form             | Form                               |         | The structure of the page including all the widgets and its configurations |
+| state            | FormState                          |         | The state of the form and all its widgets                                  |
+| languages        | Languages                          |         | A JSON containing all locale key-values for each widget                    |
+| view             | FormView                           |         | The view to display                                                        |
+| widgets          | { [key: string]: WidgetControl }   | {}      | Import/Override widgets to be used in form                                 |
+| questionControls | { [key: string]: QuestionControl } | {}      | Import/Override widgets to be used in form                                 |
+| onFormChange     | (newForm: Form) => void            |         |                                                                            |
+| onStateChange    | (newState: FormState) => void      |         |                                                                            |
+
+## Built-in Widget Controls
+
+You can view the list of built-in widget controls [here](src/lib-components/widgets/README.md)
+
+## Built-in Question Controls
+
+You can view the list of built-in question controls [here](src/lib-components/questionControls/README.md)
 
 ## Models
 
@@ -91,6 +101,22 @@ reflexCodeToIdsMap: { [widgetCode: string]: string };
 
 ```typescript
 "display" | "readOnly";
+```
+
+### WidgetControl
+
+```typescript
+readOnly: VueConstructor<Vue>;
+display: VueConstructor<Vue>;
+widgetItem?: typeof WidgetItem;
+```
+
+### QuestionControl
+
+```typescript
+form?: VueConstructor<Vue>;
+display: VueConstructor<Vue>;
+readOnly: VueConstructor<Vue>;
 ```
 
 ### Languages

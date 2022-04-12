@@ -93,5 +93,6 @@ export interface DatePickerProperties {
 
 ```typescript
 {
+  __placeholder: string;
 }
 ```
