@@ -1,5 +1,26 @@
 # Question Controls
 
+## buttonGroup
+
+### Button Group Properties
+
+```typescript
+{
+  options: Array<{
+    labelKey: string;
+    value: string;
+  }>;
+}
+```
+
+### Button Group Language Messages
+
+```typescript
+__label: string;
+// option labels
+['opt{num}']: string;
+```
+
 ## checkbox
 
 ### Checkbox Properties
@@ -38,6 +59,29 @@ export interface DatePickerProperties {
 
 ```typescript
 
+```
+
+## dropdown
+
+### Dropdown Picker Properties
+
+```typescript
+{
+  options: Array<{
+    labelKey: string;
+    value: string;
+  }>;
+}
+```
+
+### Dropdown Picker Language Messages
+
+```typescript
+{
+  __label: string;
+  // option labels
+  ['opt{num}']: string;
+}
 ```
 
 ## numberPicker

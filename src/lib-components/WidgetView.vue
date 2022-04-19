@@ -15,7 +15,14 @@
         :view="view"
       />
     </div>
-    <div>
+    <div class="widget-component-wrapper" ref="widgetComponentWrapper">
+      <component
+        v-for="widgetEffect in widget.effects"
+        :key="widgetEffect.type"
+        :is="widgetEffectControls[widgetEffect.type].display"
+        :properties="widgetEffect.properties"
+        :wrapperRef="$refs.widgetComponentWrapper"
+      />
       <component
         :is="widgetControls[widget.type][view || 'display']"
         :widget="widget"
@@ -25,6 +32,7 @@
         :setWidgetState="(key, value) => setWidgetState(key, value, widget)"
         :getWidgetState="(key) => getWidgetState(key, widget)"
         :view="view"
+        :wrapperRef="$refs.widgetComponentWrapper"
       />
     </div>
   </div>
@@ -43,11 +51,14 @@ export default defineComponent({
     getWidgetState: Function,
     view: String,
   },
-  setup() {},
+  inject: ["widgetEffectControls"],
 });
 </script>
 
 <style scoped>
+.widget-component-wrapper {
+  position: relative;
+}
 .widget-wrapper {
   padding: 0 10px;
 }

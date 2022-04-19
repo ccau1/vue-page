@@ -10,6 +10,7 @@ export default class WidgetItem<Properties = any> {
     static getParentIds(widgetId: string, widgetItems: WidgetItems): string[];
     get formState(): FormState;
     get id(): string;
+    get effects(): import("..").WidgetEffect[] | undefined;
     get type(): string;
     get code(): string | undefined;
     get style(): string | undefined;

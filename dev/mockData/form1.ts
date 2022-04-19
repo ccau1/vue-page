@@ -77,6 +77,17 @@ export default {
         id: "24d84b9f-19e6-49d4-9123-6fbda60361ec",
         type: "html",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        effects: [
+          {
+            type: "reveal",
+            properties: {
+              origin: "left",
+              distance: "500px",
+              delay: 500,
+              duration: 300,
+            },
+          },
+        ],
         properties: {
           from: "default",
         },
@@ -86,6 +97,15 @@ export default {
         type: "question",
         code: "isAgreedTerms",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        effects: [
+          {
+            type: "anchor",
+            properties: {
+              id: "agreement",
+              top: -20,
+            },
+          },
+        ],
         validationRules: [
           {
             conditions: [{ fact: "response", operator: "equal", value: true }],
@@ -263,7 +283,6 @@ export default {
               { labelKey: "opt2", value: "shoulder" },
               { labelKey: "opt3", value: "arm" },
             ],
-            maxLen: 300,
           },
         },
       },

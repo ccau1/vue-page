@@ -2,12 +2,19 @@ import { ConditionProperties } from "json-rules-engine";
 import { VueConstructor } from "vue";
 import WidgetItem from "./models/WidgetItem";
 export declare type FormStepperPosition = "top" | "right" | "bottom" | "left" | "center";
+export interface WidgetEffect {
+    type: string;
+    properties: {
+        [key: string]: any;
+    };
+}
 export interface Widget<WidgetProperties = any> {
     id: string;
     type: string;
     code?: string;
     parent?: string;
     style?: string;
+    effects?: WidgetEffect[];
     reflexiveRules?: ConditionProperties[];
     validationRules?: Array<{
         conditions: ConditionProperties[];

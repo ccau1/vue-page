@@ -1,7 +1,7 @@
 import { WidgetControl } from "../..";
-import Display from "./WidgetDisplay.vue";
-import Form from "./WidgetForm.vue";
-import ReadOnly from "./WidgetReadOnly.vue";
+import Display from "./Display.vue";
+import Form from "./Form.vue";
+import ReadOnly from "./ReadOnly.vue";
 import QuestionWidgetItem from "./QuestionWidgetItem";
 
 export interface QuestionProperties {

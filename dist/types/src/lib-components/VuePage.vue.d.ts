@@ -1,13 +1,6 @@
-import { QuestionControl } from "./questionControls";
 import WidgetsLayout from "./WidgetsLayout.vue";
-import { WidgetControl, WidgetItems } from "../entry.esm";
+import { WidgetItems } from "../entry.esm";
 interface VuePageData {
-    combWidgetControls: {
-        [key: string]: WidgetControl<any>;
-    };
-    combQuestionControls: {
-        [key: string]: QuestionControl;
-    };
     widgetItems: WidgetItems;
 }
 declare const _default: import("vue").ComponentOptions<WidgetsLayout, import("@vue/composition-api").ShallowUnwrapRef<any> & VuePageData, {}, {}, import("@vue/composition-api").ComponentPropsOptions<import("@vue/composition-api").Data>, ({

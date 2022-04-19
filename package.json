@@ -1,6 +1,6 @@
 {
   "name": "vue-page-kabob",
-  "version": "0.0.19",
+  "version": "0.0.21",
   "description": "",
   "main": "dist/vue-page.ssr.js",
   "browser": "dist/vue-page.esm.js",
@@ -26,7 +26,9 @@
     "@vue/composition-api": "^1.4.9",
     "dayjs": "^1.11.0",
     "json-rules-engine": "^6.1.2",
+    "scrollreveal": "^4.0.9",
     "vue-class-component": "^7.2.6",
+    "vue-fragment": "^1.5.2",
     "vue-property-decorator": "^9.1.2",
     "vue-types": "^4.1.1"
   },

@@ -9,18 +9,16 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import {
-  questionControls as sysQuestionControls,
-  QuestionControl,
-} from "./questionControls";
 import { widgets as sysWidgets } from "./widgets";
-// import DynamicFormLayout from "./DynamicFormLayout.vue";
+import { widgetEffects as sysWidgetEffectControls } from "./widgetEffectControls";
+import { questionControls as sysQuestionControls } from "./questionControls";
 import { shape, arrayOf, string, bool, instanceOf } from "vue-types";
 import { Form, Widget } from ".";
 import { FormState } from "./models/FormState";
 import WidgetsLayout from "./WidgetsLayout.vue";
 import WidgetItem from "./models/WidgetItem";
-import { WidgetControl, WidgetItems } from "@/entry.esm";
+import { WidgetItems } from "@/entry.esm";
+import { cachedMerge } from "./utils";
 
 interface VuePageProps {
   languages: { [widgetId: string]: { [key: string]: string } };
@@ -30,7 +28,13 @@ interface VuePageProps {
   onStateChange: (newState: FormState) => void;
   widgets?: WidgetItems;
   questionControls?: Object;
+  widgetEffectControls?: Object;
   view?: "display" | "readOnly";
+  plugins?: Array<{
+    widgetControls?: Object;
+    questionControls?: Object;
+    widgetEffectControls?: Object;
+  }>;
   configs: {
     widgets: {
       disableInternalControls: boolean;
@@ -44,12 +48,16 @@ interface VuePageProps {
       whitelist: string[];
       filters: { [key: string]: any };
     };
+    widgetEffectControls: {
+      disableInternalControls: boolean;
+      blacklist: string[];
+      whitelist: string[];
+      filters: { [key: string]: any };
+    };
   };
 }
 
 interface VuePageData {
-  combWidgetControls: { [key: string]: WidgetControl<any> };
-  combQuestionControls: { [key: string]: QuestionControl };
   widgetItems: WidgetItems;
 }
 
@@ -66,6 +74,13 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     onStateChange: Function, // func<(state: FormState) => void>().isRequired,
     widgets: Object, // shape(QuestionControl),
     questionControls: Object,
+    plugins: arrayOf(
+      shape({
+        widgetControls: Object,
+        widgetEffectControls: Object,
+        questionControls: Object,
+      })
+    ),
     // display | form | readOnly
     view: String,
     configs: shape({
@@ -88,12 +103,8 @@ export default defineComponent<VuePageProps, any, VuePageData>({
   },
   data() {
     return {
-      combQuestionControls: sysQuestionControls,
-      combWidgetControls: sysWidgets,
       widgetItems: {},
     } as {
-      combQuestionControls: { [key: string]: QuestionControl };
-      combWidgetControls: { [key: string]: WidgetControl };
       widgetItems: WidgetItems;
     };
   },
@@ -101,50 +112,45 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     widgetItemsArr() {
       return this.$props.form.widgets;
     },
-    widgetsHandlerWatch() {
-      return {
-        widgets: this.$props.widgets,
-        configs: this.$props.configs?.widgets,
-      };
+    combWidgetControls() {
+      return cachedMerge(
+        "widgetControls",
+        this.$props.configs?.widgets.disableInternalControls ? {} : sysWidgets,
+        ...(this.$props.plugins || [])?.map((p) => p.widgetControls),
+        this.$props.widgets
+      );
     },
-    questionControlsHandlerWatch() {
-      return {
-        questionControls: this.$props.questionControls,
-        configs: this.$props.configs?.questionControls,
-      };
+    combWidgetEffectControls() {
+      return cachedMerge(
+        "widgetEffectControls",
+        this.$props.configs?.widgetEffectControls.disableInternalControls
+          ? {}
+          : sysWidgetEffectControls,
+        ...(this.$props.plugins || [])?.map((p) => p.widgetEffectControls),
+        this.$props.widgetEffectControls
+      );
+    },
+    combQuestionControls() {
+      return cachedMerge(
+        "questionControls",
+        this.$props.configs?.questionControls.disableInternalControls
+          ? {}
+          : sysQuestionControls,
+        ...(this.$props.plugins || [])?.map((p) => p.questionControls),
+        this.$props.questionControls
+      );
     },
     formState() {
       return this.$props.state;
     },
   },
   watch: {
-    widgetsHandlerWatch: {
-      handler({ widgets, configs }) {
-        this.$data.combWidgetControls = {
-          ...(configs?.widgets?.disableInternalControls ? {} : sysWidgets),
-          ...(widgets || {}),
-        };
-      },
-      immediate: true,
-    },
-    questionControlsHandlerWatch: {
-      handler({ questionControls, configs }) {
-        this.$data.combQuestionControls = {
-          ...(configs?.questionControls?.disableInternalControls
-            ? {}
-            : sysQuestionControls),
-          ...(questionControls || {}),
-        } as { [key: string]: QuestionControl };
-      },
-      immediate: true,
-    },
     "form.widgets": {
       handler(newFormWidgetArr) {
         this.$data.widgetItems = newFormWidgetArr.reduce(
           (obj: { [widgetId: string]: WidgetItem }, widget: Widget) => {
             const WidgetItemClass =
-              this.$data.combWidgetControls[widget.type]?.widgetItem ||
-              WidgetItem;
+              this.combWidgetControls[widget.type]?.widgetItem || WidgetItem;
             obj[widget.id] = new WidgetItemClass({
               widget,
               getState: () => this.$props.state,
@@ -193,8 +199,9 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       setFormState: (newFormState: FormState) => {
         this.$emit("onStateChange", newFormState);
       },
-      widgetControls: this.$data.combWidgetControls,
-      questionControls: this.$data.combQuestionControls,
+      widgetEffectControls: this.combWidgetEffectControls,
+      widgetControls: this.combWidgetControls,
+      questionControls: this.combQuestionControls,
     };
   },
 });

@@ -1,7 +1,7 @@
 import QuestionControl from "../QuestionControl";
-import Form from "./ControlForm.vue";
-import Display from "./ControlDisplay.vue";
-import ReadOnly from "./ControlReadOnly.vue";
+import Form from "./Form.vue";
+import Display from "./Display.vue";
+import ReadOnly from "./ReadOnly.vue";
 
 export interface NumberPickerProperties {
   min?: number;

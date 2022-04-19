@@ -1,8 +1,8 @@
 import { WidgetControl } from "../..";
 import SectionWidgetItem from "./SectionWidgetItem";
-import Display from "./WidgetDisplay.vue";
-import Form from "./WidgetForm.vue";
-import ReadOnly from "./WidgetReadOnly.vue";
+import Display from "./Display.vue";
+import Form from "./Form.vue";
+import ReadOnly from "./ReadOnly.vue";
 
 export interface SectionProperties {
   children: string[];

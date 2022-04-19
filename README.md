@@ -167,3 +167,5 @@ readOnly: VueConstructor<Vue>;
 - [ ] handle theming/styling
 
 - [ ] outside triggers/event handlers programmatically
+
+- [ ] separate question and widget locale messages (question messages should have prefix)

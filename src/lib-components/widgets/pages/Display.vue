@@ -77,6 +77,7 @@ export default defineComponent({
     widgetItems: Object,
     formState: Object,
     setWidgetState: Function,
+    wrapperRef: HTMLDivElement,
   },
   data() {
     return {
@@ -109,17 +110,6 @@ export default defineComponent({
       immediate: true,
     },
   },
-  // methods: {
-  //   pageIndexHasErrors(idx) {
-  //     // get child errors
-  //     const childErrors = this.$props.widget.getState("pageIdxErrors") || {};
-  //     // if no childErrors, just return false
-  //     if (!Object.keys(childErrors).length) return false;
-  //     // map child error widget ids to pages children index
-  //     // const children = this.$props.widget.getChildren();
-  //     return Object.keys(childErrors[idx] || {}).length;
-  //   },
-  // },
 });
 </script>
 

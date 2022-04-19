@@ -26,6 +26,10 @@ export default class WidgetItem<Properties = any> {
     return this._widget.id;
   }
 
+  get effects() {
+    return this._widget.effects;
+  }
+
   get type() {
     return this._widget.type;
   }

@@ -75,7 +75,6 @@ export default defineComponent({
       return this.formState.widgetState[widget.id]?.[key];
     },
   },
-  setup() {},
 });
 </script>
 

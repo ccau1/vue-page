@@ -9,12 +9,18 @@ export type FormStepperPosition =
   | "left"
   | "center";
 
+export interface WidgetEffect {
+  type: string;
+  properties: { [key: string]: any };
+}
+
 export interface Widget<WidgetProperties = any> {
   id: string;
   type: string;
   code?: string;
   parent?: string;
   style?: string;
+  effects?: WidgetEffect[];
   reflexiveRules?: ConditionProperties[];
   validationRules?: Array<{ conditions: ConditionProperties[]; error: string }>;
   order?: number;
