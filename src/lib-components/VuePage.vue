@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import { widgets as sysWidgets } from "./widgets";
+import { widgets as sysWidgets } from "./widgetControls";
 import { widgetEffects as sysWidgetEffectControls } from "./widgetEffectControls";
 import { questionControls as sysQuestionControls } from "./questionControls";
 import { shape, arrayOf, string, bool, instanceOf } from "vue-types";
@@ -26,7 +26,7 @@ interface VuePageProps {
   onFormChange: (newForm: Form) => void;
   state: FormState;
   onStateChange: (newState: FormState) => void;
-  widgets?: WidgetItems;
+  widgetControls?: WidgetItems;
   questionControls?: Object;
   widgetEffectControls?: Object;
   view?: "display" | "readOnly";
@@ -72,7 +72,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     state: instanceOf(FormState).isRequired,
     // eslint-disable-next-line no-unused-vars
     onStateChange: Function, // func<(state: FormState) => void>().isRequired,
-    widgets: Object, // shape(QuestionControl),
+    widgetControls: Object, // shape(QuestionControl),
     questionControls: Object,
     plugins: arrayOf(
       shape({
@@ -117,7 +117,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
         "widgetControls",
         this.$props.configs?.widgets.disableInternalControls ? {} : sysWidgets,
         ...(this.$props.plugins || [])?.map((p) => p.widgetControls),
-        this.$props.widgets
+        this.$props.widgetControls
       );
     },
     combWidgetEffectControls() {

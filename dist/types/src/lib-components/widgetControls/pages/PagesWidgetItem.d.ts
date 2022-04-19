@@ -9,7 +9,11 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
         setState: (newState: FormState) => void;
         onUpdate: (newWidget: Widget<PagesProperties>) => void;
     });
-    getSortedPages(): import(".").PagesPropertiesPage[];
+    getSortedPages(): {
+        labelKey: string;
+        idx?: number | undefined;
+        children: string[];
+    }[];
     isWidgetIdInWidgetIds(widgetId: string, inWidgetIds: string[]): boolean;
     getChildIndexByWidgetId(widgetId: string): number;
     getChildrenIds(opts?: {

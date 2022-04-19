@@ -11853,7 +11853,7 @@ var cachedMerge = function cachedMerge(key) {
     // eslint-disable-next-line no-unused-vars
     onStateChange: Function,
     // func<(state: FormState) => void>().isRequired,
-    widgets: Object,
+    widgetControls: Object,
     // shape(QuestionControl),
     questionControls: Object,
     plugins: R(C({
@@ -11895,7 +11895,7 @@ var cachedMerge = function cachedMerge(key) {
 
       return cachedMerge.apply(void 0, ["widgetControls", (_this$$props$configs = this.$props.configs) !== null && _this$$props$configs !== void 0 && _this$$props$configs.widgets.disableInternalControls ? {} : widgets].concat(_toConsumableArray((_ref = this.$props.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(function (p) {
         return p.widgetControls;
-      })), [this.$props.widgets]));
+      })), [this.$props.widgetControls]));
     },
     combWidgetEffectControls: function combWidgetEffectControls() {
       var _this$$props$configs2, _ref2;
@@ -12011,8 +12011,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-1cf04919_0", {
-    source: ".main-wrapper[data-v-1cf04919]{font-family:Arial,Helvetica,sans-serif}",
+  inject("data-v-f6c60a46_0", {
+    source: ".main-wrapper[data-v-f6c60a46]{font-family:Arial,Helvetica,sans-serif}",
     map: undefined,
     media: undefined
   });
@@ -12020,10 +12020,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-1cf04919";
+var __vue_scope_id__ = "data-v-f6c60a46";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-1cf04919";
+var __vue_module_identifier__ = "data-v-f6c60a46";
 /* functional template */
 
 var __vue_is_functional_template__ = false;

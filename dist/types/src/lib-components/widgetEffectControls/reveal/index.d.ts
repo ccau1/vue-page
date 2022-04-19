@@ -15,6 +15,7 @@ export interface RevealEffectProperties {
     };
     scale?: number;
     mobile?: boolean;
+    desktop?: boolean;
 }
 declare const _default: WidgetEffectControl<RevealEffectProperties>;
 export default _default;

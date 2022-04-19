@@ -5,9 +5,12 @@ export interface PagesPropertiesPage {
     children: string[];
 }
 export interface PagesProperties {
-    pages: PagesPropertiesPage[];
+    pages: Array<{
+        labelKey: string;
+        idx?: number;
+        children: string[];
+    }>;
     navigationVisible?: boolean;
-    navigationIntegrateParentPage?: boolean;
     tabsVisible?: boolean;
     hasCompleteButton?: boolean;
     navigationIntegrateChildrenPages?: boolean;

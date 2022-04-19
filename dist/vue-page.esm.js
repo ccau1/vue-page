@@ -11887,7 +11887,7 @@ var script = defineComponent({
     state: $(FormState).isRequired,
     // eslint-disable-next-line no-unused-vars
     onStateChange: Function,
-    widgets: Object,
+    widgetControls: Object,
     questionControls: Object,
     plugins: R(C({
       widgetControls: Object,
@@ -11929,7 +11929,7 @@ var script = defineComponent({
     combWidgetControls() {
       var _this$$props$configs, _ref;
 
-      return cachedMerge("widgetControls", (_this$$props$configs = this.$props.configs) !== null && _this$$props$configs !== void 0 && _this$$props$configs.widgets.disableInternalControls ? {} : widgets, ...((_ref = this.$props.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(p => p.widgetControls)), this.$props.widgets);
+      return cachedMerge("widgetControls", (_this$$props$configs = this.$props.configs) !== null && _this$$props$configs !== void 0 && _this$$props$configs.widgets.disableInternalControls ? {} : widgets, ...((_ref = this.$props.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(p => p.widgetControls)), this.$props.widgetControls);
     },
 
     combWidgetEffectControls() {
@@ -12043,8 +12043,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-1cf04919_0", {
-    source: ".main-wrapper[data-v-1cf04919]{font-family:Arial,Helvetica,sans-serif}",
+  inject("data-v-f6c60a46_0", {
+    source: ".main-wrapper[data-v-f6c60a46]{font-family:Arial,Helvetica,sans-serif}",
     map: undefined,
     media: undefined
   });
@@ -12052,7 +12052,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-1cf04919";
+const __vue_scope_id__ = "data-v-f6c60a46";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;

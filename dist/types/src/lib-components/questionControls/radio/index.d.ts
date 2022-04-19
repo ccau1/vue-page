@@ -1,7 +1,7 @@
 import QuestionControl from "../QuestionControl";
 export interface RadioProperties {
     multiple?: boolean;
-    values: Array<{
+    options: Array<{
         labelKey: string;
         value: string;
     }>;

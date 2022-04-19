@@ -1,11 +1,18 @@
 # Question Controls
 
-## buttonGroup
+Question controls are controls that helps render a question based on the type. This is only used for widget type `question`. This can be extended by passing via props `plugins` or `questionControls` on `<vue-page />`
+
+## Button Group
+
+type: `buttonGroup`
+
+a selection of buttons to toggle
 
 ### Button Group Properties
 
 ```typescript
-{
+interface ButtonGroupQuestionProperties {
+  // an array of options with label + value
   options: Array<{
     labelKey: string;
     value: string;
@@ -18,16 +25,19 @@
 ```typescript
 __label: string;
 // option labels
-['opt{num}']: string;
+[labelKey: string]: string;
 ```
 
-## checkbox
+## Checkbox
+
+type: `checkbox`
+
+a single checkbox for true | false
 
 ### Checkbox Properties
 
 ```typescript
-{
-}
+
 ```
 
 ### Checkbox Language Messages
@@ -36,13 +46,16 @@ __label: string;
 __checkboxLabel: string;
 ```
 
-## datePicker
+## Date Picker
+
+type: `datePicker`
+
+a date picker to select a single date
 
 ### Date Picker Properties
 
 ```typescript
-{
-export interface DatePickerProperties {
+export interface DatePickerQuestionProperties {
   // string can be a date string or one of the following:
   // - Date.now()
   // - new Date()
@@ -61,12 +74,17 @@ export interface DatePickerProperties {
 
 ```
 
-## dropdown
+## Dropdown
 
-### Dropdown Picker Properties
+type: `dropdown`
+
+a dropdown list to select
+
+### Dropdown Properties
 
 ```typescript
 {
+  // an array of options with label + value
   options: Array<{
     labelKey: string;
     value: string;
@@ -74,25 +92,33 @@ export interface DatePickerProperties {
 }
 ```
 
-### Dropdown Picker Language Messages
+### Dropdown Language Messages
 
 ```typescript
 {
   __label: string;
   // option labels
-  ['opt{num}']: string;
+  [labelKey: string]: string;
 }
 ```
 
-## numberPicker
+## Number Picker
+
+type: `numberPicker`
+
+a number picker to select
 
 ### Number Picker Properties
 
 ```typescript
 {
+  // minimum amount the picker can go down to
   min?: number;
+  // maximum amount the picker can go up to
   max?: number;
+  // an incremental step for each up/down
   step?: number;
+  // default number to start if no value given
   default?: number;
 }
 ```
@@ -100,17 +126,23 @@ export interface DatePickerProperties {
 ### Number Picker Language Messages
 
 ```typescript
-{
-}
+
 ```
 
-## radio
+## Radio
+
+type: `radio`
+
+an array of radio buttons to select from
 
 ### Radio Properties
 
 ```typescript
 {
-  values: Array<{ labelKey: string; value: string }>;
+  // can select multiple
+  multiple?: boolean;
+  // an array of options with label + value
+  options: Array<{ labelKey: string; value: string }>;
 }
 ```
 
@@ -118,17 +150,24 @@ export interface DatePickerProperties {
 
 ```typescript
 {
-  [`opt${num}`]: string;
+  // option labels
+  [labelKey: string]: string;
 }
 ```
 
-## text
+## Text
+
+type: `text`
+
+a text area to enter text, can be single line or multi-line
 
 ### Text Properties
 
 ```typescript
 {
+  // whether text input will be multiline
   multiline?: boolean;
+  // the max length the input allows
   maxLen?: number;
 }
 ```

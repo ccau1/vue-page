@@ -3,14 +3,13 @@ import Display from "./Display.vue";
 import Form from "./Form.vue";
 import ReadOnly from "./ReadOnly.vue";
 
-export interface AlertProperties {
-  type: "default" | "info" | "success" | "danger" | "warning" | "custom";
-  customColor?: string;
-  showCloseBtn?: boolean;
+export interface HeaderProperties {
+  // the tag type to use
+  tagType: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
 export default {
   display: Display,
   form: Form,
   readOnly: ReadOnly,
-} as WidgetControl<AlertProperties>;
+} as WidgetControl<HeaderProperties>;

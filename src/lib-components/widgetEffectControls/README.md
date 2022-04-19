@@ -1,7 +1,28 @@
-import WidgetEffectControl from "../../models/WidgetEffectControl";
-import display from "./Display.vue";
+# Widget Effect Controls
 
-export interface RevealEffectProperties {
+Widget effects are features attached to any widgets such as an animation, UI or navigation handling (ie. anchor). This can be extended by passing via props `plugins` or `widgetEffectControls` on `<vue-page />`
+
+## Anchor
+
+an anchor to allow links to jump to
+
+```typescript
+interface AnchorEffectProperties {
+  // id to navigate to
+  id: string;
+  // positioning anchor from top-left of widget wrapper
+  top?: number;
+}
+```
+
+## Reveal
+
+adding an animation to the wrapper that triggers when the scroll reaches widget
+
+reference: [scrollreveal](https://scrollrevealjs.org/api/reveal.html)
+
+```typescript
+interface RevealEffectProperties {
   // time delay before running animation
   delay?: number;
   // travel distance from origin (ie. '50%', '50px')
@@ -27,7 +48,4 @@ export interface RevealEffectProperties {
   // should run animation when desktop
   desktop?: boolean;
 }
-
-export default new WidgetEffectControl<RevealEffectProperties>({
-  display,
-});
+```

@@ -5,6 +5,7 @@ import Form from "./Form.vue";
 import ReadOnly from "./ReadOnly.vue";
 
 export interface SectionProperties {
+  // the children that this section holds
   children: string[];
 }
 
