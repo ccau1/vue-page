@@ -167,6 +167,11 @@ Array<{
 │   ├── radio
 │   ├── FormControl.ts
 │   └── index.ts
+├── widgetControls
+│   ├── header
+│   ├── pages
+│   ├── question
+│   └── index.ts
 ├── widgetEffects
 │   ├── anchor
 │   ├── aspectRatio
@@ -174,14 +179,10 @@ Array<{
 │   ├── gradient
 │   ├── opacity
 │   ├── reveal
-├── widgets
-│   ├── header
-│   ├── pages
-│   ├── question
-│   └── index.ts
-├── DynamicForm.vue
 ├── index.ts
-├── utils.vue
+├── interfaces.ts
+├── utils.ts
+├── VuePage.vue
 ├── WidgetsLayout.vue
 └── WidgetView.vue
 ```
