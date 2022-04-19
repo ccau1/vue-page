@@ -172,7 +172,7 @@ Array<{
 │   ├── pages
 │   ├── question
 │   └── index.ts
-├── widgetEffects
+├── widgetEffectControls
 │   ├── anchor
 │   ├── aspectRatio
 │   ├── boxed
