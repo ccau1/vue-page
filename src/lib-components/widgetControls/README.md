@@ -1,5 +1,7 @@
 # Widgets
 
+A widget is a component to display in the page. With this building block, we can piece different types of widgets to design a complete page. A widget container (ie. [pages](#pages-navigation), [section](#section)) can hold/points to children widgets
+
 ## Alert
 
 type: `alert`
