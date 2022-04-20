@@ -1356,7 +1356,7 @@ var script$F = defineComponent({
 
     filteredWidgetItemsArr() {
       const filteredArr = this.widgetItemsArr.filter(f => {
-        return f.parentId === this.forParent && (!this.$props.onlyIncludeWidgetIds || this.$props.onlyIncludeWidgetIds.includes(f.id)) && (!(this.excludeWidgetIds || []).length || !this.excludeWidgetIds.includes(f.id));
+        return (!this.forParent && !f.parentId || f.parentId === this.forParent) && (!this.$props.onlyIncludeWidgetIds || this.$props.onlyIncludeWidgetIds.includes(f.id)) && (!(this.excludeWidgetIds || []).length || !this.excludeWidgetIds.includes(f.id));
       }).sort((a, b) => (a.order || 0) - (b.order || 0));
       return filteredArr;
     }
@@ -1420,8 +1420,8 @@ var __vue_staticRenderFns__$F = [];
 
 const __vue_inject_styles__$F = function (inject) {
   if (!inject) return;
-  inject("data-v-2fb0a134_0", {
-    source: ".widget-container[data-v-2fb0a134]{position:relative}.widget-form-control[data-v-2fb0a134]{position:absolute;top:-40px;left:0}",
+  inject("data-v-2a58bd34_0", {
+    source: ".widget-container[data-v-2a58bd34]{position:relative}.widget-form-control[data-v-2a58bd34]{position:absolute;top:-40px;left:0}",
     map: undefined,
     media: undefined
   });
@@ -1429,7 +1429,7 @@ const __vue_inject_styles__$F = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$F = "data-v-2fb0a134";
+const __vue_scope_id__$F = "data-v-2a58bd34";
 /* module identifier */
 
 const __vue_module_identifier__$F = undefined;
@@ -10712,11 +10712,12 @@ var dayjs_min = createCommonjsModule(function (module, exports) {
 });
 
 let formatDateString = date => {
-  if (!date) return undefined; // NOTE: does not handle timezone, but we don't want to
-  // because admin timezone cause different output in
-  // client side
-
-  return date.toISOString().split("T")[0];
+  if (!date) return undefined;
+  return date.toLocaleString("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  });
 };
 let getDateByPropertyValue = date => {
   if (!date) {
@@ -11758,7 +11759,8 @@ class FormState {
       return new FormState({
         widgetState: formState.widgetState,
         widgetCodeToIdMap: formState.widgetCodeToIdMap,
-        reflexCodeToIdsMap: formState.reflexCodeToIdsMap
+        reflexCodeToIdsMap: formState.reflexCodeToIdsMap,
+        widgetIdToCodeMap: formState.widgetIdToCodeMap
       });
     } else {
       // assume it is just a plain object, fetch its protected
@@ -11766,7 +11768,8 @@ class FormState {
       return new FormState({
         widgetState: formState._widgetState,
         widgetCodeToIdMap: formState._widgetCodeToIdMap,
-        reflexCodeToIdsMap: formState._reflexCodeToIdsMap
+        reflexCodeToIdsMap: formState._reflexCodeToIdsMap,
+        widgetIdToCodeMap: formState._widgetIdToCodeMap
       });
     }
   }
@@ -11775,11 +11778,13 @@ class FormState {
     let {
       widgetState,
       widgetCodeToIdMap,
-      reflexCodeToIdsMap
+      reflexCodeToIdsMap,
+      widgetIdToCodeMap
     } = _ref;
     this._widgetState = widgetState || {};
     this._widgetCodeToIdMap = widgetCodeToIdMap || {};
     this._reflexCodeToIdsMap = reflexCodeToIdsMap || {};
+    this._widgetIdToCodeMap = widgetIdToCodeMap || {};
   }
 
   get widgetState() {
@@ -11792,6 +11797,18 @@ class FormState {
 
   get reflexCodeToIdsMap() {
     return this._reflexCodeToIdsMap;
+  }
+
+  get widgetIdToCodeMap() {
+    return this._widgetIdToCodeMap;
+  }
+
+  getWidgetIdByCode(code) {
+    return this._widgetCodeToIdMap[code];
+  }
+
+  getWidgetCodeById(widgetId) {
+    return this._widgetIdToCodeMap[widgetId];
   }
 
   onUpdate() {}
@@ -11821,6 +11838,7 @@ class FormState {
 
   registerWidgetCode(widgetCode, widgetId) {
     this._widgetCodeToIdMap[widgetCode] = widgetId;
+    this._widgetIdToCodeMap[widgetId] = widgetCode;
     this.setWidgetState(widgetId, "code", widgetCode);
   }
 

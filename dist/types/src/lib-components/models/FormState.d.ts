@@ -9,6 +9,9 @@ export interface FormStateCreate {
     reflexCodeToIdsMap?: {
         [widgetCode: string]: string[];
     };
+    widgetIdToCodeMap?: {
+        [widgetId: string]: string;
+    };
 }
 export interface FormStateRawObject {
     _widgetState: WidgetState;
@@ -17,6 +20,9 @@ export interface FormStateRawObject {
     };
     _reflexCodeToIdsMap: {
         [widgetCode: string]: string[];
+    };
+    _widgetIdToCodeMap: {
+        [widgetId: string]: string;
     };
 }
 export declare class FormState {
@@ -27,8 +33,11 @@ export declare class FormState {
     protected _reflexCodeToIdsMap: {
         [widgetCode: string]: string[];
     };
+    protected _widgetIdToCodeMap: {
+        [widgetId: string]: string;
+    };
     static from(formState: FormState | FormStateRawObject): FormState;
-    constructor({ widgetState, widgetCodeToIdMap, reflexCodeToIdsMap, }: FormStateCreate);
+    constructor({ widgetState, widgetCodeToIdMap, reflexCodeToIdsMap, widgetIdToCodeMap, }: FormStateCreate);
     get widgetState(): WidgetState;
     get widgetCodeToIdMap(): {
         [widgetCode: string]: string;
@@ -36,6 +45,11 @@ export declare class FormState {
     get reflexCodeToIdsMap(): {
         [widgetCode: string]: string[];
     };
+    get widgetIdToCodeMap(): {
+        [widgetId: string]: string;
+    };
+    getWidgetIdByCode(code: string): string;
+    getWidgetCodeById(widgetId: string): string;
     onUpdate(): void;
     getWidgetState(widgetId: string, key?: string): any;
     setWidgetState(widgetId: string, key: string, value?: any): void;

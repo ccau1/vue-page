@@ -2,10 +2,11 @@ import dayjs from "dayjs";
 
 export let formatDateString = (date?: Date): string | undefined => {
   if (!date) return undefined;
-  // NOTE: does not handle timezone, but we don't want to
-  // because admin timezone cause different output in
-  // client side
-  return date.toISOString().split("T")[0];
+  return date.toLocaleString("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 };
 
 export let getDateByPropertyValue = (

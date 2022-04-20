@@ -47,7 +47,8 @@ export default defineComponent({
       const filteredArr = this.widgetItemsArr
         .filter((f) => {
           return (
-            f.parentId === this.forParent &&
+            ((!this.forParent && !f.parentId) ||
+              f.parentId === this.forParent) &&
             (!this.$props.onlyIncludeWidgetIds ||
               this.$props.onlyIncludeWidgetIds.includes(f.id)) &&
             (!(this.excludeWidgetIds || []).length ||

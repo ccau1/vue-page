@@ -6,18 +6,21 @@ export interface FormStateCreate {
   widgetState?: WidgetState;
   widgetCodeToIdMap?: { [widgetCode: string]: string };
   reflexCodeToIdsMap?: { [widgetCode: string]: string[] };
+  widgetIdToCodeMap?: { [widgetId: string]: string };
 }
 
 export interface FormStateRawObject {
   _widgetState: WidgetState;
   _widgetCodeToIdMap: { [widgetCode: string]: string };
   _reflexCodeToIdsMap: { [widgetCode: string]: string[] };
+  _widgetIdToCodeMap: { [widgetId: string]: string };
 }
 
 export class FormState {
   protected _widgetState: WidgetState;
   protected _widgetCodeToIdMap: { [widgetCode: string]: string };
   protected _reflexCodeToIdsMap: { [widgetCode: string]: string[] };
+  protected _widgetIdToCodeMap: { [widgetId: string]: string };
 
   static from(formState: FormState | FormStateRawObject) {
     if (formState instanceof FormState) {
@@ -26,6 +29,7 @@ export class FormState {
         widgetState: formState.widgetState,
         widgetCodeToIdMap: formState.widgetCodeToIdMap,
         reflexCodeToIdsMap: formState.reflexCodeToIdsMap,
+        widgetIdToCodeMap: formState.widgetIdToCodeMap,
       });
     } else {
       // assume it is just a plain object, fetch its protected
@@ -34,6 +38,7 @@ export class FormState {
         widgetState: formState._widgetState,
         widgetCodeToIdMap: formState._widgetCodeToIdMap,
         reflexCodeToIdsMap: formState._reflexCodeToIdsMap,
+        widgetIdToCodeMap: formState._widgetIdToCodeMap,
       });
     }
   }
@@ -42,10 +47,12 @@ export class FormState {
     widgetState,
     widgetCodeToIdMap,
     reflexCodeToIdsMap,
+    widgetIdToCodeMap,
   }: FormStateCreate) {
     this._widgetState = widgetState || {};
     this._widgetCodeToIdMap = widgetCodeToIdMap || {};
     this._reflexCodeToIdsMap = reflexCodeToIdsMap || {};
+    this._widgetIdToCodeMap = widgetIdToCodeMap || {};
   }
 
   get widgetState() {
@@ -58,6 +65,18 @@ export class FormState {
 
   get reflexCodeToIdsMap() {
     return this._reflexCodeToIdsMap;
+  }
+
+  get widgetIdToCodeMap() {
+    return this._widgetIdToCodeMap;
+  }
+
+  getWidgetIdByCode(code: string) {
+    return this._widgetCodeToIdMap[code];
+  }
+
+  getWidgetCodeById(widgetId: string) {
+    return this._widgetIdToCodeMap[widgetId];
   }
 
   onUpdate() {}
@@ -86,6 +105,7 @@ export class FormState {
 
   registerWidgetCode(widgetCode: string, widgetId: string) {
     this._widgetCodeToIdMap[widgetCode] = widgetId;
+    this._widgetIdToCodeMap[widgetId] = widgetCode;
     this.setWidgetState(widgetId, "code", widgetCode);
   }
 
