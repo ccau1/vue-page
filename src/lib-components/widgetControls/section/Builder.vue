@@ -1,7 +1,7 @@
 <template>
-  <section class="section-wrapper">
+  <section class="section-wrapper" :class="{ errors: hasChildErrors }">
     <label v-if="!!label">{{ label }}</label>
-    <widgets-layout
+    <builder-widgets-layout
       :widgetControls="widgetControls"
       :widgetItems="widgetItems"
       :forParent="widget.id"
@@ -11,12 +11,14 @@
 
 <script>
 import { defineComponent } from "@vue/composition-api";
+import WidgetItem from "../../models/WidgetItem";
 import WidgetsLayout from "../../WidgetsLayout.vue";
+import BuilderWidgetsLayout from "../../builder/BuilderWidgetsLayout.vue";
 
 export default defineComponent({
-  components: { WidgetsLayout },
+  components: { BuilderWidgetsLayout, WidgetsLayout },
   props: {
-    widget: Object,
+    widget: WidgetItem,
     widgetItems: Object,
     widgetControls: Object,
   },
@@ -25,6 +27,12 @@ export default defineComponent({
   computed: {
     label() {
       return this.t("__label", this.$props.widget.id);
+    },
+    childErrors() {
+      return this.$props.widget.getState()?.childErrors;
+    },
+    hasChildErrors() {
+      return this.$props.widget.hasChildErrors();
     },
   },
   methods: {
@@ -44,7 +52,7 @@ export default defineComponent({
   border: 1px solid #a9a9a9;
   min-height: 30px;
   padding: 10px;
-  margin: 10px;
+  margin: 10px 0;
   border-radius: 8px;
 }
 .section-wrapper > label {
@@ -54,5 +62,8 @@ export default defineComponent({
   transform: translateY(-50%);
   background-color: #fff;
   padding: 10px;
+}
+.section-wrapper.errors {
+  border-color: #f00;
 }
 </style>

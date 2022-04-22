@@ -1,7 +1,7 @@
-import { WidgetControl } from "../..";
+import Builder from "./Builder.vue";
 import Display from "./Display.vue";
-import Form from "./Form.vue";
 import ReadOnly from "./ReadOnly.vue";
+import { WidgetControl } from "../..";
 
 export interface AlertProperties {
   // what type of alert is this (effects colors)
@@ -14,6 +14,6 @@ export interface AlertProperties {
 
 export default {
   display: Display,
-  form: Form,
+  builder: Builder,
   readOnly: ReadOnly,
 } as WidgetControl<AlertProperties>;

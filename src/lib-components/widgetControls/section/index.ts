@@ -1,8 +1,8 @@
-import { WidgetControl } from "../..";
-import SectionWidgetItem from "./SectionWidgetItem";
+import Builder from "./Builder.vue";
 import Display from "./Display.vue";
-import Form from "./Form.vue";
 import ReadOnly from "./ReadOnly.vue";
+import SectionWidgetItem from "./SectionWidgetItem";
+import { WidgetControl } from "../..";
 
 export interface SectionProperties {
   // the children that this section holds
@@ -11,7 +11,7 @@ export interface SectionProperties {
 
 export default {
   display: Display,
-  form: Form,
+  builder: Builder,
   readOnly: ReadOnly,
   widgetItem: SectionWidgetItem,
 } as WidgetControl<SectionProperties>;

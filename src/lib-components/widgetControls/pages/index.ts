@@ -1,8 +1,8 @@
-import { WidgetControl } from "../..";
+import Builder from "./Builder.vue";
 import Display from "./Display.vue";
-import Form from "./Form.vue";
-import ReadOnly from "./ReadOnly.vue";
 import PagesWidgetItem from "./PagesWidgetItem";
+import ReadOnly from "./ReadOnly.vue";
+import { WidgetControl } from "../..";
 
 export interface PagesPropertiesPage {
   labelKey: string;
@@ -31,7 +31,7 @@ export interface PagesProperties {
 
 export default {
   display: Display,
-  form: Form,
+  builder: Builder,
   readOnly: ReadOnly,
   widgetItem: PagesWidgetItem,
 } as WidgetControl<PagesProperties>;

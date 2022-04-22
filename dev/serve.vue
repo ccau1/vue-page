@@ -30,11 +30,11 @@
             v-on:click="() => setFormView('display')"
             >Customer Display</a
           >
-          <!-- <a
-          :class="{ active: formView === 'form' }"
-          v-on:click="() => setFormView('form')"
-          >Builder</a
-        > -->
+          <a
+            :class="{ active: formView === 'builder' }"
+            v-on:click="() => setFormView('builder')"
+            >Builder</a
+          >
           <a
             :class="{ active: formView === 'readOnly' }"
             v-on:click="() => setFormView('readOnly')"
@@ -44,7 +44,17 @@
       </div>
     </div>
 
+    <vue-page-builder
+      v-if="formView === 'builder'"
+      :form="form"
+      :state="state"
+      :languages="languages"
+      :view="formView"
+      @onFormChange="onFormChange"
+      @onStateChange="onStateChange"
+    />
     <vue-page
+      v-if="formView !== 'builder'"
       :form="form"
       :state="state"
       :languages="languages"
@@ -79,6 +89,7 @@ import { VuePage, Form } from "../src/lib-components";
 import { FormState } from "../src/lib-components/models/FormState";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
+import { Fragment } from "vue-fragment";
 
 // mock data
 import formData from "./mockData/form1";
@@ -92,6 +103,7 @@ interface Response {
 
 export default defineComponent({
   components: {
+    Fragment,
     VuePage,
     VueJsonPretty,
   },
@@ -159,7 +171,7 @@ export default defineComponent({
     setLocale(locale: string) {
       this.$data.locale = locale;
     },
-    setFormView(view: "display" | "form" | "readOnly") {
+    setFormView(view: "builder" | "form" | "readOnly") {
       this.$data.formView = view;
     },
     onStateChange(newState: any) {

@@ -1,7 +1,8 @@
-import { WidgetControl } from "../..";
+import Builder from "./Builder.vue";
+import BuilderControl from "./BuilderControl.vue";
 import Display from "./Display.vue";
-import Form from "./Form.vue";
 import ReadOnly from "./ReadOnly.vue";
+import { WidgetControl } from "../..";
 
 export interface HeaderProperties {
   // the tag type to use
@@ -10,6 +11,7 @@ export interface HeaderProperties {
 
 export default {
   display: Display,
-  form: Form,
+  builder: Builder,
+  builderControl: BuilderControl,
   readOnly: ReadOnly,
 } as WidgetControl<HeaderProperties>;

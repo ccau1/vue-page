@@ -4,6 +4,7 @@ export interface WidgetState {
 
 export interface FormStateCreate {
   widgetState?: WidgetState;
+  interactiveState?: InteractiveState;
   widgetCodeToIdMap?: { [widgetCode: string]: string };
   reflexCodeToIdsMap?: { [widgetCode: string]: string[] };
   widgetIdToCodeMap?: { [widgetId: string]: string };
@@ -11,13 +12,21 @@ export interface FormStateCreate {
 
 export interface FormStateRawObject {
   _widgetState: WidgetState;
+  _interactiveState: InteractiveState;
   _widgetCodeToIdMap: { [widgetCode: string]: string };
   _reflexCodeToIdsMap: { [widgetCode: string]: string[] };
   _widgetIdToCodeMap: { [widgetId: string]: string };
 }
 
+export interface InteractiveState {
+  hoveredWidgetId?: string;
+  selectedWidgetId?: string;
+  draggingWidgetId?: string;
+}
+
 export class FormState {
   protected _widgetState: WidgetState;
+  protected _interactiveState: InteractiveState;
   protected _widgetCodeToIdMap: { [widgetCode: string]: string };
   protected _reflexCodeToIdsMap: { [widgetCode: string]: string[] };
   protected _widgetIdToCodeMap: { [widgetId: string]: string };
@@ -27,6 +36,7 @@ export class FormState {
       // from an object, use their public getters
       return new FormState({
         widgetState: formState.widgetState,
+        interactiveState: formState.interactiveState,
         widgetCodeToIdMap: formState.widgetCodeToIdMap,
         reflexCodeToIdsMap: formState.reflexCodeToIdsMap,
         widgetIdToCodeMap: formState.widgetIdToCodeMap,
@@ -36,6 +46,7 @@ export class FormState {
       // field
       return new FormState({
         widgetState: formState._widgetState,
+        interactiveState: formState._interactiveState,
         widgetCodeToIdMap: formState._widgetCodeToIdMap,
         reflexCodeToIdsMap: formState._reflexCodeToIdsMap,
         widgetIdToCodeMap: formState._widgetIdToCodeMap,
@@ -45,14 +56,20 @@ export class FormState {
 
   constructor({
     widgetState,
+    interactiveState,
     widgetCodeToIdMap,
     reflexCodeToIdsMap,
     widgetIdToCodeMap,
   }: FormStateCreate) {
     this._widgetState = widgetState || {};
+    this._interactiveState = interactiveState || {};
     this._widgetCodeToIdMap = widgetCodeToIdMap || {};
     this._reflexCodeToIdsMap = reflexCodeToIdsMap || {};
     this._widgetIdToCodeMap = widgetIdToCodeMap || {};
+  }
+
+  get interactiveState() {
+    return this._interactiveState;
   }
 
   get widgetState() {

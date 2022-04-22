@@ -1,5 +1,5 @@
 <template>
-  <div v-html="widget.properties.html" />
+  <div class="html-wrapper" v-html="t('__html', widget.id)" />
 </template>
 
 <script>
@@ -13,5 +13,8 @@ export default defineComponent({
     formState: Object,
     setWidgetState: Function,
   },
+  inject: ["t"],
 });
 </script>
+
+<style scoped></style>

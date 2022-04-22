@@ -30,8 +30,9 @@ export interface Widget<WidgetProperties = any> {
 export interface WidgetControl<Data = any> {
   readOnly: VueConstructor<Vue>;
   display: VueConstructor<Vue>;
-  form: VueConstructor<Vue>;
-  formControl?: VueConstructor<Vue>;
+  builder: VueConstructor<Vue>;
+  builderControl?: VueConstructor<Vue>;
+  builderForm?: VueConstructor<Vue>;
   widgetItem?: typeof WidgetItem;
 
   // future, for DnD
