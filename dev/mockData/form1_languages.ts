@@ -1,3 +1,5 @@
+import { WidgetLanguage } from "@/lib-components";
+
 export default [
   {
     id: "85099878-9ca5-4b27-8808-578055706ebc",
@@ -385,11 +387,4 @@ export default [
       opt3: "手臂",
     },
   },
-] as {
-  id: string;
-  refId: string;
-  type: string;
-  version: number;
-  locale: string;
-  message: { [key: string]: string };
-}[];
+] as WidgetLanguage[];

@@ -48,10 +48,12 @@
       v-if="formView === 'builder'"
       :form="form"
       :state="state"
-      :languages="languages"
+      :languages="builderLanguages"
       :view="formView"
-      @onFormChange="onFormChange"
+      :locale="locale"
       @onStateChange="onStateChange"
+      @onLanguageChange="onLanguageChange"
+      @onPageChange="onPageChange"
     />
     <vue-page
       v-if="formView !== 'builder'"
@@ -59,7 +61,6 @@
       :state="state"
       :languages="languages"
       :view="formView"
-      @onFormChange="onFormChange"
       @onStateChange="onStateChange"
     />
     <div style="display: flex; flex-direction: row; padding: 10px">
@@ -85,7 +86,12 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import { VuePage, Form } from "../src/lib-components";
+import {
+  VuePage,
+  Form,
+  WidgetLanguage,
+  BuilderWidgetLanguages,
+} from "../src/lib-components";
 import { FormState } from "../src/lib-components/models/FormState";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
@@ -93,7 +99,7 @@ import { Fragment } from "vue-fragment";
 
 // mock data
 import formData from "./mockData/form1";
-import languages from "./mockData/form1_languages";
+import _languages from "./mockData/form1_languages";
 
 interface Response {
   code: string;
@@ -115,6 +121,7 @@ export default defineComponent({
       formView: "display",
       isPersistState: !!persistedStateRaw,
       responses: [] as Response[],
+      languagesRaw: _languages,
       ...formData,
       state: !!persistedStateRaw
         ? FormState.from(JSON.parse(persistedStateRaw))
@@ -122,8 +129,26 @@ export default defineComponent({
     };
   },
   computed: {
+    builderLanguages() {
+      return (this.$data.languagesRaw as WidgetLanguage[]).reduce<{
+        [widgetId: string]: { [locale: string]: WidgetLanguage };
+      }>((obj, l) => {
+        if (!obj[l.refId]) obj[l.refId] = {};
+        obj[l.refId][l.locale] = l;
+        return obj;
+      }, {});
+    },
     languages() {
-      return languages.reduce<{
+      return (
+        this.$data.languagesRaw as {
+          id: string;
+          refId: string;
+          type: string;
+          version: number;
+          locale: string;
+          message: { [key: string]: string };
+        }[]
+      ).reduce<{
         [group: string]: { [key: string]: string };
       }>((obj, l) => {
         if (l.locale !== this.$data.locale) return obj;
@@ -182,8 +207,13 @@ export default defineComponent({
       this.$data.isPersistState &&
         localStorage.setItem("pageState", JSON.stringify(newState));
     },
-    onFormChange(newForm: Form) {
+    onPageChange(newForm: Form) {
       this.$data.form = newForm;
+    },
+    onLanguageChange(newLanguages: BuilderWidgetLanguages) {
+      this.$data.languagesRaw = Object.values(newLanguages).reduce<
+        WidgetLanguage[]
+      >((arr, val) => [...arr, ...Object.values(val)], []);
     },
   },
 });

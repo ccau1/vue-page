@@ -3,38 +3,47 @@
     <a
       class="tag-selection"
       :class="{ selected: widget.properties.tagType === 'h1' }"
+      @click="(ev) => setTagType('h1')"
       >H1</a
     >
     <a
       class="tag-selection"
       :class="{ selected: widget.properties.tagType === 'h2' }"
+      @click="(ev) => setTagType('h2')"
       >H2</a
     >
     <a
       class="tag-selection"
       :class="{ selected: widget.properties.tagType === 'h3' }"
+      @click="(ev) => setTagType('h3')"
       >H3</a
     >
     <a
       class="tag-selection"
       :class="{ selected: widget.properties.tagType === 'h4' }"
+      @click="(ev) => setTagType('h4')"
       >H4</a
     >
     <a
       class="tag-selection"
       :class="{ selected: widget.properties.tagType === 'h5' }"
+      @click="(ev) => setTagType('h5')"
       >H5</a
     >
     <a
       class="tag-selection"
       :class="{ selected: widget.properties.tagType === 'h6' }"
+      @click="(ev) => setTagType('h6')"
       >H6</a
     >
   </div>
 </template>
 
 <script lang="ts">
+import WidgetItem from "@/lib-components/models/WidgetItem";
 import { defineComponent } from "@vue/composition-api";
+
+type TagType = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
 export default defineComponent({
   props: {
@@ -43,6 +52,13 @@ export default defineComponent({
     widgetItems: Object,
     formState: Object,
     setWidgetState: Function,
+  },
+  inject: ["updateWidget"],
+  methods: {
+    setTagType(type: TagType) {
+      (this.widget as WidgetItem).properties.tagType = type;
+      (this as any).updateWidget(this.widget);
+    },
   },
 });
 </script>

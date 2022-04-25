@@ -66,3 +66,16 @@ export interface WidgetItems {
 export interface Form {
   widgets: Widget[];
 }
+
+export interface WidgetLanguage {
+  id: string;
+  refId: string;
+  type: string;
+  version: number;
+  locale: string;
+  message: { [key: string]: string };
+}
+
+export interface BuilderWidgetLanguages {
+  [widgetId: string]: { [locale: string]: WidgetLanguage };
+}

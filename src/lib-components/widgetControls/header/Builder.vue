@@ -1,17 +1,33 @@
 <template>
   <component class="header" :is="widget.properties.tagType">
-    <input type="text" :value="t('__label', widget.id)" class="header-input" />
+    <input
+      type="text"
+      :value="t('__label', widget.id)"
+      @input="onTextChange"
+      class="header-input"
+    />
   </component>
 </template>
 
-<script>
+<script lang="ts">
+import { Widget } from "@/entry.esm";
 import { defineComponent } from "@vue/composition-api";
 
 export default defineComponent({
   props: {
     widget: Object,
   },
-  inject: ["t"],
+  inject: ["t", "getLocale", "setMessage"],
+  methods: {
+    onTextChange(val: Event) {
+      (this as any).setMessage({
+        id: (this.$props.widget as Widget).id,
+        locale: (this as any).getLocale(),
+        key: "__label",
+        value: (val.target as HTMLInputElement).value,
+      });
+    },
+  },
 });
 </script>
 

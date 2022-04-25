@@ -25,13 +25,14 @@ import { Form, Widget } from "..";
 import { FormState } from "../models/FormState";
 import BuilderWidgetsLayout from "./BuilderWidgetsLayout.vue";
 import WidgetItem from "../models/WidgetItem";
-import { WidgetItems } from "@/entry.esm";
+import { BuilderWidgetLanguages, WidgetItems } from "@/entry.esm";
 import { cachedMerge } from "../utils";
 import BuilderRightPane from "./BuilderRightPane.vue";
 import BuilderLeftPane from "./BuilderLeftPane.vue";
 
 interface VuePageProps {
-  languages: { [widgetId: string]: { [key: string]: string } };
+  languages: BuilderWidgetLanguages;
+  locale: string;
   form: Form;
   onFormChange: (newForm: Form) => void;
   state: FormState;
@@ -76,6 +77,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
   // components: { DynamicFormLayout },
   props: {
     languages: Object,
+    locale: String,
     form: Object as () => Form,
     // eslint-disable-next-line no-unused-vars
     onFormChange: Function, // func<(form: Form) => void>().isRequired,
@@ -197,14 +199,53 @@ export default defineComponent<VuePageProps, any, VuePageData>({
           return obj?.[g];
         }, lang);
       }
-      return lang?.[key];
+
+      return lang?.[this.$props.locale]?.message[key];
+    },
+    setMessage({
+      id,
+      locale,
+      key,
+      value,
+      type = "formItem",
+    }: {
+      id: string;
+      locale: string;
+      key: string;
+      value: string;
+      type?: string;
+    }) {
+      const newLanguages = { ...this.$props.languages };
+      if (!newLanguages[id]) newLanguages[id] = {};
+      if (!newLanguages[id][locale])
+        newLanguages[id][locale] = {
+          id: "",
+          refId: id,
+          type,
+          version: 1,
+          locale,
+          message: {},
+        };
+
+      newLanguages[id][locale].message[key] = value;
+      this.$emit("onLanguageChange", newLanguages);
+    },
+    updateWidget(widget: WidgetItem) {
+      this.$data.widgetItems[widget.id] = widget;
+      this.$emit("onPageChange", {
+        ...this.$props.form,
+        widgets: Object.values(this.$data.widgetItems).map((m) => m.widget),
+      });
     },
   },
   provide() {
     return {
       getView: () => this.$props.view,
       t: (this as any).t,
+      getLocale: () => this.$props.locale,
       languages: this.$props.languages,
+      setMessage: (this as any).setMessage,
+      updateWidget: (this as any).updateWidget,
       getFormState: () => this.$props.state,
       setFormState: (newFormState: FormState) => {
         this.$emit("onStateChange", newFormState);
