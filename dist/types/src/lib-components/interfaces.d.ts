@@ -26,8 +26,9 @@ export interface Widget<WidgetProperties = any> {
 export interface WidgetControl<Data = any> {
     readOnly: VueConstructor<Vue>;
     display: VueConstructor<Vue>;
-    form: VueConstructor<Vue>;
-    formControl?: VueConstructor<Vue>;
+    builder: VueConstructor<Vue>;
+    builderControl?: VueConstructor<Vue>;
+    builderForm?: VueConstructor<Vue>;
     widgetItem?: typeof WidgetItem;
     removeChild?: (options: {
         child: Widget;
@@ -55,4 +56,19 @@ export interface WidgetItems {
 }
 export interface Form {
     widgets: Widget[];
+}
+export interface WidgetLanguage {
+    id: string;
+    refId: string;
+    type: string;
+    version: number;
+    locale: string;
+    message: {
+        [key: string]: string;
+    };
+}
+export interface BuilderWidgetLanguages {
+    [widgetId: string]: {
+        [locale: string]: WidgetLanguage;
+    };
 }

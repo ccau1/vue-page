@@ -1,7 +1,7 @@
 <template>
   <div class="main-wrapper">
-    <builder-left-pane>
-      <builder-right-pane>
+    <builder-left-pane :widgetItems="widgetItems">
+      <builder-right-pane :widgetItems="widgetItems">
         <div class="widgets-layout-wrapper">
           <div class="widgets-layout-inner-wrapper">
             <builder-widgets-layout
@@ -265,6 +265,8 @@ export default defineComponent<VuePageProps, any, VuePageData>({
 .widgets-layout-wrapper {
   padding: 30px;
   background-color: #eaedf5;
+  height: 100%;
+  box-sizing: border-box;
 }
 .widgets-layout-inner-wrapper {
   background-color: #fff;

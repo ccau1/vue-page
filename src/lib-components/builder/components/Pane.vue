@@ -51,10 +51,12 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
   align-items: stretch;
+  min-height: 100vh;
   position: relative;
 }
 .pane-outside-wrapper {
   flex: 1;
+  position: relative;
 }
 .pane-content-wrapper {
   position: absolute;

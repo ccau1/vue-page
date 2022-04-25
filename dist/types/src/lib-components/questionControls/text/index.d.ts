@@ -1,7 +1,7 @@
 import QuestionControl from "../QuestionControl";
-export interface TextProperties {
+export interface TextQuestionProperties {
     multiline?: boolean;
     maxLen?: number;
 }
-declare const _default: QuestionControl<TextProperties>;
+declare const _default: QuestionControl<TextQuestionProperties>;
 export default _default;

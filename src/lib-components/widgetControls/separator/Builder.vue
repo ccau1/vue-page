@@ -6,20 +6,36 @@
     <label
       v-if="isShowLabel('start')"
       :class="{ [widget.properties.labelPosition || 'start']: true }"
-      >{{ label }}</label
     >
+      <input
+        type="text"
+        class="text-input"
+        :value="label"
+        @input="(ev) => updateText('label', ev.target.value)"
+      />
+    </label>
     <div class="line" />
     <label
       v-if="isShowLabel('center')"
       :class="{ [widget.properties.labelPosition || 'start']: true }"
-      >{{ label }}</label
     >
+      <input
+        type="text"
+        class="text-input"
+        :value="label"
+        @input="(ev) => updateText('label', ev.target.value)"
+    /></label>
     <div class="line" />
     <label
       v-if="isShowLabel('end')"
       :class="{ [widget.properties.labelPosition || 'start']: true }"
-      >{{ label }}</label
     >
+      <input
+        type="text"
+        class="text-input"
+        :value="label"
+        @input="(ev) => updateText('label', ev.target.value)"
+    /></label>
   </div>
 </template>
 
@@ -30,7 +46,7 @@ export default defineComponent({
   props: {
     widget: Object,
   },
-  inject: ["t"],
+  inject: ["t", "getLocale", "setMessage"],
   setup() {},
   computed: {
     label() {
@@ -38,6 +54,14 @@ export default defineComponent({
     },
   },
   methods: {
+    updateText(name, text) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: `__${name}`,
+        value: text.replaceAll(/\n|\r/g, ""),
+      });
+    },
     isShowLabel(pos) {
       return (
         this.$props.widget.properties.hasLabel &&
@@ -77,5 +101,17 @@ export default defineComponent({
 }
 .line-wrapper label.end {
   padding-right: 0;
+}
+.text-input {
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  border: none;
+  outline: none;
+  width: 100%;
+  background-color: transparent;
+  resize: none;
+  min-height: 10px;
+  margin-bottom: -15px;
 }
 </style>

@@ -5,8 +5,36 @@
     :style="alertStyles"
     :class="{ [widget.properties.type]: true }"
   >
-    <h3 class="title">{{ t("__title", widget.id) }}</h3>
-    <p>{{ t("__text", widget.id) }}</p>
+    <h3 class="title">
+      <textarea
+        ref="titleInput"
+        :value="t('__title', widget.id)"
+        @input="(ev) => updateText('title', ev.target.value)"
+        class="text-input"
+        @load="
+          () => {
+            this.style.height = '';
+            this.style.height = this.scrollHeight + 'px';
+          }
+        "
+        oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+      />
+    </h3>
+    <p>
+      <textarea
+        ref="textInput"
+        :value="t('__text', widget.id)"
+        @input="(ev) => updateText('text', ev.target.value)"
+        class="text-input"
+        @load="
+          () => {
+            this.style.height = '';
+            this.style.height = this.scrollHeight + 'px';
+          }
+        "
+        oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+      />
+    </p>
     <a
       class="close-button"
       @click="onCloseAlert"
@@ -16,14 +44,29 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Widget } from "@/entry.esm";
 import { defineComponent } from "@vue/composition-api";
 
 export default defineComponent({
   props: {
     widget: Object,
+    properties: Object,
   },
-  inject: ["t"],
+  inject: ["t", "getLocale", "setMessage"],
+  mounted() {
+    this.$nextTick(() => {
+      (this.$refs.titleInput as HTMLTextAreaElement).style.height = "";
+
+      (this.$refs.titleInput as HTMLTextAreaElement).style.height =
+        (this.$refs.titleInput as HTMLTextAreaElement).scrollHeight + "px";
+
+      (this.$refs.textInput as HTMLTextAreaElement).style.height = "";
+
+      (this.$refs.textInput as HTMLTextAreaElement).style.height =
+        (this.$refs.textInput as HTMLTextAreaElement).scrollHeight + "px";
+    });
+  },
   data() {
     return {
       isOpen: true,
@@ -32,13 +75,22 @@ export default defineComponent({
   methods: {
     onCloseAlert() {
       this.$data.isOpen = false;
+      setTimeout(() => (this.$data.isOpen = true), 1000);
+    },
+    updateText(name: string, text: string) {
+      (this as any).setMessage({
+        id: (this.$props.widget as Widget).id,
+        locale: (this as any).getLocale(),
+        key: `__${name}`,
+        value: text.replaceAll(/\n|\r/g, ""),
+      });
     },
   },
   computed: {
-    alertStyles() {
+    alertStyles(): { [cssProp: string]: number | string } {
       if (
-        this.widget.properties.type !== "custom" ||
-        this.widget.properties.customColor
+        this.widget?.properties.type !== "custom" ||
+        this.widget?.properties.customColor
       )
         return {};
       return {
@@ -90,5 +142,18 @@ export default defineComponent({
   padding: 18px 18px;
   cursor: pointer;
   transform: scaleX(1.2);
+}
+
+.text-input {
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  border: none;
+  outline: none;
+  width: 100%;
+  background-color: transparent;
+  resize: none;
+  min-height: 10px;
+  margin-bottom: -15px;
 }
 </style>

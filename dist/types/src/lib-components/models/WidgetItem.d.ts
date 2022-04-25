@@ -1,6 +1,6 @@
+import { ConditionProperties } from "json-rules-engine";
 import { Widget, WidgetItems } from "..";
 import { FormState } from "./FormState";
-import { ConditionProperties } from "json-rules-engine";
 export default class WidgetItem<Properties = any> {
     protected _widget: Widget<Properties>;
     protected _getFormState: () => FormState;
@@ -10,6 +10,7 @@ export default class WidgetItem<Properties = any> {
     static getParentIds(widgetId: string, widgetItems: WidgetItems): string[];
     get formState(): FormState;
     get id(): string;
+    get widget(): Widget<Properties>;
     get effects(): import("..").WidgetEffect[] | undefined;
     get type(): string;
     get code(): string | undefined;

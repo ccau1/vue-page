@@ -1,6 +1,6 @@
+import { FormState } from "../../models/FormState";
 import { PagesProperties } from ".";
 import { Widget } from "../..";
-import { FormState } from "../../models/FormState";
 import WidgetItem from "../../models/WidgetItem";
 export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     constructor(opts: {

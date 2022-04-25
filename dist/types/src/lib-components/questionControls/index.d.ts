@@ -22,5 +22,5 @@ export declare let questionControls: {
     dropdown: import("./QuestionControl").default<import("./dropdown").DropdownProperties>;
     numberPicker: import("./QuestionControl").default<import("./numberPicker").NumberPickerProperties>;
     radio: import("./QuestionControl").default<import("./radio").RadioProperties>;
-    text: import("./QuestionControl").default<import("./text").TextProperties>;
+    text: import("./QuestionControl").default<import("./text").TextQuestionProperties>;
 };

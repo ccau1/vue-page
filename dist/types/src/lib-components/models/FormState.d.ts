@@ -3,6 +3,7 @@ export interface WidgetState {
 }
 export interface FormStateCreate {
     widgetState?: WidgetState;
+    interactiveState?: InteractiveState;
     widgetCodeToIdMap?: {
         [widgetCode: string]: string;
     };
@@ -15,6 +16,7 @@ export interface FormStateCreate {
 }
 export interface FormStateRawObject {
     _widgetState: WidgetState;
+    _interactiveState: InteractiveState;
     _widgetCodeToIdMap: {
         [widgetCode: string]: string;
     };
@@ -25,8 +27,14 @@ export interface FormStateRawObject {
         [widgetId: string]: string;
     };
 }
+export interface InteractiveState {
+    hoveredWidgetId?: string;
+    selectedWidgetId?: string;
+    draggingWidgetId?: string;
+}
 export declare class FormState {
     protected _widgetState: WidgetState;
+    protected _interactiveState: InteractiveState;
     protected _widgetCodeToIdMap: {
         [widgetCode: string]: string;
     };
@@ -37,7 +45,8 @@ export declare class FormState {
         [widgetId: string]: string;
     };
     static from(formState: FormState | FormStateRawObject): FormState;
-    constructor({ widgetState, widgetCodeToIdMap, reflexCodeToIdsMap, widgetIdToCodeMap, }: FormStateCreate);
+    constructor({ widgetState, interactiveState, widgetCodeToIdMap, reflexCodeToIdsMap, widgetIdToCodeMap, }: FormStateCreate);
+    get interactiveState(): InteractiveState;
     get widgetState(): WidgetState;
     get widgetCodeToIdMap(): {
         [widgetCode: string]: string;

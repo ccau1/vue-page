@@ -334,6 +334,26 @@ export default [
     },
   },
   {
+    id: "654d2746-eab7-4be8-b6f7-e2cbc11c80a4",
+    refId: "ecaae14f-2c0c-42e5-adf3-85277ec0b448",
+    type: "formItem",
+    version: 1,
+    locale: "en",
+    message: {
+      __label: "Incident location",
+    },
+  },
+  {
+    id: "2575da0a-b47d-4114-9a95-22fc5cdb8982",
+    refId: "ecaae14f-2c0c-42e5-adf3-85277ec0b448",
+    type: "formItem",
+    version: 1,
+    locale: "zh_hk",
+    message: {
+      __label: "事件地點",
+    },
+  },
+  {
     id: "df5ea4ec-76f0-4f8b-a4db-50ee79fe7af2",
     refId: "da07bc99-88ef-460d-824e-24972e2bebe1",
     type: "formItem",
@@ -368,7 +388,7 @@ export default [
     version: 1,
     locale: "en",
     message: {
-      __label: "Injury",
+      __label: "Injury 2",
       opt1: "Knee",
       opt2: "Shoulder",
       opt3: "Arm",

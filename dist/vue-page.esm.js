@@ -1053,53 +1053,59 @@ if (typeof window !== 'undefined' && window.Vue) {
     window.Vue.use(Plugin);
 }
 
-/*!
- * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
- *
- * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
- */
-
-function isObject$1(o) {
-  return Object.prototype.toString.call(o) === '[object Object]';
-}
-
-function isPlainObject(o) {
-  var ctor,prot;
-
-  if (isObject$1(o) === false) return false;
-
-  // If has modified constructor
-  ctor = o.constructor;
-  if (ctor === undefined) return true;
-
-  // If has modified prototype
-  prot = ctor.prototype;
-  if (isObject$1(prot) === false) return false;
-
-  // If constructor does not have an Object-specific method
-  if (prot.hasOwnProperty('isPrototypeOf') === false) {
-    return false;
-  }
-
-  // Most likely a plain Object
-  return true;
-}
-
-var c=Object.prototype,l=c.toString,s=c.hasOwnProperty,v=/^\s*function (\w+)/;function p(e){var t,n=null!==(t=null==e?void 0:e.type)&&void 0!==t?t:e;if(n){var r=n.toString().match(v);return r?r[1]:""}return ""}var y=isPlainObject,d=function(e){return e},h=d;var g=function(e,t){return s.call(e,t)},m=Array.isArray||function(e){return "[object Array]"===l.call(e)},j=function(e){return "[object Function]"===l.call(e)},_=function(e){return y(e)&&g(e,"_vueTypes_name")},T=function(e){return y(e)&&(g(e,"type")||["_vueTypes_name","validator","default","required"].some(function(t){return g(e,t)}))};function w(e,t){return Object.defineProperty(e.bind(t),"__original",{value:e})}function k(e,t,n){var r;void 0===n&&(n=!1);var i=!0,o="";r=y(e)?e:{type:e};var u=_(r)?r._vueTypes_name+" - ":"";if(T(r)&&null!==r.type){if(void 0===r.type||!0===r.type)return i;if(!r.required&&void 0===t)return i;m(r.type)?(i=r.type.some(function(e){return !0===k(e,t,!0)}),o=r.type.map(function(e){return p(e)}).join(" or ")):i="Array"===(o=p(r))?m(t):"Object"===o?y(t):"String"===o||"Number"===o||"Boolean"===o||"Function"===o?function(e){if(null==e)return "";var t=e.constructor.toString().match(v);return t?t[1]:""}(t)===o:t instanceof r.type;}if(!i){var a=u+'value "'+t+'" should be of type "'+o+'"';return !1===n?(h(a),!1):a}if(g(r,"validator")&&j(r.validator)){var f=h,c=[];if(h=function(e){c.push(e);},i=r.validator(t),h=f,!i){var l=(c.length>1?"* ":"")+c.join("\n* ");return c.length=0,!1===n?(h(l),i):l}}return i}function P(e,t){var n=Object.defineProperties(t,{_vueTypes_name:{value:e,writable:!0},isRequired:{get:function(){return this.required=!0,this}},def:{value:function(e){return void 0===e?(g(this,"default")&&delete this.default,this):j(e)||!0===k(this,e,!0)?(this.default=m(e)?function(){return [].concat(e)}:y(e)?function(){return Object.assign({},e)}:e,this):(h(this._vueTypes_name+' - invalid default value: "'+e+'"'),this)}}}),r=n.validator;return j(r)&&(n.validator=w(r,n)),n}function x(e,t){var n=P(e,t);return Object.defineProperty(n,"validate",{value:function(e){return j(this.validator)&&h(this._vueTypes_name+" - calling .validate() will overwrite the current custom validator function. Validator info:\n"+JSON.stringify(this)),this.validator=w(e,this),this}})}function N(e){return e.replace(/^(?!\s*$)/gm,"  ")}var V=function(){return x("boolean",{type:Boolean})},S=function(){return x("string",{type:String})};function R(e){return P("arrayOf",{type:Array,validator:function(t){var n="",r=t.every(function(t){return !0===(n=k(e,t,!0))});return r||h("arrayOf - value validation error:\n"+N(n)),r}})}function $(e){return P("instanceOf",{type:e})}function C(e){var t=Object.keys(e),n=t.filter(function(t){var n;return !(null===(n=e[t])||void 0===n||!n.required)}),r=P("shape",{type:Object,validator:function(r){var i=this;if(!y(r))return !1;var o=Object.keys(r);if(n.length>0&&n.some(function(e){return -1===o.indexOf(e)})){var u=n.filter(function(e){return -1===o.indexOf(e)});return h(1===u.length?'shape - required property "'+u[0]+'" is not defined.':'shape - required properties "'+u.join('", "')+'" are not defined.'),!1}return o.every(function(n){if(-1===t.indexOf(n))return !0===i._vueTypes_isLoose||(h('shape - shape definition does not include a "'+n+'" property. Allowed keys: "'+t.join('", "')+'".'),!1);var o=k(e[n],r[n],!0);return "string"==typeof o&&h('shape - "'+n+'" property validation error:\n '+N(o)),!0===o})}});return Object.defineProperty(r,"_vueTypes_isLoose",{writable:!0,value:!1}),Object.defineProperty(r,"loose",{get:function(){return this._vueTypes_isLoose=!0,this}}),r}
-
-//
-var script$G = defineComponent({
+var script$R = defineComponent({
   props: {
     widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    formState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String
+    properties: Object
   },
-  inject: ["widgetEffectControls"]
+  inject: ["t", "getLocale", "setMessage"],
+
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.titleInput.style.height = "";
+      this.$refs.titleInput.style.height = this.$refs.titleInput.scrollHeight + "px";
+      this.$refs.textInput.style.height = "";
+      this.$refs.textInput.style.height = this.$refs.textInput.scrollHeight + "px";
+    });
+  },
+
+  data() {
+    return {
+      isOpen: true
+    };
+  },
+
+  methods: {
+    onCloseAlert() {
+      this.$data.isOpen = false;
+      setTimeout(() => this.$data.isOpen = true, 1000);
+    },
+
+    updateText(name, text) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: `__${name}`,
+        value: text.replaceAll(/\n|\r/g, "")
+      });
+    }
+
+  },
+  computed: {
+    alertStyles() {
+      var _this$widget, _this$widget2;
+
+      if (((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.type) !== "custom" || (_this$widget2 = this.widget) !== null && _this$widget2 !== void 0 && _this$widget2.properties.customColor) return {};
+      return {
+        backgroundColor: this.widget.properties.customBackgroundColor,
+        borderColor: this.widget.properties.customBorderColor || "transparent",
+        ...(this.widget.properties.customTextColor ? {
+          color: this.widget.properties.customTextColor
+        } : {})
+      };
+    }
+
+  }
 });
 
 function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier /* server only */, shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
@@ -1231,10 +1237,840 @@ function addStyle(id, css) {
 }
 
 /* script */
-const __vue_script__$G = script$G;
+const __vue_script__$R = script$R;
 /* template */
 
-var __vue_render__$G = function () {
+var __vue_render__$R = function () {
+  var this$1$1 = this;
+
+  var _obj;
+
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _vm.isOpen ? _c('div', {
+    staticClass: "alert",
+    class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
+    style: _vm.alertStyles
+  }, [_c('h3', {
+    staticClass: "title"
+  }, [_c('textarea', {
+    ref: "titleInput",
+    staticClass: "text-input",
+    attrs: {
+      "oninput": "this.style.height = \"\";this.style.height = this.scrollHeight + \"px\""
+    },
+    domProps: {
+      "value": _vm.t('__title', _vm.widget.id)
+    },
+    on: {
+      "input": function (ev) {
+        return _vm.updateText('title', ev.target.value);
+      },
+      "load": function () {
+        this$1$1.style.height = '';
+        this$1$1.style.height = this$1$1.scrollHeight + 'px';
+      }
+    }
+  })]), _vm._v(" "), _c('p', [_c('textarea', {
+    ref: "textInput",
+    staticClass: "text-input",
+    attrs: {
+      "oninput": "this.style.height = \"\";this.style.height = this.scrollHeight + \"px\""
+    },
+    domProps: {
+      "value": _vm.t('__text', _vm.widget.id)
+    },
+    on: {
+      "input": function (ev) {
+        return _vm.updateText('text', ev.target.value);
+      },
+      "load": function () {
+        this$1$1.style.height = '';
+        this$1$1.style.height = this$1$1.scrollHeight + 'px';
+      }
+    }
+  })]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
+    staticClass: "close-button",
+    on: {
+      "click": _vm.onCloseAlert
+    }
+  }, [_vm._v("x")]) : _vm._e()]) : _vm._e();
+};
+
+var __vue_staticRenderFns__$R = [];
+/* style */
+
+const __vue_inject_styles__$R = function (inject) {
+  if (!inject) return;
+  inject("data-v-cdb552e4_0", {
+    source: ".alert[data-v-cdb552e4]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-cdb552e4]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-cdb552e4]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-cdb552e4]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-cdb552e4]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-cdb552e4]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-cdb552e4]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}.text-input[data-v-cdb552e4]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$R = "data-v-cdb552e4";
+/* module identifier */
+
+const __vue_module_identifier__$R = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$R = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$T = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$R,
+  staticRenderFns: __vue_staticRenderFns__$R
+}, __vue_inject_styles__$R, __vue_script__$R, __vue_scope_id__$R, __vue_is_functional_template__$R, __vue_module_identifier__$R, false, createInjector, undefined, undefined);
+
+var Builder$7 = __vue_component__$T;
+
+//
+var script$Q = defineComponent({
+  props: {
+    widget: Object
+  },
+  inject: ["t"],
+
+  data() {
+    return {
+      isOpen: true
+    };
+  },
+
+  methods: {
+    onCloseAlert() {
+      this.$data.isOpen = false;
+    }
+
+  },
+  computed: {
+    alertStyles() {
+      if (this.widget.properties.type !== "custom" || this.widget.properties.customColor) return {};
+      return {
+        backgroundColor: this.widget.properties.customBackgroundColor,
+        borderColor: this.widget.properties.customBorderColor || "transparent",
+        ...(this.widget.properties.customTextColor ? {
+          color: this.widget.properties.customTextColor
+        } : {})
+      };
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$Q = script$Q;
+/* template */
+
+var __vue_render__$Q = function () {
+  var _obj;
+
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _vm.isOpen ? _c('div', {
+    staticClass: "alert",
+    class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
+    style: _vm.alertStyles
+  }, [_c('h3', {
+    staticClass: "title"
+  }, [_vm._v(_vm._s(_vm.t("__title", _vm.widget.id)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.t("__text", _vm.widget.id)))]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
+    staticClass: "close-button",
+    on: {
+      "click": _vm.onCloseAlert
+    }
+  }, [_vm._v("x")]) : _vm._e()]) : _vm._e();
+};
+
+var __vue_staticRenderFns__$Q = [];
+/* style */
+
+const __vue_inject_styles__$Q = function (inject) {
+  if (!inject) return;
+  inject("data-v-5519b41c_0", {
+    source: ".alert[data-v-5519b41c]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-5519b41c]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-5519b41c]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-5519b41c]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-5519b41c]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-5519b41c]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-5519b41c]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$Q = "data-v-5519b41c";
+/* module identifier */
+
+const __vue_module_identifier__$Q = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$Q = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$S = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$Q,
+  staticRenderFns: __vue_staticRenderFns__$Q
+}, __vue_inject_styles__$Q, __vue_script__$Q, __vue_scope_id__$Q, __vue_is_functional_template__$Q, __vue_module_identifier__$Q, false, createInjector, undefined, undefined);
+
+var Display$e = __vue_component__$S;
+
+//
+var script$P = defineComponent({
+  props: {
+    widget: Object
+  },
+  inject: ["t"],
+
+  data() {
+    return {
+      isOpen: true
+    };
+  },
+
+  methods: {
+    onCloseAlert() {
+      this.$data.isOpen = false;
+    }
+
+  },
+  computed: {
+    alertStyles() {
+      if (this.widget.properties.type !== "custom" || this.widget.properties.customColor) return {};
+      return {
+        backgroundColor: this.widget.properties.customBackgroundColor,
+        borderColor: this.widget.properties.customBorderColor || "transparent",
+        ...(this.widget.properties.customTextColor ? {
+          color: this.widget.properties.customTextColor
+        } : {})
+      };
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$P = script$P;
+/* template */
+
+var __vue_render__$P = function () {
+  var _obj;
+
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _vm.isOpen ? _c('div', {
+    staticClass: "alert",
+    class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
+    style: _vm.alertStyles
+  }, [_c('h3', [_vm._v(_vm._s(_vm.t("__title", _vm.widget.id)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.t("__text", _vm.widget.id)))]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
+    staticClass: "close-button",
+    on: {
+      "click": _vm.onCloseAlert
+    }
+  }, [_vm._v("x")]) : _vm._e()]) : _vm._e();
+};
+
+var __vue_staticRenderFns__$P = [];
+/* style */
+
+const __vue_inject_styles__$P = function (inject) {
+  if (!inject) return;
+  inject("data-v-5ede53fa_0", {
+    source: ".alert[data-v-5ede53fa]{padding:10px;margin:10px;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-5ede53fa]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-5ede53fa]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-5ede53fa]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-5ede53fa]{background-color:#fef8ea;border-color:#f4eada}.alert>.close-button[data-v-5ede53fa]{position:absolute;top:0;right:0;padding:10px 15px;cursor:pointer;transform:scaleX(1.2)}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$P = "data-v-5ede53fa";
+/* module identifier */
+
+const __vue_module_identifier__$P = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$P = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$R = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$P,
+  staticRenderFns: __vue_staticRenderFns__$P
+}, __vue_inject_styles__$P, __vue_script__$P, __vue_scope_id__$P, __vue_is_functional_template__$P, __vue_module_identifier__$P, false, createInjector, undefined, undefined);
+
+var ReadOnly$e = __vue_component__$R;
+
+var alert = {
+  display: Display$e,
+  builder: Builder$7,
+  readOnly: ReadOnly$e
+};
+
+var script$O = defineComponent({
+  props: {
+    widget: Object
+  },
+  inject: ["t", "getLocale", "setMessage"],
+  methods: {
+    onTextChange(val) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: "__label",
+        value: val.target.value
+      });
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$O = script$O;
+/* template */
+
+var __vue_render__$O = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c(_vm.widget.properties.tagType, {
+    tag: "component",
+    staticClass: "header"
+  }, [_c('input', {
+    staticClass: "header-input",
+    attrs: {
+      "type": "text"
+    },
+    domProps: {
+      "value": _vm.t('__label', _vm.widget.id)
+    },
+    on: {
+      "input": _vm.onTextChange
+    }
+  })]);
+};
+
+var __vue_staticRenderFns__$O = [];
+/* style */
+
+const __vue_inject_styles__$O = function (inject) {
+  if (!inject) return;
+  inject("data-v-345c1574_0", {
+    source: ".header-input[data-v-345c1574]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$O = "data-v-345c1574";
+/* module identifier */
+
+const __vue_module_identifier__$O = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$O = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$Q = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$O,
+  staticRenderFns: __vue_staticRenderFns__$O
+}, __vue_inject_styles__$O, __vue_script__$O, __vue_scope_id__$O, __vue_is_functional_template__$O, __vue_module_identifier__$O, false, createInjector, undefined, undefined);
+
+var Builder$6 = __vue_component__$Q;
+
+var script$N = defineComponent({
+  props: {
+    widget: Object,
+    widgets: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function
+  },
+  inject: ["updateWidget"],
+  methods: {
+    setTagType(type) {
+      this.widget.properties.tagType = type;
+      this.updateWidget(this.widget);
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$N = script$N;
+/* template */
+
+var __vue_render__$N = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "control-wrapper"
+  }, [_c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h1'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h1');
+      }
+    }
+  }, [_vm._v("H1")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h2'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h2');
+      }
+    }
+  }, [_vm._v("H2")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h3'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h3');
+      }
+    }
+  }, [_vm._v("H3")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h4'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h4');
+      }
+    }
+  }, [_vm._v("H4")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h5'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h5');
+      }
+    }
+  }, [_vm._v("H5")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h6'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h6');
+      }
+    }
+  }, [_vm._v("H6")])]);
+};
+
+var __vue_staticRenderFns__$N = [];
+/* style */
+
+const __vue_inject_styles__$N = function (inject) {
+  if (!inject) return;
+  inject("data-v-54e91b93_0", {
+    source: ".control-wrapper[data-v-54e91b93]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-54e91b93]{height:30px;width:40px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-54e91b93]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-54e91b93]{background-color:#03a9f4;color:#fff}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$N = "data-v-54e91b93";
+/* module identifier */
+
+const __vue_module_identifier__$N = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$N = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$P = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$N,
+  staticRenderFns: __vue_staticRenderFns__$N
+}, __vue_inject_styles__$N, __vue_script__$N, __vue_scope_id__$N, __vue_is_functional_template__$N, __vue_module_identifier__$N, false, createInjector, undefined, undefined);
+
+var BuilderControl$1 = __vue_component__$P;
+
+//
+var script$M = defineComponent({
+  props: {
+    widget: Object
+  },
+  inject: ["t"]
+});
+
+/* script */
+const __vue_script__$M = script$M;
+/* template */
+
+var __vue_render__$M = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c(_vm.widget.properties.tagType, {
+    tag: "component",
+    staticClass: "header"
+  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+};
+
+var __vue_staticRenderFns__$M = [];
+/* style */
+
+const __vue_inject_styles__$M = undefined;
+/* scoped */
+
+const __vue_scope_id__$M = "data-v-4e34eb30";
+/* module identifier */
+
+const __vue_module_identifier__$M = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$M = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$O = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$M,
+  staticRenderFns: __vue_staticRenderFns__$M
+}, __vue_inject_styles__$M, __vue_script__$M, __vue_scope_id__$M, __vue_is_functional_template__$M, __vue_module_identifier__$M, false, undefined, undefined, undefined);
+
+var Display$d = __vue_component__$O;
+
+//
+var script$L = defineComponent({
+  props: {
+    widget: Object
+  },
+  inject: ["t"]
+});
+
+/* script */
+const __vue_script__$L = script$L;
+/* template */
+
+var __vue_render__$L = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c(_vm.widget.properties.tagType, {
+    tag: "component",
+    staticClass: "header"
+  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+};
+
+var __vue_staticRenderFns__$L = [];
+/* style */
+
+const __vue_inject_styles__$L = function (inject) {
+  if (!inject) return;
+  inject("data-v-19fb5abe_0", {
+    source: ".header[data-v-19fb5abe]{padding:0 10px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$L = "data-v-19fb5abe";
+/* module identifier */
+
+const __vue_module_identifier__$L = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$L = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$N = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$L,
+  staticRenderFns: __vue_staticRenderFns__$L
+}, __vue_inject_styles__$L, __vue_script__$L, __vue_scope_id__$L, __vue_is_functional_template__$L, __vue_module_identifier__$L, false, createInjector, undefined, undefined);
+
+var ReadOnly$d = __vue_component__$N;
+
+var header = {
+  display: Display$d,
+  builder: Builder$6,
+  builderControl: BuilderControl$1,
+  readOnly: ReadOnly$d
+};
+
+//
+var script$K = defineComponent({
+  props: {
+    widget: Object,
+    widgets: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function
+  },
+  inject: ["t"]
+});
+
+/* script */
+const __vue_script__$K = script$K;
+/* template */
+
+var __vue_render__$K = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "html-wrapper",
+    domProps: {
+      "innerHTML": _vm._s(_vm.t('__html', _vm.widget.id))
+    }
+  });
+};
+
+var __vue_staticRenderFns__$K = [];
+/* style */
+
+const __vue_inject_styles__$K = undefined;
+/* scoped */
+
+const __vue_scope_id__$K = "data-v-2cf4bc11";
+/* module identifier */
+
+const __vue_module_identifier__$K = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$K = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$M = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$K,
+  staticRenderFns: __vue_staticRenderFns__$K
+}, __vue_inject_styles__$K, __vue_script__$K, __vue_scope_id__$K, __vue_is_functional_template__$K, __vue_module_identifier__$K, false, undefined, undefined, undefined);
+
+var Builder$5 = __vue_component__$M;
+
+//
+var script$J = defineComponent({
+  props: {
+    widget: Object,
+    widgets: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function
+  },
+  inject: ["t"]
+});
+
+/* script */
+const __vue_script__$J = script$J;
+/* template */
+
+var __vue_render__$J = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "html-wrapper",
+    domProps: {
+      "innerHTML": _vm._s(_vm.t('__html', _vm.widget.id))
+    }
+  });
+};
+
+var __vue_staticRenderFns__$J = [];
+/* style */
+
+const __vue_inject_styles__$J = undefined;
+/* scoped */
+
+const __vue_scope_id__$J = "data-v-489a40b8";
+/* module identifier */
+
+const __vue_module_identifier__$J = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$J = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$L = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$J,
+  staticRenderFns: __vue_staticRenderFns__$J
+}, __vue_inject_styles__$J, __vue_script__$J, __vue_scope_id__$J, __vue_is_functional_template__$J, __vue_module_identifier__$J, false, undefined, undefined, undefined);
+
+var Display$c = __vue_component__$L;
+
+//
+var script$I = defineComponent({
+  props: {
+    widget: Object,
+    widgets: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function
+  }
+});
+
+/* script */
+const __vue_script__$I = script$I;
+/* template */
+
+var __vue_render__$I = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    domProps: {
+      "innerHTML": _vm._s(_vm.widget.properties.html)
+    }
+  });
+};
+
+var __vue_staticRenderFns__$I = [];
+/* style */
+
+const __vue_inject_styles__$I = undefined;
+/* scoped */
+
+const __vue_scope_id__$I = undefined;
+/* module identifier */
+
+const __vue_module_identifier__$I = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$I = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$K = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$I,
+  staticRenderFns: __vue_staticRenderFns__$I
+}, __vue_inject_styles__$I, __vue_script__$I, __vue_scope_id__$I, __vue_is_functional_template__$I, __vue_module_identifier__$I, false, undefined, undefined, undefined);
+
+var ReadOnly$c = __vue_component__$K;
+
+var html = {
+  display: Display$c,
+  builder: Builder$5,
+  readOnly: ReadOnly$c
+};
+
+/*!
+ * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
+ *
+ * Copyright (c) 2014-2017, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+function isObject$1(o) {
+  return Object.prototype.toString.call(o) === '[object Object]';
+}
+
+function isPlainObject(o) {
+  var ctor,prot;
+
+  if (isObject$1(o) === false) return false;
+
+  // If has modified constructor
+  ctor = o.constructor;
+  if (ctor === undefined) return true;
+
+  // If has modified prototype
+  prot = ctor.prototype;
+  if (isObject$1(prot) === false) return false;
+
+  // If constructor does not have an Object-specific method
+  if (prot.hasOwnProperty('isPrototypeOf') === false) {
+    return false;
+  }
+
+  // Most likely a plain Object
+  return true;
+}
+
+var c=Object.prototype,l=c.toString,s=c.hasOwnProperty,v=/^\s*function (\w+)/;function p(e){var t,n=null!==(t=null==e?void 0:e.type)&&void 0!==t?t:e;if(n){var r=n.toString().match(v);return r?r[1]:""}return ""}var y=isPlainObject,d=function(e){return e},h=d;var g=function(e,t){return s.call(e,t)},m=Array.isArray||function(e){return "[object Array]"===l.call(e)},j=function(e){return "[object Function]"===l.call(e)},_=function(e){return y(e)&&g(e,"_vueTypes_name")},T=function(e){return y(e)&&(g(e,"type")||["_vueTypes_name","validator","default","required"].some(function(t){return g(e,t)}))};function w(e,t){return Object.defineProperty(e.bind(t),"__original",{value:e})}function k(e,t,n){var r;void 0===n&&(n=!1);var i=!0,o="";r=y(e)?e:{type:e};var u=_(r)?r._vueTypes_name+" - ":"";if(T(r)&&null!==r.type){if(void 0===r.type||!0===r.type)return i;if(!r.required&&void 0===t)return i;m(r.type)?(i=r.type.some(function(e){return !0===k(e,t,!0)}),o=r.type.map(function(e){return p(e)}).join(" or ")):i="Array"===(o=p(r))?m(t):"Object"===o?y(t):"String"===o||"Number"===o||"Boolean"===o||"Function"===o?function(e){if(null==e)return "";var t=e.constructor.toString().match(v);return t?t[1]:""}(t)===o:t instanceof r.type;}if(!i){var a=u+'value "'+t+'" should be of type "'+o+'"';return !1===n?(h(a),!1):a}if(g(r,"validator")&&j(r.validator)){var f=h,c=[];if(h=function(e){c.push(e);},i=r.validator(t),h=f,!i){var l=(c.length>1?"* ":"")+c.join("\n* ");return c.length=0,!1===n?(h(l),i):l}}return i}function P(e,t){var n=Object.defineProperties(t,{_vueTypes_name:{value:e,writable:!0},isRequired:{get:function(){return this.required=!0,this}},def:{value:function(e){return void 0===e?(g(this,"default")&&delete this.default,this):j(e)||!0===k(this,e,!0)?(this.default=m(e)?function(){return [].concat(e)}:y(e)?function(){return Object.assign({},e)}:e,this):(h(this._vueTypes_name+' - invalid default value: "'+e+'"'),this)}}}),r=n.validator;return j(r)&&(n.validator=w(r,n)),n}function x(e,t){var n=P(e,t);return Object.defineProperty(n,"validate",{value:function(e){return j(this.validator)&&h(this._vueTypes_name+" - calling .validate() will overwrite the current custom validator function. Validator info:\n"+JSON.stringify(this)),this.validator=w(e,this),this}})}function N(e){return e.replace(/^(?!\s*$)/gm,"  ")}var V=function(){return x("boolean",{type:Boolean})},S=function(){return x("string",{type:String})};function R(e){return P("arrayOf",{type:Array,validator:function(t){var n="",r=t.every(function(t){return !0===(n=k(e,t,!0))});return r||h("arrayOf - value validation error:\n"+N(n)),r}})}function $(e){return P("instanceOf",{type:e})}function C(e){var t=Object.keys(e),n=t.filter(function(t){var n;return !(null===(n=e[t])||void 0===n||!n.required)}),r=P("shape",{type:Object,validator:function(r){var i=this;if(!y(r))return !1;var o=Object.keys(r);if(n.length>0&&n.some(function(e){return -1===o.indexOf(e)})){var u=n.filter(function(e){return -1===o.indexOf(e)});return h(1===u.length?'shape - required property "'+u[0]+'" is not defined.':'shape - required properties "'+u.join('", "')+'" are not defined.'),!1}return o.every(function(n){if(-1===t.indexOf(n))return !0===i._vueTypes_isLoose||(h('shape - shape definition does not include a "'+n+'" property. Allowed keys: "'+t.join('", "')+'".'),!1);var o=k(e[n],r[n],!0);return "string"==typeof o&&h('shape - "'+n+'" property validation error:\n '+N(o)),!0===o})}});return Object.defineProperty(r,"_vueTypes_isLoose",{writable:!0,value:!1}),Object.defineProperty(r,"loose",{get:function(){return this._vueTypes_isLoose=!0,this}}),r}
+
+//
+var script$H = defineComponent({
+  props: {
+    widget: Object,
+    widgetControls: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String
+  },
+  inject: ["widgetEffectControls"]
+});
+
+/* script */
+const __vue_script__$H = script$H;
+/* template */
+
+var __vue_render__$H = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1296,10 +2132,10 @@ var __vue_render__$G = function () {
   })], 2)], 1);
 };
 
-var __vue_staticRenderFns__$G = [];
+var __vue_staticRenderFns__$H = [];
 /* style */
 
-const __vue_inject_styles__$G = function (inject) {
+const __vue_inject_styles__$H = function (inject) {
   if (!inject) return;
   inject("data-v-221e9d22_0", {
     source: ".widget-component-wrapper[data-v-221e9d22]{position:relative}.widget-wrapper[data-v-221e9d22]{padding:0 10px}",
@@ -1310,28 +2146,28 @@ const __vue_inject_styles__$G = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$G = "data-v-221e9d22";
+const __vue_scope_id__$H = "data-v-221e9d22";
 /* module identifier */
 
-const __vue_module_identifier__$G = undefined;
+const __vue_module_identifier__$H = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$G = false;
+const __vue_is_functional_template__$H = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$H = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$G,
-  staticRenderFns: __vue_staticRenderFns__$G
-}, __vue_inject_styles__$G, __vue_script__$G, __vue_scope_id__$G, __vue_is_functional_template__$G, __vue_module_identifier__$G, false, createInjector, undefined, undefined);
+const __vue_component__$J = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$H,
+  staticRenderFns: __vue_staticRenderFns__$H
+}, __vue_inject_styles__$H, __vue_script__$H, __vue_scope_id__$H, __vue_is_functional_template__$H, __vue_module_identifier__$H, false, createInjector, undefined, undefined);
 
-var WidgetView = __vue_component__$H;
+var WidgetView$1 = __vue_component__$J;
 
 //
-var script$F = defineComponent({
+var script$G = defineComponent({
   components: {
-    WidgetView
+    WidgetView: WidgetView$1
   },
   props: {
     widgetControls: Object,
@@ -1387,10 +2223,10 @@ var script$F = defineComponent({
 });
 
 /* script */
-const __vue_script__$F = script$F;
+const __vue_script__$G = script$G;
 /* template */
 
-var __vue_render__$F = function () {
+var __vue_render__$G = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1415,10 +2251,10 @@ var __vue_render__$F = function () {
   }), 0);
 };
 
-var __vue_staticRenderFns__$F = [];
+var __vue_staticRenderFns__$G = [];
 /* style */
 
-const __vue_inject_styles__$F = function (inject) {
+const __vue_inject_styles__$G = function (inject) {
   if (!inject) return;
   inject("data-v-2a58bd34_0", {
     source: ".widget-container[data-v-2a58bd34]{position:relative}.widget-form-control[data-v-2a58bd34]{position:absolute;top:-40px;left:0}",
@@ -1429,7 +2265,146 @@ const __vue_inject_styles__$F = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$F = "data-v-2a58bd34";
+const __vue_scope_id__$G = "data-v-2a58bd34";
+/* module identifier */
+
+const __vue_module_identifier__$G = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$G = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$I = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$G,
+  staticRenderFns: __vue_staticRenderFns__$G
+}, __vue_inject_styles__$G, __vue_script__$G, __vue_scope_id__$G, __vue_is_functional_template__$G, __vue_module_identifier__$G, false, createInjector, undefined, undefined);
+
+var WidgetsLayout = __vue_component__$I;
+
+//
+var script$F = defineComponent({
+  props: {
+    widget: Object,
+    widgetControls: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String
+  },
+  inject: ["widgetEffectControls", "setFormState"],
+  methods: {
+    onWidgetSelect() {
+      // if (
+      //   this.$props.formState.interactiveState.selectedWidgetId ===
+      //   this.$props.widget.id
+      // ) {
+      //   this.$props.formState.interactiveState.selectedWidgetId = "";
+      // } else {
+      this.$props.formState.interactiveState.selectedWidgetId = this.$props.widget.id; // }
+
+      this.setFormState(this.$props.formState);
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$F = script$F;
+/* template */
+
+var __vue_render__$F = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "widget-wrapper",
+    on: {
+      "click": function ($event) {
+        $event.stopPropagation();
+        return _vm.onWidgetSelect($event);
+      }
+    }
+  }, [_vm.widget.style ? _c('style', {
+    tag: "component",
+    attrs: {
+      "scoped": ""
+    }
+  }, [_vm._v("\n    " + _vm._s(_vm.widget.style) + "\n  ")]) : _vm._e(), _vm._v(" "), _vm.view === 'builder' && _vm.widgetControls[_vm.widget.type].builderControl ? _c('div', {
+    staticClass: "widget-builder-control",
+    class: {
+      hovered: _vm.formState.interactiveState.hoveredWidgetId === _vm.widget.id
+    }
+  }, [_c(_vm.widgetControls[_vm.widget.type].builderControl, {
+    tag: "component",
+    attrs: {
+      "widget": _vm.widget,
+      "widgetControls": _vm.widgetControls,
+      "widgetItems": _vm.widgetItems,
+      "formState": _vm.formState,
+      "setWidgetState": function (key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function (key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      },
+      "view": _vm.view
+    }
+  })], 1) : _vm._e(), _vm._v(" "), _c('div', {
+    ref: "widgetComponentWrapper",
+    staticClass: "widget-component-wrapper",
+    class: {
+      selected: _vm.formState.interactiveState.selectedWidgetId === _vm.widget.id,
+      unselected: _vm.formState.interactiveState.selectedWidgetId && _vm.formState.interactiveState.selectedWidgetId !== _vm.widget.id
+    }
+  }, [_vm._l(_vm.widget.effects, function (widgetEffect) {
+    return _c(_vm.widgetEffectControls[widgetEffect.type].display, {
+      key: widgetEffect.type,
+      tag: "component",
+      attrs: {
+        "properties": widgetEffect.properties,
+        "wrapperRef": _vm.$refs.widgetComponentWrapper
+      }
+    });
+  }), _vm._v(" "), _c(_vm.widgetControls[_vm.widget.type][_vm.view || 'display'], {
+    tag: "component",
+    attrs: {
+      "widget": _vm.widget,
+      "widgetControls": _vm.widgetControls,
+      "widgetItems": _vm.widgetItems,
+      "formState": _vm.formState,
+      "setWidgetState": function (key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function (key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      },
+      "view": _vm.view,
+      "wrapperRef": _vm.$refs.widgetComponentWrapper
+    }
+  })], 2)], 1);
+};
+
+var __vue_staticRenderFns__$F = [];
+/* style */
+
+const __vue_inject_styles__$F = function (inject) {
+  if (!inject) return;
+  inject("data-v-32ac1558_0", {
+    source: ".widget-component-wrapper[data-v-32ac1558]{position:relative}.widget-component-wrapper.selected[data-v-32ac1558]{background-color:#fff;border:1px solid #03a9f4;border-radius:8px;padding:0 10px;margin:-1px -11px -1px -11px}.widget-wrapper[data-v-32ac1558]{padding:0 10px}.widget-builder-control[data-v-32ac1558]{position:absolute;top:-10px;left:10px;opacity:0;transition:opacity .2s;z-index:10}.widget-builder-control.hovered[data-v-32ac1558]{opacity:1}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$F = "data-v-32ac1558";
 /* module identifier */
 
 const __vue_module_identifier__$F = undefined;
@@ -1440,15 +2415,386 @@ const __vue_is_functional_template__$F = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$G = /*#__PURE__*/normalizeComponent({
+const __vue_component__$H = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$F,
   staticRenderFns: __vue_staticRenderFns__$F
 }, __vue_inject_styles__$F, __vue_script__$F, __vue_scope_id__$F, __vue_is_functional_template__$F, __vue_module_identifier__$F, false, createInjector, undefined, undefined);
 
-var WidgetsLayout = __vue_component__$G;
+var WidgetView = __vue_component__$H;
 
 //
 var script$E = defineComponent({
+  components: {
+    WidgetView
+  },
+  props: {
+    widgetControls: Object,
+    widgetItems: Object,
+    excludeWidgetIds: R(String),
+    onlyIncludeWidgetIds: R(String),
+    forParent: String
+  },
+  inject: ["widgetControls", "getFormState", "getView", "setFormState"],
+
+  data() {
+    return {
+      hoveredWidgetId: -1
+    };
+  },
+
+  computed: {
+    view() {
+      return this.getView();
+    },
+
+    formState() {
+      return this.getFormState();
+    },
+
+    widgetItemsArr() {
+      return Object.values(this.$props.widgetItems);
+    },
+
+    filteredWidgetItemsArr() {
+      const filteredArr = this.widgetItemsArr.filter(f => {
+        return (!this.forParent && !f.parentId || f.parentId === this.forParent) && (!this.$props.onlyIncludeWidgetIds || this.$props.onlyIncludeWidgetIds.includes(f.id)) && (!(this.excludeWidgetIds || []).length || !this.excludeWidgetIds.includes(f.id));
+      }).sort((a, b) => (a.order || 0) - (b.order || 0));
+      return filteredArr;
+    }
+
+  },
+  methods: {
+    onDnDPlaceholderMouseDown(ev, widgetId) {
+      this.formState.interactiveState.draggingWidgetId = widgetId;
+      this.setFormState(this.formState);
+    },
+
+    onDnDPlaceholderMouseUp(ev, widgetId) {
+      this.formState.interactiveState.draggingWidgetId = "";
+      this.setFormState(this.formState);
+    },
+
+    onMouseEnter(ev, widgetId) {
+      ev.stopPropagation();
+      this.$data.hoveredWidgetId = widgetId;
+      this.formState.interactiveState.hoveredWidgetId = widgetId;
+      this.setFormState(this.formState);
+    },
+
+    onMouseLeave(ev, widgetId) {
+      if (this.$data.hoveredWidgetId !== widgetId) return;
+      this.$data.hoveredWidgetId = -1;
+      this.formState.interactiveState.hoveredWidgetId = "";
+      this.setFormState(this.formState);
+    },
+
+    setWidgetState(key, value, widget) {
+      const formState = this.formState;
+
+      if (value === undefined) {
+        if (!formState.widgetState[widget.id]) return;
+        delete formState.widgetState[widget.id][key];
+      } else {
+        if (!formState.widgetState[widget.id]) formState.widgetState[widget.id] = {};
+        formState.widgetState[widget.id][key] = value;
+      }
+
+      this.setFormState(formState);
+    },
+
+    getWidgetState(key, widget) {
+      var _this$formState$widge;
+
+      return (_this$formState$widge = this.formState.widgetState[widget.id]) === null || _this$formState$widge === void 0 ? void 0 : _this$formState$widge[key];
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$E = script$E;
+/* template */
+
+var __vue_render__$E = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', _vm._l(_vm.filteredWidgetItemsArr, function (widget, widgetIndex) {
+    return _c('div', {
+      key: widget.id,
+      staticClass: "widget-container",
+      class: {
+        hovering: _vm.hoveredWidgetId === widget.id,
+        dragging: _vm.formState.interactiveState.draggingWidgetId === widget.id,
+        notDragging: _vm.formState.interactiveState.draggingWidgetId && _vm.formState.interactiveState.draggingWidgetId !== widget.id
+      },
+      on: {
+        "mouseenter": function ($event) {
+          $event.stopPropagation();
+          return function (ev) {
+            return _vm.onMouseEnter(ev, widget.id);
+          }($event);
+        },
+        "mouseleave": function ($event) {
+          $event.stopPropagation();
+          return function (ev) {
+            return _vm.onMouseLeave(ev, widget.id);
+          }($event);
+        }
+      }
+    }, [_c('div', {
+      staticClass: "add-line"
+    }, [_c('div', {
+      staticClass: "line",
+      on: {
+        "click": function ($event) {
+          $event.stopPropagation();
+          return function (ev) {
+            return _vm.onAddClick(ev, widget, widgetIndex);
+          }($event);
+        }
+      }
+    }), _vm._v(" "), _c('a', {
+      staticClass: "add-button",
+      on: {
+        "click": function ($event) {
+          $event.stopPropagation();
+          return function (ev) {
+            return _vm.onAddClick(ev, widget, widgetIndex);
+          }($event);
+        }
+      }
+    }, [_vm._v("+")])]), _vm._v(" "), _c('div', {
+      staticClass: "left-actions-wrapper"
+    }, [_c('a', {
+      staticClass: "dnd-placeholder",
+      on: {
+        "mousedown": function (ev) {
+          return _vm.onDnDPlaceholderMouseDown(ev, widget.id);
+        },
+        "mouseup": function (ev) {
+          return _vm.onDnDPlaceholderMouseUp(ev, widget.id);
+        }
+      }
+    }, [_vm._v("\n        ↑↓\n      ")]), _vm._v(" "), _c('a', {
+      staticClass: "delete-button"
+    }, [_vm._v("🗑")])]), _vm._v(" "), _c('widget-view', {
+      attrs: {
+        "widget": widget,
+        "widgetControls": _vm.widgetControls,
+        "widgetItems": _vm.widgetItems,
+        "formState": _vm.formState,
+        "setWidgetState": _vm.setWidgetState,
+        "getWidgetState": _vm.getWidgetState,
+        "view": _vm.view
+      }
+    }), _vm._v(" "), widgetIndex === _vm.filteredWidgetItemsArr.length - 1 ? _c('div', {
+      staticClass: "add-line"
+    }, [_c('div', {
+      staticClass: "line",
+      on: {
+        "click": function ($event) {
+          $event.stopPropagation();
+          return function (ev) {
+            return _vm.onAddClick(ev, widget, widgetIndex);
+          }($event);
+        }
+      }
+    }), _vm._v(" "), _c('a', {
+      staticClass: "add-button",
+      on: {
+        "click": function ($event) {
+          $event.stopPropagation();
+          return function (ev) {
+            return _vm.onAddClick(ev, widget, widgetIndex);
+          }($event);
+        }
+      }
+    }, [_vm._v("+")])]) : _vm._e()], 1);
+  }), 0);
+};
+
+var __vue_staticRenderFns__$E = [];
+/* style */
+
+const __vue_inject_styles__$E = function (inject) {
+  if (!inject) return;
+  inject("data-v-d5af8564_0", {
+    source: ".widget-container[data-v-d5af8564]{position:relative}.widget-container.notDragging[data-v-d5af8564]{opacity:.4}.widget-container.dragging[data-v-d5af8564]{opacity:1}.widget-form-control[data-v-d5af8564]{position:absolute;top:-40px;left:0}.add-line[data-v-d5af8564]{position:relative;padding:10px 0;margin:-10.5px 0;opacity:0;transition:opacity .2s;z-index:10}.add-line[data-v-d5af8564]:hover{opacity:1}.add-line .line[data-v-d5af8564]{width:100%;height:1px;background-color:#b5b5b5;cursor:pointer}.add-line .add-button[data-v-d5af8564]{position:absolute;top:-2px;left:-10px;width:20px;height:20px;background-color:#fff;border:1px solid #b5b5b5;border-radius:4px;display:flex;justify-content:center;align-items:center;padding-top:2px;box-shadow:0 0 10px 10px #fff;cursor:pointer}.add-line .add-button[data-v-d5af8564]:hover{background-color:#eaeaea}.widget-container .dnd-placeholder[data-v-d5af8564]{width:20px;height:25px;padding-bottom:2px;background-color:#fafafa;border:1px dashed #dadada;cursor:grab;font-size:9pt;display:flex;justify-content:center;align-items:center;border-radius:4px}.widget-container .dnd-placeholder[data-v-d5af8564]:hover{background-color:#eaeaea}.left-actions-wrapper[data-v-d5af8564]{position:absolute;top:15px;left:-40px;padding:10px;opacity:0;transition:opacity .2s;width:25px;display:flex;flex-direction:column;align-items:center}.widget-container.hovering>.left-actions-wrapper[data-v-d5af8564]{opacity:1}.delete-button[data-v-d5af8564]{font-size:12px;margin:2px 0;padding:1px 0;cursor:pointer;color:red}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$E = "data-v-d5af8564";
+/* module identifier */
+
+const __vue_module_identifier__$E = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$E = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$G = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$E,
+  staticRenderFns: __vue_staticRenderFns__$E
+}, __vue_inject_styles__$E, __vue_script__$E, __vue_scope_id__$E, __vue_is_functional_template__$E, __vue_module_identifier__$E, false, createInjector, undefined, undefined);
+
+var BuilderWidgetsLayout = __vue_component__$G;
+
+//
+var script$D = defineComponent({
+  components: {
+    WidgetsLayout,
+    BuilderWidgetsLayout
+  },
+  props: {
+    widget: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function,
+    wrapperRef: HTMLDivElement
+  },
+
+  data() {
+    return {
+      sortedPages: []
+    };
+  },
+
+  inject: ["t"],
+  computed: {
+    currentPageIndex() {
+      var _this$formState$widge, _this$formState$widge2;
+
+      return ((_this$formState$widge = this.formState.widgetState) === null || _this$formState$widge === void 0 ? void 0 : (_this$formState$widge2 = _this$formState$widge[this.$props.widget.id]) === null || _this$formState$widge2 === void 0 ? void 0 : _this$formState$widge2.currentPageIndex) || 0;
+    }
+
+  },
+  watch: {
+    currentPageIndex: {
+      handler() {
+        const viewedIndices = this.$props.widget.getState("viewedIndices");
+        this.$props.widget.setState("viewedIndices", [...new Set([...(viewedIndices || []), this.currentPageIndex])]);
+      },
+
+      immediate: true
+    },
+    "widget.properties.pages": {
+      handler() {
+        this.$data.sortedPages = this.$props.widget.getSortedPages();
+      },
+
+      immediate: true
+    }
+  }
+});
+
+/* script */
+const __vue_script__$D = script$D;
+/* template */
+
+var __vue_render__$D = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm.widget.properties.tabsVisible ? _c('div', {
+    staticClass: "pages-menu-wrapper"
+  }, _vm._l(_vm.sortedPages, function (page, pageIndex) {
+    return _c('a', {
+      key: pageIndex,
+      staticClass: "pages-menu-item",
+      class: {
+        active: _vm.currentPageIndex === pageIndex,
+        errors: _vm.widget.pageIndexHasErrors(pageIndex, {
+          allChildPages: true
+        }),
+        unopened: !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)
+      },
+      on: {
+        "click": function () {
+          return _vm.widget.onChangePageIndex(pageIndex);
+        }
+      }
+    }, [_vm._v("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ")]);
+  }), 0) : _vm._e(), _vm._v(" "), _vm._l(_vm.sortedPages, function (page, pageIndex) {
+    return _c('div', {
+      key: pageIndex,
+      staticClass: "pages-content-item"
+    }, [_vm.currentPageIndex === pageIndex ? _c('div', [_c('builder-widgets-layout', {
+      attrs: {
+        "widgetItems": _vm.widgetItems,
+        "excludeWidgetIds": [_vm.widget.id],
+        "onlyIncludeWidgetIds": page.children,
+        "forParent": _vm.widget.id
+      }
+    })], 1) : _vm._e()]);
+  }), _vm._v(" "), _vm.widget.properties.navigationVisible ? _c('div', {
+    staticClass: "back-forward-wrapper"
+  }, [_c('div', [_vm.widget.hasPreviousButton() ? _c('button', {
+    staticClass: "back-forward-button",
+    on: {
+      "click": function () {
+        return _vm.widget.toPreviousPage();
+      }
+    }
+  }, [_vm._v("\n        " + _vm._s(_vm.t("__" + _vm.widget.previousButtonType(), _vm.widget.id)) + "\n      ")]) : _vm._e()]), _vm._v(" "), _c('div', [_vm.widget.hasNextButton() ? _c('button', {
+    staticClass: "back-forward-button",
+    class: {
+      errors: _vm.widget.pageIndexHasErrors(_vm.currentPageIndex)
+    },
+    on: {
+      "click": function () {
+        return _vm.widget.toNextPage();
+      }
+    }
+  }, [_vm._v("\n        " + _vm._s(_vm.t("__" + _vm.widget.nextButtonType(), _vm.widget.id)) + "\n      ")]) : _vm._e()])]) : _vm._e()], 2);
+};
+
+var __vue_staticRenderFns__$D = [];
+/* style */
+
+const __vue_inject_styles__$D = function (inject) {
+  if (!inject) return;
+  inject("data-v-421cd508_0", {
+    source: ".pages-menu-wrapper[data-v-421cd508]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-421cd508]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-421cd508]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-421cd508]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-421cd508]{border-color:red}.back-forward-wrapper[data-v-421cd508]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-421cd508]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-421cd508]{background-color:red;color:#fff;opacity:.2;cursor:default}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$D = "data-v-421cd508";
+/* module identifier */
+
+const __vue_module_identifier__$D = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$D = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$F = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$D,
+  staticRenderFns: __vue_staticRenderFns__$D
+}, __vue_inject_styles__$D, __vue_script__$D, __vue_scope_id__$D, __vue_is_functional_template__$D, __vue_module_identifier__$D, false, createInjector, undefined, undefined);
+
+var Builder$4 = __vue_component__$F;
+
+//
+var script$C = defineComponent({
   components: {
     WidgetsLayout
   },
@@ -1495,10 +2841,10 @@ var script$E = defineComponent({
 });
 
 /* script */
-const __vue_script__$E = script$E;
+const __vue_script__$C = script$C;
 /* template */
 
-var __vue_render__$E = function () {
+var __vue_render__$C = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -1564,10 +2910,10 @@ var __vue_render__$E = function () {
   }, [_vm._v("\n        " + _vm._s(_vm.t("__" + _vm.widget.nextButtonType(), _vm.widget.id)) + "\n      ")]) : _vm._e()])]) : _vm._e()], 2);
 };
 
-var __vue_staticRenderFns__$E = [];
+var __vue_staticRenderFns__$C = [];
 /* style */
 
-const __vue_inject_styles__$E = function (inject) {
+const __vue_inject_styles__$C = function (inject) {
   if (!inject) return;
   inject("data-v-735b5fe9_0", {
     source: ".pages-menu-wrapper[data-v-735b5fe9]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-735b5fe9]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-735b5fe9]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-735b5fe9]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-735b5fe9]{border-color:red}.back-forward-wrapper[data-v-735b5fe9]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-735b5fe9]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-735b5fe9]{background-color:red;color:#fff;opacity:.2;cursor:default}",
@@ -1578,257 +2924,7 @@ const __vue_inject_styles__$E = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$E = "data-v-735b5fe9";
-/* module identifier */
-
-const __vue_module_identifier__$E = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$E = false;
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$F = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$E,
-  staticRenderFns: __vue_staticRenderFns__$E
-}, __vue_inject_styles__$E, __vue_script__$E, __vue_scope_id__$E, __vue_is_functional_template__$E, __vue_module_identifier__$E, false, createInjector, undefined, undefined);
-
-var Display$d = __vue_component__$F;
-
-//
-var script$D = defineComponent({
-  components: {
-    WidgetsLayout
-  },
-  props: {
-    widget: Object,
-    widgets: Object,
-    widgetItems: Object,
-    formState: Object
-  },
-  inject: ["t", "setFormState"],
-  computed: {
-    currentPageIndex() {
-      var _this$formState$widge, _this$formState$widge2;
-
-      return ((_this$formState$widge = this.formState.widgetState) === null || _this$formState$widge === void 0 ? void 0 : (_this$formState$widge2 = _this$formState$widge[this.$props.widget.id]) === null || _this$formState$widge2 === void 0 ? void 0 : _this$formState$widge2.currentPageIndex) || 0;
-    }
-
-  },
-  watch: {
-    formStateCurrentPageIndex: {
-      handler(newPageIndex) {
-        this.$data.currentPageIndex = newPageIndex;
-      },
-
-      deep: true
-    }
-  },
-  methods: {
-    setState(key, value) {
-      const formState = this.formState;
-
-      if (value === undefined) {
-        if (!formState.widgetState[this.$props.widget.id]) return;
-        delete formState.widgetState[this.$props.widget.id][key];
-      } else {
-        if (!formState.widgetState[this.$props.widget.id]) formState.widgetState[this.$props.widget.id] = {};
-        formState.widgetState[this.$props.widget.id][key] = value;
-      }
-
-      this.setFormState(formState);
-    }
-
-  }
-});
-
-/* script */
-const __vue_script__$D = script$D;
-/* template */
-
-var __vue_render__$D = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_c('div', {
-    staticClass: "paging-menu"
-  }, _vm._l(_vm.widget.properties.pages, function (page, pageIndex) {
-    return _c('a', {
-      key: pageIndex,
-      staticClass: "paging-menu-item",
-      class: {
-        active: _vm.currentPageIndex === pageIndex
-      },
-      on: {
-        "click": function () {
-          return _vm.setState('currentPageIndex', pageIndex);
-        }
-      }
-    }, [_vm._v("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ")]);
-  }), 0), _vm._v(" "), _vm._l(_vm.widget.properties.pages, function (page, pageIndex) {
-    return _c('div', {
-      key: pageIndex,
-      staticClass: "paging-content-item"
-    }, [_vm.currentPageIndex === pageIndex ? _c('div', _vm._l(page.children, function (child, childIndex) {
-      return _c('div', {
-        key: childIndex
-      }, [_c('widgets-layout', {
-        attrs: {
-          "widgets": _vm.widgets,
-          "widgetItems": _vm.widgetItems,
-          "excludeWidgetIds": [_vm.widget.id],
-          "forParent": _vm.widget.id
-        }
-      })], 1);
-    }), 0) : _vm._e()]);
-  })], 2);
-};
-
-var __vue_staticRenderFns__$D = [];
-/* style */
-
-const __vue_inject_styles__$D = function (inject) {
-  if (!inject) return;
-  inject("data-v-487c98a8_0", {
-    source: ".paging-menu[data-v-487c98a8]{display:flex;flex-direction:row;justify-content:space-around}.paging-menu-item[data-v-487c98a8]{display:inline-block;padding:5px 10px}.paging-menu-item.active[data-v-487c98a8]{background-color:#e8e8e8}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-const __vue_scope_id__$D = "data-v-487c98a8";
-/* module identifier */
-
-const __vue_module_identifier__$D = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$D = false;
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$E = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$D,
-  staticRenderFns: __vue_staticRenderFns__$D
-}, __vue_inject_styles__$D, __vue_script__$D, __vue_scope_id__$D, __vue_is_functional_template__$D, __vue_module_identifier__$D, false, createInjector, undefined, undefined);
-
-var Form$9 = __vue_component__$E;
-
-//
-var script$C = defineComponent({
-  components: {
-    WidgetsLayout
-  },
-  props: {
-    widget: Object,
-    widgets: Object,
-    widgetItems: Object,
-    formState: Object,
-    setWidgetState: Function
-  },
-
-  data() {
-    return {
-      sortedPages: []
-    };
-  },
-
-  inject: ["t"],
-  computed: {
-    currentPageIndex() {
-      var _this$formState$widge, _this$formState$widge2;
-
-      return ((_this$formState$widge = this.formState.widgetState) === null || _this$formState$widge === void 0 ? void 0 : (_this$formState$widge2 = _this$formState$widge[this.$props.widget.id]) === null || _this$formState$widge2 === void 0 ? void 0 : _this$formState$widge2.currentPageIndex) || 0;
-    }
-
-  },
-  watch: {
-    "widget.properties.pages": {
-      handler() {
-        this.$data.sortedPages = this.$props.widget.getSortedPages();
-      },
-
-      immediate: true
-    }
-  },
-  methods: {
-    pageIndexHasErrors(idx) {
-      // get child errors
-      const childErrors = this.$props.widget.getState("pageIdxErrors") || {}; // if no childErrors, just return false
-
-      if (!Object.keys(childErrors).length) return false; // map child error widget ids to paging children index
-      // const children = this.$props.widget.getChildren();
-
-      return Object.keys(childErrors[idx] || {}).length;
-    }
-
-  }
-});
-
-/* script */
-const __vue_script__$C = script$C;
-/* template */
-
-var __vue_render__$C = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_c('div', {
-    staticClass: "paging-menu-wrapper"
-  }, _vm._l(_vm.sortedPages, function (page, pageIndex) {
-    return _c('a', {
-      key: pageIndex,
-      staticClass: "paging-menu-item",
-      class: {
-        active: _vm.currentPageIndex === pageIndex,
-        errors: _vm.pageIndexHasErrors(pageIndex)
-      },
-      on: {
-        "click": function () {
-          return _vm.widget.setState('currentPageIndex', pageIndex);
-        }
-      }
-    }, [_vm._v("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ")]);
-  }), 0), _vm._v(" "), _vm._l(_vm.sortedPages, function (page, pageIndex) {
-    return _c('div', {
-      key: pageIndex,
-      staticClass: "paging-content-item"
-    }, [_vm.currentPageIndex === pageIndex ? _c('div', [_c('widgets-layout', {
-      attrs: {
-        "widgets": _vm.widgets,
-        "widgetItems": _vm.widgetItems,
-        "excludeWidgetIds": [_vm.widget.id],
-        "onlyIncludeWidgetIds": page.children,
-        "forParent": _vm.widget.id
-      }
-    })], 1) : _vm._e()]);
-  })], 2);
-};
-
-var __vue_staticRenderFns__$C = [];
-/* style */
-
-const __vue_inject_styles__$C = function (inject) {
-  if (!inject) return;
-  inject("data-v-225b5a8f_0", {
-    source: ".paging-menu-wrapper[data-v-225b5a8f]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.paging-menu-item[data-v-225b5a8f]{display:inline-block;padding:10px 20px;cursor:pointer;border:1px solid transparent}.paging-menu-item.active[data-v-225b5a8f]{background-color:#e8e8e8}.paging-menu-item.errors[data-v-225b5a8f]{border-color:red}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-const __vue_scope_id__$C = "data-v-225b5a8f";
+const __vue_scope_id__$C = "data-v-735b5fe9";
 /* module identifier */
 
 const __vue_module_identifier__$C = undefined;
@@ -1839,12 +2935,12 @@ const __vue_is_functional_template__$C = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$D = /*#__PURE__*/normalizeComponent({
+const __vue_component__$E = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$C,
   staticRenderFns: __vue_staticRenderFns__$C
 }, __vue_inject_styles__$C, __vue_script__$C, __vue_scope_id__$C, __vue_is_functional_template__$C, __vue_module_identifier__$C, false, createInjector, undefined, undefined);
 
-var ReadOnly$d = __vue_component__$D;
+var Display$b = __vue_component__$E;
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -6598,6 +7694,10 @@ class WidgetItem {
     return this._widget.id;
   }
 
+  get widget() {
+    return this._widget;
+  }
+
   get effects() {
     return this._widget.effects;
   }
@@ -7039,7 +8139,7 @@ class PagesWidgetItem extends WidgetItem {
     // current pages is not at its end yet, just return
     // based on current pages' state
 
-    if (!this.properties.navigationIntegrateChildrenPages || !childPages || childPages.properties.detachParentIntegration || !isCurrentPageAtEnd) {
+    if (!this.properties.navigationIntegrateChildrenPages || !childPages || childPages.nextButtonType() === "none" || childPages.properties.detachParentIntegration || !isCurrentPageAtEnd) {
       if (isCurrentPageAtEnd) {
         return this.properties.hasCompleteButton ? "complete" : "none";
       }
@@ -7061,17 +8161,307 @@ class PagesWidgetItem extends WidgetItem {
 
 }
 
+//
+var script$B = defineComponent({
+  components: {
+    WidgetsLayout
+  },
+  props: {
+    widget: Object,
+    widgets: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function
+  },
+
+  data() {
+    return {
+      sortedPages: []
+    };
+  },
+
+  inject: ["t"],
+  computed: {
+    currentPageIndex() {
+      var _this$formState$widge, _this$formState$widge2;
+
+      return ((_this$formState$widge = this.formState.widgetState) === null || _this$formState$widge === void 0 ? void 0 : (_this$formState$widge2 = _this$formState$widge[this.$props.widget.id]) === null || _this$formState$widge2 === void 0 ? void 0 : _this$formState$widge2.currentPageIndex) || 0;
+    }
+
+  },
+  watch: {
+    "widget.properties.pages": {
+      handler() {
+        this.$data.sortedPages = this.$props.widget.getSortedPages();
+      },
+
+      immediate: true
+    }
+  },
+  methods: {
+    pageIndexHasErrors(idx) {
+      // get child errors
+      const childErrors = this.$props.widget.getState("pageIdxErrors") || {}; // if no childErrors, just return false
+
+      if (!Object.keys(childErrors).length) return false; // map child error widget ids to paging children index
+      // const children = this.$props.widget.getChildren();
+
+      return Object.keys(childErrors[idx] || {}).length;
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$B = script$B;
+/* template */
+
+var __vue_render__$B = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_c('div', {
+    staticClass: "paging-menu-wrapper"
+  }, _vm._l(_vm.sortedPages, function (page, pageIndex) {
+    return _c('a', {
+      key: pageIndex,
+      staticClass: "paging-menu-item",
+      class: {
+        active: _vm.currentPageIndex === pageIndex,
+        errors: _vm.pageIndexHasErrors(pageIndex)
+      },
+      on: {
+        "click": function () {
+          return _vm.widget.setState('currentPageIndex', pageIndex);
+        }
+      }
+    }, [_vm._v("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ")]);
+  }), 0), _vm._v(" "), _vm._l(_vm.sortedPages, function (page, pageIndex) {
+    return _c('div', {
+      key: pageIndex,
+      staticClass: "paging-content-item"
+    }, [_vm.currentPageIndex === pageIndex ? _c('div', [_c('widgets-layout', {
+      attrs: {
+        "widgets": _vm.widgets,
+        "widgetItems": _vm.widgetItems,
+        "excludeWidgetIds": [_vm.widget.id],
+        "onlyIncludeWidgetIds": page.children,
+        "forParent": _vm.widget.id
+      }
+    })], 1) : _vm._e()]);
+  })], 2);
+};
+
+var __vue_staticRenderFns__$B = [];
+/* style */
+
+const __vue_inject_styles__$B = function (inject) {
+  if (!inject) return;
+  inject("data-v-225b5a8f_0", {
+    source: ".paging-menu-wrapper[data-v-225b5a8f]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.paging-menu-item[data-v-225b5a8f]{display:inline-block;padding:10px 20px;cursor:pointer;border:1px solid transparent}.paging-menu-item.active[data-v-225b5a8f]{background-color:#e8e8e8}.paging-menu-item.errors[data-v-225b5a8f]{border-color:red}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$B = "data-v-225b5a8f";
+/* module identifier */
+
+const __vue_module_identifier__$B = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$B = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$D = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$B,
+  staticRenderFns: __vue_staticRenderFns__$B
+}, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, createInjector, undefined, undefined);
+
+var ReadOnly$b = __vue_component__$D;
+
 var pages = {
-  display: Display$d,
-  form: Form$9,
-  readOnly: ReadOnly$d,
+  display: Display$b,
+  builder: Builder$4,
+  readOnly: ReadOnly$b,
   widgetItem: PagesWidgetItem
 };
 
 //
 // import { validateWidget } from "../../validateUtils";
 
-var script$B = defineComponent({
+var script$A = defineComponent({
+  props: {
+    widget: Object,
+    widgetControls: Object,
+    widgetItems: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String
+  },
+  inject: ["t", "questionControls", "widgetControls", "getFormState", "setFormState", "getLocale", "setMessage"],
+
+  created() {
+    var _this$$props$widget, _this$widget;
+
+    const widgetState = { ...((_this$$props$widget = this.$props.widget) === null || _this$$props$widget === void 0 ? void 0 : _this$$props$widget.getState())
+    };
+    (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.setState("type", "question");
+
+    if ((widgetState === null || widgetState === void 0 ? void 0 : widgetState.touched) === undefined) {
+      var _this$widget2, _this$widget3, _this$widget4;
+
+      (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.setState("touched", false);
+      (_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.setState("pristine", true);
+      (_this$widget4 = this.widget) === null || _this$widget4 === void 0 ? void 0 : _this$widget4.setState("dirty", false);
+    }
+  },
+
+  mounted() {
+    this.$nextTick(() => {
+      if (!this.$refs.labelInput) return;
+      this.$refs.labelInput.style.height = "";
+      this.$refs.labelInput.style.height = this.$refs.labelInput.scrollHeight + "px";
+    });
+  },
+
+  unmounted() {},
+
+  computed: {
+    formState() {
+      return this.getFormState();
+    }
+
+  },
+  methods: {
+    updateText(name, text) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: `__${name}`,
+        value: text.replaceAll(/\n|\r/g, "")
+      });
+    },
+
+    onChange(response, ignoreChecks) {
+      this.widget.setState("response", response);
+      if (ignoreChecks) return;
+      this.widget.setState("touched", true);
+      this.widget.setState("pristine", false);
+      this.widget.setState("dirty", true);
+
+      (async () => {
+        // handle validations
+        await this.$props.widget.runValidations(); // handle reflexives
+
+        const widgetIdsToHandleReflexives = this.formState.getReflexWidgetIdsByCode(this.$props.widget.code);
+        await Promise.all(widgetIdsToHandleReflexives.map(async widgetId => {
+          return this.$props.widgetItems[widgetId].runReflexives();
+        }));
+      })();
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$A = script$A;
+/* template */
+
+var __vue_render__$A = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return !_vm.widget.getState('reflexiveHide') ? _c('div', [_c('div', {
+    staticClass: "question-wrapper"
+  }, [!_vm.widget.properties.hideLabel ? _c('label', {
+    class: {
+      errors: (_vm.getWidgetState('errors') || []).length
+    },
+    attrs: {
+      "for": _vm.widget.code || _vm.widget.id
+    }
+  }, [_c('textarea', {
+    ref: "labelInput",
+    staticClass: "text-input",
+    attrs: {
+      "oninput": "this.style.height = \"\";this.style.height = this.scrollHeight + \"px\""
+    },
+    domProps: {
+      "value": _vm.t('__label', _vm.widget.id)
+    },
+    on: {
+      "input": function (ev) {
+        return _vm.updateText('label', ev.target.value);
+      }
+    }
+  })]) : _vm._e(), _vm._v(" "), _c('div', [_c(_vm.questionControls[_vm.widget.properties.control].display, {
+    tag: "component",
+    attrs: {
+      "properties": _vm.widget.properties.controlProperties,
+      "widget": _vm.widget,
+      "onChange": _vm.onChange,
+      "value": _vm.widget.getState('response'),
+      "setWidgetState": _vm.setWidgetState,
+      "getWidgetState": _vm.getWidgetState,
+      "view": _vm.view,
+      "errors": _vm.getWidgetState('errors'),
+      "t": _vm.t
+    }
+  }), _vm._v(" "), _vm._l(_vm.getWidgetState('errors'), function (errorKey) {
+    return _c('span', {
+      key: errorKey,
+      staticClass: "error"
+    }, [_vm._v(_vm._s(_vm.t(errorKey, _vm.widget.id)))]);
+  })], 2)])]) : _vm._e();
+};
+
+var __vue_staticRenderFns__$A = [];
+/* style */
+
+const __vue_inject_styles__$A = function (inject) {
+  if (!inject) return;
+  inject("data-v-a6f64c72_0", {
+    source: ".question-wrapper[data-v-a6f64c72]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-a6f64c72]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-a6f64c72]{color:red}.question-wrapper>div[data-v-a6f64c72]{flex:2;padding:20px 0}.error[data-v-a6f64c72]{display:block;color:red;margin-top:10px}.text-input[data-v-a6f64c72]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$A = "data-v-a6f64c72";
+/* module identifier */
+
+const __vue_module_identifier__$A = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$A = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$C = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$A,
+  staticRenderFns: __vue_staticRenderFns__$A
+}, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, false, createInjector, undefined, undefined);
+
+var Builder$3 = __vue_component__$C;
+
+//
+// import { validateWidget } from "../../validateUtils";
+
+var script$z = defineComponent({
   props: {
     widget: Object,
     widgetControls: Object,
@@ -7125,10 +8515,10 @@ var script$B = defineComponent({
 });
 
 /* script */
-const __vue_script__$B = script$B;
+const __vue_script__$z = script$z;
 /* template */
 
-var __vue_render__$B = function () {
+var __vue_render__$z = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -7165,10 +8555,10 @@ var __vue_render__$B = function () {
   })], 2)])]) : _vm._e();
 };
 
-var __vue_staticRenderFns__$B = [];
+var __vue_staticRenderFns__$z = [];
 /* style */
 
-const __vue_inject_styles__$B = function (inject) {
+const __vue_inject_styles__$z = function (inject) {
   if (!inject) return;
   inject("data-v-b98ef6c4_0", {
     source: ".question-wrapper[data-v-b98ef6c4]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-b98ef6c4]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-b98ef6c4]{color:red}.question-wrapper>div[data-v-b98ef6c4]{flex:2;padding:20px 0}.error[data-v-b98ef6c4]{display:block;color:red;margin-top:10px}",
@@ -7179,178 +8569,7 @@ const __vue_inject_styles__$B = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$B = "data-v-b98ef6c4";
-/* module identifier */
-
-const __vue_module_identifier__$B = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$B = false;
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$C = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$B,
-  staticRenderFns: __vue_staticRenderFns__$B
-}, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, createInjector, undefined, undefined);
-
-var Display$c = __vue_component__$C;
-
-//
-var script$A = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String
-  },
-  inject: ["t", "questionControls"],
-
-  setup() {},
-
-  methods: {
-    onChange(response) {
-      this.setWidgetState("response", response);
-    }
-
-  }
-});
-
-/* script */
-const __vue_script__$A = script$A;
-/* template */
-
-var __vue_render__$A = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_c('div', {
-    staticClass: "question-wrapper"
-  }, [_c('label', [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]), _vm._v(" "), _c('div', [_c(_vm.questionControls[_vm.widget.properties.control].form, {
-    tag: "component",
-    attrs: {
-      "properties": _vm.widget.properties.controlProperties,
-      "widget": _vm.widget,
-      "onChange": _vm.onChange,
-      "value": _vm.getWidgetState('response'),
-      "setWidgetState": _vm.setWidgetState,
-      "getWidgetState": _vm.getWidgetState,
-      "view": _vm.view
-    }
-  })], 1)])]);
-};
-
-var __vue_staticRenderFns__$A = [];
-/* style */
-
-const __vue_inject_styles__$A = function (inject) {
-  if (!inject) return;
-  inject("data-v-38881a82_0", {
-    source: ".question-wrapper[data-v-38881a82]{width:100%;display:flex;flex-direction:row;padding:10px 10px}.question-wrapper>label[data-v-38881a82]{flex:1;border-right:1px solid #393939}.question-wrapper>div[data-v-38881a82]{flex:2;padding-left:10px}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-const __vue_scope_id__$A = "data-v-38881a82";
-/* module identifier */
-
-const __vue_module_identifier__$A = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$A = false;
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$B = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$A,
-  staticRenderFns: __vue_staticRenderFns__$A
-}, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, false, createInjector, undefined, undefined);
-
-var Form$8 = __vue_component__$B;
-
-//
-var script$z = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String
-  },
-  inject: ["t", "questionControls", "widgetControls", "getFormState", "setFormState"],
-
-  created() {},
-
-  unmounted() {},
-
-  computed: {
-    formState() {
-      return this.getFormState();
-    }
-
-  },
-  methods: {
-    onChange(response) {
-      this.setWidgetState("response", response);
-    }
-
-  }
-});
-
-/* script */
-const __vue_script__$z = script$z;
-/* template */
-
-var __vue_render__$z = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return !_vm.getWidgetState('reflexiveHide') ? _c('div', [_c('div', {
-    staticClass: "question-wrapper"
-  }, [!_vm.widget.properties.hideLabel ? _c('label', [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]) : _vm._e(), _vm._v(" "), _c('div', [_c(_vm.questionControls[_vm.widget.properties.control].readOnly, {
-    tag: "component",
-    attrs: {
-      "properties": _vm.widget.properties.controlProperties,
-      "widget": _vm.widget,
-      "onChange": _vm.onChange,
-      "value": _vm.getWidgetState('response'),
-      "setWidgetState": _vm.setWidgetState,
-      "getWidgetState": _vm.getWidgetState,
-      "view": _vm.view,
-      "t": _vm.t
-    }
-  })], 1)])]) : _vm._e();
-};
-
-var __vue_staticRenderFns__$z = [];
-/* style */
-
-const __vue_inject_styles__$z = function (inject) {
-  if (!inject) return;
-  inject("data-v-36d25796_0", {
-    source: ".question-wrapper[data-v-36d25796]{width:100%;display:flex;flex-direction:row;padding:10px 10px}.question-wrapper>label[data-v-36d25796]{flex:1;max-width:300px;border-right:1px solid #393939;padding:10px 0}.question-wrapper>div[data-v-36d25796]{flex:2;padding:10px 20px}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-const __vue_scope_id__$z = "data-v-36d25796";
+const __vue_scope_id__$z = "data-v-b98ef6c4";
 /* module identifier */
 
 const __vue_module_identifier__$z = undefined;
@@ -7361,12 +8580,12 @@ const __vue_is_functional_template__$z = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$A = /*#__PURE__*/normalizeComponent({
+const __vue_component__$B = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$z,
   staticRenderFns: __vue_staticRenderFns__$z
 }, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, false, createInjector, undefined, undefined);
 
-var ReadOnly$c = __vue_component__$A;
+var Display$a = __vue_component__$B;
 
 class QuestionWidgetItem extends WidgetItem {
   constructor(opts) {
@@ -7399,31 +8618,31 @@ class QuestionWidgetItem extends WidgetItem {
 
 }
 
-var question = {
-  display: Display$c,
-  form: Form$8,
-  readOnly: ReadOnly$c,
-  widgetItem: QuestionWidgetItem
-};
-
 //
 var script$y = defineComponent({
   props: {
-    widget: Object
+    widget: Object,
+    widgetControls: Object,
+    widgetItems: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String
   },
-  inject: ["t"],
+  inject: ["t", "questionControls", "widgetControls", "getFormState", "setFormState"],
 
-  setup() {},
+  created() {},
+
+  unmounted() {},
 
   computed: {
-    label() {
-      return this.t("__label", this.$props.widget.id);
+    formState() {
+      return this.getFormState();
     }
 
   },
   methods: {
-    isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+    onChange(response) {
+      this.setWidgetState("response", response);
     }
 
   }
@@ -7434,30 +8653,27 @@ const __vue_script__$y = script$y;
 /* template */
 
 var __vue_render__$y = function () {
-  var _obj, _obj$1, _obj$2;
-
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', {
-    staticClass: "line-wrapper",
-    class: {
-      vertical: _vm.widget.properties.dir === 'vertical'
+  return !_vm.getWidgetState('reflexiveHide') ? _c('div', [_c('div', {
+    staticClass: "question-wrapper"
+  }, [!_vm.widget.properties.hideLabel ? _c('label', [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]) : _vm._e(), _vm._v(" "), _c('div', [_c(_vm.questionControls[_vm.widget.properties.control].readOnly, {
+    tag: "component",
+    attrs: {
+      "properties": _vm.widget.properties.controlProperties,
+      "widget": _vm.widget,
+      "onChange": _vm.onChange,
+      "value": _vm.getWidgetState('response'),
+      "setWidgetState": _vm.setWidgetState,
+      "getWidgetState": _vm.getWidgetState,
+      "view": _vm.view,
+      "t": _vm.t
     }
-  }, [_vm.isShowLabel('start') ? _c('label', {
-    class: (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)
-  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
-    staticClass: "line"
-  }), _vm._v(" "), _vm.isShowLabel('center') ? _c('label', {
-    class: (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)
-  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
-    staticClass: "line"
-  }), _vm._v(" "), _vm.isShowLabel('end') ? _c('label', {
-    class: (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)
-  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e()]);
+  })], 1)])]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$y = [];
@@ -7465,8 +8681,8 @@ var __vue_staticRenderFns__$y = [];
 
 const __vue_inject_styles__$y = function (inject) {
   if (!inject) return;
-  inject("data-v-5d942951_0", {
-    source: ".line-wrapper[data-v-5d942951]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-5d942951]{flex-direction:column}.line-wrapper .line[data-v-5d942951]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-5d942951]{width:1px}.line-wrapper label[data-v-5d942951]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-5d942951]{padding-left:0}.line-wrapper label.end[data-v-5d942951]{padding-right:0}",
+  inject("data-v-36d25796_0", {
+    source: ".question-wrapper[data-v-36d25796]{width:100%;display:flex;flex-direction:row;padding:10px 10px}.question-wrapper>label[data-v-36d25796]{flex:1;max-width:300px;border-right:1px solid #393939;padding:10px 0}.question-wrapper>div[data-v-36d25796]{flex:2;padding:10px 20px}",
     map: undefined,
     media: undefined
   });
@@ -7474,7 +8690,7 @@ const __vue_inject_styles__$y = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$y = "data-v-5d942951";
+const __vue_scope_id__$y = "data-v-36d25796";
 /* module identifier */
 
 const __vue_module_identifier__$y = undefined;
@@ -7485,29 +8701,61 @@ const __vue_is_functional_template__$y = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$z = /*#__PURE__*/normalizeComponent({
+const __vue_component__$A = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$y,
   staticRenderFns: __vue_staticRenderFns__$y
 }, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, createInjector, undefined, undefined);
 
-var Display$b = __vue_component__$z;
+var ReadOnly$a = __vue_component__$A;
+
+var question = {
+  display: Display$a,
+  builder: Builder$3,
+  readOnly: ReadOnly$a,
+  widgetItem: QuestionWidgetItem
+};
 
 //
 var script$x = defineComponent({
-  props: {
-    widget: Object
+  components: {
+    BuilderWidgetsLayout,
+    WidgetsLayout
   },
-  inject: ["t"],
+  props: {
+    widget: WidgetItem,
+    widgetItems: Object,
+    widgetControls: Object
+  },
+  inject: ["t", "getLocale", "setMessage"],
 
   setup() {},
 
   computed: {
     label() {
       return this.t("__label", this.$props.widget.id);
+    },
+
+    childErrors() {
+      var _this$$props$widget$g;
+
+      return (_this$$props$widget$g = this.$props.widget.getState()) === null || _this$$props$widget$g === void 0 ? void 0 : _this$$props$widget$g.childErrors;
+    },
+
+    hasChildErrors() {
+      return this.$props.widget.hasChildErrors();
     }
 
   },
   methods: {
+    updateText(name, text) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: `__${name}`,
+        value: text.replaceAll(/\n|\r/g, "")
+      });
+    },
+
     isShowLabel(pos) {
       return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
     }
@@ -7520,30 +8768,37 @@ const __vue_script__$x = script$x;
 /* template */
 
 var __vue_render__$x = function () {
-  var _obj, _obj$1, _obj$2;
-
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', {
-    staticClass: "line-wrapper",
+  return _c('section', {
+    staticClass: "section-wrapper",
     class: {
-      vertical: _vm.widget.properties.dir === 'vertical'
+      errors: _vm.hasChildErrors
     }
-  }, [_vm.isShowLabel('start') ? _c('label', {
-    class: (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)
-  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
-    staticClass: "line"
-  }), _vm._v(" "), _vm.isShowLabel('center') ? _c('label', {
-    class: (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)
-  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
-    staticClass: "line"
-  }), _vm._v(" "), _vm.isShowLabel('end') ? _c('label', {
-    class: (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)
-  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e()]);
+  }, [_c('label', [_c('input', {
+    staticClass: "text-input",
+    attrs: {
+      "type": "text"
+    },
+    domProps: {
+      "value": _vm.label
+    },
+    on: {
+      "input": function (ev) {
+        return _vm.updateText('label', ev.target.value);
+      }
+    }
+  })]), _vm._v(" "), _c('builder-widgets-layout', {
+    attrs: {
+      "widgetControls": _vm.widgetControls,
+      "widgetItems": _vm.widgetItems,
+      "forParent": _vm.widget.id
+    }
+  })], 1);
 };
 
 var __vue_staticRenderFns__$x = [];
@@ -7551,8 +8806,8 @@ var __vue_staticRenderFns__$x = [];
 
 const __vue_inject_styles__$x = function (inject) {
   if (!inject) return;
-  inject("data-v-928f2922_0", {
-    source: ".line-wrapper[data-v-928f2922]{display:flex;flex-direction:row;align-items:center;padding:10px}.line-wrapper.vertical[data-v-928f2922]{flex-direction:column}.line-wrapper .line[data-v-928f2922]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-928f2922]{width:1px}.line-wrapper label[data-v-928f2922]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-928f2922]{padding-left:0}.line-wrapper label.end[data-v-928f2922]{padding-right:0}",
+  inject("data-v-71ae3a26_0", {
+    source: ".section-wrapper[data-v-71ae3a26]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-71ae3a26]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px;z-index:10}.section-wrapper.errors[data-v-71ae3a26]{border-color:red}.text-input[data-v-71ae3a26]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
     map: undefined,
     media: undefined
   });
@@ -7560,7 +8815,7 @@ const __vue_inject_styles__$x = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$x = "data-v-928f2922";
+const __vue_scope_id__$x = "data-v-71ae3a26";
 /* module identifier */
 
 const __vue_module_identifier__$x = undefined;
@@ -7571,132 +8826,15 @@ const __vue_is_functional_template__$x = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$y = /*#__PURE__*/normalizeComponent({
+const __vue_component__$z = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$x,
   staticRenderFns: __vue_staticRenderFns__$x
 }, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, false, createInjector, undefined, undefined);
 
-var Form$7 = __vue_component__$y;
+var Builder$2 = __vue_component__$z;
 
 //
 var script$w = defineComponent({
-  props: {
-    widget: Object
-  },
-  inject: ["t"],
-
-  setup() {},
-
-  computed: {
-    label() {
-      return this.t("__label", this.$props.widget.id);
-    }
-
-  },
-  methods: {
-    isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
-    }
-
-  }
-});
-
-/* script */
-const __vue_script__$w = script$w;
-/* template */
-
-var __vue_render__$w = function () {
-  var _obj, _obj$1, _obj$2;
-
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', {
-    staticClass: "line-wrapper",
-    class: {
-      vertical: _vm.widget.properties.dir === 'vertical'
-    }
-  }, [_vm.isShowLabel('start') ? _c('label', {
-    class: (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)
-  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
-    staticClass: "line"
-  }), _vm._v(" "), _vm.isShowLabel('center') ? _c('label', {
-    class: (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)
-  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
-    staticClass: "line"
-  }), _vm._v(" "), _vm.isShowLabel('end') ? _c('label', {
-    class: (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)
-  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e()]);
-};
-
-var __vue_staticRenderFns__$w = [];
-/* style */
-
-const __vue_inject_styles__$w = function (inject) {
-  if (!inject) return;
-  inject("data-v-39a1748d_0", {
-    source: ".line-wrapper[data-v-39a1748d]{display:flex;flex-direction:row;align-items:center;padding:10px}.line-wrapper.vertical[data-v-39a1748d]{flex-direction:column}.line-wrapper .line[data-v-39a1748d]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-39a1748d]{width:1px}.line-wrapper label[data-v-39a1748d]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-39a1748d]{padding-left:0}.line-wrapper label.end[data-v-39a1748d]{padding-right:0}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-const __vue_scope_id__$w = "data-v-39a1748d";
-/* module identifier */
-
-const __vue_module_identifier__$w = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$w = false;
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$x = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$w,
-  staticRenderFns: __vue_staticRenderFns__$w
-}, __vue_inject_styles__$w, __vue_script__$w, __vue_scope_id__$w, __vue_is_functional_template__$w, __vue_module_identifier__$w, false, createInjector, undefined, undefined);
-
-var ReadOnly$b = __vue_component__$x;
-
-var separator = {
-  display: Display$b,
-  form: Form$7,
-  readOnly: ReadOnly$b
-};
-
-class SectionWidgetItem extends WidgetItem {
-  constructor(opts) {
-    super(opts);
-  }
-
-  getChildrenIds() {
-    return this.properties.children;
-  }
-
-  addChild(childWidget, meta) {
-    super.addChild(childWidget, meta);
-
-    this._widget.properties.children.splice((meta === null || meta === void 0 ? void 0 : meta.idx) || 0, 0, childWidget.id);
-  }
-
-  removeChild(childWidget) {
-    super.removeChild(childWidget);
-
-    const removeIdx = this._widget.properties.children.findIndex(c => c === childWidget.id);
-
-    if (removeIdx > -1) this._widget.properties.children.splice(removeIdx, 1);
-  }
-
-}
-
-//
-var script$v = defineComponent({
   components: {
     WidgetsLayout
   },
@@ -7734,10 +8872,10 @@ var script$v = defineComponent({
 });
 
 /* script */
-const __vue_script__$v = script$v;
+const __vue_script__$w = script$w;
 /* template */
 
-var __vue_render__$v = function () {
+var __vue_render__$w = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -7758,10 +8896,10 @@ var __vue_render__$v = function () {
   })], 1);
 };
 
-var __vue_staticRenderFns__$v = [];
+var __vue_staticRenderFns__$w = [];
 /* style */
 
-const __vue_inject_styles__$v = function (inject) {
+const __vue_inject_styles__$w = function (inject) {
   if (!inject) return;
   inject("data-v-3bcb2215_0", {
     source: ".section-wrapper[data-v-3bcb2215]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-3bcb2215]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}.section-wrapper.errors[data-v-3bcb2215]{border-color:red}",
@@ -7772,26 +8910,26 @@ const __vue_inject_styles__$v = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$v = "data-v-3bcb2215";
+const __vue_scope_id__$w = "data-v-3bcb2215";
 /* module identifier */
 
-const __vue_module_identifier__$v = undefined;
+const __vue_module_identifier__$w = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$v = false;
+const __vue_is_functional_template__$w = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$w = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$v,
-  staticRenderFns: __vue_staticRenderFns__$v
-}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, createInjector, undefined, undefined);
+const __vue_component__$y = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$w,
+  staticRenderFns: __vue_staticRenderFns__$w
+}, __vue_inject_styles__$w, __vue_script__$w, __vue_scope_id__$w, __vue_is_functional_template__$w, __vue_module_identifier__$w, false, createInjector, undefined, undefined);
 
-var Display$a = __vue_component__$w;
+var Display$9 = __vue_component__$y;
 
 //
-var script$u = defineComponent({
+var script$v = defineComponent({
   components: {
     WidgetsLayout
   },
@@ -7819,10 +8957,10 @@ var script$u = defineComponent({
 });
 
 /* script */
-const __vue_script__$u = script$u;
+const __vue_script__$v = script$v;
 /* template */
 
-var __vue_render__$u = function () {
+var __vue_render__$v = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -7840,13 +8978,13 @@ var __vue_render__$u = function () {
   })], 1);
 };
 
-var __vue_staticRenderFns__$u = [];
+var __vue_staticRenderFns__$v = [];
 /* style */
 
-const __vue_inject_styles__$u = function (inject) {
+const __vue_inject_styles__$v = function (inject) {
   if (!inject) return;
-  inject("data-v-c60a62be_0", {
-    source: ".section-wrapper[data-v-c60a62be]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px;border-radius:8px}.section-wrapper>label[data-v-c60a62be]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}",
+  inject("data-v-2ff96dbf_0", {
+    source: ".section-wrapper[data-v-2ff96dbf]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px;border-radius:8px}.section-wrapper>label[data-v-2ff96dbf]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}",
     map: undefined,
     media: undefined
   });
@@ -7854,7 +8992,173 @@ const __vue_inject_styles__$u = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$u = "data-v-c60a62be";
+const __vue_scope_id__$v = "data-v-2ff96dbf";
+/* module identifier */
+
+const __vue_module_identifier__$v = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$v = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$x = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$v,
+  staticRenderFns: __vue_staticRenderFns__$v
+}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, createInjector, undefined, undefined);
+
+var ReadOnly$9 = __vue_component__$x;
+
+class SectionWidgetItem extends WidgetItem {
+  constructor(opts) {
+    super(opts);
+  }
+
+  getChildrenIds() {
+    return this.properties.children;
+  }
+
+  addChild(childWidget, meta) {
+    super.addChild(childWidget, meta);
+
+    this._widget.properties.children.splice((meta === null || meta === void 0 ? void 0 : meta.idx) || 0, 0, childWidget.id);
+  }
+
+  removeChild(childWidget) {
+    super.removeChild(childWidget);
+
+    const removeIdx = this._widget.properties.children.findIndex(c => c === childWidget.id);
+
+    if (removeIdx > -1) this._widget.properties.children.splice(removeIdx, 1);
+  }
+
+}
+
+var section = {
+  display: Display$9,
+  builder: Builder$2,
+  readOnly: ReadOnly$9,
+  widgetItem: SectionWidgetItem
+};
+
+//
+var script$u = defineComponent({
+  props: {
+    widget: Object
+  },
+  inject: ["t", "getLocale", "setMessage"],
+
+  setup() {},
+
+  computed: {
+    label() {
+      return this.t("__label", this.$props.widget.id);
+    }
+
+  },
+  methods: {
+    updateText(name, text) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: `__${name}`,
+        value: text.replaceAll(/\n|\r/g, "")
+      });
+    },
+
+    isShowLabel(pos) {
+      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$u = script$u;
+/* template */
+
+var __vue_render__$u = function () {
+  var _obj, _obj$1, _obj$2;
+
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "line-wrapper",
+    class: {
+      vertical: _vm.widget.properties.dir === 'vertical'
+    }
+  }, [_vm.isShowLabel('start') ? _c('label', {
+    class: (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)
+  }, [_c('input', {
+    staticClass: "text-input",
+    attrs: {
+      "type": "text"
+    },
+    domProps: {
+      "value": _vm.label
+    },
+    on: {
+      "input": function (ev) {
+        return _vm.updateText('label', ev.target.value);
+      }
+    }
+  })]) : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "line"
+  }), _vm._v(" "), _vm.isShowLabel('center') ? _c('label', {
+    class: (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)
+  }, [_c('input', {
+    staticClass: "text-input",
+    attrs: {
+      "type": "text"
+    },
+    domProps: {
+      "value": _vm.label
+    },
+    on: {
+      "input": function (ev) {
+        return _vm.updateText('label', ev.target.value);
+      }
+    }
+  })]) : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "line"
+  }), _vm._v(" "), _vm.isShowLabel('end') ? _c('label', {
+    class: (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)
+  }, [_c('input', {
+    staticClass: "text-input",
+    attrs: {
+      "type": "text"
+    },
+    domProps: {
+      "value": _vm.label
+    },
+    on: {
+      "input": function (ev) {
+        return _vm.updateText('label', ev.target.value);
+      }
+    }
+  })]) : _vm._e()]);
+};
+
+var __vue_staticRenderFns__$u = [];
+/* style */
+
+const __vue_inject_styles__$u = function (inject) {
+  if (!inject) return;
+  inject("data-v-be1a0f8e_0", {
+    source: ".line-wrapper[data-v-be1a0f8e]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-be1a0f8e]{flex-direction:column}.line-wrapper .line[data-v-be1a0f8e]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-be1a0f8e]{width:1px}.line-wrapper label[data-v-be1a0f8e]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-be1a0f8e]{padding-left:0}.line-wrapper label.end[data-v-be1a0f8e]{padding-right:0}.text-input[data-v-be1a0f8e]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$u = "data-v-be1a0f8e";
 /* module identifier */
 
 const __vue_module_identifier__$u = undefined;
@@ -7865,22 +9169,17 @@ const __vue_is_functional_template__$u = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$v = /*#__PURE__*/normalizeComponent({
+const __vue_component__$w = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$u,
   staticRenderFns: __vue_staticRenderFns__$u
 }, __vue_inject_styles__$u, __vue_script__$u, __vue_scope_id__$u, __vue_is_functional_template__$u, __vue_module_identifier__$u, false, createInjector, undefined, undefined);
 
-var Form$6 = __vue_component__$v;
+var Builder$1 = __vue_component__$w;
 
 //
 var script$t = defineComponent({
-  components: {
-    WidgetsLayout
-  },
   props: {
-    widget: Object,
-    widgetItems: Object,
-    widgetControls: Object
+    widget: Object
   },
   inject: ["t"],
 
@@ -7905,21 +9204,30 @@ const __vue_script__$t = script$t;
 /* template */
 
 var __vue_render__$t = function () {
+  var _obj, _obj$1, _obj$2;
+
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _c('section', {
-    staticClass: "section-wrapper"
-  }, [!!_vm.label ? _c('label', [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('widgets-layout', {
-    attrs: {
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "forParent": _vm.widget.id
+  return _c('div', {
+    staticClass: "line-wrapper",
+    class: {
+      vertical: _vm.widget.properties.dir === 'vertical'
     }
-  })], 1);
+  }, [_vm.isShowLabel('start') ? _c('label', {
+    class: (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)
+  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "line"
+  }), _vm._v(" "), _vm.isShowLabel('center') ? _c('label', {
+    class: (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)
+  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "line"
+  }), _vm._v(" "), _vm.isShowLabel('end') ? _c('label', {
+    class: (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)
+  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e()]);
 };
 
 var __vue_staticRenderFns__$t = [];
@@ -7927,8 +9235,8 @@ var __vue_staticRenderFns__$t = [];
 
 const __vue_inject_styles__$t = function (inject) {
   if (!inject) return;
-  inject("data-v-2ff96dbf_0", {
-    source: ".section-wrapper[data-v-2ff96dbf]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px;border-radius:8px}.section-wrapper>label[data-v-2ff96dbf]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}",
+  inject("data-v-5d942951_0", {
+    source: ".line-wrapper[data-v-5d942951]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-5d942951]{flex-direction:column}.line-wrapper .line[data-v-5d942951]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-5d942951]{width:1px}.line-wrapper label[data-v-5d942951]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-5d942951]{padding-left:0}.line-wrapper label.end[data-v-5d942951]{padding-right:0}",
     map: undefined,
     media: undefined
   });
@@ -7936,7 +9244,7 @@ const __vue_inject_styles__$t = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$t = "data-v-2ff96dbf";
+const __vue_scope_id__$t = "data-v-5d942951";
 /* module identifier */
 
 const __vue_module_identifier__$t = undefined;
@@ -7947,26 +9255,34 @@ const __vue_is_functional_template__$t = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$u = /*#__PURE__*/normalizeComponent({
+const __vue_component__$v = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$t,
   staticRenderFns: __vue_staticRenderFns__$t
 }, __vue_inject_styles__$t, __vue_script__$t, __vue_scope_id__$t, __vue_is_functional_template__$t, __vue_module_identifier__$t, false, createInjector, undefined, undefined);
 
-var ReadOnly$a = __vue_component__$u;
-
-var section = {
-  display: Display$a,
-  form: Form$6,
-  readOnly: ReadOnly$a,
-  widgetItem: SectionWidgetItem
-};
+var Display$8 = __vue_component__$v;
 
 //
 var script$s = defineComponent({
   props: {
     widget: Object
   },
-  inject: ["t"]
+  inject: ["t"],
+
+  setup() {},
+
+  computed: {
+    label() {
+      return this.t("__label", this.$props.widget.id);
+    }
+
+  },
+  methods: {
+    isShowLabel(pos) {
+      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+    }
+
+  }
 });
 
 /* script */
@@ -7974,50 +9290,86 @@ const __vue_script__$s = script$s;
 /* template */
 
 var __vue_render__$s = function () {
+  var _obj, _obj$1, _obj$2;
+
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _c(_vm.widget.properties.tagType, {
-    tag: "component",
-    staticClass: "header"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+  return _c('div', {
+    staticClass: "line-wrapper",
+    class: {
+      vertical: _vm.widget.properties.dir === 'vertical'
+    }
+  }, [_vm.isShowLabel('start') ? _c('label', {
+    class: (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)
+  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "line"
+  }), _vm._v(" "), _vm.isShowLabel('center') ? _c('label', {
+    class: (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)
+  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "line"
+  }), _vm._v(" "), _vm.isShowLabel('end') ? _c('label', {
+    class: (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)
+  }, [_vm._v(_vm._s(_vm.label))]) : _vm._e()]);
 };
 
 var __vue_staticRenderFns__$s = [];
 /* style */
 
-const __vue_inject_styles__$s = undefined;
+const __vue_inject_styles__$s = function (inject) {
+  if (!inject) return;
+  inject("data-v-39a1748d_0", {
+    source: ".line-wrapper[data-v-39a1748d]{display:flex;flex-direction:row;align-items:center;padding:10px}.line-wrapper.vertical[data-v-39a1748d]{flex-direction:column}.line-wrapper .line[data-v-39a1748d]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-39a1748d]{width:1px}.line-wrapper label[data-v-39a1748d]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-39a1748d]{padding-left:0}.line-wrapper label.end[data-v-39a1748d]{padding-right:0}",
+    map: undefined,
+    media: undefined
+  });
+};
 /* scoped */
 
-const __vue_scope_id__$s = "data-v-4e34eb30";
+
+const __vue_scope_id__$s = "data-v-39a1748d";
 /* module identifier */
 
 const __vue_module_identifier__$s = undefined;
 /* functional template */
 
 const __vue_is_functional_template__$s = false;
-/* style inject */
-
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$t = /*#__PURE__*/normalizeComponent({
+const __vue_component__$u = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$s,
   staticRenderFns: __vue_staticRenderFns__$s
-}, __vue_inject_styles__$s, __vue_script__$s, __vue_scope_id__$s, __vue_is_functional_template__$s, __vue_module_identifier__$s, false, undefined, undefined, undefined);
+}, __vue_inject_styles__$s, __vue_script__$s, __vue_scope_id__$s, __vue_is_functional_template__$s, __vue_module_identifier__$s, false, createInjector, undefined, undefined);
 
-var Display$9 = __vue_component__$t;
+var ReadOnly$8 = __vue_component__$u;
 
-//
+var separator = {
+  display: Display$8,
+  builder: Builder$1,
+  readOnly: ReadOnly$8
+};
+
 var script$r = defineComponent({
   props: {
     widget: Object
   },
-  inject: ["t"]
+  inject: ["t", "getLocale", "setMessage"],
+  methods: {
+    onTextChange(val) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: "__label",
+        value: val.target.value
+      });
+    }
+
+  }
 });
 
 /* script */
@@ -8033,8 +9385,19 @@ var __vue_render__$r = function () {
 
   return _c(_vm.widget.properties.tagType, {
     tag: "component",
-    staticClass: "header"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+    staticClass: "text"
+  }, [_c('input', {
+    staticClass: "text-input",
+    attrs: {
+      "type": "text"
+    },
+    domProps: {
+      "value": _vm.t('__label', _vm.widget.id)
+    },
+    on: {
+      "input": _vm.onTextChange
+    }
+  })]);
 };
 
 var __vue_staticRenderFns__$r = [];
@@ -8042,8 +9405,8 @@ var __vue_staticRenderFns__$r = [];
 
 const __vue_inject_styles__$r = function (inject) {
   if (!inject) return;
-  inject("data-v-cda582fa_0", {
-    source: ".header[data-v-cda582fa]{padding:0 10px}",
+  inject("data-v-4c1be7c6_0", {
+    source: ".text-input[data-v-4c1be7c6]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
     map: undefined,
     media: undefined
   });
@@ -8051,7 +9414,7 @@ const __vue_inject_styles__$r = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$r = "data-v-cda582fa";
+const __vue_scope_id__$r = "data-v-4c1be7c6";
 /* module identifier */
 
 const __vue_module_identifier__$r = undefined;
@@ -8062,19 +9425,29 @@ const __vue_is_functional_template__$r = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$s = /*#__PURE__*/normalizeComponent({
+const __vue_component__$t = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$r,
   staticRenderFns: __vue_staticRenderFns__$r
 }, __vue_inject_styles__$r, __vue_script__$r, __vue_scope_id__$r, __vue_is_functional_template__$r, __vue_module_identifier__$r, false, createInjector, undefined, undefined);
 
-var Form$5 = __vue_component__$s;
+var Builder = __vue_component__$t;
 
-//
 var script$q = defineComponent({
   props: {
-    widget: Object
+    widget: Object,
+    widgets: Object,
+    widgetItems: Object,
+    formState: Object,
+    setWidgetState: Function
   },
-  inject: ["t"]
+  inject: ["updateWidget"],
+  methods: {
+    setTagType(type) {
+      this.widget.properties.tagType = type;
+      this.updateWidget(this.widget);
+    }
+
+  }
 });
 
 /* script */
@@ -8088,10 +9461,89 @@ var __vue_render__$q = function () {
 
   var _c = _vm._self._c || _h;
 
-  return _c(_vm.widget.properties.tagType, {
-    tag: "component",
-    staticClass: "header"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+  return _c('div', {
+    staticClass: "control-wrapper"
+  }, [_c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h1'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h1');
+      }
+    }
+  }, [_vm._v("H1")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h2'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h2');
+      }
+    }
+  }, [_vm._v("H2")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h3'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h3');
+      }
+    }
+  }, [_vm._v("H3")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h4'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h4');
+      }
+    }
+  }, [_vm._v("H4")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h5'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h5');
+      }
+    }
+  }, [_vm._v("H5")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'h6'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('h6');
+      }
+    }
+  }, [_vm._v("H6")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'p'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('p');
+      }
+    }
+  }, [_vm._v("Paragraph")]), _vm._v(" "), _c('a', {
+    staticClass: "tag-selection",
+    class: {
+      selected: _vm.widget.properties.tagType === 'small'
+    },
+    on: {
+      "click": function (ev) {
+        return _vm.setTagType('small');
+      }
+    }
+  }, [_vm._v("Small")])]);
 };
 
 var __vue_staticRenderFns__$q = [];
@@ -8099,8 +9551,8 @@ var __vue_staticRenderFns__$q = [];
 
 const __vue_inject_styles__$q = function (inject) {
   if (!inject) return;
-  inject("data-v-19fb5abe_0", {
-    source: ".header[data-v-19fb5abe]{padding:0 10px}",
+  inject("data-v-476c9ca7_0", {
+    source: ".control-wrapper[data-v-476c9ca7]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-476c9ca7]{height:30px;min-width:40px;padding:0 5px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-476c9ca7]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-476c9ca7]{background-color:#03a9f4;color:#fff}",
     map: undefined,
     media: undefined
   });
@@ -8108,7 +9560,7 @@ const __vue_inject_styles__$q = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$q = "data-v-19fb5abe";
+const __vue_scope_id__$q = "data-v-476c9ca7";
 /* module identifier */
 
 const __vue_module_identifier__$q = undefined;
@@ -8119,51 +9571,19 @@ const __vue_is_functional_template__$q = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$r = /*#__PURE__*/normalizeComponent({
+const __vue_component__$s = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$q,
   staticRenderFns: __vue_staticRenderFns__$q
 }, __vue_inject_styles__$q, __vue_script__$q, __vue_scope_id__$q, __vue_is_functional_template__$q, __vue_module_identifier__$q, false, createInjector, undefined, undefined);
 
-var ReadOnly$9 = __vue_component__$r;
-
-var header = {
-  display: Display$9,
-  form: Form$5,
-  readOnly: ReadOnly$9
-};
+var BuilderControl = __vue_component__$s;
 
 //
 var script$p = defineComponent({
   props: {
     widget: Object
   },
-  inject: ["t"],
-
-  data() {
-    return {
-      isOpen: true
-    };
-  },
-
-  methods: {
-    onCloseAlert() {
-      this.$data.isOpen = false;
-    }
-
-  },
-  computed: {
-    alertStyles() {
-      if (this.widget.properties.type !== "custom" || this.widget.properties.customColor) return {};
-      return {
-        backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent",
-        ...(this.widget.properties.customTextColor ? {
-          color: this.widget.properties.customTextColor
-        } : {})
-      };
-    }
-
-  }
+  inject: ["t"]
 });
 
 /* script */
@@ -8171,92 +9591,50 @@ const __vue_script__$p = script$p;
 /* template */
 
 var __vue_render__$p = function () {
-  var _obj;
-
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _vm.isOpen ? _c('div', {
-    staticClass: "alert",
-    class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
-    style: _vm.alertStyles
-  }, [_c('h3', {
-    staticClass: "title"
-  }, [_vm._v(_vm._s(_vm.t("__title", _vm.widget.id)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.t("__text", _vm.widget.id)))]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
-    staticClass: "close-button",
-    on: {
-      "click": _vm.onCloseAlert
-    }
-  }, [_vm._v("x")]) : _vm._e()]) : _vm._e();
+  return _c(_vm.widget.properties.tagType, {
+    tag: "component",
+    staticClass: "text"
+  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
 };
 
 var __vue_staticRenderFns__$p = [];
 /* style */
 
-const __vue_inject_styles__$p = function (inject) {
-  if (!inject) return;
-  inject("data-v-5519b41c_0", {
-    source: ".alert[data-v-5519b41c]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-5519b41c]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-5519b41c]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-5519b41c]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-5519b41c]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-5519b41c]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-5519b41c]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}",
-    map: undefined,
-    media: undefined
-  });
-};
+const __vue_inject_styles__$p = undefined;
 /* scoped */
 
-
-const __vue_scope_id__$p = "data-v-5519b41c";
+const __vue_scope_id__$p = "data-v-333ed5e8";
 /* module identifier */
 
 const __vue_module_identifier__$p = undefined;
 /* functional template */
 
 const __vue_is_functional_template__$p = false;
+/* style inject */
+
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$q = /*#__PURE__*/normalizeComponent({
+const __vue_component__$r = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$p,
   staticRenderFns: __vue_staticRenderFns__$p
-}, __vue_inject_styles__$p, __vue_script__$p, __vue_scope_id__$p, __vue_is_functional_template__$p, __vue_module_identifier__$p, false, createInjector, undefined, undefined);
+}, __vue_inject_styles__$p, __vue_script__$p, __vue_scope_id__$p, __vue_is_functional_template__$p, __vue_module_identifier__$p, false, undefined, undefined, undefined);
 
-var Display$8 = __vue_component__$q;
+var Display$7 = __vue_component__$r;
 
 //
 var script$o = defineComponent({
   props: {
     widget: Object
   },
-  inject: ["t"],
-
-  data() {
-    return {
-      isOpen: true
-    };
-  },
-
-  methods: {
-    onCloseAlert() {
-      this.$data.isOpen = false;
-    }
-
-  },
-  computed: {
-    alertStyles() {
-      if (this.widget.properties.type !== "custom" || this.widget.properties.customColor) return {};
-      return {
-        backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent",
-        ...(this.widget.properties.customTextColor ? {
-          color: this.widget.properties.customTextColor
-        } : {})
-      };
-    }
-
-  }
+  inject: ["t"]
 });
 
 /* script */
@@ -8264,24 +9642,16 @@ const __vue_script__$o = script$o;
 /* template */
 
 var __vue_render__$o = function () {
-  var _obj;
-
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _vm.isOpen ? _c('div', {
-    staticClass: "alert",
-    class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
-    style: _vm.alertStyles
-  }, [_c('h3', [_vm._v(_vm._s(_vm.t("__title", _vm.widget.id)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.t("__text", _vm.widget.id)))]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
-    staticClass: "close-button",
-    on: {
-      "click": _vm.onCloseAlert
-    }
-  }, [_vm._v("x")]) : _vm._e()]) : _vm._e();
+  return _c(_vm.widget.properties.tagType, {
+    tag: "component",
+    staticClass: "text"
+  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
 };
 
 var __vue_staticRenderFns__$o = [];
@@ -8289,8 +9659,8 @@ var __vue_staticRenderFns__$o = [];
 
 const __vue_inject_styles__$o = function (inject) {
   if (!inject) return;
-  inject("data-v-2e2e1336_0", {
-    source: ".alert[data-v-2e2e1336]{padding:10px;margin:10px;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-2e2e1336]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-2e2e1336]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-2e2e1336]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-2e2e1336]{background-color:#fef8ea;border-color:#f4eada}.alert>.close-button[data-v-2e2e1336]{position:absolute;top:0;right:0;padding:10px 15px;cursor:pointer;transform:scaleX(1.2)}",
+  inject("data-v-1687fd21_0", {
+    source: ".text[data-v-1687fd21]{padding:0 10px}",
     map: undefined,
     media: undefined
   });
@@ -8298,7 +9668,7 @@ const __vue_inject_styles__$o = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$o = "data-v-2e2e1336";
+const __vue_scope_id__$o = "data-v-1687fd21";
 /* module identifier */
 
 const __vue_module_identifier__$o = undefined;
@@ -8309,280 +9679,17 @@ const __vue_is_functional_template__$o = false;
 
 /* style inject shadow dom */
 
-const __vue_component__$p = /*#__PURE__*/normalizeComponent({
+const __vue_component__$q = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$o,
   staticRenderFns: __vue_staticRenderFns__$o
 }, __vue_inject_styles__$o, __vue_script__$o, __vue_scope_id__$o, __vue_is_functional_template__$o, __vue_module_identifier__$o, false, createInjector, undefined, undefined);
 
-var Form$4 = __vue_component__$p;
+var ReadOnly$7 = __vue_component__$q;
 
-//
-var script$n = defineComponent({
-  props: {
-    widget: Object
-  },
-  inject: ["t"],
-
-  data() {
-    return {
-      isOpen: true
-    };
-  },
-
-  methods: {
-    onCloseAlert() {
-      this.$data.isOpen = false;
-    }
-
-  },
-  computed: {
-    alertStyles() {
-      if (this.widget.properties.type !== "custom" || this.widget.properties.customColor) return {};
-      return {
-        backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent",
-        ...(this.widget.properties.customTextColor ? {
-          color: this.widget.properties.customTextColor
-        } : {})
-      };
-    }
-
-  }
-});
-
-/* script */
-const __vue_script__$n = script$n;
-/* template */
-
-var __vue_render__$n = function () {
-  var _obj;
-
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _vm.isOpen ? _c('div', {
-    staticClass: "alert",
-    class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
-    style: _vm.alertStyles
-  }, [_c('h3', [_vm._v(_vm._s(_vm.t("__title", _vm.widget.id)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.t("__text", _vm.widget.id)))]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
-    staticClass: "close-button",
-    on: {
-      "click": _vm.onCloseAlert
-    }
-  }, [_vm._v("x")]) : _vm._e()]) : _vm._e();
-};
-
-var __vue_staticRenderFns__$n = [];
-/* style */
-
-const __vue_inject_styles__$n = function (inject) {
-  if (!inject) return;
-  inject("data-v-5ede53fa_0", {
-    source: ".alert[data-v-5ede53fa]{padding:10px;margin:10px;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-5ede53fa]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-5ede53fa]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-5ede53fa]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-5ede53fa]{background-color:#fef8ea;border-color:#f4eada}.alert>.close-button[data-v-5ede53fa]{position:absolute;top:0;right:0;padding:10px 15px;cursor:pointer;transform:scaleX(1.2)}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-const __vue_scope_id__$n = "data-v-5ede53fa";
-/* module identifier */
-
-const __vue_module_identifier__$n = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$n = false;
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$o = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$n,
-  staticRenderFns: __vue_staticRenderFns__$n
-}, __vue_inject_styles__$n, __vue_script__$n, __vue_scope_id__$n, __vue_is_functional_template__$n, __vue_module_identifier__$n, false, createInjector, undefined, undefined);
-
-var ReadOnly$8 = __vue_component__$o;
-
-var alert = {
-  display: Display$8,
-  form: Form$4,
-  readOnly: ReadOnly$8
-};
-
-//
-var script$m = defineComponent({
-  props: {
-    widget: Object,
-    widgets: Object,
-    widgetItems: Object,
-    formState: Object,
-    setWidgetState: Function
-  },
-  inject: ["t"]
-});
-
-/* script */
-const __vue_script__$m = script$m;
-/* template */
-
-var __vue_render__$m = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', {
-    staticClass: "html-wrapper",
-    domProps: {
-      "innerHTML": _vm._s(_vm.t('__html', _vm.widget.id))
-    }
-  });
-};
-
-var __vue_staticRenderFns__$m = [];
-/* style */
-
-const __vue_inject_styles__$m = undefined;
-/* scoped */
-
-const __vue_scope_id__$m = "data-v-489a40b8";
-/* module identifier */
-
-const __vue_module_identifier__$m = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$m = false;
-/* style inject */
-
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$n = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$m,
-  staticRenderFns: __vue_staticRenderFns__$m
-}, __vue_inject_styles__$m, __vue_script__$m, __vue_scope_id__$m, __vue_is_functional_template__$m, __vue_module_identifier__$m, false, undefined, undefined, undefined);
-
-var Display$7 = __vue_component__$n;
-
-//
-var script$l = defineComponent({
-  props: {
-    widget: Object,
-    widgets: Object,
-    widgetItems: Object,
-    formState: Object,
-    setWidgetState: Function
-  }
-});
-
-/* script */
-const __vue_script__$l = script$l;
-/* template */
-
-var __vue_render__$l = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', {
-    domProps: {
-      "innerHTML": _vm._s(_vm.widget.properties.html)
-    }
-  });
-};
-
-var __vue_staticRenderFns__$l = [];
-/* style */
-
-const __vue_inject_styles__$l = undefined;
-/* scoped */
-
-const __vue_scope_id__$l = undefined;
-/* module identifier */
-
-const __vue_module_identifier__$l = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$l = false;
-/* style inject */
-
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$m = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$l,
-  staticRenderFns: __vue_staticRenderFns__$l
-}, __vue_inject_styles__$l, __vue_script__$l, __vue_scope_id__$l, __vue_is_functional_template__$l, __vue_module_identifier__$l, false, undefined, undefined, undefined);
-
-var Form$3 = __vue_component__$m;
-
-//
-var script$k = defineComponent({
-  props: {
-    widget: Object,
-    widgets: Object,
-    widgetItems: Object,
-    formState: Object,
-    setWidgetState: Function
-  }
-});
-
-/* script */
-const __vue_script__$k = script$k;
-/* template */
-
-var __vue_render__$k = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', {
-    domProps: {
-      "innerHTML": _vm._s(_vm.widget.properties.html)
-    }
-  });
-};
-
-var __vue_staticRenderFns__$k = [];
-/* style */
-
-const __vue_inject_styles__$k = undefined;
-/* scoped */
-
-const __vue_scope_id__$k = undefined;
-/* module identifier */
-
-const __vue_module_identifier__$k = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$k = false;
-/* style inject */
-
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$l = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$k,
-  staticRenderFns: __vue_staticRenderFns__$k
-}, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, false, undefined, undefined, undefined);
-
-var ReadOnly$7 = __vue_component__$l;
-
-var html = {
+var text$1 = {
   display: Display$7,
-  form: Form$3,
+  builder: Builder,
+  builderControl: BuilderControl,
   readOnly: ReadOnly$7
 };
 
@@ -8593,7 +9700,8 @@ let widgets = {
   pages,
   question,
   section,
-  separator
+  separator,
+  text: text$1
 };
 
 class WidgetEffectControl {
@@ -8611,7 +9719,7 @@ class WidgetEffectControl {
 }
 
 //
-var script$j = defineComponent({
+var script$n = defineComponent({
   props: {
     wrapperRef: HTMLDivElement,
     properties: Object
@@ -8619,10 +9727,10 @@ var script$j = defineComponent({
 });
 
 /* script */
-const __vue_script__$j = script$j;
+const __vue_script__$n = script$n;
 /* template */
 
-var __vue_render__$j = function () {
+var __vue_render__$n = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -8640,10 +9748,10 @@ var __vue_render__$j = function () {
   });
 };
 
-var __vue_staticRenderFns__$j = [];
+var __vue_staticRenderFns__$n = [];
 /* style */
 
-const __vue_inject_styles__$j = function (inject) {
+const __vue_inject_styles__$n = function (inject) {
   if (!inject) return;
   inject("data-v-4044acf0_0", {
     source: "a.anchor[data-v-4044acf0]{position:absolute;top:0;left:0}",
@@ -8654,23 +9762,23 @@ const __vue_inject_styles__$j = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$j = "data-v-4044acf0";
+const __vue_scope_id__$n = "data-v-4044acf0";
 /* module identifier */
 
-const __vue_module_identifier__$j = undefined;
+const __vue_module_identifier__$n = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$j = false;
+const __vue_is_functional_template__$n = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$k = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$j,
-  staticRenderFns: __vue_staticRenderFns__$j
-}, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, false, createInjector, undefined, undefined);
+const __vue_component__$p = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$n,
+  staticRenderFns: __vue_staticRenderFns__$n
+}, __vue_inject_styles__$n, __vue_script__$n, __vue_scope_id__$n, __vue_is_functional_template__$n, __vue_module_identifier__$n, false, createInjector, undefined, undefined);
 
-var display$1 = __vue_component__$k;
+var display$1 = __vue_component__$p;
 
 var anchor = new WidgetEffectControl({
   display: display$1
@@ -10233,7 +11341,7 @@ Object.defineProperty(ScrollReveal, 'debug', {
 ScrollReveal();
 
 //
-var script$i = defineComponent({
+var script$m = defineComponent({
   props: {
     wrapperRef: HTMLDivElement,
     properties: Object
@@ -10267,10 +11375,10 @@ var script$i = defineComponent({
 });
 
 /* script */
-const __vue_script__$i = script$i;
+const __vue_script__$m = script$m;
 /* template */
 
-var __vue_render__$i = function () {
+var __vue_render__$m = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -10280,31 +11388,31 @@ var __vue_render__$i = function () {
   return _c("div");
 };
 
-var __vue_staticRenderFns__$i = [];
+var __vue_staticRenderFns__$m = [];
 /* style */
 
-const __vue_inject_styles__$i = undefined;
+const __vue_inject_styles__$m = undefined;
 /* scoped */
 
-const __vue_scope_id__$i = undefined;
+const __vue_scope_id__$m = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$i = undefined;
+const __vue_module_identifier__$m = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$i = false;
+const __vue_is_functional_template__$m = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$j = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$i,
-  staticRenderFns: __vue_staticRenderFns__$i
-}, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, false, undefined, undefined, undefined);
+const __vue_component__$o = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$m,
+  staticRenderFns: __vue_staticRenderFns__$m
+}, __vue_inject_styles__$m, __vue_script__$m, __vue_scope_id__$m, __vue_is_functional_template__$m, __vue_module_identifier__$m, false, undefined, undefined, undefined);
 
-var display = __vue_component__$j;
+var display = __vue_component__$o;
 
 var reveal = new WidgetEffectControl({
   display
@@ -10331,7 +11439,7 @@ class QuestionControl {
 
 }
 
-var script$h = defineComponent({
+var script$l = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -10374,10 +11482,10 @@ var script$h = defineComponent({
 });
 
 /* script */
-const __vue_script__$h = script$h;
+const __vue_script__$l = script$l;
 /* template */
 
-var __vue_render__$h = function () {
+var __vue_render__$l = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -10402,10 +11510,10 @@ var __vue_render__$h = function () {
   }), 0);
 };
 
-var __vue_staticRenderFns__$h = [];
+var __vue_staticRenderFns__$l = [];
 /* style */
 
-const __vue_inject_styles__$h = function (inject) {
+const __vue_inject_styles__$l = function (inject) {
   if (!inject) return;
   inject("data-v-531591b8_0", {
     source: ".button-group-wrapper[data-v-531591b8]{display:inline-flex;flex-direction:row;border:1px solid #000;border-radius:8px;overflow:hidden}button[data-v-531591b8]{border:1px solid transparent;cursor:pointer;background-color:#fff}button[data-v-531591b8]:not(.isLast){border-right-color:#000}button.selected[data-v-531591b8]{background-color:#03a9f4;color:#fff}",
@@ -10416,25 +11524,25 @@ const __vue_inject_styles__$h = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$h = "data-v-531591b8";
+const __vue_scope_id__$l = "data-v-531591b8";
 /* module identifier */
 
-const __vue_module_identifier__$h = undefined;
+const __vue_module_identifier__$l = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$h = false;
+const __vue_is_functional_template__$l = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$i = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$h,
-  staticRenderFns: __vue_staticRenderFns__$h
-}, __vue_inject_styles__$h, __vue_script__$h, __vue_scope_id__$h, __vue_is_functional_template__$h, __vue_module_identifier__$h, false, createInjector, undefined, undefined);
+const __vue_component__$n = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$l,
+  staticRenderFns: __vue_staticRenderFns__$l
+}, __vue_inject_styles__$l, __vue_script__$l, __vue_scope_id__$l, __vue_is_functional_template__$l, __vue_module_identifier__$l, false, createInjector, undefined, undefined);
 
-var Display$6 = __vue_component__$i;
+var Display$6 = __vue_component__$n;
 
-var script$g = defineComponent({
+var script$k = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -10469,10 +11577,10 @@ var script$g = defineComponent({
 });
 
 /* script */
-const __vue_script__$g = script$g;
+const __vue_script__$k = script$k;
 /* template */
 
-var __vue_render__$g = function () {
+var __vue_render__$k = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -10482,38 +11590,38 @@ var __vue_render__$g = function () {
   return _c('div', [_vm._v("\n  " + _vm._s(_vm.translatedLabel) + "\n")]);
 };
 
-var __vue_staticRenderFns__$g = [];
+var __vue_staticRenderFns__$k = [];
 /* style */
 
-const __vue_inject_styles__$g = undefined;
+const __vue_inject_styles__$k = undefined;
 /* scoped */
 
-const __vue_scope_id__$g = undefined;
+const __vue_scope_id__$k = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$g = undefined;
+const __vue_module_identifier__$k = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$g = false;
+const __vue_is_functional_template__$k = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$h = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$g,
-  staticRenderFns: __vue_staticRenderFns__$g
-}, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, false, undefined, undefined, undefined);
+const __vue_component__$m = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$k,
+  staticRenderFns: __vue_staticRenderFns__$k
+}, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, false, undefined, undefined, undefined);
 
-var ReadOnly$6 = __vue_component__$h;
+var ReadOnly$6 = __vue_component__$m;
 
 var buttonGroup = new QuestionControl({
   display: Display$6,
   readOnly: ReadOnly$6
 });
 
-var script$f = defineComponent({
+var script$j = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -10532,10 +11640,10 @@ var script$f = defineComponent({
 });
 
 /* script */
-const __vue_script__$f = script$f;
+const __vue_script__$j = script$j;
 /* template */
 
-var __vue_render__$f = function () {
+var __vue_render__$j = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -10556,33 +11664,33 @@ var __vue_render__$f = function () {
   }), _vm._v("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ")])]);
 };
 
-var __vue_staticRenderFns__$f = [];
+var __vue_staticRenderFns__$j = [];
 /* style */
 
-const __vue_inject_styles__$f = undefined;
+const __vue_inject_styles__$j = undefined;
 /* scoped */
 
-const __vue_scope_id__$f = undefined;
+const __vue_scope_id__$j = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$f = undefined;
+const __vue_module_identifier__$j = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$f = false;
+const __vue_is_functional_template__$j = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$g = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$f,
-  staticRenderFns: __vue_staticRenderFns__$f
-}, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, false, undefined, undefined, undefined);
+const __vue_component__$l = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$j,
+  staticRenderFns: __vue_staticRenderFns__$j
+}, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, false, undefined, undefined, undefined);
 
-var Form$2 = __vue_component__$g;
+var Form$2 = __vue_component__$l;
 
-var script$e = defineComponent({
+var script$i = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -10601,10 +11709,10 @@ var script$e = defineComponent({
 });
 
 /* script */
-const __vue_script__$e = script$e;
+const __vue_script__$i = script$i;
 /* template */
 
-var __vue_render__$e = function () {
+var __vue_render__$i = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -10625,33 +11733,33 @@ var __vue_render__$e = function () {
   }), _vm._v("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ")])]);
 };
 
-var __vue_staticRenderFns__$e = [];
+var __vue_staticRenderFns__$i = [];
 /* style */
 
-const __vue_inject_styles__$e = undefined;
+const __vue_inject_styles__$i = undefined;
 /* scoped */
 
-const __vue_scope_id__$e = undefined;
+const __vue_scope_id__$i = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$e = undefined;
+const __vue_module_identifier__$i = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$e = false;
+const __vue_is_functional_template__$i = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$f = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$e,
-  staticRenderFns: __vue_staticRenderFns__$e
-}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, false, undefined, undefined, undefined);
+const __vue_component__$k = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$i,
+  staticRenderFns: __vue_staticRenderFns__$i
+}, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, false, undefined, undefined, undefined);
 
-var Display$5 = __vue_component__$f;
+var Display$5 = __vue_component__$k;
 
-var script$d = defineComponent({
+var script$h = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -10662,10 +11770,10 @@ var script$d = defineComponent({
 });
 
 /* script */
-const __vue_script__$d = script$d;
+const __vue_script__$h = script$h;
 /* template */
 
-var __vue_render__$d = function () {
+var __vue_render__$h = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -10675,31 +11783,31 @@ var __vue_render__$d = function () {
   return _c('div', [_vm._v("\n  " + _vm._s(!!_vm.value) + "\n")]);
 };
 
-var __vue_staticRenderFns__$d = [];
+var __vue_staticRenderFns__$h = [];
 /* style */
 
-const __vue_inject_styles__$d = undefined;
+const __vue_inject_styles__$h = undefined;
 /* scoped */
 
-const __vue_scope_id__$d = undefined;
+const __vue_scope_id__$h = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$d = undefined;
+const __vue_module_identifier__$h = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$d = false;
+const __vue_is_functional_template__$h = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$e = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$d,
-  staticRenderFns: __vue_staticRenderFns__$d
-}, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, false, undefined, undefined, undefined);
+const __vue_component__$j = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$h,
+  staticRenderFns: __vue_staticRenderFns__$h
+}, __vue_inject_styles__$h, __vue_script__$h, __vue_scope_id__$h, __vue_is_functional_template__$h, __vue_module_identifier__$h, false, undefined, undefined, undefined);
 
-var ReadOnly$5 = __vue_component__$e;
+var ReadOnly$5 = __vue_component__$j;
 
 var checkbox = new QuestionControl({
   form: Form$2,
@@ -10768,7 +11876,7 @@ let getDateByPropertyValue = date => {
   return undefined;
 };
 
-var script$c = defineComponent({
+var script$g = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -10798,10 +11906,10 @@ var script$c = defineComponent({
 });
 
 /* script */
-const __vue_script__$c = script$c;
+const __vue_script__$g = script$g;
 /* template */
 
-var __vue_render__$c = function () {
+var __vue_render__$g = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -10823,10 +11931,10 @@ var __vue_render__$c = function () {
   })]);
 };
 
-var __vue_staticRenderFns__$c = [];
+var __vue_staticRenderFns__$g = [];
 /* style */
 
-const __vue_inject_styles__$c = function (inject) {
+const __vue_inject_styles__$g = function (inject) {
   if (!inject) return;
   inject("data-v-5a5d677c_0", {
     source: ".radio-item[data-v-5a5d677c]{margin-right:10px}",
@@ -10837,25 +11945,25 @@ const __vue_inject_styles__$c = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$c = "data-v-5a5d677c";
+const __vue_scope_id__$g = "data-v-5a5d677c";
 /* module identifier */
 
-const __vue_module_identifier__$c = undefined;
+const __vue_module_identifier__$g = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$c = false;
+const __vue_is_functional_template__$g = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$d = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$c,
-  staticRenderFns: __vue_staticRenderFns__$c
-}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, false, createInjector, undefined, undefined);
+const __vue_component__$i = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$g,
+  staticRenderFns: __vue_staticRenderFns__$g
+}, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, false, createInjector, undefined, undefined);
 
-var Display$4 = __vue_component__$d;
+var Display$4 = __vue_component__$i;
 
-var script$b = defineComponent({
+var script$f = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -10873,10 +11981,10 @@ var script$b = defineComponent({
 });
 
 /* script */
-const __vue_script__$b = script$b;
+const __vue_script__$f = script$f;
 /* template */
 
-var __vue_render__$b = function () {
+var __vue_render__$f = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -10886,31 +11994,31 @@ var __vue_render__$b = function () {
   return _c('div', [_vm._v("\n  " + _vm._s(_vm.value) + "\n")]);
 };
 
-var __vue_staticRenderFns__$b = [];
+var __vue_staticRenderFns__$f = [];
 /* style */
 
-const __vue_inject_styles__$b = undefined;
+const __vue_inject_styles__$f = undefined;
 /* scoped */
 
-const __vue_scope_id__$b = undefined;
+const __vue_scope_id__$f = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$b = undefined;
+const __vue_module_identifier__$f = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$b = false;
+const __vue_is_functional_template__$f = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$c = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$b,
-  staticRenderFns: __vue_staticRenderFns__$b
-}, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, false, undefined, undefined, undefined);
+const __vue_component__$h = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$f,
+  staticRenderFns: __vue_staticRenderFns__$f
+}, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, false, undefined, undefined, undefined);
 
-var ReadOnly$4 = __vue_component__$c;
+var ReadOnly$4 = __vue_component__$h;
 
 var datePicker = new QuestionControl({
   display: Display$4,
@@ -10919,7 +12027,7 @@ var datePicker = new QuestionControl({
 
 // import "vue-multiselect/dist/vue-multiselect.min.css";
 
-var script$a = defineComponent({
+var script$e = defineComponent({
   // components: { Multiselect },
   props: {
     properties: Object,
@@ -10967,10 +12075,10 @@ var script$a = defineComponent({
 });
 
 /* script */
-const __vue_script__$a = script$a;
+const __vue_script__$e = script$e;
 /* template */
 
-var __vue_render__$a = function () {
+var __vue_render__$e = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11000,10 +12108,10 @@ var __vue_render__$a = function () {
   })], 2)]);
 };
 
-var __vue_staticRenderFns__$a = [];
+var __vue_staticRenderFns__$e = [];
 /* style */
 
-const __vue_inject_styles__$a = function (inject) {
+const __vue_inject_styles__$e = function (inject) {
   if (!inject) return;
   inject("data-v-2bf2f5b8_0", {
     source: ".radio-item[data-v-2bf2f5b8]{margin-right:10px}",
@@ -11014,25 +12122,25 @@ const __vue_inject_styles__$a = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$a = "data-v-2bf2f5b8";
+const __vue_scope_id__$e = "data-v-2bf2f5b8";
 /* module identifier */
 
-const __vue_module_identifier__$a = undefined;
+const __vue_module_identifier__$e = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$a = false;
+const __vue_is_functional_template__$e = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$b = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$a,
-  staticRenderFns: __vue_staticRenderFns__$a
-}, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, false, createInjector, undefined, undefined);
+const __vue_component__$g = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$e,
+  staticRenderFns: __vue_staticRenderFns__$e
+}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, false, createInjector, undefined, undefined);
 
-var Display$3 = __vue_component__$b;
+var Display$3 = __vue_component__$g;
 
-var script$9 = defineComponent({
+var script$d = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -11067,10 +12175,10 @@ var script$9 = defineComponent({
 });
 
 /* script */
-const __vue_script__$9 = script$9;
+const __vue_script__$d = script$d;
 /* template */
 
-var __vue_render__$9 = function () {
+var __vue_render__$d = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11080,38 +12188,38 @@ var __vue_render__$9 = function () {
   return _c('div', [_vm._v("\n  " + _vm._s(_vm.translatedLabel) + "\n")]);
 };
 
-var __vue_staticRenderFns__$9 = [];
+var __vue_staticRenderFns__$d = [];
 /* style */
 
-const __vue_inject_styles__$9 = undefined;
+const __vue_inject_styles__$d = undefined;
 /* scoped */
 
-const __vue_scope_id__$9 = undefined;
+const __vue_scope_id__$d = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$9 = undefined;
+const __vue_module_identifier__$d = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$9 = false;
+const __vue_is_functional_template__$d = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$a = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$9,
-  staticRenderFns: __vue_staticRenderFns__$9
-}, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, false, undefined, undefined, undefined);
+const __vue_component__$f = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$d,
+  staticRenderFns: __vue_staticRenderFns__$d
+}, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, false, undefined, undefined, undefined);
 
-var ReadOnly$3 = __vue_component__$a;
+var ReadOnly$3 = __vue_component__$f;
 
 var dropdown = new QuestionControl({
   display: Display$3,
   readOnly: ReadOnly$3
 });
 
-var script$8 = defineComponent({
+var script$c = defineComponent({
   props: {
     properties: Object,
     value: Number,
@@ -11145,10 +12253,10 @@ var script$8 = defineComponent({
 });
 
 /* script */
-const __vue_script__$8 = script$8;
+const __vue_script__$c = script$c;
 /* template */
 
-var __vue_render__$8 = function () {
+var __vue_render__$c = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11183,10 +12291,10 @@ var __vue_render__$8 = function () {
   }, [_vm._v("+")])]);
 };
 
-var __vue_staticRenderFns__$8 = [];
+var __vue_staticRenderFns__$c = [];
 /* style */
 
-const __vue_inject_styles__$8 = function (inject) {
+const __vue_inject_styles__$c = function (inject) {
   if (!inject) return;
   inject("data-v-5fc8cc90_0", {
     source: "input[data-v-5fc8cc90]::-webkit-inner-spin-button,input[data-v-5fc8cc90]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
@@ -11197,25 +12305,25 @@ const __vue_inject_styles__$8 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$8 = "data-v-5fc8cc90";
+const __vue_scope_id__$c = "data-v-5fc8cc90";
 /* module identifier */
 
-const __vue_module_identifier__$8 = undefined;
+const __vue_module_identifier__$c = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$8 = false;
+const __vue_is_functional_template__$c = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$9 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$8,
-  staticRenderFns: __vue_staticRenderFns__$8
-}, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, false, createInjector, undefined, undefined);
+const __vue_component__$e = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$c,
+  staticRenderFns: __vue_staticRenderFns__$c
+}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, false, createInjector, undefined, undefined);
 
-var Form$1 = __vue_component__$9;
+var Form$1 = __vue_component__$e;
 
-var script$7 = defineComponent({
+var script$b = defineComponent({
   props: {
     properties: Object,
     value: Number,
@@ -11261,10 +12369,10 @@ var script$7 = defineComponent({
 });
 
 /* script */
-const __vue_script__$7 = script$7;
+const __vue_script__$b = script$b;
 /* template */
 
-var __vue_render__$7 = function () {
+var __vue_render__$b = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11299,10 +12407,10 @@ var __vue_render__$7 = function () {
   }, [_vm._v("+")])]);
 };
 
-var __vue_staticRenderFns__$7 = [];
+var __vue_staticRenderFns__$b = [];
 /* style */
 
-const __vue_inject_styles__$7 = function (inject) {
+const __vue_inject_styles__$b = function (inject) {
   if (!inject) return;
   inject("data-v-5d4490d4_0", {
     source: "input[data-v-5d4490d4]::-webkit-inner-spin-button,input[data-v-5d4490d4]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
@@ -11313,25 +12421,25 @@ const __vue_inject_styles__$7 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$7 = "data-v-5d4490d4";
+const __vue_scope_id__$b = "data-v-5d4490d4";
 /* module identifier */
 
-const __vue_module_identifier__$7 = undefined;
+const __vue_module_identifier__$b = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$7 = false;
+const __vue_is_functional_template__$b = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$8 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$7,
-  staticRenderFns: __vue_staticRenderFns__$7
-}, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, false, createInjector, undefined, undefined);
+const __vue_component__$d = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$b,
+  staticRenderFns: __vue_staticRenderFns__$b
+}, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, false, createInjector, undefined, undefined);
 
-var Display$2 = __vue_component__$8;
+var Display$2 = __vue_component__$d;
 
-var script$6 = defineComponent({
+var script$a = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -11342,10 +12450,10 @@ var script$6 = defineComponent({
 });
 
 /* script */
-const __vue_script__$6 = script$6;
+const __vue_script__$a = script$a;
 /* template */
 
-var __vue_render__$6 = function () {
+var __vue_render__$a = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11355,31 +12463,31 @@ var __vue_render__$6 = function () {
   return _c('div', [_vm._v("\n  " + _vm._s(_vm.value || _vm.widget.properties.controlProperties.default) + "\n")]);
 };
 
-var __vue_staticRenderFns__$6 = [];
+var __vue_staticRenderFns__$a = [];
 /* style */
 
-const __vue_inject_styles__$6 = undefined;
+const __vue_inject_styles__$a = undefined;
 /* scoped */
 
-const __vue_scope_id__$6 = undefined;
+const __vue_scope_id__$a = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$6 = undefined;
+const __vue_module_identifier__$a = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$6 = false;
+const __vue_is_functional_template__$a = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$7 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$6,
-  staticRenderFns: __vue_staticRenderFns__$6
-}, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, false, undefined, undefined, undefined);
+const __vue_component__$c = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$a,
+  staticRenderFns: __vue_staticRenderFns__$a
+}, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, false, undefined, undefined, undefined);
 
-var ReadOnly$2 = __vue_component__$7;
+var ReadOnly$2 = __vue_component__$c;
 
 var numberPicker = new QuestionControl({
   form: Form$1,
@@ -11387,7 +12495,7 @@ var numberPicker = new QuestionControl({
   readOnly: ReadOnly$2
 });
 
-var script$5 = defineComponent({
+var script$9 = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -11406,10 +12514,10 @@ var script$5 = defineComponent({
 });
 
 /* script */
-const __vue_script__$5 = script$5;
+const __vue_script__$9 = script$9;
 /* template */
 
-var __vue_render__$5 = function () {
+var __vue_render__$9 = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11436,10 +12544,10 @@ var __vue_render__$5 = function () {
   }), 0);
 };
 
-var __vue_staticRenderFns__$5 = [];
+var __vue_staticRenderFns__$9 = [];
 /* style */
 
-const __vue_inject_styles__$5 = function (inject) {
+const __vue_inject_styles__$9 = function (inject) {
   if (!inject) return;
   inject("data-v-31ad933e_0", {
     source: ".radio-item[data-v-31ad933e]{margin-right:10px}",
@@ -11450,25 +12558,25 @@ const __vue_inject_styles__$5 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$5 = "data-v-31ad933e";
+const __vue_scope_id__$9 = "data-v-31ad933e";
 /* module identifier */
 
-const __vue_module_identifier__$5 = undefined;
+const __vue_module_identifier__$9 = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$5 = false;
+const __vue_is_functional_template__$9 = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$6 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$5,
-  staticRenderFns: __vue_staticRenderFns__$5
-}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, createInjector, undefined, undefined);
+const __vue_component__$b = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$9,
+  staticRenderFns: __vue_staticRenderFns__$9
+}, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, false, createInjector, undefined, undefined);
 
-var Form = __vue_component__$6;
+var Form = __vue_component__$b;
 
-var script$4 = defineComponent({
+var script$8 = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -11485,10 +12593,10 @@ var script$4 = defineComponent({
 });
 
 /* script */
-const __vue_script__$4 = script$4;
+const __vue_script__$8 = script$8;
 /* template */
 
-var __vue_render__$4 = function () {
+var __vue_render__$8 = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11515,10 +12623,10 @@ var __vue_render__$4 = function () {
   }), 0);
 };
 
-var __vue_staticRenderFns__$4 = [];
+var __vue_staticRenderFns__$8 = [];
 /* style */
 
-const __vue_inject_styles__$4 = function (inject) {
+const __vue_inject_styles__$8 = function (inject) {
   if (!inject) return;
   inject("data-v-4b1138df_0", {
     source: ".radio-item[data-v-4b1138df]{margin-right:10px}",
@@ -11529,25 +12637,25 @@ const __vue_inject_styles__$4 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$4 = "data-v-4b1138df";
+const __vue_scope_id__$8 = "data-v-4b1138df";
 /* module identifier */
 
-const __vue_module_identifier__$4 = undefined;
+const __vue_module_identifier__$8 = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$4 = false;
+const __vue_is_functional_template__$8 = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$5 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$4,
-  staticRenderFns: __vue_staticRenderFns__$4
-}, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, false, createInjector, undefined, undefined);
+const __vue_component__$a = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$8,
+  staticRenderFns: __vue_staticRenderFns__$8
+}, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, false, createInjector, undefined, undefined);
 
-var Display$1 = __vue_component__$5;
+var Display$1 = __vue_component__$a;
 
-var script$3 = defineComponent({
+var script$7 = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -11565,10 +12673,10 @@ var script$3 = defineComponent({
 });
 
 /* script */
-const __vue_script__$3 = script$3;
+const __vue_script__$7 = script$7;
 /* template */
 
-var __vue_render__$3 = function () {
+var __vue_render__$7 = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11578,31 +12686,31 @@ var __vue_render__$3 = function () {
   return _c('div', [_vm._v("\n  " + _vm._s(_vm.label) + "\n")]);
 };
 
-var __vue_staticRenderFns__$3 = [];
+var __vue_staticRenderFns__$7 = [];
 /* style */
 
-const __vue_inject_styles__$3 = undefined;
+const __vue_inject_styles__$7 = undefined;
 /* scoped */
 
-const __vue_scope_id__$3 = undefined;
+const __vue_scope_id__$7 = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$3 = undefined;
+const __vue_module_identifier__$7 = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$3 = false;
+const __vue_is_functional_template__$7 = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$4 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$3,
-  staticRenderFns: __vue_staticRenderFns__$3
-}, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, false, undefined, undefined, undefined);
+const __vue_component__$9 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$7,
+  staticRenderFns: __vue_staticRenderFns__$7
+}, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, false, undefined, undefined, undefined);
 
-var ReadOnly$1 = __vue_component__$4;
+var ReadOnly$1 = __vue_component__$9;
 
 var radio = new QuestionControl({
   form: Form,
@@ -11610,7 +12718,7 @@ var radio = new QuestionControl({
   readOnly: ReadOnly$1
 });
 
-var script$2 = defineComponent({
+var script$6 = defineComponent({
   props: {
     properties: Object,
     value: String,
@@ -11625,10 +12733,10 @@ var script$2 = defineComponent({
 });
 
 /* script */
-const __vue_script__$2 = script$2;
+const __vue_script__$6 = script$6;
 /* template */
 
-var __vue_render__$2 = function () {
+var __vue_render__$6 = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11655,10 +12763,10 @@ var __vue_render__$2 = function () {
   }) : _vm._e()]);
 };
 
-var __vue_staticRenderFns__$2 = [];
+var __vue_staticRenderFns__$6 = [];
 /* style */
 
-const __vue_inject_styles__$2 = function (inject) {
+const __vue_inject_styles__$6 = function (inject) {
   if (!inject) return;
   inject("data-v-abfcf24a_0", {
     source: "input[data-v-abfcf24a]::-webkit-inner-spin-button,input[data-v-abfcf24a]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
@@ -11669,25 +12777,25 @@ const __vue_inject_styles__$2 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$2 = "data-v-abfcf24a";
+const __vue_scope_id__$6 = "data-v-abfcf24a";
 /* module identifier */
 
-const __vue_module_identifier__$2 = undefined;
+const __vue_module_identifier__$6 = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$2 = false;
+const __vue_is_functional_template__$6 = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$3 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$2,
-  staticRenderFns: __vue_staticRenderFns__$2
-}, __vue_inject_styles__$2, __vue_script__$2, __vue_scope_id__$2, __vue_is_functional_template__$2, __vue_module_identifier__$2, false, createInjector, undefined, undefined);
+const __vue_component__$8 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$6,
+  staticRenderFns: __vue_staticRenderFns__$6
+}, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, false, createInjector, undefined, undefined);
 
-var Display = __vue_component__$3;
+var Display = __vue_component__$8;
 
-var script$1 = defineComponent({
+var script$5 = defineComponent({
   props: {
     properties: Object,
     widget: Object,
@@ -11698,10 +12806,10 @@ var script$1 = defineComponent({
 });
 
 /* script */
-const __vue_script__$1 = script$1;
+const __vue_script__$5 = script$5;
 /* template */
 
-var __vue_render__$1 = function () {
+var __vue_render__$5 = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -11711,31 +12819,31 @@ var __vue_render__$1 = function () {
   return _c('div', [_vm._v("\n  " + _vm._s(_vm.value || _vm.widget.properties.controlProperties.default) + "\n")]);
 };
 
-var __vue_staticRenderFns__$1 = [];
+var __vue_staticRenderFns__$5 = [];
 /* style */
 
-const __vue_inject_styles__$1 = undefined;
+const __vue_inject_styles__$5 = undefined;
 /* scoped */
 
-const __vue_scope_id__$1 = undefined;
+const __vue_scope_id__$5 = undefined;
 /* module identifier */
 
-const __vue_module_identifier__$1 = undefined;
+const __vue_module_identifier__$5 = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$1 = false;
+const __vue_is_functional_template__$5 = false;
 /* style inject */
 
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$2 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$1,
-  staticRenderFns: __vue_staticRenderFns__$1
-}, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, false, undefined, undefined, undefined);
+const __vue_component__$7 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$5,
+  staticRenderFns: __vue_staticRenderFns__$5
+}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, undefined, undefined, undefined);
 
-var ReadOnly = __vue_component__$2;
+var ReadOnly = __vue_component__$7;
 
 var text = new QuestionControl({
   display: Display,
@@ -11758,6 +12866,7 @@ class FormState {
       // from an object, use their public getters
       return new FormState({
         widgetState: formState.widgetState,
+        interactiveState: formState.interactiveState,
         widgetCodeToIdMap: formState.widgetCodeToIdMap,
         reflexCodeToIdsMap: formState.reflexCodeToIdsMap,
         widgetIdToCodeMap: formState.widgetIdToCodeMap
@@ -11767,6 +12876,7 @@ class FormState {
       // field
       return new FormState({
         widgetState: formState._widgetState,
+        interactiveState: formState._interactiveState,
         widgetCodeToIdMap: formState._widgetCodeToIdMap,
         reflexCodeToIdsMap: formState._reflexCodeToIdsMap,
         widgetIdToCodeMap: formState._widgetIdToCodeMap
@@ -11777,14 +12887,20 @@ class FormState {
   constructor(_ref) {
     let {
       widgetState,
+      interactiveState,
       widgetCodeToIdMap,
       reflexCodeToIdsMap,
       widgetIdToCodeMap
     } = _ref;
     this._widgetState = widgetState || {};
+    this._interactiveState = interactiveState || {};
     this._widgetCodeToIdMap = widgetCodeToIdMap || {};
     this._reflexCodeToIdsMap = reflexCodeToIdsMap || {};
     this._widgetIdToCodeMap = widgetIdToCodeMap || {};
+  }
+
+  get interactiveState() {
+    return this._interactiveState;
   }
 
   get widgetState() {
@@ -11892,7 +13008,7 @@ const cachedMerge = function (key) {
   return cachedArgs[key].result;
 };
 
-var script = defineComponent({
+var script$4 = defineComponent({
   components: {
     WidgetsLayout
   },
@@ -12036,10 +13152,10 @@ var script = defineComponent({
 });
 
 /* script */
-const __vue_script__ = script;
+const __vue_script__$4 = script$4;
 /* template */
 
-var __vue_render__ = function () {
+var __vue_render__$4 = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -12056,10 +13172,10 @@ var __vue_render__ = function () {
   })], 1);
 };
 
-var __vue_staticRenderFns__ = [];
+var __vue_staticRenderFns__$4 = [];
 /* style */
 
-const __vue_inject_styles__ = function (inject) {
+const __vue_inject_styles__$4 = function (inject) {
   if (!inject) return;
   inject("data-v-f6c60a46_0", {
     source: ".main-wrapper[data-v-f6c60a46]{font-family:Arial,Helvetica,sans-serif}",
@@ -12070,7 +13186,469 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-f6c60a46";
+const __vue_scope_id__$4 = "data-v-f6c60a46";
+/* module identifier */
+
+const __vue_module_identifier__$4 = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$4 = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$5 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$4,
+  staticRenderFns: __vue_staticRenderFns__$4
+}, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, false, createInjector, undefined, undefined);
+
+var __vue_component__$6 = __vue_component__$5;
+
+var script$3 = defineComponent({
+  props: {
+    position: {
+      type: String,
+      default: "left"
+    },
+    isOpen: {
+      type: Boolean,
+      default: true
+    },
+    paneWidth: {
+      type: Number,
+      default: 300
+    }
+  }
+});
+
+/* script */
+const __vue_script__$3 = script$3;
+/* template */
+
+var __vue_render__$3 = function () {
+  var _obj;
+
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "pane-wrapper",
+    class: {
+      isOpen: _vm.isOpen
+    }
+  }, [_vm.position === 'left' ? _c('div', {
+    staticClass: "pane-content-wrapper left",
+    style: {
+      width: _vm.paneWidth + 'px'
+    }
+  }, [_vm._t("pane-content")], 2) : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "pane-outside-wrapper",
+    style: (_obj = {}, _obj[_vm.position === 'left' ? 'marginLeft' : 'marginRight'] = _vm.paneWidth + 'px', _obj)
+  }, [_vm._t("default")], 2), _vm._v(" "), _vm.position === 'right' ? _c('div', {
+    staticClass: "pane-content-wrapper right",
+    style: {
+      width: _vm.paneWidth + 'px'
+    }
+  }, [_vm._t("pane-content")], 2) : _vm._e()]);
+};
+
+var __vue_staticRenderFns__$3 = [];
+/* style */
+
+const __vue_inject_styles__$3 = function (inject) {
+  if (!inject) return;
+  inject("data-v-67a6231c_0", {
+    source: ".pane-wrapper[data-v-67a6231c]{display:flex;flex-direction:row;align-items:stretch;min-height:100vh;position:relative}.pane-outside-wrapper[data-v-67a6231c]{flex:1;position:relative}.pane-content-wrapper[data-v-67a6231c]{position:absolute;top:0;height:100%;z-index:10;background-color:#fff;box-shadow:0 0 10px #c9c9c9}.pane-content-wrapper.left[data-v-67a6231c]{left:0}.pane-content-wrapper.right[data-v-67a6231c]{right:0}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$3 = "data-v-67a6231c";
+/* module identifier */
+
+const __vue_module_identifier__$3 = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$3 = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$4 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$3,
+  staticRenderFns: __vue_staticRenderFns__$3
+}, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, false, createInjector, undefined, undefined);
+
+var Pane = __vue_component__$4;
+
+var script$2 = defineComponent({
+  components: {
+    Pane
+  },
+  props: {
+    widgetItems: Object
+  },
+  inject: ["getFormState"],
+  computed: {
+    selectedWidgetItem() {
+      var _this$$props$widgetIt;
+
+      const formState = this.getFormState();
+      return formState.interactiveState.selectedWidgetId ? (_this$$props$widgetIt = this.$props.widgetItems) === null || _this$$props$widgetIt === void 0 ? void 0 : _this$$props$widgetIt[formState.interactiveState.selectedWidgetId] : null;
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$2 = script$2;
+/* template */
+
+var __vue_render__$2 = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('pane', {
+    attrs: {
+      "position": 'right',
+      "isOpen": true
+    },
+    scopedSlots: _vm._u([{
+      key: "pane-content",
+      fn: function () {
+        return [_vm._v("\n    RIGHT: widget detail - layout, widget form, widget effects, styling,\n    etc...\n    "), !!_vm.selectedWidgetItem ? _c('p', [_vm._v("type: " + _vm._s(_vm.selectedWidgetItem.type))]) : _vm._e(), _vm._v(" "), !!_vm.selectedWidgetItem ? _c('div', {
+          staticClass: "effects-wrapper"
+        }, _vm._l(_vm.selectedWidgetItem.effects, function (effect) {
+          return _c('div', {
+            key: effect.type
+          });
+        }), 0) : _vm._e()];
+      },
+      proxy: true
+    }])
+  }, [_vm._v(" "), [_vm._t("default")]], 2);
+};
+
+var __vue_staticRenderFns__$2 = [];
+/* style */
+
+const __vue_inject_styles__$2 = undefined;
+/* scoped */
+
+const __vue_scope_id__$2 = "data-v-abba6f28";
+/* module identifier */
+
+const __vue_module_identifier__$2 = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$2 = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$3 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$2,
+  staticRenderFns: __vue_staticRenderFns__$2
+}, __vue_inject_styles__$2, __vue_script__$2, __vue_scope_id__$2, __vue_is_functional_template__$2, __vue_module_identifier__$2, false, undefined, undefined, undefined);
+
+var BuilderRightPane = __vue_component__$3;
+
+var script$1 = defineComponent({
+  components: {
+    Pane
+  }
+});
+
+/* script */
+const __vue_script__$1 = script$1;
+/* template */
+
+var __vue_render__$1 = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('pane', {
+    attrs: {
+      "position": 'left',
+      "isOpen": true
+    },
+    scopedSlots: _vm._u([{
+      key: "pane-content",
+      fn: function () {
+        return [_vm._v("\n    LEFT: locale setting, add widget list, current layout, etc...\n  ")];
+      },
+      proxy: true
+    }])
+  }, [_vm._v(" "), [_vm._t("default")]], 2);
+};
+
+var __vue_staticRenderFns__$1 = [];
+/* style */
+
+const __vue_inject_styles__$1 = undefined;
+/* scoped */
+
+const __vue_scope_id__$1 = "data-v-19f1004c";
+/* module identifier */
+
+const __vue_module_identifier__$1 = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$1 = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$2 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$1,
+  staticRenderFns: __vue_staticRenderFns__$1
+}, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, false, undefined, undefined, undefined);
+
+var BuilderLeftPane = __vue_component__$2;
+
+var script = defineComponent({
+  components: {
+    BuilderWidgetsLayout,
+    BuilderRightPane,
+    BuilderLeftPane
+  },
+  // components: { DynamicFormLayout },
+  props: {
+    languages: Object,
+    locale: String,
+    form: Object,
+    // eslint-disable-next-line no-unused-vars
+    onFormChange: Function,
+    state: $(FormState).isRequired,
+    // eslint-disable-next-line no-unused-vars
+    onStateChange: Function,
+    widgetControls: Object,
+    questionControls: Object,
+    plugins: R(C({
+      widgetControls: Object,
+      widgetEffectControls: Object,
+      questionControls: Object
+    })),
+    // display | form | readOnly
+    view: String,
+    configs: C({
+      widgets: C({
+        // whether or not to use controls
+        disableInternalControls: V(),
+        blacklist: R(S()),
+        whitelist: R(S()),
+        filters: Object
+      }),
+      questionControls: C({
+        // whether or not to use controls
+        //
+        disableInternalControls: V(),
+        blacklist: R(S()),
+        whitelist: R(S()),
+        filters: Object
+      })
+    })
+  },
+
+  data() {
+    return {
+      widgetItems: {}
+    };
+  },
+
+  computed: {
+    widgetItemsArr() {
+      return this.$props.form.widgets;
+    },
+
+    combWidgetControls() {
+      var _this$$props$configs, _ref;
+
+      return cachedMerge("widgetControls", (_this$$props$configs = this.$props.configs) !== null && _this$$props$configs !== void 0 && _this$$props$configs.widgets.disableInternalControls ? {} : widgets, ...((_ref = this.$props.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(p => p.widgetControls)), this.$props.widgetControls);
+    },
+
+    combWidgetEffectControls() {
+      var _this$$props$configs2, _ref2;
+
+      return cachedMerge("widgetEffectControls", (_this$$props$configs2 = this.$props.configs) !== null && _this$$props$configs2 !== void 0 && _this$$props$configs2.widgetEffectControls.disableInternalControls ? {} : widgetEffects, ...((_ref2 = this.$props.plugins || []) === null || _ref2 === void 0 ? void 0 : _ref2.map(p => p.widgetEffectControls)), this.$props.widgetEffectControls);
+    },
+
+    combQuestionControls() {
+      var _this$$props$configs3, _ref3;
+
+      return cachedMerge("questionControls", (_this$$props$configs3 = this.$props.configs) !== null && _this$$props$configs3 !== void 0 && _this$$props$configs3.questionControls.disableInternalControls ? {} : questionControls, ...((_ref3 = this.$props.plugins || []) === null || _ref3 === void 0 ? void 0 : _ref3.map(p => p.questionControls)), this.$props.questionControls);
+    },
+
+    formState() {
+      return this.$props.state;
+    }
+
+  },
+  watch: {
+    "form.widgets": {
+      handler(newFormWidgetArr) {
+        this.$data.widgetItems = newFormWidgetArr.reduce((obj, widget) => {
+          var _this$combWidgetContr;
+
+          const WidgetItemClass = ((_this$combWidgetContr = this.combWidgetControls[widget.type]) === null || _this$combWidgetContr === void 0 ? void 0 : _this$combWidgetContr.widgetItem) || WidgetItem;
+          obj[widget.id] = new WidgetItemClass({
+            widget,
+            getState: () => this.$props.state,
+            setState: newFormState => {
+              this.$emit("onStateChange", newFormState);
+            },
+            onUpdate: newWidget => {
+              var _this$$props$onFormCh, _this$$props;
+
+              (_this$$props$onFormCh = (_this$$props = this.$props).onFormChange) === null || _this$$props$onFormCh === void 0 ? void 0 : _this$$props$onFormCh.call(_this$$props, { ...this.$props.form,
+                widgets: Object.values({ ...this.$data.widgetItems,
+                  [newWidget.id]: newWidget
+                })
+              });
+            }
+          });
+          return obj;
+        }, {});
+        Object.values(this.$data.widgetItems).forEach(widgetItem => {
+          widgetItem.setWidgetItems(this.$data.widgetItems);
+        });
+      },
+
+      immediate: true,
+      deep: true
+    }
+  },
+  methods: {
+    t(key, groupId) {
+      var _lang, _lang$this$$props$loc;
+
+      let lang = this.languages;
+
+      if (groupId) {
+        lang = groupId.split(".").reduce((obj, g) => {
+          return obj === null || obj === void 0 ? void 0 : obj[g];
+        }, lang);
+      }
+
+      return (_lang = lang) === null || _lang === void 0 ? void 0 : (_lang$this$$props$loc = _lang[this.$props.locale]) === null || _lang$this$$props$loc === void 0 ? void 0 : _lang$this$$props$loc.message[key];
+    },
+
+    setMessage(_ref4) {
+      let {
+        id,
+        locale,
+        key,
+        value,
+        type = "formItem"
+      } = _ref4;
+      const newLanguages = { ...this.$props.languages
+      };
+      if (!newLanguages[id]) newLanguages[id] = {};
+      if (!newLanguages[id][locale]) newLanguages[id][locale] = {
+        id: "",
+        refId: id,
+        type,
+        version: 1,
+        locale,
+        message: {}
+      };
+      newLanguages[id][locale].message[key] = value;
+      this.$emit("onLanguageChange", newLanguages);
+    },
+
+    updateWidget(widget) {
+      this.$data.widgetItems[widget.id] = widget;
+      this.$emit("onPageChange", { ...this.$props.form,
+        widgets: Object.values(this.$data.widgetItems).map(m => m.widget)
+      });
+    }
+
+  },
+
+  provide() {
+    return {
+      getView: () => this.$props.view,
+      t: this.t,
+      getLocale: () => this.$props.locale,
+      languages: this.$props.languages,
+      setMessage: this.setMessage,
+      updateWidget: this.updateWidget,
+      getFormState: () => this.$props.state,
+      setFormState: newFormState => {
+        this.$emit("onStateChange", newFormState);
+      },
+      widgetEffectControls: this.combWidgetEffectControls,
+      widgetControls: this.combWidgetControls,
+      questionControls: this.combQuestionControls
+    };
+  }
+
+});
+
+/* script */
+const __vue_script__ = script;
+/* template */
+
+var __vue_render__ = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "main-wrapper"
+  }, [_c('builder-left-pane', {
+    attrs: {
+      "widgetItems": _vm.widgetItems
+    }
+  }, [_c('builder-right-pane', {
+    attrs: {
+      "widgetItems": _vm.widgetItems
+    }
+  }, [_c('div', {
+    staticClass: "widgets-layout-wrapper"
+  }, [_c('div', {
+    staticClass: "widgets-layout-inner-wrapper"
+  }, [_c('builder-widgets-layout', {
+    attrs: {
+      "widgetControls": _vm.combWidgetControls,
+      "widgetItems": _vm.widgetItems
+    }
+  })], 1)])])], 1)], 1);
+};
+
+var __vue_staticRenderFns__ = [];
+/* style */
+
+const __vue_inject_styles__ = function (inject) {
+  if (!inject) return;
+  inject("data-v-32a3c388_0", {
+    source: ".main-wrapper[data-v-32a3c388]{font-family:Arial,Helvetica,sans-serif}.widgets-layout-wrapper[data-v-32a3c388]{padding:30px;background-color:#eaedf5;height:100%;box-sizing:border-box}.widgets-layout-inner-wrapper[data-v-32a3c388]{background-color:#fff;position:relative;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23)}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__ = "data-v-32a3c388";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
@@ -12090,9 +13668,10 @@ var __vue_component__$1 = __vue_component__;
 
 var components = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    VuePage: __vue_component__$1,
+    VuePage: __vue_component__$6,
     WidgetsLayout: WidgetsLayout,
-    WidgetView: WidgetView,
+    WidgetView: WidgetView$1,
+    VuePageBuilder: __vue_component__$1,
     FormState: FormState,
     widgets: widgets,
     QuestionControl: QuestionControl,
@@ -12110,4 +13689,4 @@ const install = function installVuePage(Vue) {
   });
 }; // Create module definition for Vue.use()
 
-export { FormState, QuestionControl, __vue_component__$1 as VuePage, WidgetView, WidgetsLayout, install as default, formatDateString, getDateByPropertyValue, questionControls, widgets };
+export { FormState, QuestionControl, __vue_component__$6 as VuePage, __vue_component__$1 as VuePageBuilder, WidgetView$1 as WidgetView, WidgetsLayout, install as default, formatDateString, getDateByPropertyValue, questionControls, widgets };

@@ -67,7 +67,7 @@ export default {
       },
       {
         id: "1e6e8ead-591c-43cc-bc44-f99ad76062ef",
-        type: "header",
+        type: "text",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         properties: {
           tagType: "h1",
@@ -121,7 +121,7 @@ export default {
       },
       {
         id: "aa104b5b-1a13-47b8-8590-7fa5b9927d97",
-        type: "header",
+        type: "text",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         properties: {
           tagType: "h1",
@@ -129,7 +129,7 @@ export default {
       },
       {
         id: "4036afd0-0d81-4b99-b862-4e1f3d44509a",
-        type: "header",
+        type: "text",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         properties: {
           tagType: "h2",

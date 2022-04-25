@@ -1,6 +1,13 @@
 <template>
   <section class="section-wrapper" :class="{ errors: hasChildErrors }">
-    <label v-if="!!label">{{ label }}</label>
+    <label>
+      <input
+        type="text"
+        class="text-input"
+        :value="label"
+        @input="(ev) => updateText('label', ev.target.value)"
+      />
+    </label>
     <builder-widgets-layout
       :widgetControls="widgetControls"
       :widgetItems="widgetItems"
@@ -22,7 +29,7 @@ export default defineComponent({
     widgetItems: Object,
     widgetControls: Object,
   },
-  inject: ["t"],
+  inject: ["t", "getLocale", "setMessage"],
   setup() {},
   computed: {
     label() {
@@ -36,6 +43,14 @@ export default defineComponent({
     },
   },
   methods: {
+    updateText(name, text) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: `__${name}`,
+        value: text.replaceAll(/\n|\r/g, ""),
+      });
+    },
     isShowLabel(pos) {
       return (
         this.$props.widget.properties.hasLabel &&
@@ -62,8 +77,22 @@ export default defineComponent({
   transform: translateY(-50%);
   background-color: #fff;
   padding: 10px;
+  z-index: 10;
 }
 .section-wrapper.errors {
   border-color: #f00;
+}
+
+.text-input {
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  border: none;
+  outline: none;
+  width: 100%;
+  background-color: transparent;
+  resize: none;
+  min-height: 10px;
+  margin-bottom: -15px;
 }
 </style>

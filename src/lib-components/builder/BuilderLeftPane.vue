@@ -1,6 +1,8 @@
 <template>
   <pane :position="'left'" :isOpen="true">
-    <template v-slot:pane-content> testing </template>
+    <template v-slot:pane-content>
+      LEFT: locale setting, add widget list, current layout, etc...
+    </template>
     <template>
       <slot />
     </template>
@@ -16,19 +18,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.pane-wrapper {
-  display: flex;
-  flex-direction: row;
-}
-.pane-content-wrapper {
-  flex: 1;
-  background-color: #fafafa;
-}
-.builder-right-pane-wrapper {
-  width: 300px;
-  align-items: stretch;
-  background-color: #fff;
-  border-left: 1px solid #a8a8a8;
-}
-</style>
+<style scoped></style>

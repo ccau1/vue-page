@@ -5,8 +5,15 @@
         :for="widget.code || widget.id"
         v-if="!widget.properties.hideLabel"
         :class="{ errors: (getWidgetState('errors') || []).length }"
-        >{{ t("__label", widget.id) }}</label
       >
+        <textarea
+          ref="labelInput"
+          :value="t('__label', widget.id)"
+          @input="(ev) => updateText('label', ev.target.value)"
+          class="text-input"
+          oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+        />
+      </label>
       <div>
         <component
           :is="questionControls[widget.properties.control].display"
@@ -33,8 +40,6 @@
 
 <script>
 import { defineComponent } from "@vue/composition-api";
-// import { getParents } from "../../utils";
-// import { validateWidget } from "../../validateUtils";
 
 export default defineComponent({
   props: {
@@ -51,15 +56,26 @@ export default defineComponent({
     "widgetControls",
     "getFormState",
     "setFormState",
+    "getLocale",
+    "setMessage",
   ],
   created() {
-    const widgetState = { ...this.$props.widget.getState() };
-    this.widget.setState("type", "question");
+    const widgetState = { ...this.$props.widget?.getState() };
+    this.widget?.setState("type", "question");
     if (widgetState?.touched === undefined) {
-      this.widget.setState("touched", false);
-      this.widget.setState("pristine", true);
-      this.widget.setState("dirty", false);
+      this.widget?.setState("touched", false);
+      this.widget?.setState("pristine", true);
+      this.widget?.setState("dirty", false);
     }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (!this.$refs.labelInput) return;
+      this.$refs.labelInput.style.height = "";
+
+      this.$refs.labelInput.style.height =
+        this.$refs.labelInput.scrollHeight + "px";
+    });
   },
   unmounted() {},
   computed: {
@@ -68,6 +84,14 @@ export default defineComponent({
     },
   },
   methods: {
+    updateText(name, text) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: `__${name}`,
+        value: text.replaceAll(/\n|\r/g, ""),
+      });
+    },
     onChange(response, ignoreChecks) {
       this.widget.setState("response", response);
       if (ignoreChecks) return;
@@ -119,5 +143,18 @@ export default defineComponent({
   display: block;
   color: red;
   margin-top: 10px;
+}
+
+.text-input {
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  border: none;
+  outline: none;
+  width: 100%;
+  background-color: transparent;
+  resize: none;
+  min-height: 10px;
+  margin-bottom: -15px;
 }
 </style>
