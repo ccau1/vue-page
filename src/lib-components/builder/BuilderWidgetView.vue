@@ -69,15 +69,15 @@ export default defineComponent({
   inject: ["widgetEffectControls", "setFormState"],
   methods: {
     onWidgetSelect() {
-      if (
-        this.$props.formState.interactiveState.selectedWidgetId ===
-        this.$props.widget.id
-      ) {
-        this.$props.formState.interactiveState.selectedWidgetId = "";
-      } else {
-        this.$props.formState.interactiveState.selectedWidgetId =
-          this.$props.widget.id;
-      }
+      // if (
+      //   this.$props.formState.interactiveState.selectedWidgetId ===
+      //   this.$props.widget.id
+      // ) {
+      //   this.$props.formState.interactiveState.selectedWidgetId = "";
+      // } else {
+      this.$props.formState.interactiveState.selectedWidgetId =
+        this.$props.widget.id;
+      // }
       this.setFormState(this.$props.formState);
     },
   },
@@ -92,10 +92,11 @@ export default defineComponent({
   background-color: #fff;
   border: 1px solid #03a9f4;
   border-radius: 8px;
-  margin: -1px;
+  padding: 0 10px;
+  margin: -1px -11px -1px -11px;
 }
 .widget-component-wrapper.unselected {
-  background-color: #fafafa;
+  /* background-color: #fafafa; */
 }
 .widget-wrapper {
   padding: 0 10px;

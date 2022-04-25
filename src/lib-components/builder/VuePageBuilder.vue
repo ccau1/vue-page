@@ -1,9 +1,17 @@
 <template>
   <div class="main-wrapper">
-    <builder-widgets-layout
-      :widgetControls="combWidgetControls"
-      :widgetItems="widgetItems"
-    />
+    <builder-left-pane>
+      <builder-right-pane>
+        <div class="widgets-layout-wrapper">
+          <div class="widgets-layout-inner-wrapper">
+            <builder-widgets-layout
+              :widgetControls="combWidgetControls"
+              :widgetItems="widgetItems"
+            />
+          </div>
+        </div>
+      </builder-right-pane>
+    </builder-left-pane>
   </div>
 </template>
 
@@ -19,6 +27,8 @@ import BuilderWidgetsLayout from "./BuilderWidgetsLayout.vue";
 import WidgetItem from "../models/WidgetItem";
 import { WidgetItems } from "@/entry.esm";
 import { cachedMerge } from "../utils";
+import BuilderRightPane from "./BuilderRightPane.vue";
+import BuilderLeftPane from "./BuilderLeftPane.vue";
 
 interface VuePageProps {
   languages: { [widgetId: string]: { [key: string]: string } };
@@ -62,7 +72,7 @@ interface VuePageData {
 }
 
 export default defineComponent<VuePageProps, any, VuePageData>({
-  components: { BuilderWidgetsLayout },
+  components: { BuilderWidgetsLayout, BuilderRightPane, BuilderLeftPane },
   // components: { DynamicFormLayout },
   props: {
     languages: Object,
@@ -210,6 +220,15 @@ export default defineComponent<VuePageProps, any, VuePageData>({
 <style scoped>
 .main-wrapper {
   font-family: Arial, Helvetica, sans-serif;
+}
+.widgets-layout-wrapper {
   padding: 30px;
+  background-color: #eaedf5;
+}
+.widgets-layout-inner-wrapper {
+  background-color: #fff;
+  position: relative;
+  border-radius: 4px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 </style>
