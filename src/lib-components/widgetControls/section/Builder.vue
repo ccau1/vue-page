@@ -76,7 +76,7 @@ export default defineComponent({
   left: 10px;
   transform: translateY(-50%);
   background-color: #fff;
-  padding: 10px;
+  padding: 1px 10px;
   z-index: 10;
 }
 .section-wrapper.errors {

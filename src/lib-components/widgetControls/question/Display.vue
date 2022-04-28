@@ -120,4 +120,17 @@ export default defineComponent({
   color: red;
   margin-top: 10px;
 }
+
+@media only screen and (max-width: 600px) {
+  .question-wrapper {
+    flex-direction: column;
+  }
+  .question-wrapper > label {
+    border-right: none;
+    padding: 10px 0 5px 0;
+  }
+  .question-wrapper > div {
+    padding: 5px 0 10px 0;
+  }
+}
 </style>

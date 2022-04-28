@@ -13,6 +13,6 @@ export declare let widgets: {
     pages: import("..").WidgetControl<import("./pages").PagesProperties>;
     question: import("..").WidgetControl<import("./question").QuestionProperties>;
     section: import("..").WidgetControl<import("./section").SectionProperties>;
-    separator: import("..").WidgetControl<import("./separator").SeparatorData>;
+    separator: import("..").WidgetControl<import("./separator").SeparatorProperties>;
     text: import("..").WidgetControl<import("./text").TextProperties>;
 };

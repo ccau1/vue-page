@@ -33,7 +33,9 @@
         >
           &uarr;&darr;
         </a>
-        <a class="delete-button">&#128465;</a>
+        <a class="delete-button" @click="() => removeWidget(widget.id)"
+          >&#128465;</a
+        >
       </div>
 
       <widget-view
@@ -66,6 +68,7 @@
 <script>
 import { defineComponent } from "@vue/composition-api";
 import { arrayOf } from "vue-types";
+import WidgetItem from "../models/WidgetItem";
 import WidgetView from "./BuilderWidgetView.vue";
 
 export default defineComponent({
@@ -77,7 +80,13 @@ export default defineComponent({
     onlyIncludeWidgetIds: arrayOf(String),
     forParent: String,
   },
-  inject: ["widgetControls", "getFormState", "getView", "setFormState"],
+  inject: [
+    "widgetControls",
+    "getFormState",
+    "getView",
+    "setFormState",
+    "removeWidget",
+  ],
   data() {
     return { hoveredWidgetId: -1 };
   },
@@ -108,6 +117,7 @@ export default defineComponent({
     },
   },
   methods: {
+    removeWidget(widget) {},
     onDnDPlaceholderMouseDown(ev, widgetId) {
       this.formState.interactiveState.draggingWidgetId = widgetId;
       this.setFormState(this.formState);

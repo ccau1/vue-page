@@ -153,6 +153,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
               this.combWidgetControls[widget.type]?.widgetItem || WidgetItem;
             obj[widget.id] = new WidgetItemClass({
               widget,
+              emitEvent: this.emitEvent,
               getState: () => this.$props.state,
               setState: (newFormState: FormState) => {
                 this.$emit("onStateChange", newFormState);
@@ -189,6 +190,15 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       }
       return lang?.[key];
     },
+    emitEvent(name: string, value?: any, widget?: WidgetItem) {
+      this.$emit("event", {
+        name,
+        value,
+        widget,
+        formState: this.formState,
+        widgetItems: this.$data.widgetItems,
+      });
+    },
   },
   provide() {
     return {
@@ -199,6 +209,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       setFormState: (newFormState: FormState) => {
         this.$emit("onStateChange", newFormState);
       },
+      emitEvent: (this as any).emitEvent,
       widgetEffectControls: this.combWidgetEffectControls,
       widgetControls: this.combWidgetControls,
       questionControls: this.combQuestionControls,

@@ -6,6 +6,7 @@ import WidgetItem from "../../models/WidgetItem";
 export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   constructor(opts: {
     widget: Widget;
+    emitEvent: (name: string, value?: any) => void;
     getState: () => FormState;
     setState: (newState: FormState) => void;
     onUpdate: (newWidget: Widget<PagesProperties>) => void;
@@ -206,6 +207,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
       const nextType = this.nextButtonType();
       if (nextType === "complete") {
         // TODO: trigger complete button.
+        this.emitEvent("pages_complete");
       } else if (nextType === "none") {
         // wasn't suppose to show, just skip it
         return;

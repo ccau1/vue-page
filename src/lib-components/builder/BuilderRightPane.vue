@@ -4,7 +4,11 @@
       RIGHT: widget detail - layout, widget form, widget effects, styling,
       etc...
       <p v-if="!!selectedWidgetItem">type: {{ selectedWidgetItem.type }}</p>
-
+      <component
+        v-if="!!selectedWidgetItem && widgetControls[selectedWidgetItem.type]"
+        :is="widgetControls[selectedWidgetItem.type].builderForm"
+        :widget="selectedWidgetItem"
+      />
       <div class="effects-wrapper" v-if="!!selectedWidgetItem">
         <div
           v-for="effect in selectedWidgetItem.effects"
@@ -29,7 +33,7 @@ export default defineComponent({
   props: {
     widgetItems: Object,
   },
-  inject: ["getFormState"],
+  inject: ["widgetControls", "getFormState"],
   computed: {
     selectedWidgetItem(): WidgetItem {
       const formState: FormState = (this as any).getFormState();

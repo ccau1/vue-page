@@ -78,4 +78,10 @@ export default defineComponent({
 .line-wrapper label.end {
   padding-right: 0;
 }
+
+@media only screen and (max-width: 600px) {
+  .line-wrapper label {
+    font-size: 10pt;
+  }
+}
 </style>

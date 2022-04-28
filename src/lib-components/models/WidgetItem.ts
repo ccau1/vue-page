@@ -9,6 +9,11 @@ export default class WidgetItem<Properties = any> {
   protected _setFormState: (newState: FormState) => void;
   protected _widgetItems: WidgetItems;
   protected _onUpdate: (newWidgetItem: WidgetItem<Properties>) => void;
+  protected _emitEvent: (
+    name: string,
+    value?: any,
+    widget?: WidgetItem
+  ) => void;
 
   static getParentIds(widgetId: string, widgetItems: WidgetItems): string[] {
     const widget = widgetItems[widgetId];
@@ -21,6 +26,10 @@ export default class WidgetItem<Properties = any> {
 
   get formState() {
     return this._getFormState();
+  }
+
+  emitEvent(name: string, value?: string) {
+    this._emitEvent(name, value, this);
   }
 
   get id() {
@@ -69,15 +78,18 @@ export default class WidgetItem<Properties = any> {
 
   constructor({
     widget,
+    emitEvent,
     getState,
     setState,
     onUpdate,
   }: {
     widget: Widget;
+    emitEvent: (name: string, value?: any) => void;
     getState: () => FormState;
     setState: (newState: FormState) => void;
     onUpdate: (newWidgetItem: WidgetItem) => void;
   }) {
+    this._emitEvent = emitEvent;
     this._widgetItems = {};
     this._widget = widget;
     this._getFormState = getState;

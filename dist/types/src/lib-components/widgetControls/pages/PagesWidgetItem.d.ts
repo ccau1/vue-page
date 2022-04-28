@@ -5,6 +5,7 @@ import WidgetItem from "../../models/WidgetItem";
 export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     constructor(opts: {
         widget: Widget;
+        emitEvent: (name: string, value?: any) => void;
         getState: () => FormState;
         setState: (newState: FormState) => void;
         onUpdate: (newWidget: Widget<PagesProperties>) => void;

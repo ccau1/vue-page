@@ -62,6 +62,7 @@
       :languages="languages"
       :view="formView"
       @onStateChange="onStateChange"
+      @event="onPageEvent"
     />
     <div style="display: flex; flex-direction: row; padding: 10px">
       <div style="flex: 1; padding: 10px">
@@ -91,6 +92,7 @@ import {
   Form,
   WidgetLanguage,
   BuilderWidgetLanguages,
+  WidgetItems,
 } from "../src/lib-components";
 import { FormState } from "../src/lib-components/models/FormState";
 import VueJsonPretty from "vue-json-pretty";
@@ -100,6 +102,7 @@ import { Fragment } from "vue-fragment";
 // mock data
 import formData from "./mockData/form1";
 import _languages from "./mockData/form1_languages";
+import WidgetItem from "@/lib-components/models/WidgetItem";
 
 interface Response {
   code: string;
@@ -214,6 +217,19 @@ export default defineComponent({
       this.$data.languagesRaw = Object.values(newLanguages).reduce<
         WidgetLanguage[]
       >((arr, val) => [...arr, ...Object.values(val)], []);
+    },
+    onPageEvent({
+      name,
+      value,
+      widget,
+    }: {
+      name: string;
+      value: any;
+      widget: WidgetItem;
+      formState: FormState;
+      widgetItems: WidgetItems;
+    }) {
+      console.log("onPageEvent", name, value, widget);
     },
   },
 });

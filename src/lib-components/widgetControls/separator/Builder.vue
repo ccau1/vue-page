@@ -114,4 +114,17 @@ export default defineComponent({
   min-height: 10px;
   margin-bottom: -15px;
 }
+
+.start .text-input {
+  text-align: left;
+}
+.center .text-input {
+  text-align: center;
+}
+.end .text-input {
+  text-align: right;
+}
+.line-wrapper.vertical .text-input {
+  text-align: center;
+}
 </style>

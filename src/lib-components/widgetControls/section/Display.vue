@@ -65,4 +65,10 @@ export default defineComponent({
 .section-wrapper.errors {
   border-color: #f00;
 }
+
+@media only screen and (max-width: 600px) {
+  .section-wrapper label {
+    font-size: 10pt;
+  }
+}
 </style>

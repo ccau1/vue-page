@@ -230,12 +230,25 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       newLanguages[id][locale].message[key] = value;
       this.$emit("onLanguageChange", newLanguages);
     },
+    updatePage(page: Form) {
+      this.$emit("onPageChange", page);
+    },
     updateWidget(widget: WidgetItem) {
       this.$data.widgetItems[widget.id] = widget;
-      this.$emit("onPageChange", {
+      this.updatePage({
         ...this.$props.form,
         widgets: Object.values(this.$data.widgetItems).map((m) => m.widget),
       });
+    },
+    removeWidget(widgetId: string) {
+      delete this.$data.widgetItems[widgetId];
+      this.updatePage({
+        ...this.$props.form,
+        widgets: Object.values(this.$data.widgetItems).map((m) => m.widget),
+      });
+      // remove languages
+      delete this.$props.languages[widgetId];
+      this.$emit("onLanguageChange", this.$props.languages);
     },
   },
   provide() {
@@ -246,6 +259,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       languages: this.$props.languages,
       setMessage: (this as any).setMessage,
       updateWidget: (this as any).updateWidget,
+      removeWidget: (this as any).removeWidget,
       getFormState: () => this.$props.state,
       setFormState: (newFormState: FormState) => {
         this.$emit("onStateChange", newFormState);

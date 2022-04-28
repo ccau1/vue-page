@@ -21,6 +21,7 @@ export default {
               children: [],
             },
           ],
+          hasCompleteButton: true,
           tabsVisible: true,
           // tabsPosition: ["top", "center"],
           navigationVisible: true,

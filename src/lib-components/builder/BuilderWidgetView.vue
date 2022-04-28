@@ -90,7 +90,7 @@ export default defineComponent({
 }
 .widget-component-wrapper.selected {
   background-color: #fff;
-  border: 1px solid #03a9f4;
+  border: 1px solid #86d5fa;
   border-radius: 8px;
   padding: 0 10px;
   margin: -1px -11px -1px -11px;
