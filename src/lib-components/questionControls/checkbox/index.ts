@@ -1,12 +1,12 @@
-import QuestionControl from "../QuestionControl";
-import Form from "./Form.vue";
+import Builder from "./Builder.vue";
 import Display from "./Display.vue";
+import QuestionControl from "../QuestionControl";
 import ReadOnly from "./ReadOnly.vue";
 
 export interface CheckboxProperties {}
 
 export default new QuestionControl<CheckboxProperties>({
-  form: Form,
+  builder: Builder,
   display: Display,
   readOnly: ReadOnly,
 });

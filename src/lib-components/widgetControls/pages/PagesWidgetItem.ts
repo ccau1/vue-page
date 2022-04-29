@@ -1,4 +1,4 @@
-import { FormState } from "../../models/FormState";
+import { PageState } from "../../models/PageState";
 import { PagesProperties } from ".";
 import { Widget } from "../..";
 import WidgetItem from "../../models/WidgetItem";
@@ -6,9 +6,10 @@ import WidgetItem from "../../models/WidgetItem";
 export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   constructor(opts: {
     widget: Widget;
+    removeWidget: (widgetId: string) => void;
     emitEvent: (name: string, value?: any) => void;
-    getState: () => FormState;
-    setState: (newState: FormState) => void;
+    getState: () => PageState;
+    setState: (newState: PageState) => void;
     onUpdate: (newWidget: Widget<PagesProperties>) => void;
   }) {
     super(opts);
@@ -117,6 +118,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     this._widget.properties.pages.forEach((page) => {
       page.children = page.children.filter((c) => c !== childWidget.id);
     });
+    this._onUpdate(this);
   }
 
   onChangePageIndex(toIndex: number) {

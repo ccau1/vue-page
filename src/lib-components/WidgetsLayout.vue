@@ -9,7 +9,7 @@
         :widget="widget"
         :widgetControls="widgetControls"
         :widgetItems="widgetItems"
-        :formState="formState"
+        :pageState="pageState"
         :setWidgetState="setWidgetState"
         :getWidgetState="getWidgetState"
         :view="view"
@@ -30,15 +30,16 @@ export default defineComponent({
     widgetItems: Object,
     excludeWidgetIds: arrayOf(String),
     onlyIncludeWidgetIds: arrayOf(String),
+    widgetsOrder: arrayOf(String),
     forParent: String,
   },
-  inject: ["widgetControls", "getFormState", "getView", "setFormState"],
+  inject: ["widgetControls", "getPageState", "getView", "setPageState"],
   computed: {
     view() {
       return this.getView();
     },
-    formState() {
-      return this.getFormState();
+    pageState() {
+      return this.getPageState();
     },
     widgetItemsArr() {
       return Object.values(this.$props.widgetItems);
@@ -55,25 +56,33 @@ export default defineComponent({
               !this.excludeWidgetIds.includes(f.id))
           );
         })
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
+        .sort((a, b) => {
+          const aOrder = (this.$props.widgetsOrder || []).includes(a.id)
+            ? this.$props.widgetsOrder.indexOf(a.id)
+            : a.order || 0;
+          const bOrder = (this.$props.widgetsOrder || []).includes(b.id)
+            ? this.$props.widgetsOrder.indexOf(b.id)
+            : b.order || 0;
+          return aOrder - bOrder;
+        });
       return filteredArr;
     },
   },
   methods: {
     setWidgetState(key, value, widget) {
-      const formState = this.formState;
+      const pageState = this.pageState;
       if (value === undefined) {
-        if (!formState.widgetState[widget.id]) return;
-        delete formState.widgetState[widget.id][key];
+        if (!pageState.widgetState[widget.id]) return;
+        delete pageState.widgetState[widget.id][key];
       } else {
-        if (!formState.widgetState[widget.id])
-          formState.widgetState[widget.id] = {};
-        formState.widgetState[widget.id][key] = value;
+        if (!pageState.widgetState[widget.id])
+          pageState.widgetState[widget.id] = {};
+        pageState.widgetState[widget.id][key] = value;
       }
-      this.setFormState(formState);
+      this.setPageState(pageState);
     },
     getWidgetState(key, widget) {
-      return this.formState.widgetState[widget.id]?.[key];
+      return this.pageState.widgetState[widget.id]?.[key];
     },
   },
 });
@@ -82,10 +91,5 @@ export default defineComponent({
 <style scoped>
 .widget-container {
   position: relative;
-}
-.widget-form-control {
-  position: absolute;
-  top: -40px;
-  left: 0;
 }
 </style>

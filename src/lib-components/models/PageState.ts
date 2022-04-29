@@ -2,7 +2,7 @@ export interface WidgetState {
   [widgetId: string]: any;
 }
 
-export interface FormStateCreate {
+export interface PageStateCreate {
   widgetState?: WidgetState;
   interactiveState?: InteractiveState;
   widgetCodeToIdMap?: { [widgetCode: string]: string };
@@ -10,7 +10,7 @@ export interface FormStateCreate {
   widgetIdToCodeMap?: { [widgetId: string]: string };
 }
 
-export interface FormStateRawObject {
+export interface PageStateRawObject {
   _widgetState: WidgetState;
   _interactiveState: InteractiveState;
   _widgetCodeToIdMap: { [widgetCode: string]: string };
@@ -24,32 +24,32 @@ export interface InteractiveState {
   draggingWidgetId?: string;
 }
 
-export class FormState {
+export class PageState {
   protected _widgetState: WidgetState;
   protected _interactiveState: InteractiveState;
   protected _widgetCodeToIdMap: { [widgetCode: string]: string };
   protected _reflexCodeToIdsMap: { [widgetCode: string]: string[] };
   protected _widgetIdToCodeMap: { [widgetId: string]: string };
 
-  static from(formState: FormState | FormStateRawObject) {
-    if (formState instanceof FormState) {
+  static from(pageState: PageState | PageStateRawObject) {
+    if (pageState instanceof PageState) {
       // from an object, use their public getters
-      return new FormState({
-        widgetState: formState.widgetState,
-        interactiveState: formState.interactiveState,
-        widgetCodeToIdMap: formState.widgetCodeToIdMap,
-        reflexCodeToIdsMap: formState.reflexCodeToIdsMap,
-        widgetIdToCodeMap: formState.widgetIdToCodeMap,
+      return new PageState({
+        widgetState: pageState.widgetState,
+        interactiveState: pageState.interactiveState,
+        widgetCodeToIdMap: pageState.widgetCodeToIdMap,
+        reflexCodeToIdsMap: pageState.reflexCodeToIdsMap,
+        widgetIdToCodeMap: pageState.widgetIdToCodeMap,
       });
     } else {
       // assume it is just a plain object, fetch its protected
       // field
-      return new FormState({
-        widgetState: formState._widgetState,
-        interactiveState: formState._interactiveState,
-        widgetCodeToIdMap: formState._widgetCodeToIdMap,
-        reflexCodeToIdsMap: formState._reflexCodeToIdsMap,
-        widgetIdToCodeMap: formState._widgetIdToCodeMap,
+      return new PageState({
+        widgetState: pageState._widgetState,
+        interactiveState: pageState._interactiveState,
+        widgetCodeToIdMap: pageState._widgetCodeToIdMap,
+        reflexCodeToIdsMap: pageState._reflexCodeToIdsMap,
+        widgetIdToCodeMap: pageState._widgetIdToCodeMap,
       });
     }
   }
@@ -60,7 +60,7 @@ export class FormState {
     widgetCodeToIdMap,
     reflexCodeToIdsMap,
     widgetIdToCodeMap,
-  }: FormStateCreate) {
+  }: PageStateCreate) {
     this._widgetState = widgetState || {};
     this._interactiveState = interactiveState || {};
     this._widgetCodeToIdMap = widgetCodeToIdMap || {};

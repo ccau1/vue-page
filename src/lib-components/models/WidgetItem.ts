@@ -1,12 +1,12 @@
 import { ConditionProperties, Engine } from "json-rules-engine";
 import { Widget, WidgetItems } from "..";
 
-import { FormState } from "./FormState";
+import { PageState } from "./PageState";
 
 export default class WidgetItem<Properties = any> {
   protected _widget: Widget<Properties>;
-  protected _getFormState: () => FormState;
-  protected _setFormState: (newState: FormState) => void;
+  protected _getPageState: () => PageState;
+  protected _setPageState: (newState: PageState) => void;
   protected _widgetItems: WidgetItems;
   protected _onUpdate: (newWidgetItem: WidgetItem<Properties>) => void;
   protected _emitEvent: (
@@ -14,6 +14,7 @@ export default class WidgetItem<Properties = any> {
     value?: any,
     widget?: WidgetItem
   ) => void;
+  protected _removeWidget: (widgetId: string) => void;
 
   static getParentIds(widgetId: string, widgetItems: WidgetItems): string[] {
     const widget = widgetItems[widgetId];
@@ -24,8 +25,8 @@ export default class WidgetItem<Properties = any> {
     ];
   }
 
-  get formState() {
-    return this._getFormState();
+  get pageState() {
+    return this._getPageState();
   }
 
   emitEvent(name: string, value?: string) {
@@ -64,6 +65,10 @@ export default class WidgetItem<Properties = any> {
     return this._widget.parent;
   }
 
+  get parent() {
+    return this._widget.parent;
+  }
+
   set parent(parentId: string | undefined) {
     this._widget.parent = parentId;
   }
@@ -78,27 +83,30 @@ export default class WidgetItem<Properties = any> {
 
   constructor({
     widget,
+    removeWidget,
     emitEvent,
     getState,
     setState,
     onUpdate,
   }: {
     widget: Widget;
+    removeWidget: (widgetId: string) => void;
     emitEvent: (name: string, value?: any) => void;
-    getState: () => FormState;
-    setState: (newState: FormState) => void;
+    getState: () => PageState;
+    setState: (newState: PageState) => void;
     onUpdate: (newWidgetItem: WidgetItem) => void;
   }) {
+    this._removeWidget = removeWidget;
     this._emitEvent = emitEvent;
     this._widgetItems = {};
     this._widget = widget;
-    this._getFormState = getState;
-    this._setFormState = setState;
+    this._getPageState = getState;
+    this._setPageState = setState;
     this._onUpdate = onUpdate;
 
     if (this.code) getState().registerWidgetCode(this.code, this.id);
     if (this.reflexiveRules?.length) {
-      this.formState.registerReflexWatch(
+      this.pageState.registerReflexWatch(
         this.id,
         this.reflexiveRules.map((r) => r.fact)
       );
@@ -109,10 +117,21 @@ export default class WidgetItem<Properties = any> {
 
   destroyed() {
     if (this.reflexiveRules?.length)
-      this.formState.unregisterReflexWatch(
+      this.pageState.unregisterReflexWatch(
         this.id,
         this.reflexiveRules.map((r) => r.fact)
       );
+  }
+
+  removeWidget() {
+    // if there is a parent, let them know to remove you
+    if (this.parentId) {
+      this._widgetItems[this.parentId].removeChild(this);
+    }
+    // trigger destroyed method for clean up
+    this.destroyed();
+    // remove self
+    this._removeWidget(this.id);
   }
 
   setWidgetItems(widgetItems: WidgetItems) {
@@ -123,7 +142,7 @@ export default class WidgetItem<Properties = any> {
     conditions: ConditionProperties[],
     data: { [key: string]: any }
   ) {
-    const engine = new Engine();
+    const engine = new Engine(undefined, { allowUndefinedFacts: true });
     engine.addRule({
       conditions: {
         all: conditions,
@@ -141,7 +160,7 @@ export default class WidgetItem<Properties = any> {
     const errors = await this._getValidationErrors();
     // save error to widgetState
     this.setState("errors", errors);
-    this._setFormState(this.formState);
+    this._setPageState(this.pageState);
     // update parent fields that they have children errors
     // TODO
     // return errors
@@ -162,8 +181,8 @@ export default class WidgetItem<Properties = any> {
       await Promise.all(
         this.validationRules.map(async (validation) => {
           const isValid = await this.validate(validation.conditions, {
-            data: this.properties,
-            response,
+            properties: this.properties,
+            response: response === undefined ? null : response,
           });
           if (!isValid) return validation.error;
           return null;
@@ -212,11 +231,11 @@ export default class WidgetItem<Properties = any> {
       this.reflexiveRules.reduce<{ [widgetCode: string]: any }>(
         (obj, reflexive) => {
           const widgetIdByCode =
-            this.formState.widgetCodeToIdMap[reflexive.fact];
+            this.pageState.widgetCodeToIdMap[reflexive.fact];
 
           // TODO: what if I want to be more generic
           // and run rule by any param in widgetState and data
-          const response = this.formState.widgetState[widgetIdByCode]?.response;
+          const response = this.pageState.widgetState[widgetIdByCode]?.response;
 
           obj[reflexive.fact] = response;
           return obj;
@@ -227,14 +246,14 @@ export default class WidgetItem<Properties = any> {
   }
 
   setState(key: string, value: any) {
-    const state = this._getFormState();
+    const state = this._getPageState();
     state.setWidgetState(this.id, key, value);
     // FIXME: hack to trigger re-render
-    this._setFormState(this.formState);
+    this._setPageState(this.pageState);
   }
 
   getState(key?: string) {
-    const state = this._getFormState();
+    const state = this._getPageState();
 
     return state.getWidgetState(this.id, key);
   }

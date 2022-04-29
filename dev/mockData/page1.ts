@@ -1,8 +1,8 @@
-import { Form } from "../../src/lib-components";
-import { FormState } from "../../src/lib-components/models/FormState";
+import { Page } from "../../src/lib-components";
+import { PageState } from "../../src/lib-components/models/PageState";
 
 export default {
-  form: {
+  page: {
     id: "7347ef09-7778-4c5c-898d-bede667f4c0b",
     widgets: [
       {
@@ -156,7 +156,7 @@ export default {
         validationRules: [
           {
             conditions: [
-              { fact: "response", operator: "notEqual", value: undefined },
+              { fact: "response", operator: "notEqual", value: null },
             ],
             error: "err1",
           },
@@ -305,7 +305,7 @@ export default {
         },
       },
     ],
-  } as Form,
+  } as Page,
   configs: {},
-  state: new FormState({}),
+  state: new PageState({}),
 };

@@ -1,6 +1,5 @@
-import QuestionControl from "../QuestionControl";
-import Form from "./Form.vue";
 import Display from "./Display.vue";
+import QuestionControl from "../QuestionControl";
 import ReadOnly from "./ReadOnly.vue";
 
 export interface RadioProperties {
@@ -11,7 +10,7 @@ export interface RadioProperties {
 }
 
 export default new QuestionControl<RadioProperties>({
-  form: Form,
+  builder: Display,
   display: Display,
   readOnly: ReadOnly,
 });

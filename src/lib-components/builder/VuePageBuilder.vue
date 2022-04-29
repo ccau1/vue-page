@@ -21,8 +21,8 @@ import { widgets as sysWidgets } from "../widgetControls";
 import { widgetEffects as sysWidgetEffectControls } from "../widgetEffectControls";
 import { questionControls as sysQuestionControls } from "../questionControls";
 import { shape, arrayOf, string, bool, instanceOf } from "vue-types";
-import { Form, Widget } from "..";
-import { FormState } from "../models/FormState";
+import { Page, Widget } from "..";
+import { PageState } from "../models/PageState";
 import BuilderWidgetsLayout from "./BuilderWidgetsLayout.vue";
 import WidgetItem from "../models/WidgetItem";
 import { BuilderWidgetLanguages, WidgetItems } from "@/entry.esm";
@@ -33,10 +33,10 @@ import BuilderLeftPane from "./BuilderLeftPane.vue";
 interface VuePageProps {
   languages: BuilderWidgetLanguages;
   locale: string;
-  form: Form;
-  onFormChange: (newForm: Form) => void;
-  state: FormState;
-  onStateChange: (newState: FormState) => void;
+  page: Page;
+  onPageChange: (newPage: Page) => void;
+  state: PageState;
+  onStateChange: (newState: PageState) => void;
   widgetControls?: WidgetItems;
   questionControls?: Object;
   widgetEffectControls?: Object;
@@ -74,16 +74,16 @@ interface VuePageData {
 
 export default defineComponent<VuePageProps, any, VuePageData>({
   components: { BuilderWidgetsLayout, BuilderRightPane, BuilderLeftPane },
-  // components: { DynamicFormLayout },
+  // components: { DynamicPageLayout },
   props: {
     languages: Object,
     locale: String,
-    form: Object as () => Form,
+    page: Object as () => Page,
     // eslint-disable-next-line no-unused-vars
-    onFormChange: Function, // func<(form: Form) => void>().isRequired,
-    state: instanceOf(FormState).isRequired,
+    onPageChange: Function, // func<(page: Page) => void>().isRequired,
+    state: instanceOf(PageState).isRequired,
     // eslint-disable-next-line no-unused-vars
-    onStateChange: Function, // func<(state: FormState) => void>().isRequired,
+    onStateChange: Function, // func<(state: PageState) => void>().isRequired,
     widgetControls: Object, // shape(QuestionControl),
     questionControls: Object,
     plugins: arrayOf(
@@ -93,7 +93,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
         questionControls: Object,
       })
     ),
-    // display | form | readOnly
+    // display | page | readOnly
     view: String,
     configs: shape({
       widgets: shape({
@@ -122,7 +122,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
   },
   computed: {
     widgetItemsArr() {
-      return this.$props.form.widgets;
+      return this.$props.page.widgets;
     },
     combWidgetControls() {
       return cachedMerge(
@@ -152,26 +152,27 @@ export default defineComponent<VuePageProps, any, VuePageData>({
         this.$props.questionControls
       );
     },
-    formState() {
+    pageState() {
       return this.$props.state;
     },
   },
   watch: {
-    "form.widgets": {
-      handler(newFormWidgetArr) {
-        this.$data.widgetItems = newFormWidgetArr.reduce(
+    "page.widgets": {
+      handler(newPageWidgetArr) {
+        this.$data.widgetItems = newPageWidgetArr.reduce(
           (obj: { [widgetId: string]: WidgetItem }, widget: Widget) => {
             const WidgetItemClass =
               this.combWidgetControls[widget.type]?.widgetItem || WidgetItem;
             obj[widget.id] = new WidgetItemClass({
               widget,
+              removeWidget: this.removeWidget,
               getState: () => this.$props.state,
-              setState: (newFormState: FormState) => {
-                this.$emit("onStateChange", newFormState);
+              setState: (newPageState: PageState) => {
+                this.$emit("onStateChange", newPageState);
               },
               onUpdate: (newWidget: WidgetItem) => {
-                this.$props.onFormChange?.({
-                  ...this.$props.form,
+                this.$props.onPageChange?.({
+                  ...this.$props.page,
                   widgets: Object.values({
                     ...this.$data.widgetItems,
                     [newWidget.id]: newWidget,
@@ -207,7 +208,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       locale,
       key,
       value,
-      type = "formItem",
+      type = "pageItem",
     }: {
       id: string;
       locale: string;
@@ -230,25 +231,31 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       newLanguages[id][locale].message[key] = value;
       this.$emit("onLanguageChange", newLanguages);
     },
-    updatePage(page: Form) {
+    updatePage(page: Page) {
       this.$emit("onPageChange", page);
     },
     updateWidget(widget: WidgetItem) {
       this.$data.widgetItems[widget.id] = widget;
       this.updatePage({
-        ...this.$props.form,
+        ...this.$props.page,
         widgets: Object.values(this.$data.widgetItems).map((m) => m.widget),
       });
     },
     removeWidget(widgetId: string) {
-      delete this.$data.widgetItems[widgetId];
       this.updatePage({
-        ...this.$props.form,
-        widgets: Object.values(this.$data.widgetItems).map((m) => m.widget),
+        ...this.$props.page,
+        widgets: Object.keys(this.$data.widgetItems).reduce<Widget[]>(
+          (arr, _widgetId) => {
+            if (_widgetId === widgetId) return arr;
+            return [...arr, this.$data.widgetItems[_widgetId].widget];
+          },
+          []
+        ),
       });
       // remove languages
-      delete this.$props.languages[widgetId];
-      this.$emit("onLanguageChange", this.$props.languages);
+      const newLanguages = { ...this.$props.languages };
+      delete newLanguages[widgetId];
+      this.$emit("onLanguageChange", newLanguages);
     },
   },
   provide() {
@@ -260,9 +267,9 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       setMessage: (this as any).setMessage,
       updateWidget: (this as any).updateWidget,
       removeWidget: (this as any).removeWidget,
-      getFormState: () => this.$props.state,
-      setFormState: (newFormState: FormState) => {
-        this.$emit("onStateChange", newFormState);
+      getPageState: () => this.$props.state,
+      setPageState: (newPageState: PageState) => {
+        this.$emit("onStateChange", newPageState);
       },
       widgetEffectControls: this.combWidgetEffectControls,
       widgetControls: this.combWidgetControls,

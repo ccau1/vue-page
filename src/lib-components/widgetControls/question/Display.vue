@@ -49,8 +49,8 @@ export default defineComponent({
     "t",
     "questionControls",
     "widgetControls",
-    "getFormState",
-    "setFormState",
+    "getPageState",
+    "setPageState",
   ],
   created() {
     const widgetState = { ...this.$props.widget.getState() };
@@ -63,8 +63,8 @@ export default defineComponent({
   },
   unmounted() {},
   computed: {
-    formState() {
-      return this.getFormState();
+    pageState() {
+      return this.getPageState();
     },
   },
   methods: {
@@ -81,7 +81,7 @@ export default defineComponent({
         await this.$props.widget.runValidations();
         // handle reflexives
         const widgetIdsToHandleReflexives =
-          this.formState.getReflexWidgetIdsByCode(this.$props.widget.code);
+          this.pageState.getReflexWidgetIdsByCode(this.$props.widget.code);
         await Promise.all(
           widgetIdsToHandleReflexives.map(async (widgetId) => {
             return this.$props.widgetItems[widgetId].runReflexives();
@@ -118,7 +118,7 @@ export default defineComponent({
 .error {
   display: block;
   color: red;
-  margin-top: 10px;
+  /* margin-top: 10px; */
 }
 
 @media only screen and (max-width: 600px) {
@@ -128,6 +128,9 @@ export default defineComponent({
   .question-wrapper > label {
     border-right: none;
     padding: 10px 0 5px 0;
+  }
+  .question-wrapper > label.errors {
+    color: #000;
   }
   .question-wrapper > div {
     padding: 5px 0 10px 0;

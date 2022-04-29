@@ -1,4 +1,4 @@
-import WidgetEffectControl from "../../models/WidgetEffectControl";
+import { WidgetEffectControl } from "../../models/WidgetEffectControl";
 import display from "./Display.vue";
 
 export interface AnchorEffectProperties {

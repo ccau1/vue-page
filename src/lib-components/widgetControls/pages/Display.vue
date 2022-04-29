@@ -34,6 +34,7 @@
           :widgetItems="widgetItems"
           :excludeWidgetIds="[widget.id]"
           :onlyIncludeWidgetIds="page.children"
+          :widgetsOrder="page.children"
           :forParent="widget.id"
         />
       </div>
@@ -75,7 +76,7 @@ export default defineComponent({
   props: {
     widget: Object,
     widgetItems: Object,
-    formState: Object,
+    pageState: Object,
     setWidgetState: Function,
     wrapperRef: HTMLDivElement,
   },
@@ -88,7 +89,7 @@ export default defineComponent({
   computed: {
     currentPageIndex() {
       return (
-        this.formState.widgetState?.[this.$props.widget.id]?.currentPageIndex ||
+        this.pageState.widgetState?.[this.$props.widget.id]?.currentPageIndex ||
         0
       );
     },

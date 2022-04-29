@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { FormState } from "@/entry.esm";
+import { PageState } from "@/entry.esm";
 import { defineComponent } from "@vue/composition-api";
 import WidgetItem from "../models/WidgetItem";
 import Pane from "./components/Pane.vue";
@@ -33,13 +33,13 @@ export default defineComponent({
   props: {
     widgetItems: Object,
   },
-  inject: ["widgetControls", "getFormState"],
+  inject: ["widgetControls", "getPageState"],
   computed: {
     selectedWidgetItem(): WidgetItem {
-      const formState: FormState = (this as any).getFormState();
+      const pageState: PageState = (this as any).getPageState();
 
-      return formState.interactiveState.selectedWidgetId
-        ? this.$props.widgetItems?.[formState.interactiveState.selectedWidgetId]
+      return pageState.interactiveState.selectedWidgetId
+        ? this.$props.widgetItems?.[pageState.interactiveState.selectedWidgetId]
         : null;
     },
   },

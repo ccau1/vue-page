@@ -26,18 +26,18 @@
       <div class="app-bar-right-side">
         <div class="view-switcher">
           <a
-            :class="{ active: formView === 'display' }"
-            v-on:click="() => setFormView('display')"
+            :class="{ active: pageView === 'display' }"
+            v-on:click="() => setPageView('display')"
             >Customer Display</a
           >
           <a
-            :class="{ active: formView === 'builder' }"
-            v-on:click="() => setFormView('builder')"
+            :class="{ active: pageView === 'builder' }"
+            v-on:click="() => setPageView('builder')"
             >Builder</a
           >
           <a
-            :class="{ active: formView === 'readOnly' }"
-            v-on:click="() => setFormView('readOnly')"
+            :class="{ active: pageView === 'readOnly' }"
+            v-on:click="() => setPageView('readOnly')"
             >Read Only</a
           >
         </div>
@@ -45,22 +45,22 @@
     </div>
 
     <vue-page-builder
-      v-if="formView === 'builder'"
-      :form="form"
+      v-if="pageView === 'builder'"
+      :page="page"
       :state="state"
       :languages="builderLanguages"
-      :view="formView"
+      :view="pageView"
       :locale="locale"
       @onStateChange="onStateChange"
       @onLanguageChange="onLanguageChange"
       @onPageChange="onPageChange"
     />
     <vue-page
-      v-if="formView !== 'builder'"
-      :form="form"
+      v-if="pageView !== 'builder'"
+      :page="page"
       :state="state"
       :languages="languages"
-      :view="formView"
+      :view="pageView"
       @onStateChange="onStateChange"
       @event="onPageEvent"
     />
@@ -74,8 +74,8 @@
         <vue-json-pretty :path="'res'" :data="responses" />
       </div>
       <div style="flex: 1; padding: 10px">
-        <h4>Form</h4>
-        <vue-json-pretty :path="'res'" :data="form" />
+        <h4>Page</h4>
+        <vue-json-pretty :path="'res'" :data="page" />
       </div>
       <div style="flex: 1; padding: 10px; background-color: #f8f8f8">
         <h4>Languages</h4>
@@ -89,19 +89,19 @@
 import { defineComponent } from "@vue/composition-api";
 import {
   VuePage,
-  Form,
+  Page,
   WidgetLanguage,
   BuilderWidgetLanguages,
   WidgetItems,
 } from "../src/lib-components";
-import { FormState } from "../src/lib-components/models/FormState";
+import { PageState } from "../src/lib-components/models/PageState";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
 import { Fragment } from "vue-fragment";
 
 // mock data
-import formData from "./mockData/form1";
-import _languages from "./mockData/form1_languages";
+import pageData from "./mockData/page1";
+import _languages from "./mockData/page1_languages";
 import WidgetItem from "@/lib-components/models/WidgetItem";
 
 interface Response {
@@ -121,14 +121,14 @@ export default defineComponent({
 
     return {
       locale: "en",
-      formView: "display",
+      pageView: "display",
       isPersistState: !!persistedStateRaw,
       responses: [] as Response[],
       languagesRaw: _languages,
-      ...formData,
+      ...pageData,
       state: !!persistedStateRaw
-        ? FormState.from(JSON.parse(persistedStateRaw))
-        : formData.state,
+        ? PageState.from(JSON.parse(persistedStateRaw))
+        : pageData.state,
     };
   },
   computed: {
@@ -169,7 +169,7 @@ export default defineComponent({
   },
   watch: {
     state: {
-      handler(state: FormState) {
+      handler(state: PageState) {
         this.$data.responses = Object.keys(state.widgetState).reduce<
           Response[]
         >((responses, wStateKey) => {
@@ -199,19 +199,19 @@ export default defineComponent({
     setLocale(locale: string) {
       this.$data.locale = locale;
     },
-    setFormView(view: "builder" | "form" | "readOnly") {
-      this.$data.formView = view;
+    setPageView(view: "builder" | "page" | "readOnly") {
+      this.$data.pageView = view;
     },
     onStateChange(newState: any) {
-      // FIXME: creating new FormState is the only
+      // FIXME: creating new PageState is the only
       // way to keep state reactive. Better way?
-      this.$data.state = FormState.from(newState);
+      this.$data.state = PageState.from(newState);
 
       this.$data.isPersistState &&
         localStorage.setItem("pageState", JSON.stringify(newState));
     },
-    onPageChange(newForm: Form) {
-      this.$data.form = newForm;
+    onPageChange(newPage: Page) {
+      this.$data.page = newPage;
     },
     onLanguageChange(newLanguages: BuilderWidgetLanguages) {
       this.$data.languagesRaw = Object.values(newLanguages).reduce<
@@ -226,7 +226,7 @@ export default defineComponent({
       name: string;
       value: any;
       widget: WidgetItem;
-      formState: FormState;
+      pageState: PageState;
       widgetItems: WidgetItems;
     }) {
       console.log("onPageEvent", name, value, widget);

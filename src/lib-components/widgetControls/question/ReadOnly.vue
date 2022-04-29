@@ -37,14 +37,14 @@ export default defineComponent({
     "t",
     "questionControls",
     "widgetControls",
-    "getFormState",
-    "setFormState",
+    "getPageState",
+    "setPageState",
   ],
   created() {},
   unmounted() {},
   computed: {
-    formState() {
-      return this.getFormState();
+    pageState() {
+      return this.getPageState();
     },
   },
   methods: {

@@ -1,4 +1,4 @@
-import WidgetEffectControl from "../../models/WidgetEffectControl";
+import { WidgetEffectControl } from "../../models/WidgetEffectControl";
 export interface RevealEffectProperties {
     delay?: number;
     distance?: string;

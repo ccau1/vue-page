@@ -42,7 +42,7 @@ export default defineComponent({
     widget: Object,
     widgets: Object,
     widgetItems: Object,
-    formState: Object,
+    pageState: Object,
     setWidgetState: Function,
   },
   data() {
@@ -54,7 +54,7 @@ export default defineComponent({
   computed: {
     currentPageIndex() {
       return (
-        this.formState.widgetState?.[this.$props.widget.id]?.currentPageIndex ||
+        this.pageState.widgetState?.[this.$props.widget.id]?.currentPageIndex ||
         0
       );
     },

@@ -1,6 +1,5 @@
-import QuestionControl from "../QuestionControl";
-import Form from "./Form.vue";
 import Display from "./Display.vue";
+import QuestionControl from "../QuestionControl";
 import ReadOnly from "./ReadOnly.vue";
 
 export interface NumberPickerProperties {
@@ -15,7 +14,7 @@ export interface NumberPickerProperties {
 }
 
 export default new QuestionControl<NumberPickerProperties>({
-  form: Form,
+  builder: Display,
   display: Display,
   readOnly: ReadOnly,
 });

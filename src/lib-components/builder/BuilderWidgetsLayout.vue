@@ -4,10 +4,10 @@
       class="widget-container"
       :class="{
         hovering: hoveredWidgetId === widget.id,
-        dragging: formState.interactiveState.draggingWidgetId === widget.id,
+        dragging: pageState.interactiveState.draggingWidgetId === widget.id,
         notDragging:
-          formState.interactiveState.draggingWidgetId &&
-          formState.interactiveState.draggingWidgetId !== widget.id,
+          pageState.interactiveState.draggingWidgetId &&
+          pageState.interactiveState.draggingWidgetId !== widget.id,
       }"
       v-for="(widget, widgetIndex) in filteredWidgetItemsArr"
       :key="widget.id"
@@ -33,7 +33,7 @@
         >
           &uarr;&darr;
         </a>
-        <a class="delete-button" @click="() => removeWidget(widget.id)"
+        <a class="delete-button" @click="() => widget.removeWidget()"
           >&#128465;</a
         >
       </div>
@@ -42,7 +42,7 @@
         :widget="widget"
         :widgetControls="widgetControls"
         :widgetItems="widgetItems"
-        :formState="formState"
+        :pageState="pageState"
         :setWidgetState="setWidgetState"
         :getWidgetState="getWidgetState"
         :view="view"
@@ -82,9 +82,9 @@ export default defineComponent({
   },
   inject: [
     "widgetControls",
-    "getFormState",
+    "getPageState",
     "getView",
-    "setFormState",
+    "setPageState",
     "removeWidget",
   ],
   data() {
@@ -94,8 +94,8 @@ export default defineComponent({
     view() {
       return this.getView();
     },
-    formState() {
-      return this.getFormState();
+    pageState() {
+      return this.getPageState();
     },
     widgetItemsArr() {
       return Object.values(this.$props.widgetItems);
@@ -117,41 +117,40 @@ export default defineComponent({
     },
   },
   methods: {
-    removeWidget(widget) {},
     onDnDPlaceholderMouseDown(ev, widgetId) {
-      this.formState.interactiveState.draggingWidgetId = widgetId;
-      this.setFormState(this.formState);
+      this.pageState.interactiveState.draggingWidgetId = widgetId;
+      this.setPageState(this.pageState);
     },
     onDnDPlaceholderMouseUp(ev, widgetId) {
-      this.formState.interactiveState.draggingWidgetId = "";
-      this.setFormState(this.formState);
+      this.pageState.interactiveState.draggingWidgetId = "";
+      this.setPageState(this.pageState);
     },
     onMouseEnter(ev, widgetId) {
       ev.stopPropagation();
       this.$data.hoveredWidgetId = widgetId;
-      this.formState.interactiveState.hoveredWidgetId = widgetId;
-      this.setFormState(this.formState);
+      this.pageState.interactiveState.hoveredWidgetId = widgetId;
+      this.setPageState(this.pageState);
     },
     onMouseLeave(ev, widgetId) {
       if (this.$data.hoveredWidgetId !== widgetId) return;
       this.$data.hoveredWidgetId = -1;
-      this.formState.interactiveState.hoveredWidgetId = "";
-      this.setFormState(this.formState);
+      this.pageState.interactiveState.hoveredWidgetId = "";
+      this.setPageState(this.pageState);
     },
     setWidgetState(key, value, widget) {
-      const formState = this.formState;
+      const pageState = this.pageState;
       if (value === undefined) {
-        if (!formState.widgetState[widget.id]) return;
-        delete formState.widgetState[widget.id][key];
+        if (!pageState.widgetState[widget.id]) return;
+        delete pageState.widgetState[widget.id][key];
       } else {
-        if (!formState.widgetState[widget.id])
-          formState.widgetState[widget.id] = {};
-        formState.widgetState[widget.id][key] = value;
+        if (!pageState.widgetState[widget.id])
+          pageState.widgetState[widget.id] = {};
+        pageState.widgetState[widget.id][key] = value;
       }
-      this.setFormState(formState);
+      this.setPageState(pageState);
     },
     getWidgetState(key, widget) {
-      return this.formState.widgetState[widget.id]?.[key];
+      return this.pageState.widgetState[widget.id]?.[key];
     },
   },
 });

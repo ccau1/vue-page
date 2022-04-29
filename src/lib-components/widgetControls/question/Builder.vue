@@ -54,8 +54,8 @@ export default defineComponent({
     "t",
     "questionControls",
     "widgetControls",
-    "getFormState",
-    "setFormState",
+    "getPageState",
+    "setPageState",
     "getLocale",
     "setMessage",
   ],
@@ -79,8 +79,8 @@ export default defineComponent({
   },
   unmounted() {},
   computed: {
-    formState() {
-      return this.getFormState();
+    pageState() {
+      return this.getPageState();
     },
   },
   methods: {
@@ -105,7 +105,7 @@ export default defineComponent({
         await this.$props.widget.runValidations();
         // handle reflexives
         const widgetIdsToHandleReflexives =
-          this.formState.getReflexWidgetIdsByCode(this.$props.widget.code);
+          this.pageState.getReflexWidgetIdsByCode(this.$props.widget.code);
         await Promise.all(
           widgetIdsToHandleReflexives.map(async (widgetId) => {
             return this.$props.widgetItems[widgetId].runReflexives();

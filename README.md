@@ -9,11 +9,11 @@ A page builder and display
 ```typescript
 <template>
   <vue-page
-    :form="form"
+    :page="page"
     :state="state"
     :languages="languages"
-    :view="formView"
-    @onFormChange="onFormChange"
+    :view="pageView"
+    @onPageChange="onPageChange"
     @onStateChange="onStateChange"
   />
 </template>
@@ -29,10 +29,10 @@ import {VuePage} from 'vue-page';
 ```typescript
 <template>
   <vue-page-builder
-    :form="form"
+    :page="page"
     :state="state"
     :languages="languages"
-    @onFormChange="onFormChange"
+    @onPageChange="onPageChange"
     @onStateChange="onStateChange"
   />
 </template>
@@ -47,16 +47,16 @@ import {VuePageBuilder} from 'vue-page';
 
 | Property             | Type                               | Default | Description                                                                |
 | :------------------- | :--------------------------------- | :------ | :------------------------------------------------------------------------- |
-| form                 | Form                               |         | The structure of the page including all the widgets and its configurations |
-| state                | FormState                          |         | The state of the form and all its widgets                                  |
+| page                 | Page                               |         | The structure of the page including all the widgets and its configurations |
+| state                | PageState                          |         | The state of the page and all its widgets                                  |
 | languages            | Languages                          |         | A JSON containing all locale key-values for each widget                    |
-| view                 | FormView                           |         | The view to display                                                        |
-| widgetControls       | { [key: string]: WidgetControl }   | {}      | Import/Override widgets to be used in form                                 |
-| widgetEffectControls | { [key: string]: QuestionControl } | {}      | Import/Override widget effects to be used in form                          |
-| questionControls     | { [key: string]: QuestionControl } | {}      | Import/Override widgets to be used in form                                 |
-| plugins              | Plugins                            | {}      | Import/Override widgets to be used in form                                 |
-| onFormChange         | (newForm: Form) => void            |         |                                                                            |
-| onStateChange        | (newState: FormState) => void      |         |                                                                            |
+| view                 | PageView                           |         | The view to display                                                        |
+| widgetControls       | { [key: string]: WidgetControl }   | {}      | Import/Override widgets to be used in page                                 |
+| widgetEffectControls | { [key: string]: QuestionControl } | {}      | Import/Override widget effects to be used in page                          |
+| questionControls     | { [key: string]: QuestionControl } | {}      | Import/Override widgets to be used in page                                 |
+| plugins              | Plugins                            | {}      | Import/Override widgets to be used in page                                 |
+| onPageChange         | (newPage: Page) => void            |         |                                                                            |
+| onStateChange        | (newState: PageState) => void      |         |                                                                            |
 
 ## Built-in Widget Controls
 
@@ -82,14 +82,14 @@ Array<{
 }>
 ```
 
-### Form
+### Page
 
 ```typescript
 {
   id: string;
   widgets: Widget[];
   configs: {};
-  state: FormState;
+  state: PageState;
 }
 ```
 
@@ -109,7 +109,7 @@ Array<{
 }
 ```
 
-### FormState
+### PageState
 
 ```typescript
 {
@@ -119,7 +119,7 @@ Array<{
 }
 ```
 
-### FormView
+### PageView
 
 ```typescript
 "display" | "readOnly";
@@ -139,7 +139,7 @@ Array<{
 
 ```typescript
 {
-  form?: VueConstructor<Vue>;
+  page?: VueConstructor<Vue>;
   display: VueConstructor<Vue>;
   readOnly: VueConstructor<Vue>;
 }
@@ -149,7 +149,7 @@ Array<{
 
 ```typescript
 {
-  [(formId | widgetId | widgetEffectId): string]: {
+  [(pageId | widgetId | widgetEffectId): string]: {
     [localeKey: string]: string;
   }
 }
@@ -159,13 +159,13 @@ Array<{
 
 ```text
 ├── models
-│   ├── FormState.ts
+│   ├── PageState.ts
 │   └── WidgetItem.ts
 ├── questionControls
 │   ├── checkbox
 │   ├── numberPicker
 │   ├── radio
-│   ├── FormControl.ts
+│   ├── PageControl.ts
 │   └── index.ts
 ├── widgetControls
 │   ├── header

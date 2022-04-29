@@ -1,15 +1,16 @@
 import { ConditionProperties } from "json-rules-engine";
 import { Widget, WidgetItems } from "..";
-import { FormState } from "./FormState";
+import { PageState } from "./PageState";
 export default class WidgetItem<Properties = any> {
     protected _widget: Widget<Properties>;
-    protected _getFormState: () => FormState;
-    protected _setFormState: (newState: FormState) => void;
+    protected _getPageState: () => PageState;
+    protected _setPageState: (newState: PageState) => void;
     protected _widgetItems: WidgetItems;
     protected _onUpdate: (newWidgetItem: WidgetItem<Properties>) => void;
     protected _emitEvent: (name: string, value?: any, widget?: WidgetItem) => void;
+    protected _removeWidget: (widgetId: string) => void;
     static getParentIds(widgetId: string, widgetItems: WidgetItems): string[];
-    get formState(): FormState;
+    get pageState(): PageState;
     emitEvent(name: string, value?: string): void;
     get id(): string;
     get widget(): Widget<Properties>;
@@ -19,20 +20,23 @@ export default class WidgetItem<Properties = any> {
     get style(): string | undefined;
     get properties(): Properties;
     get parentId(): string | undefined;
+    get parent(): string | undefined;
     set parent(parentId: string | undefined);
     get reflexiveRules(): ConditionProperties[] | undefined;
     get validationRules(): {
         conditions: ConditionProperties[];
         error: string;
     }[] | undefined;
-    constructor({ widget, emitEvent, getState, setState, onUpdate, }: {
+    constructor({ widget, removeWidget, emitEvent, getState, setState, onUpdate, }: {
         widget: Widget;
+        removeWidget: (widgetId: string) => void;
         emitEvent: (name: string, value?: any) => void;
-        getState: () => FormState;
-        setState: (newState: FormState) => void;
+        getState: () => PageState;
+        setState: (newState: PageState) => void;
         onUpdate: (newWidgetItem: WidgetItem) => void;
     });
     destroyed(): void;
+    removeWidget(): void;
     setWidgetItems(widgetItems: WidgetItems): void;
     validate(conditions: ConditionProperties[], data: {
         [key: string]: any;

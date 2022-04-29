@@ -1,22 +1,22 @@
 import { VueConstructor } from "vue";
 
 export default class QuestionControl<_Options = {}> {
-  public form?: VueConstructor<Vue>;
+  public builder?: VueConstructor<Vue>;
   public display: VueConstructor<Vue>;
   public readOnly: VueConstructor<Vue>;
   // public meta: { platforms: ["web", "fb"] };
   public tags: string[];
 
   constructor({
-    form,
+    builder,
     display,
     readOnly,
   }: {
-    form?: VueConstructor<Vue>;
+    builder?: VueConstructor<Vue>;
     display: VueConstructor<Vue>;
     readOnly: VueConstructor<Vue>;
   }) {
-    this.form = form;
+    this.builder = builder;
     this.display = display;
     this.readOnly = readOnly;
     this.tags = [];

@@ -6,7 +6,7 @@
     <div
       class="widget-builder-control"
       :class="{
-        hovered: formState.interactiveState.hoveredWidgetId === widget.id,
+        hovered: pageState.interactiveState.hoveredWidgetId === widget.id,
       }"
       v-if="view === 'builder' && widgetControls[widget.type].builderControl"
     >
@@ -15,7 +15,7 @@
         :widget="widget"
         :widgetControls="widgetControls"
         :widgetItems="widgetItems"
-        :formState="formState"
+        :pageState="pageState"
         :setWidgetState="(key, value) => setWidgetState(key, value, widget)"
         :getWidgetState="(key) => getWidgetState(key, widget)"
         :view="view"
@@ -24,10 +24,10 @@
     <div
       class="widget-component-wrapper"
       :class="{
-        selected: formState.interactiveState.selectedWidgetId === widget.id,
+        selected: pageState.interactiveState.selectedWidgetId === widget.id,
         unselected:
-          formState.interactiveState.selectedWidgetId &&
-          formState.interactiveState.selectedWidgetId !== widget.id,
+          pageState.interactiveState.selectedWidgetId &&
+          pageState.interactiveState.selectedWidgetId !== widget.id,
       }"
       ref="widgetComponentWrapper"
     >
@@ -43,7 +43,7 @@
         :widget="widget"
         :widgetControls="widgetControls"
         :widgetItems="widgetItems"
-        :formState="formState"
+        :pageState="pageState"
         :setWidgetState="(key, value) => setWidgetState(key, value, widget)"
         :getWidgetState="(key) => getWidgetState(key, widget)"
         :view="view"
@@ -61,24 +61,24 @@ export default defineComponent({
     widget: Object,
     widgetControls: Object,
     widgetItems: Object,
-    formState: Object,
+    pageState: Object,
     setWidgetState: Function,
     getWidgetState: Function,
     view: String,
   },
-  inject: ["widgetEffectControls", "setFormState"],
+  inject: ["widgetEffectControls", "setPageState"],
   methods: {
     onWidgetSelect() {
       // if (
-      //   this.$props.formState.interactiveState.selectedWidgetId ===
+      //   this.$props.pageState.interactiveState.selectedWidgetId ===
       //   this.$props.widget.id
       // ) {
-      //   this.$props.formState.interactiveState.selectedWidgetId = "";
+      //   this.$props.pageState.interactiveState.selectedWidgetId = "";
       // } else {
-      this.$props.formState.interactiveState.selectedWidgetId =
+      this.$props.pageState.interactiveState.selectedWidgetId =
         this.$props.widget.id;
       // }
-      this.setFormState(this.$props.formState);
+      this.setPageState(this.$props.pageState);
     },
   },
 });

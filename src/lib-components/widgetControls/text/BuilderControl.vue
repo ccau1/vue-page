@@ -62,7 +62,7 @@ export default defineComponent({
     widget: Object,
     widgets: Object,
     widgetItems: Object,
-    formState: Object,
+    pageState: Object,
     setWidgetState: Function,
   },
   inject: ["updateWidget"],

@@ -3,13 +3,13 @@
     <component :is="'style'" scoped v-if="widget.style">
       {{ widget.style }}
     </component>
-    <div class="widget-form-control" v-if="view === 'form'">
+    <div class="widget-form-control" v-if="view === 'builder'">
       <component
-        :is="widgetControls[widget.type].formControl"
+        :is="widgetControls[widget.type].builderControl"
         :widget="widget"
         :widgetControls="widgetControls"
         :widgetItems="widgetItems"
-        :formState="formState"
+        :pageState="pageState"
         :setWidgetState="(key, value) => setWidgetState(key, value, widget)"
         :getWidgetState="(key) => getWidgetState(key, widget)"
         :view="view"
@@ -28,7 +28,7 @@
         :widget="widget"
         :widgetControls="widgetControls"
         :widgetItems="widgetItems"
-        :formState="formState"
+        :pageState="pageState"
         :setWidgetState="(key, value) => setWidgetState(key, value, widget)"
         :getWidgetState="(key) => getWidgetState(key, widget)"
         :view="view"
@@ -46,7 +46,7 @@ export default defineComponent({
     widget: Object,
     widgetControls: Object,
     widgetItems: Object,
-    formState: Object,
+    pageState: Object,
     setWidgetState: Function,
     getWidgetState: Function,
     view: String,

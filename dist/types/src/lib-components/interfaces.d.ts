@@ -54,7 +54,7 @@ export interface WidgetControls {
 export interface WidgetItems {
     [widgetId: string]: WidgetItem;
 }
-export interface Form {
+export interface Page {
     widgets: Widget[];
 }
 export interface WidgetLanguage {
