@@ -68,7 +68,7 @@
 <script>
 import { defineComponent } from "@vue/composition-api";
 import { arrayOf } from "vue-types";
-import WidgetItem from "../models/WidgetItem";
+import { WidgetItem } from "../models/WidgetItem";
 import WidgetView from "./BuilderWidgetView.vue";
 
 export default defineComponent({

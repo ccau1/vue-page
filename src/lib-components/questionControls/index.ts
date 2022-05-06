@@ -1,3 +1,4 @@
+import { WidgetItem } from "../models/WidgetItem";
 import buttonGroup from "./buttonGroup";
 import checkbox from "./checkbox";
 import datePicker from "./datePicker";
@@ -5,7 +6,6 @@ import dropdown from "./dropdown";
 import numberPicker from "./numberPicker";
 import radio from "./radio";
 import text from "./text";
-import WidgetItem from "../models/WidgetItem";
 
 export { default as QuestionControl } from "./QuestionControl";
 

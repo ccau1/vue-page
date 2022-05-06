@@ -1,13 +1,15 @@
 import { PageState } from "../../models/PageState";
 import { PagesProperties } from ".";
 import { Widget } from "../..";
-import WidgetItem from "../../models/WidgetItem";
+import { WidgetItem } from "../../models/WidgetItem";
 
 export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
+  protected isSubmitting = false;
+
   constructor(opts: {
     widget: Widget;
     removeWidget: (widgetId: string) => void;
-    emitEvent: (name: string, value?: any) => void;
+    emitEvent: (name: string, value?: any) => Promise<void>;
     getState: () => PageState;
     setState: (newState: PageState) => void;
     onUpdate: (newWidget: Widget<PagesProperties>) => void;
@@ -85,7 +87,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     }
     if (!errors) {
       delete pageIndexErrors[childIndex]?.[childWidgetId];
-      if (!Object.keys(pageIndexErrors[childIndex]).length)
+      if (!Object.keys(pageIndexErrors[childIndex] || {}).length)
         delete pageIndexErrors[childIndex];
     } else {
       if (!pageIndexErrors[childIndex]) {
@@ -208,8 +210,16 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
       // get next type first to determine which to update
       const nextType = this.nextButtonType();
       if (nextType === "complete") {
-        // TODO: trigger complete button.
-        this.emitEvent("pages_complete");
+        const pageErrors = this.properties.pages.map((_, pageIdx) => {
+          return this.pageIndexHasErrors(pageIdx, { allChildPages: true });
+        });
+        this.isSubmitting = true;
+        await this.emitEvent("pages_complete", {
+          pageErrors,
+          hasErrors: pageErrors.some((hasError) => hasError),
+          pageWidget: this,
+        });
+        this.isSubmitting = false;
       } else if (nextType === "none") {
         // wasn't suppose to show, just skip it
         return;

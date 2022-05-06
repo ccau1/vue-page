@@ -6,7 +6,8 @@
     :class="{ [widget.properties.type]: true }"
   >
     <h3 class="title">{{ t("__title", widget.id) }}</h3>
-    <p>{{ t("__text", widget.id) }}</p>
+    <!-- <p>{{ t("__text", widget.id) }}</p> -->
+    <div v-html="t('__text', widget.id)" />
     <a
       class="close-button"
       @click="onCloseAlert"

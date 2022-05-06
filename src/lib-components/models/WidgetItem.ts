@@ -3,7 +3,7 @@ import { Widget, WidgetItems } from "..";
 
 import { PageState } from "./PageState";
 
-export default class WidgetItem<Properties = any> {
+export class WidgetItem<Properties = any> {
   protected _widget: Widget<Properties>;
   protected _getPageState: () => PageState;
   protected _setPageState: (newState: PageState) => void;
@@ -13,7 +13,7 @@ export default class WidgetItem<Properties = any> {
     name: string,
     value?: any,
     widget?: WidgetItem
-  ) => void;
+  ) => Promise<void>;
   protected _removeWidget: (widgetId: string) => void;
 
   static getParentIds(widgetId: string, widgetItems: WidgetItems): string[] {
@@ -29,8 +29,8 @@ export default class WidgetItem<Properties = any> {
     return this._getPageState();
   }
 
-  emitEvent(name: string, value?: string) {
-    this._emitEvent(name, value, this);
+  async emitEvent(name: string, value?: any): Promise<void> {
+    return this._emitEvent(name, value, this);
   }
 
   get id() {
@@ -91,7 +91,7 @@ export default class WidgetItem<Properties = any> {
   }: {
     widget: Widget;
     removeWidget: (widgetId: string) => void;
-    emitEvent: (name: string, value?: any) => void;
+    emitEvent: (name: string, value?: any) => Promise<void>;
     getState: () => PageState;
     setState: (newState: PageState) => void;
     onUpdate: (newWidgetItem: WidgetItem) => void;

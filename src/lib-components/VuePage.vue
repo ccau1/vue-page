@@ -16,7 +16,7 @@ import { shape, arrayOf, string, bool, instanceOf } from "vue-types";
 import { Page, Widget } from ".";
 import { PageState } from "./models/PageState";
 import WidgetsLayout from "./WidgetsLayout.vue";
-import WidgetItem from "./models/WidgetItem";
+import { WidgetItem } from "./models/WidgetItem";
 import { WidgetItems } from "@/entry.esm";
 import { cachedMerge } from "./utils";
 
@@ -189,8 +189,8 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       }
       return lang?.[key];
     },
-    emitEvent(name: string, value?: any, widget?: WidgetItem) {
-      this.$emit("event", {
+    async emitEvent(name: string, value?: any, widget?: WidgetItem) {
+      await (this.$listeners.event as Function)?.({
         name,
         value,
         widget,

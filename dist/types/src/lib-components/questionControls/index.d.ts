@@ -1,4 +1,4 @@
-import WidgetItem from "../models/WidgetItem";
+import { WidgetItem } from "../models/WidgetItem";
 export { default as QuestionControl } from "./QuestionControl";
 export interface QuestionControlProps<Properties = {
     [key: string]: any;

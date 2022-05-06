@@ -24,7 +24,7 @@ import { shape, arrayOf, string, bool, instanceOf } from "vue-types";
 import { Page, Widget } from "..";
 import { PageState } from "../models/PageState";
 import BuilderWidgetsLayout from "./BuilderWidgetsLayout.vue";
-import WidgetItem from "../models/WidgetItem";
+import { WidgetItem } from "../models/WidgetItem";
 import { BuilderWidgetLanguages, WidgetItems } from "@/entry.esm";
 import { cachedMerge } from "../utils";
 import BuilderRightPane from "./BuilderRightPane.vue";

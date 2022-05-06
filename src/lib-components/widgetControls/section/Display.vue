@@ -11,7 +11,7 @@
 
 <script>
 import { defineComponent } from "@vue/composition-api";
-import WidgetItem from "../../models/WidgetItem";
+import { WidgetItem } from "../../models/WidgetItem";
 import WidgetsLayout from "../../WidgetsLayout.vue";
 
 export default defineComponent({

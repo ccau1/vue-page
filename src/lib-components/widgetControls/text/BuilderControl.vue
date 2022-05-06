@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import WidgetItem from "@/lib-components/models/WidgetItem";
+import { WidgetItem } from "@/lib-components/models/WidgetItem";
 import { defineComponent } from "@vue/composition-api";
 
 type TagType = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "small";

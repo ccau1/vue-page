@@ -23,9 +23,9 @@
 </template>
 
 <script lang="ts">
-import { PageState } from "@/entry.esm";
+import { PageState } from "../models/PageState";
 import { defineComponent } from "@vue/composition-api";
-import WidgetItem from "../models/WidgetItem";
+import { WidgetItem } from "../models/WidgetItem";
 import Pane from "./components/Pane.vue";
 
 export default defineComponent({

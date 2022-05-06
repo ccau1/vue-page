@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import WidgetItem from "@/lib-components/models/WidgetItem";
+import { WidgetItem } from "@/lib-components/models/WidgetItem";
 import { defineComponent } from "@vue/composition-api";
 import { ButtonGroupProperties } from ".";
 

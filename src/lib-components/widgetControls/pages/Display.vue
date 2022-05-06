@@ -55,8 +55,13 @@
       <div>
         <button
           class="back-forward-button"
-          :class="{ errors: widget.pageIndexHasErrors(currentPageIndex) }"
-          :disabled="widget.pageIndexHasErrors(currentPageIndex)"
+          :class="{
+            errors: widget.pageIndexHasErrors(currentPageIndex),
+            submitting: widget.isSubmitting,
+          }"
+          :disabled="
+            widget.pageIndexHasErrors(currentPageIndex) || widget.isSubmitting
+          "
           v-if="widget.hasNextButton()"
           @click="() => widget.toNextPage()"
         >
@@ -161,5 +166,8 @@ export default defineComponent({
   color: #fff;
   opacity: 0.2;
   cursor: default;
+}
+.back-forward-button.submitting {
+  opacity: 0.2;
 }
 </style>

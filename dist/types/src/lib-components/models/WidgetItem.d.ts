@@ -1,17 +1,17 @@
 import { ConditionProperties } from "json-rules-engine";
 import { Widget, WidgetItems } from "..";
 import { PageState } from "./PageState";
-export default class WidgetItem<Properties = any> {
+export declare class WidgetItem<Properties = any> {
     protected _widget: Widget<Properties>;
     protected _getPageState: () => PageState;
     protected _setPageState: (newState: PageState) => void;
     protected _widgetItems: WidgetItems;
     protected _onUpdate: (newWidgetItem: WidgetItem<Properties>) => void;
-    protected _emitEvent: (name: string, value?: any, widget?: WidgetItem) => void;
+    protected _emitEvent: (name: string, value: any, widget: WidgetItem) => Promise<void>;
     protected _removeWidget: (widgetId: string) => void;
     static getParentIds(widgetId: string, widgetItems: WidgetItems): string[];
     get pageState(): PageState;
-    emitEvent(name: string, value?: string): void;
+    emitEvent(name: string, value?: any): Promise<void>;
     get id(): string;
     get widget(): Widget<Properties>;
     get effects(): import("..").WidgetEffect[] | undefined;
@@ -30,7 +30,7 @@ export default class WidgetItem<Properties = any> {
     constructor({ widget, removeWidget, emitEvent, getState, setState, onUpdate, }: {
         widget: Widget;
         removeWidget: (widgetId: string) => void;
-        emitEvent: (name: string, value?: any) => void;
+        emitEvent: (name: string, value: any, widget: Widget) => Promise<void>;
         getState: () => PageState;
         setState: (newState: PageState) => void;
         onUpdate: (newWidgetItem: WidgetItem) => void;

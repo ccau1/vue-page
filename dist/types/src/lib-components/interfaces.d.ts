@@ -1,6 +1,6 @@
 import { ConditionProperties } from "json-rules-engine";
 import { VueConstructor } from "vue";
-import WidgetItem from "./models/WidgetItem";
+import { WidgetItem } from "./models/WidgetItem";
 export declare type FormStepperPosition = "top" | "right" | "bottom" | "left" | "center";
 export interface WidgetEffect {
     type: string;

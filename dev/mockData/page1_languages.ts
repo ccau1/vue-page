@@ -236,7 +236,7 @@ export default [
     message: {
       __title: "You won the 1 million dollar prize!",
       __text:
-        "Be careful of scams, but this one definitely isn't one! Come down to your trusty dark alley you so love and adore and get your free voucher to a million dollar mansion now! While supplies lasts!",
+        "<p>Be careful of scams, but this one definitely isn't one! Come down to your trusty dark alley you so love and adore and get your free voucher to a million dollar mansion now! While supplies lasts!</p><ol><li>item 1</li><li>item 2</li></ol>",
     },
   },
   {

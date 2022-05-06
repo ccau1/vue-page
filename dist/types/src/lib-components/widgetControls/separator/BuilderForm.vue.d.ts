@@ -1,4 +1,4 @@
-import WidgetItem from "../../models/WidgetItem";
+import { WidgetItem } from "../../models/WidgetItem";
 declare const _default: import("vue").ComponentOptions<import("vue").default, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & import("@vue/composition-api").Data, {
     setLabelPosition(labelPosition: "start" | "center" | "end"): void;
 }, {}, {

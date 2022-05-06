@@ -102,7 +102,7 @@ import { Fragment } from "vue-fragment";
 // mock data
 import pageData from "./mockData/page1";
 import _languages from "./mockData/page1_languages";
-import WidgetItem from "@/lib-components/models/WidgetItem";
+import { WidgetItem } from "@/lib-components/models/WidgetItem";
 
 interface Response {
   code: string;
@@ -218,7 +218,7 @@ export default defineComponent({
         WidgetLanguage[]
       >((arr, val) => [...arr, ...Object.values(val)], []);
     },
-    onPageEvent({
+    async onPageEvent({
       name,
       value,
       widget,
@@ -230,6 +230,7 @@ export default defineComponent({
       widgetItems: WidgetItems;
     }) {
       console.log("onPageEvent", name, value, widget);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     },
   },
 });

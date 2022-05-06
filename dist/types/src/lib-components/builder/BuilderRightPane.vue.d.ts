@@ -1,4 +1,4 @@
-import WidgetItem from "../models/WidgetItem";
+import { WidgetItem } from "../models/WidgetItem";
 import Pane from "./components/Pane.vue";
 declare const _default: import("vue").ComponentOptions<Pane, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & import("@vue/composition-api").Data, {}, {
     selectedWidgetItem(): WidgetItem;

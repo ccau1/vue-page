@@ -1,12 +1,14 @@
 <template>
   <div>
     <input
+      class="textInput"
       v-if="!properties.multiline"
       :value="value"
       type="text"
       @input="onTextChange"
     />
     <textarea
+      class="textInput"
       v-if="properties.multiline"
       :value="value"
       @input="onTextChange"
@@ -33,10 +35,13 @@ export default defineComponent<QuestionControlProps>({
 </script>
 
 <style scoped>
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
+.textInput::-webkit-outer-spin-button,
+.textInput::-webkit-inner-spin-button {
   -webkit-appearance: none;
   -moz-appearance: textfield;
   margin: 0;
+}
+.textInput {
+  min-height: 42px;
 }
 </style>
