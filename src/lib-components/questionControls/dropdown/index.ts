@@ -1,10 +1,12 @@
-import QuestionControl from "../QuestionControl";
+import { ConditionProperties } from "json-rules-engine";
 import Display from "./Display.vue";
+import QuestionControl from "../QuestionControl";
 import ReadOnly from "./ReadOnly.vue";
 
 export interface DropdownPropertiesOption {
   labelKey: string;
   value: string;
+  conditions?: ConditionProperties[];
 }
 
 export interface DropdownProperties {

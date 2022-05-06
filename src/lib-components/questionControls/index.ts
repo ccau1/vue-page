@@ -1,4 +1,5 @@
 import { WidgetItem } from "../models/WidgetItem";
+import { WidgetItems } from "../interfaces";
 import buttonGroup from "./buttonGroup";
 import checkbox from "./checkbox";
 import datePicker from "./datePicker";
@@ -18,6 +19,7 @@ export interface QuestionControlProps<
   value: Value;
   properties: Properties;
   widget: WidgetItem;
+  widgetItems: WidgetItems;
   onChange: (newVal: Value, ignoreChecks?: boolean) => void;
 }
 

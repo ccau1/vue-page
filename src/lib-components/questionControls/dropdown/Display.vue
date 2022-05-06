@@ -27,7 +27,16 @@
 </template>
 
 <script lang="ts">
+import { DropdownProperties, WidgetItems } from "@/entry.esm";
+import { PageEventListener } from "@/lib-components/models/PageEventListener";
+import QuestionWidgetItem from "@/lib-components/widgetControls/question/QuestionWidgetItem";
 import { defineComponent } from "@vue/composition-api";
+import {
+  AllConditions,
+  AnyConditions,
+  ConditionProperties,
+  NestedCondition,
+} from "json-rules-engine";
 import { QuestionControlProps } from "../index";
 // import Multiselect from "vue-multiselect";
 // import "vue-multiselect/dist/vue-multiselect.min.css";
@@ -39,23 +48,99 @@ export default defineComponent<QuestionControlProps>({
     widget: Object,
     onChange: Function,
     value: String,
+    widgetItems: Object,
   },
-  inject: ["t"],
+  inject: ["t", "pageEventListener", "getPageState"],
   data() {
     return {
       options: [],
+      attachedDependentCodeListeners: [],
+    } as {
+      options: Array<{ label: string; value: string }>;
+      attachedDependentCodeListeners: [name: string, fn: () => void][];
     };
+  },
+  created() {},
+  unmounted() {
+    // remove conditional listeners
+    (
+      this.attachedDependentCodeListeners as [name: string, fn: () => void][]
+    ).forEach(([name, fn]) => {
+      (this.pageEventListener as PageEventListener).remove(name, fn);
+    });
   },
   watch: {
     ["properties.options"]: {
-      handler() {
-        // FIXME: need to handle on locale switch as well
-        this.$data.options = this.$props.properties.options.map(
-          (opt: { labelKey: string; value: string }) => ({
-            value: opt.value,
-            label: (this as any).t(opt.labelKey, this.$props.widget.id),
-          })
-        );
+      async handler() {
+        // set listeners
+        //    remove prior listeners
+        (
+          this.attachedDependentCodeListeners as [
+            name: string,
+            fn: () => void
+          ][]
+        ).forEach(([name, fn]) => {
+          (this.pageEventListener as PageEventListener).remove(name, fn);
+        });
+        //    add new listeners
+        const getConditionFacts = (conditions: NestedCondition[]): string[] => {
+          return [
+            ...new Set(
+              conditions.reduce<string[]>((arr, condition) => {
+                if ((condition as AnyConditions).any) {
+                  return [
+                    ...arr,
+                    ...getConditionFacts((condition as AnyConditions).any),
+                  ];
+                } else if ((condition as AllConditions).all) {
+                  return [
+                    ...arr,
+                    ...getConditionFacts((condition as AllConditions).all),
+                  ];
+                } else {
+                  return [...arr, (condition as ConditionProperties).fact];
+                }
+              }, [])
+            ),
+          ];
+        };
+
+        // go through each option and extract condition fact names
+        const allDependentCodes = [
+          ...new Set(
+            (
+              (this.$props.widget as QuestionWidgetItem).properties
+                .controlProperties as DropdownProperties
+            ).options.reduce<string[]>((arr, option) => {
+              return [
+                ...arr,
+                ...(option.conditions?.length
+                  ? getConditionFacts(option.conditions)
+                  : []),
+              ];
+            }, [])
+          ),
+        ];
+
+        const setFilteredOptions = this.setFilteredOptions;
+        this.attachedDependentCodeListeners = allDependentCodes.map((code) => [
+          `${code}_change`,
+          () => {
+            (setFilteredOptions as any)();
+          },
+        ]);
+
+        (
+          this.attachedDependentCodeListeners as [
+            name: string,
+            fn: () => void
+          ][]
+        ).forEach(([name, fn]) => {
+          (this.pageEventListener as PageEventListener).add(name, fn);
+        });
+
+        // set initial filtered options
+        (setFilteredOptions as any)();
       },
       immediate: true,
     },
@@ -68,6 +153,50 @@ export default defineComponent<QuestionControlProps>({
     },
   },
   methods: {
+    async setFilteredOptions() {
+      this.$data.options = (await (this as any).getFilteredOptions()).map(
+        (opt: { labelKey: string; value: string }) => ({
+          value: opt.value,
+          label: (this as any).t(opt.labelKey, this.$props.widget.id),
+        })
+      );
+    },
+    async getFilteredOptions() {
+      // build facts data into:
+      // { [idOrCode: string]: response }
+      const validateData = Object.keys(
+        this.$props.widgetItems as WidgetItems
+      ).reduce<{ [idOrCode: string]: any }>((obj, widgetItemId: string) => {
+        const response = (this as any).getPageState()?.widgetState[widgetItemId]
+          ?.response;
+        if (response) {
+          obj[widgetItemId] = response;
+          if ((this.$props.widgetItems as WidgetItems)[widgetItemId].code) {
+            obj[
+              (this.$props.widgetItems as WidgetItems)[widgetItemId].code || ""
+            ] = response;
+          }
+        }
+        return obj;
+      }, {});
+
+      return (
+        await Promise.all(
+          (
+            (this.$props.widget as QuestionWidgetItem).properties
+              .controlProperties as DropdownProperties
+          ).options.map(async (opt) => {
+            return !opt.conditions?.length ||
+              (await (this.$props.widget as QuestionWidgetItem).validate(
+                opt.conditions,
+                validateData
+              ))
+              ? opt
+              : null;
+          })
+        )
+      ).filter((a) => a);
+    },
     onSelectChange(ev: Event) {
       this.$props.onChange((ev.target as HTMLSelectElement).value);
     },

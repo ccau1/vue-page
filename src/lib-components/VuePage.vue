@@ -209,6 +209,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     return {
       getView: () => this.$props.view,
       t: (this as any).t,
+      pageEventListener: this.pageEventListener,
       languages: this.$props.languages,
       getPageState: () => this.$props.state,
       setPageState: (newPageState: PageState) => {

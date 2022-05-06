@@ -57,6 +57,7 @@ export default {
                 "d42e770d-a753-41c6-96d7-0c61c3d3b29f",
                 "ecaae14f-2c0c-42e5-adf3-85277ec0b448",
                 "da07bc99-88ef-460d-824e-24972e2bebe1",
+                "e6d238e9-1bdc-4d9d-bfff-5499c2e67179",
                 "14f4c2d4-2cb0-488a-b39a-063292d6bb77",
               ],
             },
@@ -273,7 +274,7 @@ export default {
       {
         id: "da07bc99-88ef-460d-824e-24972e2bebe1",
         type: "question",
-        code: "injury",
+        code: "injuryPart",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         properties: {
           responseType: "TEXT",
@@ -283,6 +284,44 @@ export default {
               { labelKey: "opt1", value: "knee" },
               { labelKey: "opt2", value: "shoulder" },
               { labelKey: "opt3", value: "arm" },
+            ],
+          },
+        },
+      },
+      {
+        id: "e6d238e9-1bdc-4d9d-bfff-5499c2e67179",
+        type: "question",
+        code: "injuryType",
+        parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        properties: {
+          responseType: "TEXT",
+          control: "dropdown",
+          listenedOn: ["injuryPart"],
+          controlProperties: {
+            options: [
+              { labelKey: "opt1", value: "amputation" },
+              { labelKey: "opt2", value: "burn" },
+              { labelKey: "opt3", value: "cut" },
+              {
+                labelKey: "opt4",
+                value: "dislocation",
+                conditions: [
+                  {
+                    any: [
+                      {
+                        fact: "injuryPart",
+                        operator: "in",
+                        value: ["shoulder", "arm"],
+                      },
+                      {
+                        fact: "injuryPart",
+                        operator: "equal",
+                        value: null,
+                      },
+                    ],
+                  },
+                ],
+              },
             ],
           },
         },
