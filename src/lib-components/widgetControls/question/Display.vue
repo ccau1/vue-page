@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { WidgetItem } from "@/entry.esm";
 import { defineComponent } from "@vue/composition-api";
 // import { getParents } from "../../utils";
 // import { validateWidget } from "../../validateUtils";
@@ -79,14 +80,7 @@ export default defineComponent({
       (async () => {
         // handle validations
         await this.$props.widget.runValidations();
-        // handle reflexives
-        const widgetIdsToHandleReflexives =
-          this.pageState.getReflexWidgetIdsByCode(this.$props.widget.code);
-        await Promise.all(
-          widgetIdsToHandleReflexives.map(async (widgetId) => {
-            return this.$props.widgetItems[widgetId].runReflexives();
-          })
-        );
+        this.$props.widget.emitListener("change");
       })();
     },
   },

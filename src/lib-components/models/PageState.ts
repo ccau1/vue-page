@@ -14,7 +14,6 @@ export interface PageStateRawObject {
   _widgetState: WidgetState;
   _interactiveState: InteractiveState;
   _widgetCodeToIdMap: { [widgetCode: string]: string };
-  _reflexCodeToIdsMap: { [widgetCode: string]: string[] };
   _widgetIdToCodeMap: { [widgetId: string]: string };
 }
 
@@ -28,7 +27,6 @@ export class PageState {
   protected _widgetState: WidgetState;
   protected _interactiveState: InteractiveState;
   protected _widgetCodeToIdMap: { [widgetCode: string]: string };
-  protected _reflexCodeToIdsMap: { [widgetCode: string]: string[] };
   protected _widgetIdToCodeMap: { [widgetId: string]: string };
 
   static from(pageState: PageState | PageStateRawObject) {
@@ -38,7 +36,6 @@ export class PageState {
         widgetState: pageState.widgetState,
         interactiveState: pageState.interactiveState,
         widgetCodeToIdMap: pageState.widgetCodeToIdMap,
-        reflexCodeToIdsMap: pageState.reflexCodeToIdsMap,
         widgetIdToCodeMap: pageState.widgetIdToCodeMap,
       });
     } else {
@@ -48,7 +45,6 @@ export class PageState {
         widgetState: pageState._widgetState,
         interactiveState: pageState._interactiveState,
         widgetCodeToIdMap: pageState._widgetCodeToIdMap,
-        reflexCodeToIdsMap: pageState._reflexCodeToIdsMap,
         widgetIdToCodeMap: pageState._widgetIdToCodeMap,
       });
     }
@@ -58,13 +54,11 @@ export class PageState {
     widgetState,
     interactiveState,
     widgetCodeToIdMap,
-    reflexCodeToIdsMap,
     widgetIdToCodeMap,
   }: PageStateCreate) {
     this._widgetState = widgetState || {};
     this._interactiveState = interactiveState || {};
     this._widgetCodeToIdMap = widgetCodeToIdMap || {};
-    this._reflexCodeToIdsMap = reflexCodeToIdsMap || {};
     this._widgetIdToCodeMap = widgetIdToCodeMap || {};
   }
 
@@ -78,10 +72,6 @@ export class PageState {
 
   get widgetCodeToIdMap() {
     return this._widgetCodeToIdMap;
-  }
-
-  get reflexCodeToIdsMap() {
-    return this._reflexCodeToIdsMap;
   }
 
   get widgetIdToCodeMap() {
@@ -128,24 +118,5 @@ export class PageState {
 
   unregisterWidgetCode(widgetCode: string) {
     delete this._widgetCodeToIdMap[widgetCode];
-  }
-
-  getReflexWidgetIdsByCode(widgetCode: string) {
-    return this._reflexCodeToIdsMap[widgetCode] || [];
-  }
-
-  registerReflexWatch(widgetId: string, reflexCodes: string[]) {
-    reflexCodes.forEach((code) => {
-      this._reflexCodeToIdsMap[code] = [
-        ...new Set([...(this._reflexCodeToIdsMap[code] || []), widgetId]),
-      ];
-    });
-  }
-  unregisterReflexWatch(widgetId: string, reflexCodes: string[]) {
-    reflexCodes.forEach((rc) => {
-      this._reflexCodeToIdsMap[rc] = this._reflexCodeToIdsMap[rc].filter(
-        (f) => f !== widgetId
-      );
-    });
   }
 }

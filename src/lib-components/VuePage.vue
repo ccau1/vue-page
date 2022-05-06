@@ -19,6 +19,7 @@ import WidgetsLayout from "./WidgetsLayout.vue";
 import { WidgetItem } from "./models/WidgetItem";
 import { WidgetItems } from "@/entry.esm";
 import { cachedMerge } from "./utils";
+import { PageEventListener } from "./models/PageEventListener";
 
 interface VuePageProps {
   languages: { [widgetId: string]: { [key: string]: string } };
@@ -103,8 +104,12 @@ export default defineComponent<VuePageProps, any, VuePageData>({
   data() {
     return {
       widgetItems: {},
+      pageEventListener: new PageEventListener({
+        emitEvent: (this as any).emitEvent,
+      }),
     } as {
       widgetItems: WidgetItems;
+      pageEventListener: PageEventListener;
     };
   },
   computed: {
@@ -152,6 +157,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
               this.combWidgetControls[widget.type]?.widgetItem || WidgetItem;
             obj[widget.id] = new WidgetItemClass({
               widget,
+              pageEventListener: this.pageEventListener,
               emitEvent: this.emitEvent,
               getState: () => this.$props.state,
               setState: (newPageState: PageState) => {

@@ -1,3 +1,4 @@
+import { PageEventListener } from "@/lib-components/models/PageEventListener";
 import { PageState } from "../../models/PageState";
 import { SectionProperties } from ".";
 import { Widget } from "../..";
@@ -7,6 +8,7 @@ export default class SectionWidgetItem extends WidgetItem<SectionProperties> {
   constructor(opts: {
     widget: Widget;
     removeWidget: (widgetId: string) => void;
+    pageEventListener: PageEventListener;
     emitEvent: (name: string, value?: any) => Promise<void>;
     getState: () => PageState;
     setState: (newState: PageState) => void;

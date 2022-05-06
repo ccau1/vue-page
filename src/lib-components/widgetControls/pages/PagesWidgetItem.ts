@@ -1,3 +1,4 @@
+import { PageEventListener } from "@/lib-components/models/PageEventListener";
 import { PageState } from "../../models/PageState";
 import { PagesProperties } from ".";
 import { Widget } from "../..";
@@ -9,7 +10,8 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   constructor(opts: {
     widget: Widget;
     removeWidget: (widgetId: string) => void;
-    emitEvent: (name: string, value?: any) => Promise<void>;
+    pageEventListener: PageEventListener;
+    emitEvent: (name: string, value: any, widget: Widget) => Promise<void>;
     getState: () => PageState;
     setState: (newState: PageState) => void;
     onUpdate: (newWidget: Widget<PagesProperties>) => void;

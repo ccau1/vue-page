@@ -1,6 +1,7 @@
 import { ConditionProperties, Engine } from "json-rules-engine";
 import { Widget, WidgetItems } from "..";
 
+import { PageEventListener } from "./PageEventListener";
 import { PageState } from "./PageState";
 
 export class WidgetItem<Properties = any> {
@@ -11,10 +12,12 @@ export class WidgetItem<Properties = any> {
   protected _onUpdate: (newWidgetItem: WidgetItem<Properties>) => void;
   protected _emitEvent: (
     name: string,
-    value?: any,
-    widget?: WidgetItem
+    value: any,
+    widget: WidgetItem
   ) => Promise<void>;
+  protected _pageEventListener: PageEventListener;
   protected _removeWidget: (widgetId: string) => void;
+  protected _attachedReflexiveListeners: [name: string, fn: () => void][] = [];
 
   static getParentIds(widgetId: string, widgetItems: WidgetItems): string[] {
     const widget = widgetItems[widgetId];
@@ -83,6 +86,7 @@ export class WidgetItem<Properties = any> {
 
   constructor({
     widget,
+    pageEventListener,
     removeWidget,
     emitEvent,
     getState,
@@ -90,12 +94,14 @@ export class WidgetItem<Properties = any> {
     onUpdate,
   }: {
     widget: Widget;
+    pageEventListener: PageEventListener;
     removeWidget: (widgetId: string) => void;
-    emitEvent: (name: string, value?: any) => Promise<void>;
+    emitEvent: (name: string, value: any, widget: Widget) => Promise<void>;
     getState: () => PageState;
     setState: (newState: PageState) => void;
     onUpdate: (newWidgetItem: WidgetItem) => void;
   }) {
+    this._pageEventListener = pageEventListener;
     this._removeWidget = removeWidget;
     this._emitEvent = emitEvent;
     this._widgetItems = {};
@@ -105,23 +111,41 @@ export class WidgetItem<Properties = any> {
     this._onUpdate = onUpdate;
 
     if (this.code) getState().registerWidgetCode(this.code, this.id);
-    if (this.reflexiveRules?.length) {
-      this.pageState.registerReflexWatch(
-        this.id,
-        this.reflexiveRules.map((r) => r.fact)
-      );
-      // initial run
-      this.runReflexives();
+    this.syncReflexiveListeners();
+  }
+
+  syncReflexiveListeners() {
+    // remove all previous
+    this._attachedReflexiveListeners.forEach(([name, fn]) => {
+      this._pageEventListener.remove(name, fn);
+    });
+    // define & save new list of reflexives
+    this._attachedReflexiveListeners = (this.reflexiveRules || []).map((rr) => [
+      `${rr.fact}_change`,
+      () => {
+        this.runReflexives();
+      },
+    ]);
+    // attach reflexive listeners
+    this._attachedReflexiveListeners.forEach(([name, fn]) => {
+      this._pageEventListener.add(name, fn);
+    });
+    // initial run
+    this.runReflexives();
+  }
+
+  emitListener(name: string, data: any) {
+    this._pageEventListener.emit(`${this.id}_${name}`, data, {
+      widgetItem: this,
+    });
+    if (this.code) {
+      this._pageEventListener.emit(`${this.code}_${name}`, data, {
+        widgetItem: this,
+      });
     }
   }
 
-  destroyed() {
-    if (this.reflexiveRules?.length)
-      this.pageState.unregisterReflexWatch(
-        this.id,
-        this.reflexiveRules.map((r) => r.fact)
-      );
-  }
+  destroyed() {}
 
   removeWidget() {
     // if there is a parent, let them know to remove you
@@ -168,7 +192,7 @@ export class WidgetItem<Properties = any> {
   }
 
   async _getValidationErrors() {
-    if (!this.validationRules?.length) {
+    if (!this.validationRules?.length || !(await this.isReflexive())) {
       return null;
     }
     // get current widget's response
@@ -182,7 +206,8 @@ export class WidgetItem<Properties = any> {
         this.validationRules.map(async (validation) => {
           const isValid = await this.validate(validation.conditions, {
             properties: this.properties,
-            response: response === undefined ? null : response,
+            response:
+              response === undefined || response === "" ? null : response,
           });
           if (!isValid) return validation.error;
           return null;
@@ -218,6 +243,9 @@ export class WidgetItem<Properties = any> {
 
   async runReflexives() {
     const isReflexive = await this.isReflexive();
+    if (!isReflexive !== !!this.getState("reflexiveHide")) {
+      await this.runValidations();
+    }
     this.setState("reflexiveHide", !isReflexive);
   }
 
