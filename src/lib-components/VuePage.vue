@@ -178,7 +178,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
           {}
         );
         Object.values(this.$data.widgetItems).forEach((widgetItem) => {
-          (widgetItem as WidgetItem).setWidgetItems(this.$data.widgetItems);
+          widgetItem.setWidgetItems(this.$data.widgetItems);
         });
       },
       immediate: true,
@@ -187,35 +187,49 @@ export default defineComponent<VuePageProps, any, VuePageData>({
   },
   methods: {
     t(key: string, groupId?: string) {
-      let lang = (this as any).languages;
+      let lang = this.languages;
       if (groupId) {
-        lang = groupId.split(".").reduce((obj, g) => {
+        lang = groupId.split(".").reduce<{ [key: string]: any }>((obj, g) => {
           return obj?.[g];
         }, lang);
       }
       return lang?.[key];
     },
     async emitEvent(name: string, value?: any, widget?: WidgetItem) {
-      await (this.$listeners.event as Function)?.({
-        name,
-        value,
-        widget,
-        pageState: this.pageState,
-        widgetItems: this.$data.widgetItems,
-      });
+      if (Array.isArray(this.$listeners.event)) {
+        await Promise.all(
+          this.$listeners.event.map((evFn) =>
+            evFn({
+              name,
+              value,
+              widget,
+              pageState: this.pageState,
+              widgetItems: this.$data.widgetItems,
+            })
+          )
+        );
+      } else {
+        await this.$listeners.event?.({
+          name,
+          value,
+          widget,
+          pageState: this.pageState,
+          widgetItems: this.$data.widgetItems,
+        });
+      }
     },
   },
   provide() {
     return {
       getView: () => this.$props.view,
-      t: (this as any).t,
+      t: this.t,
       pageEventListener: this.pageEventListener,
       languages: this.$props.languages,
       getPageState: () => this.$props.state,
       setPageState: (newPageState: PageState) => {
         this.$emit("onStateChange", newPageState);
       },
-      emitEvent: (this as any).emitEvent,
+      emitEvent: this.emitEvent,
       widgetEffectControls: this.combWidgetEffectControls,
       widgetControls: this.combWidgetControls,
       questionControls: this.combQuestionControls,

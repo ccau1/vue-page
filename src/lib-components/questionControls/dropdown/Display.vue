@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { DropdownProperties, WidgetItems } from "@/entry.esm";
+import { DropdownProperties, PageState, WidgetItems } from "@/entry.esm";
 import { PageEventListener } from "@/lib-components/models/PageEventListener";
 import QuestionWidgetItem from "@/lib-components/widgetControls/question/QuestionWidgetItem";
 import { defineComponent } from "@vue/composition-api";
@@ -41,7 +41,16 @@ import { QuestionControlProps } from "../index";
 // import Multiselect from "vue-multiselect";
 // import "vue-multiselect/dist/vue-multiselect.min.css";
 
-export default defineComponent<QuestionControlProps>({
+export default defineComponent<
+  QuestionControlProps<DropdownProperties, string, QuestionWidgetItem>,
+  {
+    options: Array<{ label: string; value: string }>;
+    attachedDependentCodeListeners: [name: string, fn: () => void][];
+    pageEventListener: PageEventListener;
+    setFilteredOptions: () => void;
+    getPageState: () => PageState;
+  }
+>({
   // components: { Multiselect },
   props: {
     properties: Object,
@@ -63,10 +72,8 @@ export default defineComponent<QuestionControlProps>({
   created() {},
   unmounted() {
     // remove conditional listeners
-    (
-      this.attachedDependentCodeListeners as [name: string, fn: () => void][]
-    ).forEach(([name, fn]) => {
-      (this.pageEventListener as PageEventListener).remove(name, fn);
+    this.attachedDependentCodeListeners.forEach(([name, fn]) => {
+      this.pageEventListener.remove(name, fn);
     });
   },
   watch: {
@@ -74,13 +81,8 @@ export default defineComponent<QuestionControlProps>({
       async handler() {
         // set listeners
         //    remove prior listeners
-        (
-          this.attachedDependentCodeListeners as [
-            name: string,
-            fn: () => void
-          ][]
-        ).forEach(([name, fn]) => {
-          (this.pageEventListener as PageEventListener).remove(name, fn);
+        this.attachedDependentCodeListeners.forEach(([name, fn]) => {
+          this.pageEventListener.remove(name, fn);
         });
         //    add new listeners
         const getConditionFacts = (conditions: NestedCondition[]): string[] => {
@@ -109,7 +111,7 @@ export default defineComponent<QuestionControlProps>({
         const allDependentCodes = [
           ...new Set(
             (
-              (this.$props.widget as QuestionWidgetItem).properties
+              this.$props.widget.properties
                 .controlProperties as DropdownProperties
             ).options.reduce<string[]>((arr, option) => {
               return [
@@ -122,11 +124,10 @@ export default defineComponent<QuestionControlProps>({
           ),
         ];
 
-        const setFilteredOptions = this.setFilteredOptions;
         this.attachedDependentCodeListeners = allDependentCodes.map((code) => [
           `${code}_change`,
           () => {
-            (setFilteredOptions as any)();
+            this.setFilteredOptions();
           },
         ]);
 
@@ -136,11 +137,11 @@ export default defineComponent<QuestionControlProps>({
             fn: () => void
           ][]
         ).forEach(([name, fn]) => {
-          (this.pageEventListener as PageEventListener).add(name, fn);
+          this.pageEventListener.add(name, fn);
         });
 
         // set initial filtered options
-        (setFilteredOptions as any)();
+        this.setFilteredOptions();
       },
       immediate: true,
     },
@@ -164,11 +165,11 @@ export default defineComponent<QuestionControlProps>({
     async getFilteredOptions() {
       // build facts data into:
       // { [idOrCode: string]: response }
-      const validateData = Object.keys(
-        this.$props.widgetItems as WidgetItems
-      ).reduce<{ [idOrCode: string]: any }>((obj, widgetItemId: string) => {
-        const response = (this as any).getPageState()?.widgetState[widgetItemId]
-          ?.response;
+      const validateData = Object.keys(this.$props.widgetItems).reduce<{
+        [idOrCode: string]: any;
+      }>((obj, widgetItemId: string) => {
+        const response =
+          this.getPageState()?.widgetState[widgetItemId]?.response;
         if (response) {
           obj[widgetItemId] = response;
           if ((this.$props.widgetItems as WidgetItems)[widgetItemId].code) {
@@ -183,14 +184,11 @@ export default defineComponent<QuestionControlProps>({
       return (
         await Promise.all(
           (
-            (this.$props.widget as QuestionWidgetItem).properties
+            this.$props.widget.properties
               .controlProperties as DropdownProperties
           ).options.map(async (opt) => {
             return !opt.conditions?.length ||
-              (await (this.$props.widget as QuestionWidgetItem).validate(
-                opt.conditions,
-                validateData
-              ))
+              (await this.$props.widget.validate(opt.conditions, validateData))
               ? opt
               : null;
           })

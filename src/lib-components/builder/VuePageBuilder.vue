@@ -25,7 +25,11 @@ import { Page, Widget } from "..";
 import { PageState } from "../models/PageState";
 import BuilderWidgetsLayout from "./BuilderWidgetsLayout.vue";
 import { WidgetItem } from "../models/WidgetItem";
-import { BuilderWidgetLanguages, WidgetItems } from "@/entry.esm";
+import {
+  BuilderWidgetLanguages,
+  WidgetItems,
+  WidgetLanguage,
+} from "@/entry.esm";
 import { cachedMerge } from "../utils";
 import BuilderRightPane from "./BuilderRightPane.vue";
 import BuilderLeftPane from "./BuilderLeftPane.vue";
@@ -194,14 +198,18 @@ export default defineComponent<VuePageProps, any, VuePageData>({
   },
   methods: {
     t(key: string, groupId?: string) {
-      let lang = (this as any).languages;
+      let lang: {
+        [locale: string]: { [locale: string]: WidgetLanguage } | WidgetLanguage;
+      } = this.languages;
       if (groupId) {
-        lang = groupId.split(".").reduce((obj, g) => {
+        lang = groupId.split(".").reduce<{
+          [key: string]: any;
+        }>((obj, g) => {
           return obj?.[g];
-        }, lang);
+        }, lang) as { [locale: string]: WidgetLanguage };
       }
 
-      return lang?.[this.$props.locale]?.message[key];
+      return (lang?.[this.$props.locale] as WidgetLanguage)?.message[key];
     },
     setMessage({
       id,
