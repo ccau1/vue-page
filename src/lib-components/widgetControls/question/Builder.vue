@@ -19,6 +19,7 @@
           :is="questionControls[widget.properties.control].display"
           :properties="widget.properties.controlProperties"
           :widget="widget"
+          :widgetItems="widgetItems"
           :onChange="onChange"
           :value="widget.getState('response')"
           :setWidgetState="setWidgetState"

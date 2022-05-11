@@ -33,6 +33,7 @@ import {
 import { cachedMerge } from "../utils";
 import BuilderRightPane from "./BuilderRightPane.vue";
 import BuilderLeftPane from "./BuilderLeftPane.vue";
+import { PageEventListener } from "../models/PageEventListener";
 
 interface VuePageProps {
   languages: BuilderWidgetLanguages;
@@ -120,8 +121,12 @@ export default defineComponent<VuePageProps, any, VuePageData>({
   data() {
     return {
       widgetItems: {},
+      pageEventListener: new PageEventListener({
+        emitEvent: (this as any).emitEvent,
+      }),
     } as {
       widgetItems: WidgetItems;
+      pageEventListener: PageEventListener;
     };
   },
   computed: {
@@ -169,6 +174,8 @@ export default defineComponent<VuePageProps, any, VuePageData>({
               this.combWidgetControls[widget.type]?.widgetItem || WidgetItem;
             obj[widget.id] = new WidgetItemClass({
               widget,
+              pageEventListener: this.pageEventListener,
+              emitEvent: this.emitEvent,
               removeWidget: this.removeWidget,
               getState: () => this.$props.state,
               setState: (newPageState: PageState) => {
@@ -210,6 +217,29 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       }
 
       return (lang?.[this.$props.locale] as WidgetLanguage)?.message[key];
+    },
+    async emitEvent(name: string, value?: any, widget?: WidgetItem) {
+      if (Array.isArray(this.$listeners.event)) {
+        await Promise.all(
+          this.$listeners.event.map((evFn) =>
+            evFn({
+              name,
+              value,
+              widget,
+              pageState: this.pageState,
+              widgetItems: this.$data.widgetItems,
+            })
+          )
+        );
+      } else {
+        await this.$listeners.event?.({
+          name,
+          value,
+          widget,
+          pageState: this.pageState,
+          widgetItems: this.$data.widgetItems,
+        });
+      }
     },
     setMessage({
       id,
@@ -270,6 +300,8 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     return {
       getView: () => this.$props.view,
       t: (this as any).t,
+      pageEventListener: this.pageEventListener,
+      emitEvent: this.emitEvent,
       getLocale: () => this.$props.locale,
       languages: this.$props.languages,
       setMessage: (this as any).setMessage,

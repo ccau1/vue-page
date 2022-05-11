@@ -21,6 +21,7 @@ export default defineComponent({
     widget: Object,
     onChange: Function,
     value: Boolean,
+    widgetItems: Object,
   },
   inject: ["t"],
   methods: {
