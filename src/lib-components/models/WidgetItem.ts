@@ -17,7 +17,13 @@ export class WidgetItem<Properties = any> {
   ) => Promise<void>;
   protected _pageEventListener: PageEventListener;
   protected _removeWidget: (widgetId: string) => void;
-  protected _attachedReflexiveListeners: [name: string, fn: () => void][] = [];
+  protected _attachedListenerSets: {
+    [setName: string]: {
+      events: string[];
+      fn: Function;
+    };
+  } = {};
+  protected _properties: Properties;
 
   static getParentIds(widgetId: string, widgetItems: WidgetItems): string[] {
     const widget = widgetItems[widgetId];
@@ -61,7 +67,7 @@ export class WidgetItem<Properties = any> {
   }
 
   get properties() {
-    return this._widget.properties;
+    return this._properties;
   }
 
   get parentId() {
@@ -109,27 +115,83 @@ export class WidgetItem<Properties = any> {
     this._getPageState = getState;
     this._setPageState = setState;
     this._onUpdate = onUpdate;
+    this._properties = widget.properties;
 
     if (this.code) getState().registerWidgetCode(this.code, this.id);
     this.syncReflexiveListeners();
+
+    this.syncFetchPropertiesListeners();
+  }
+
+  setListenerSet(setName: string, events: string[], fn: Function) {
+    if (this._attachedListenerSets[setName]) {
+      // if setName exists, remove prior listeners
+      this._attachedListenerSets[setName].events.forEach((eventName) => {
+        this._pageEventListener.remove(
+          eventName,
+          this._attachedListenerSets[setName].fn
+        );
+      });
+    } else {
+      this._attachedListenerSets[setName] = { events: [], fn: () => null };
+    }
+    // if no events passed/defined, no point keeping this listener set,
+    // so remove it and skip the rest
+    if (!events?.length) {
+      delete this._attachedListenerSets[setName];
+      return;
+    }
+    // set new events & fn
+    this._attachedListenerSets[setName].events = events;
+    this._attachedListenerSets[setName].fn = fn;
+    // add fn to event listener
+    this._attachedListenerSets[setName].events.forEach((eventName) => {
+      this._pageEventListener.add(
+        eventName,
+        this._attachedListenerSets[setName].fn
+      );
+    });
+  }
+
+  syncFetchPropertiesListeners() {
+    this.setListenerSet(
+      "fetchProperties",
+      this.widget.fetchPropertiesOnWidgetsChange?.map((c) => `${c}_change`) ||
+        [],
+      async () => {
+        await this.callFetchPropertiesApi();
+      }
+    );
+  }
+
+  async callFetchPropertiesApi() {
+    console.log("callFetchPropertiesApi");
+
+    if (!this.widget.fetchPropertiesApi) {
+      // TODO: throw error?
+      return;
+    }
+    const body = {
+      currentProperties: this.properties,
+      originalProperties: this.widget.properties,
+    };
+    const propertiesResponse = await fetch(this.widget.fetchPropertiesApi, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+    if (!propertiesResponse.ok) {
+      // TODO: fetch error, do something?
+      return;
+    }
+    this._properties = await propertiesResponse.json();
   }
 
   syncReflexiveListeners() {
-    // remove all previous
-    this._attachedReflexiveListeners.forEach(([name, fn]) => {
-      this._pageEventListener.remove(name, fn);
-    });
-    // define & save new list of reflexives
-    this._attachedReflexiveListeners = (this.reflexiveRules || []).map((rr) => [
-      `${rr.fact}_change`,
-      () => {
-        this.runReflexives();
-      },
-    ]);
-    // attach reflexive listeners
-    this._attachedReflexiveListeners.forEach(([name, fn]) => {
-      this._pageEventListener.add(name, fn);
-    });
+    this.setListenerSet(
+      "reflexives",
+      this.reflexiveRules?.map((c) => `${c.fact}_change`) || [],
+      () => this.runReflexives()
+    );
     // initial run
     this.runReflexives();
   }

@@ -21,6 +21,8 @@ export interface Widget<WidgetProperties = any> {
   parent?: string;
   style?: string;
   effects?: WidgetEffect[];
+  fetchPropertiesOnWidgetsChange?: string[];
+  fetchPropertiesApi?: string;
   reflexiveRules?: ConditionProperties[];
   validationRules?: Array<{ conditions: ConditionProperties[]; error: string }>;
   order?: number;

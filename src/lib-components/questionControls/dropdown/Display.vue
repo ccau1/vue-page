@@ -79,12 +79,7 @@ export default defineComponent<
   watch: {
     ["properties.options"]: {
       async handler() {
-        // set listeners
-        //    remove prior listeners
-        this.attachedDependentCodeListeners.forEach(([name, fn]) => {
-          this.pageEventListener.remove(name, fn);
-        });
-        //    add new listeners
+        // recursively go through conditions and get all facts
         const getConditionFacts = (conditions: NestedCondition[]): string[] => {
           return [
             ...new Set(
@@ -124,21 +119,12 @@ export default defineComponent<
           ),
         ];
 
-        this.attachedDependentCodeListeners = allDependentCodes.map((code) => [
-          `${code}_change`,
-          () => {
-            this.setFilteredOptions();
-          },
-        ]);
-
-        (
-          this.attachedDependentCodeListeners as [
-            name: string,
-            fn: () => void
-          ][]
-        ).forEach(([name, fn]) => {
-          this.pageEventListener.add(name, fn);
-        });
+        // sync listeners for filtering options
+        this.widget.setListenerSet(
+          "options",
+          allDependentCodes.map((c) => `${c}_change`),
+          () => this.setFilteredOptions()
+        );
 
         // set initial filtered options
         this.setFilteredOptions();
@@ -198,10 +184,6 @@ export default defineComponent<
     onSelectChange(ev: Event) {
       this.$props.onChange((ev.target as HTMLSelectElement).value);
     },
-    // onSelectChange(selectedValue: { value: string; label: string }) {
-    //   if (!selectedValue) return;
-    //   this.$props.onChange(selectedValue.value);
-    // },
   },
 });
 </script>

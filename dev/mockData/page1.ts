@@ -293,6 +293,9 @@ export default {
         type: "question",
         code: "injuryType",
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
+        fetchPropertiesOnWidgetsChange: ["injuryPart"],
+        // defined in page level?
+        fetchPropertiesApi: "google.com",
         properties: {
           responseType: "TEXT",
           control: "dropdown",

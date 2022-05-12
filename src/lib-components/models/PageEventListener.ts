@@ -2,7 +2,7 @@ import { WidgetItem } from "./WidgetItem";
 
 export class PageEventListener {
   protected _listenerFns: {
-    [listenerKey: string]: Array<() => void>;
+    [listenerKey: string]: Array<Function>;
   } = {};
 
   protected _emitEvent;
@@ -13,16 +13,16 @@ export class PageEventListener {
     this._emitEvent = opts.emitEvent;
   }
 
-  addChangeListener(widgetIdOrCode: string, fn: () => void) {
+  addChangeListener(widgetIdOrCode: string, fn: Function) {
     this.add(`${widgetIdOrCode}_change`, fn);
   }
 
-  add(listenerKey: string, fn: () => void) {
+  add(listenerKey: string, fn: Function) {
     if (!this._listenerFns[listenerKey]) this._listenerFns[listenerKey] = [];
     this._listenerFns[listenerKey].push(fn);
   }
 
-  remove(listenerKey: string, fn: () => void) {
+  remove(listenerKey: string, fn: Function) {
     if (!this._listenerFns[listenerKey]) return;
     this._listenerFns[listenerKey] = this._listenerFns[listenerKey].filter(
       (f) => f !== fn
