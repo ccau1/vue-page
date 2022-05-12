@@ -24,20 +24,22 @@
         {{ t(page.labelKey, widget.id) }}
       </a>
     </div>
-    <div
-      class="pages-content-item"
-      v-for="(page, pageIndex) in sortedPages"
-      :key="pageIndex"
-    >
-      <div v-if="currentPageIndex === pageIndex">
-        <widgets-layout
-          :widgetItems="widgetItems"
-          :excludeWidgetIds="[widget.id]"
-          :onlyIncludeWidgetIds="page.children"
-          :widgetsOrder="page.children"
-          :forParent="widget.id"
-        />
-      </div>
+    <div class="pages-content-item">
+      <widgets-layout
+        :widgetItems="widgetItems"
+        :excludeWidgetIds="[widget.id]"
+        :onlyIncludeWidgetIds="
+          sortedPages.length && currentPageIndex > -1
+            ? sortedPages[currentPageIndex].children
+            : undefined
+        "
+        :widgetsOrder="
+          sortedPages.length && currentPageIndex > -1
+            ? sortedPages[currentPageIndex].children
+            : undefined
+        "
+        :forParent="widget.id"
+      />
     </div>
     <div
       class="back-forward-wrapper"

@@ -17,19 +17,17 @@
         {{ t(page.labelKey, widget.id) }}
       </a>
     </div>
-    <div
-      class="pages-content-item"
-      v-for="(page, pageIndex) in sortedPages"
-      :key="pageIndex"
-    >
-      <div v-if="currentPageIndex === pageIndex">
-        <builder-widgets-layout
-          :widgetItems="widgetItems"
-          :excludeWidgetIds="[widget.id]"
-          :onlyIncludeWidgetIds="page.children"
-          :forParent="widget.id"
-        />
-      </div>
+    <div class="pages-content-item">
+      <builder-widgets-layout
+        :widgetItems="widgetItems"
+        :excludeWidgetIds="[widget.id]"
+        :onlyIncludeWidgetIds="
+          sortedPages.length && currentPageIndex > -1
+            ? sortedPages[currentPageIndex].children
+            : []
+        "
+        :forParent="widget.id"
+      />
     </div>
     <div
       class="back-forward-wrapper"
