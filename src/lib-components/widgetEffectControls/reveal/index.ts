@@ -36,7 +36,8 @@ export default new WidgetEffectControl<RevealEffectProperties>({
     return {
       type: this.key,
       properties: {
-        delay: 0,
+        delay: 100,
+        duration: 300,
         distance: "300px",
         origin: "left",
         ...props,

@@ -45,6 +45,9 @@ export default defineComponent({
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 3px 10px #a7a7a73b;
+  z-index: 10;
+  position: relative;
 }
 .panel-title {
   margin: 0;

@@ -10,7 +10,7 @@
       />
     </div>
     <div class="field-wrapper">
-      <label for="top">Position from top</label>
+      <label for="top">Position from top (px)</label>
       <input
         id="top"
         type="number"

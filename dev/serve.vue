@@ -64,7 +64,16 @@
       @onStateChange="onStateChange"
       @event="onPageEvent"
     />
-    <div style="display: flex; flex-direction: row; padding: 10px">
+    <div
+      style="
+        display: flex;
+        flex-direction: row;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: auto;
+      "
+    >
       <div style="flex: 1; padding: 10px">
         <h4>State</h4>
         <vue-json-pretty :path="'res'" :data="state" />

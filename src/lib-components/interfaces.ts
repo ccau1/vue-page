@@ -14,6 +14,13 @@ export interface WidgetEffect {
   properties: { [key: string]: any };
 }
 
+export interface ValidationRule {
+  conditions: ConditionProperties[];
+  error: string;
+}
+
+export type ValidationRules = ValidationRule[];
+
 export interface Widget<WidgetProperties = any> {
   id: string;
   type: string;

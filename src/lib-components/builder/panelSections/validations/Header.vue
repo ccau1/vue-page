@@ -1,15 +1,6 @@
 <template>
   <div v-if="selectedWidgetItem">
-    <select @change="onAddEffect">
-      <option value="" disabled selected class="default">+</option>
-      <option
-        :value="panelSection.key"
-        v-for="panelSection in panelSectionsAvailable"
-        :key="panelSection.key"
-      >
-        {{ panelSection.name }}
-      </option>
-    </select>
+    <button @click="addValidation" class="add-button">+</button>
   </div>
 </template>
 
@@ -50,37 +41,23 @@ export default defineComponent({
     },
   },
   methods: {
-    onAddEffect(ev: Event) {
-      const selectedEffectKey = (ev.target as HTMLSelectElement).value;
-      (ev.target as HTMLSelectElement).value = "";
-      if (!(this as any).widgetEffectControls[selectedEffectKey]) {
-        // effect key does not exist?? skip for now
-        return;
-      }
-      (this.$props.selectedWidgetItem as WidgetItem).addEffect(
-        (
-          (this as any).widgetEffectControls[
-            selectedEffectKey
-          ] as WidgetEffectControl
-        ).create()
-      );
+    addValidation() {
+      const validationsCount = (
+        (this.$props.selectedWidgetItem as WidgetItem).validationRules || []
+      )?.length;
+      (this.$props.selectedWidgetItem as WidgetItem).addValidation({
+        conditions: [],
+        error: `err${validationsCount}`,
+      });
     },
   },
 });
 </script>
 
 <style scoped>
-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  padding: 1px 5px;
-  border-radius: 4px;
-  border: 1px solid #000;
+.add-button {
   background-color: rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-}
-select option.default {
-  text-align: center;
+  border: 1px solid #000;
+  border-radius: 4px;
 }
 </style>

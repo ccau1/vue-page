@@ -1,16 +1,16 @@
 import { ConditionProperties, Engine } from "json-rules-engine";
+import { ValidationRule, WidgetEffect } from "../interfaces";
 import { Widget, WidgetItems } from "..";
 
 import { PageEventListener } from "./PageEventListener";
 import { PageState } from "./PageState";
-import { WidgetEffect } from "../interfaces";
 
 export class WidgetItem<Properties = any> {
   protected _widget: Widget<Properties>;
   protected _getPageState: () => PageState;
   protected _setPageState: (newState: PageState) => void;
   protected _widgetItems: WidgetItems;
-  protected _onUpdate: (newWidgetItem?: WidgetItem<Properties>) => void;
+  protected _update: (newWidgetItem?: WidgetItem<Properties>) => void;
   protected _emitEvent: (
     name: string,
     value: any,
@@ -119,7 +119,7 @@ export class WidgetItem<Properties = any> {
     this._widget = widget;
     this._getPageState = getState;
     this._setPageState = setState;
-    this._onUpdate = (newWidgetItem: WidgetItem = this) =>
+    this._update = (newWidgetItem: WidgetItem = this) =>
       onUpdate(newWidgetItem);
     this._properties = widget.properties;
 
@@ -205,7 +205,7 @@ export class WidgetItem<Properties = any> {
     this._widget.effects = (this.effects || []).map((eff) =>
       eff.type === type ? { ...eff, properties } : eff
     );
-    this._onUpdate(this);
+    this._update(this);
   }
 
   addEffect(effect: WidgetEffect) {
@@ -216,14 +216,14 @@ export class WidgetItem<Properties = any> {
     // add effect to list of effects
     this.effects?.push(effect);
     // trigger update
-    this._onUpdate();
+    this._update();
   }
 
   removeEffect(effectType: string) {
     this._widget.effects = this._widget.effects?.filter(
       (e) => e.type !== effectType
     );
-    this._onUpdate();
+    this._update();
   }
 
   emitListener(name: string, data: any) {
@@ -308,6 +308,11 @@ export class WidgetItem<Properties = any> {
     ).filter((a) => a) as string[];
     // return error array or null
     return errors.length ? errors : null;
+  }
+
+  addValidation(validation: ValidationRule) {
+    this.validationRules?.push(validation);
+    this._update();
   }
 
   setChildErrors(childWidgetId: string, errors: string[] | null) {

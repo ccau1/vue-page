@@ -64,7 +64,8 @@ export default defineComponent({
   height: 100%;
   z-index: 10;
   background-color: #fff;
-  box-shadow: 0 0 10px rgb(201, 201, 201);
+  box-shadow: 0 7px 10px #959595;
+  overflow: hidden;
 }
 .pane-content-wrapper.left {
   left: 0;

@@ -122,7 +122,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     this._widget.properties.pages.forEach((page) => {
       page.children = page.children.filter((c) => c !== childWidget.id);
     });
-    this._onUpdate(this);
+    this._update(this);
   }
 
   onChangePageIndex(toIndex: number) {

@@ -10,6 +10,11 @@
         :widget="selectedWidgetItem"
       />
       <builder-panel-section-view
+        panelType="validations"
+        :selectedWidgetItem="selectedWidgetItem"
+        :widgetItems="widgetItems"
+      />
+      <builder-panel-section-view
         panelType="effects"
         :selectedWidgetItem="selectedWidgetItem"
         :widgetItems="widgetItems"
