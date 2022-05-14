@@ -1,5 +1,6 @@
 import { WidgetEffectControl } from "../../models/WidgetEffectControl";
 import display from "./Display.vue";
+import form from "./Form.vue";
 
 export interface RevealEffectProperties {
   // time delay before running animation
@@ -29,5 +30,19 @@ export interface RevealEffectProperties {
 }
 
 export default new WidgetEffectControl<RevealEffectProperties>({
+  key: "reveal",
+  name: "Reveal",
+  create(props: Partial<RevealEffectProperties>) {
+    return {
+      type: this.key,
+      properties: {
+        delay: 0,
+        distance: "300px",
+        origin: "left",
+        ...props,
+      },
+    };
+  },
   display,
+  form,
 });

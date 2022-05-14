@@ -3,13 +3,14 @@ import { Widget, WidgetItems } from "..";
 
 import { PageEventListener } from "./PageEventListener";
 import { PageState } from "./PageState";
+import { WidgetEffect } from "../interfaces";
 
 export class WidgetItem<Properties = any> {
   protected _widget: Widget<Properties>;
   protected _getPageState: () => PageState;
   protected _setPageState: (newState: PageState) => void;
   protected _widgetItems: WidgetItems;
-  protected _onUpdate: (newWidgetItem: WidgetItem<Properties>) => void;
+  protected _onUpdate: (newWidgetItem?: WidgetItem<Properties>) => void;
   protected _emitEvent: (
     name: string,
     value: any,
@@ -44,6 +45,10 @@ export class WidgetItem<Properties = any> {
 
   get id() {
     return this._widget.id;
+  }
+
+  get order() {
+    return this._widget.order;
   }
 
   get widget() {
@@ -114,10 +119,12 @@ export class WidgetItem<Properties = any> {
     this._widget = widget;
     this._getPageState = getState;
     this._setPageState = setState;
-    this._onUpdate = onUpdate;
+    this._onUpdate = (newWidgetItem: WidgetItem = this) =>
+      onUpdate(newWidgetItem);
     this._properties = widget.properties;
 
     if (this.code) getState().registerWidgetCode(this.code, this.id);
+
     this.syncReflexiveListeners();
 
     this.syncFetchPropertiesListeners();
@@ -164,9 +171,17 @@ export class WidgetItem<Properties = any> {
     );
   }
 
-  async callFetchPropertiesApi() {
-    console.log("callFetchPropertiesApi");
+  syncReflexiveListeners() {
+    this.setListenerSet(
+      "reflexives",
+      this.reflexiveRules?.map((c) => `${c.fact}_change`) || [],
+      () => this.runReflexives()
+    );
+    // initial run
+    this.runReflexives();
+  }
 
+  async callFetchPropertiesApi() {
     if (!this.widget.fetchPropertiesApi) {
       // TODO: throw error?
       return;
@@ -186,14 +201,29 @@ export class WidgetItem<Properties = any> {
     this._properties = await propertiesResponse.json();
   }
 
-  syncReflexiveListeners() {
-    this.setListenerSet(
-      "reflexives",
-      this.reflexiveRules?.map((c) => `${c.fact}_change`) || [],
-      () => this.runReflexives()
+  setEffectProperties(type: string, properties: any) {
+    this._widget.effects = (this.effects || []).map((eff) =>
+      eff.type === type ? { ...eff, properties } : eff
     );
-    // initial run
-    this.runReflexives();
+    this._onUpdate(this);
+  }
+
+  addEffect(effect: WidgetEffect) {
+    if (this.effects?.some((e) => e.type === effect.type)) {
+      // already exists? skip for now
+      return;
+    }
+    // add effect to list of effects
+    this.effects?.push(effect);
+    // trigger update
+    this._onUpdate();
+  }
+
+  removeEffect(effectType: string) {
+    this._widget.effects = this._widget.effects?.filter(
+      (e) => e.type !== effectType
+    );
+    this._onUpdate();
   }
 
   emitListener(name: string, data: any) {
@@ -304,11 +334,12 @@ export class WidgetItem<Properties = any> {
   }
 
   async runReflexives() {
-    const isReflexive = await this.isReflexive();
-    if (!isReflexive !== !!this.getState("reflexiveHide")) {
+    const isHide = !(await this.isReflexive());
+    const stateIsHide = !!this.getState("reflexiveHide");
+    if (isHide !== stateIsHide) {
       await this.runValidations();
     }
-    this.setState("reflexiveHide", !isReflexive);
+    this.setState("reflexiveHide", isHide);
   }
 
   async isReflexive() {

@@ -23,7 +23,7 @@
     "microservices"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
-  "thunder-client.loadFromProject": true,
   "thunder-client.workspaceRelativePath": "test",
-  "thunder-client.customLocation": "test"
+  "thunder-client.customLocation": "test",
+  "thunder-client.saveToWorkspace": true
 }

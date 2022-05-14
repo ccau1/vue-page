@@ -9,12 +9,11 @@
         :is="widgetControls[selectedWidgetItem.type].builderForm"
         :widget="selectedWidgetItem"
       />
-      <div class="effects-wrapper" v-if="!!selectedWidgetItem">
-        <div
-          v-for="effect in selectedWidgetItem.effects"
-          :key="effect.type"
-        ></div>
-      </div>
+      <builder-panel-section-view
+        panelType="effects"
+        :selectedWidgetItem="selectedWidgetItem"
+        :widgetItems="widgetItems"
+      />
     </template>
     <template>
       <slot />
@@ -27,13 +26,20 @@ import { PageState } from "../models/PageState";
 import { defineComponent } from "@vue/composition-api";
 import { WidgetItem } from "../models/WidgetItem";
 import Pane from "./components/Pane.vue";
+import { panelSections } from "./panelSections";
+import BuilderPanelSectionView from "./BuilderPanelSectionView.vue";
 
 export default defineComponent({
-  components: { Pane },
+  components: { Pane, BuilderPanelSectionView },
   props: {
     widgetItems: Object,
   },
-  inject: ["widgetControls", "getPageState"],
+  inject: ["widgetControls", "widgetEffectControls", "getPageState"],
+  data() {
+    return {
+      panelSections,
+    };
+  },
   computed: {
     selectedWidgetItem(): WidgetItem {
       const pageState: PageState = (this as any).getPageState();

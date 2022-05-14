@@ -266,7 +266,7 @@ export default {
           responseType: "TEXT",
           control: "text",
           controlProperties: {
-            multiline: false,
+            multiline: true,
             maxLen: 300,
           },
         },
@@ -295,7 +295,7 @@ export default {
         parent: "4420fbc2-0e12-46d0-8dac-b55e8d685f3e",
         fetchPropertiesOnWidgetsChange: ["injuryPart"],
         // defined in page level?
-        fetchPropertiesApi: "google.com",
+        fetchPropertiesApi: "http://backend/fetch-properties",
         properties: {
           responseType: "TEXT",
           control: "dropdown",
