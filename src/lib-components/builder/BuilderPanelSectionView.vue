@@ -1,7 +1,14 @@
 <template>
-  <div class="panel-section-wrapper" v-if="!!selectedWidgetItem">
+  <div
+    class="panel-section-wrapper"
+    :class="{ isCollapsed }"
+    v-if="!!selectedWidgetItem"
+  >
     <div class="panel-header">
-      <h5 class="panel-title">{{ panelSections[panelType].name }}</h5>
+      <div class="collapse-arrow">&#x203A;</div>
+      <h5 class="panel-title" @click="onToggleCollapse">
+        {{ panelSections[panelType].name }}
+      </h5>
       <component
         :is="panelSections[panelType].header"
         :widgetItems="widgetItems"
@@ -27,11 +34,17 @@ export default defineComponent({
     panelType: String,
     widgetItems: Object,
     selectedWidgetItem: Object,
+    isCollapsed: Boolean,
   },
   data() {
     return {
       panelSections,
     };
+  },
+  methods: {
+    onToggleCollapse() {
+      this.$emit("onToggleCollapse", !this.$props.isCollapsed);
+    },
   },
 });
 </script>
@@ -51,7 +64,20 @@ export default defineComponent({
 }
 .panel-title {
   margin: 0;
+  margin-left: 5px;
+  flex: 1;
+  cursor: pointer;
 }
 .panel-content {
+}
+.panel-section-wrapper:not(.isCollapsed) {
+  flex: 1;
+}
+.panel-section-wrapper.isCollapsed .panel-content {
+  display: none;
+}
+
+.panel-section-wrapper:not(.isCollapsed) .collapse-arrow {
+  transform: rotate(90deg);
 }
 </style>

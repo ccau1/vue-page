@@ -74,13 +74,13 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: 4px;
-  border: 1px solid #000;
-  background-color: rgba(255, 255, 255, 0.3);
+  border: none;
+  background-color: transparent;
   cursor: pointer;
 }
 select option.default {
-  text-align: center;
+  text-align: right;
 }
 </style>

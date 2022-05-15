@@ -56,8 +56,7 @@ export default defineComponent({
 
 <style scoped>
 .add-button {
-  background-color: rgba(255, 255, 255, 0.3);
-  border: 1px solid #000;
-  border-radius: 4px;
+  background-color: transparent;
+  border: none;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div v-if="selectedWidgetItem">
-    <button @click="addValidation" class="add-button">+</button>
+    {{ selectedWidgetItem.type }}
   </div>
 </template>
 

@@ -1,28 +1,10 @@
 <template>
   <pane :position="'right'" :isOpen="true">
     <template v-slot:pane-content>
-      RIGHT: widget detail - layout, widget form, widget effects, styling,
-      etc...
-      <p v-if="!!selectedWidgetItem">type: {{ selectedWidgetItem.type }}</p>
-      <component
-        v-if="!!selectedWidgetItem && widgetControls[selectedWidgetItem.type]"
-        :is="widgetControls[selectedWidgetItem.type].builderForm"
-        :widget="selectedWidgetItem"
-      />
-      <builder-panel-section-view
-        panelType="reflexives"
-        :selectedWidgetItem="selectedWidgetItem"
+      <builder-panel-section-list-view
+        :sections="['widget', 'reflexives', 'validations', 'effects']"
         :widgetItems="widgetItems"
-      />
-      <builder-panel-section-view
-        panelType="validations"
         :selectedWidgetItem="selectedWidgetItem"
-        :widgetItems="widgetItems"
-      />
-      <builder-panel-section-view
-        panelType="effects"
-        :selectedWidgetItem="selectedWidgetItem"
-        :widgetItems="widgetItems"
       />
     </template>
     <template>
@@ -37,10 +19,10 @@ import { defineComponent } from "@vue/composition-api";
 import { WidgetItem } from "../models/WidgetItem";
 import Pane from "./components/Pane.vue";
 import { panelSections } from "./panelSections";
-import BuilderPanelSectionView from "./BuilderPanelSectionView.vue";
+import BuilderPanelSectionListView from "./BuilderPanelSectionListView.vue";
 
 export default defineComponent({
-  components: { Pane, BuilderPanelSectionView },
+  components: { Pane, BuilderPanelSectionListView },
   props: {
     widgetItems: Object,
   },
@@ -62,4 +44,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.pane-wrapper {
+  background-color: blue;
+}
+</style>

@@ -209,6 +209,7 @@ export class WidgetItem<Properties = any> {
   }
 
   addEffect(effect: WidgetEffect) {
+    if (!this.effects) this._widget.effects = [];
     if (this.effects?.some((e) => e.type === effect.type)) {
       // already exists? skip for now
       return;

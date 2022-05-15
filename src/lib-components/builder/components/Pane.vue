@@ -66,6 +66,8 @@ export default defineComponent({
   background-color: #fff;
   box-shadow: 0 7px 10px #959595;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .pane-content-wrapper.left {
   left: 0;
