@@ -51,7 +51,7 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  min-height: 100vh;
+  height: 100%;
   position: relative;
 }
 .pane-outside-wrapper {

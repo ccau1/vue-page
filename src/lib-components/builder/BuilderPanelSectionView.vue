@@ -5,7 +5,7 @@
     v-if="!!selectedWidgetItem"
   >
     <div class="panel-header">
-      <div class="collapse-arrow">&#x203A;</div>
+      <div class="collapse-arrow" @click="onToggleCollapse">&#x203A;</div>
       <h5 class="panel-title" @click="onToggleCollapse">
         {{ panelSections[panelType].name }}
       </h5>
@@ -77,6 +77,9 @@ export default defineComponent({
   display: none;
 }
 
+.collapse-arrow {
+  cursor: pointer;
+}
 .panel-section-wrapper:not(.isCollapsed) .collapse-arrow {
   transform: rotate(90deg);
 }

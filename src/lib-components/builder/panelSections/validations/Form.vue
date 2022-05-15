@@ -6,7 +6,7 @@
     >
       <h6 class="sub-header">rule {{ ruleIndex + 1 }}</h6>
       <div class="error-message-wrapper">
-        <label>message</label>
+        <label>error message</label>
         <textarea :value="t(rule.error, selectedWidgetItem.id)" />
       </div>
       <div

@@ -2,14 +2,12 @@
   <div class="main-wrapper">
     <builder-left-pane :widgetItems="widgetItems">
       <builder-right-pane :widgetItems="widgetItems">
-        <div class="widgets-layout-wrapper">
-          <div class="widgets-layout-inner-wrapper">
-            <builder-widgets-layout
-              :widgetControls="combWidgetControls"
-              :widgetItems="widgetItems"
-            />
-          </div>
-        </div>
+        <builder-screen-simulation-view>
+          <builder-widgets-layout
+            :widgetControls="combWidgetControls"
+            :widgetItems="widgetItems"
+          />
+        </builder-screen-simulation-view>
       </builder-right-pane>
     </builder-left-pane>
   </div>
@@ -34,6 +32,7 @@ import { cachedMerge } from "../utils";
 import BuilderRightPane from "./BuilderRightPane.vue";
 import BuilderLeftPane from "./BuilderLeftPane.vue";
 import { PageEventListener } from "../models/PageEventListener";
+import BuilderScreenSimulationView from "./BuilderScreenSimulationView.vue";
 
 interface VuePageProps {
   languages: BuilderWidgetLanguages;
@@ -78,7 +77,12 @@ interface VuePageData {
 }
 
 export default defineComponent<VuePageProps, any, VuePageData>({
-  components: { BuilderWidgetsLayout, BuilderRightPane, BuilderLeftPane },
+  components: {
+    BuilderWidgetsLayout,
+    BuilderRightPane,
+    BuilderLeftPane,
+    BuilderScreenSimulationView,
+  },
   // components: { DynamicPageLayout },
   props: {
     languages: Object,
@@ -322,6 +326,9 @@ export default defineComponent<VuePageProps, any, VuePageData>({
 <style scoped>
 .main-wrapper {
   font-family: Arial, Helvetica, sans-serif;
+  /* height: 100%; */
+  height: 826px;
+  background-color: #fff;
 }
 .widgets-layout-wrapper {
   padding: 30px;

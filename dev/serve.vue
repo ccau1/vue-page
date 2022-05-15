@@ -1,69 +1,73 @@
 <template>
   <div>
-    <div class="app-bar">
-      <div class="app-bar-left-side">
-        <div class="locale-switcher">
-          <a
-            :class="{ active: locale === 'en' }"
-            v-on:click="() => setLocale('en')"
-            >EN</a
-          >
-          <a
-            :class="{ active: locale === 'zh_hk' }"
-            v-on:click="() => setLocale('zh_hk')"
-            >HK</a
+    <div class="wrapper">
+      <div class="app-bar">
+        <div class="app-bar-left-side">
+          <div class="locale-switcher">
+            <a
+              :class="{ active: locale === 'en' }"
+              v-on:click="() => setLocale('en')"
+              >EN</a
+            >
+            <a
+              :class="{ active: locale === 'zh_hk' }"
+              v-on:click="() => setLocale('zh_hk')"
+              >HK</a
+            >
+          </div>
+          <label>
+            <input
+              type="checkbox"
+              :checked="isPersistState"
+              @change="togglePersistState"
+            />
+            Persist State</label
           >
         </div>
-        <label>
-          <input
-            type="checkbox"
-            :checked="isPersistState"
-            @change="togglePersistState"
-          />
-          Persist State</label
-        >
+        <div class="app-bar-right-side">
+          <div class="view-switcher">
+            <a
+              :class="{ active: pageView === 'display' }"
+              v-on:click="() => setPageView('display')"
+              >Customer Display</a
+            >
+            <a
+              :class="{ active: pageView === 'builder' }"
+              v-on:click="() => setPageView('builder')"
+              >Builder</a
+            >
+            <a
+              :class="{ active: pageView === 'readOnly' }"
+              v-on:click="() => setPageView('readOnly')"
+              >Read Only</a
+            >
+          </div>
+        </div>
       </div>
-      <div class="app-bar-right-side">
-        <div class="view-switcher">
-          <a
-            :class="{ active: pageView === 'display' }"
-            v-on:click="() => setPageView('display')"
-            >Customer Display</a
-          >
-          <a
-            :class="{ active: pageView === 'builder' }"
-            v-on:click="() => setPageView('builder')"
-            >Builder</a
-          >
-          <a
-            :class="{ active: pageView === 'readOnly' }"
-            v-on:click="() => setPageView('readOnly')"
-            >Read Only</a
-          >
-        </div>
+
+      <div class="content-wrapper">
+        <vue-page-builder
+          v-if="pageView === 'builder'"
+          :page="page"
+          :state="state"
+          :languages="builderLanguages"
+          :view="pageView"
+          :locale="locale"
+          @onStateChange="onStateChange"
+          @onLanguageChange="onLanguageChange"
+          @onPageChange="onPageChange"
+        />
+        <vue-page
+          v-if="pageView !== 'builder'"
+          :page="page"
+          :state="state"
+          :languages="languages"
+          :view="pageView"
+          @onStateChange="onStateChange"
+          @event="onPageEvent"
+        />
       </div>
     </div>
-
-    <vue-page-builder
-      v-if="pageView === 'builder'"
-      :page="page"
-      :state="state"
-      :languages="builderLanguages"
-      :view="pageView"
-      :locale="locale"
-      @onStateChange="onStateChange"
-      @onLanguageChange="onLanguageChange"
-      @onPageChange="onPageChange"
-    />
-    <vue-page
-      v-if="pageView !== 'builder'"
-      :page="page"
-      :state="state"
-      :languages="languages"
-      :view="pageView"
-      @onStateChange="onStateChange"
-      @event="onPageEvent"
-    />
     <div
       style="
         display: flex;
@@ -252,6 +256,12 @@ html {
   padding: 0;
 }
 
+.wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .locale-switcher {
   display: flex;
   flex-direction: row;
@@ -295,5 +305,8 @@ html {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+.content-wrapper {
+  flex: 1;
 }
 </style>
