@@ -104,6 +104,7 @@ export default defineComponent({
       (async () => {
         // handle validations
         await this.$props.widget.runValidations();
+        this.$props.widget.emitListener("change");
       })();
     },
   },
