@@ -43,6 +43,7 @@ export interface WidgetControl<Data = any> {
   builderControl?: VueConstructor<Vue>;
   builderForm?: VueConstructor<Vue>;
   widgetItem?: typeof WidgetItem;
+  create?: (props: any) => Widget;
 
   // future, for DnD
   removeChild?: (options: {

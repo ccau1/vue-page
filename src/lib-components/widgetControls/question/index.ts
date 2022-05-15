@@ -1,8 +1,10 @@
+import { Widget, WidgetControl } from "../..";
+
 import Builder from "./Builder.vue";
 import Display from "./Display.vue";
 import QuestionWidgetItem from "./QuestionWidgetItem";
 import ReadOnly from "./ReadOnly.vue";
-import { WidgetControl } from "../..";
+import { v4 as uuidv4 } from "uuid";
 
 export interface QuestionProperties {
   // the response data type (ie. BOOLEAN, TEXT)
@@ -16,6 +18,19 @@ export interface QuestionProperties {
 }
 
 export default {
+  create(props: Partial<QuestionProperties>): Widget<QuestionProperties> {
+    return {
+      id: uuidv4(),
+      type: "question",
+      properties: {
+        responseType: "",
+        hideLabel: false,
+        control: "",
+        controlProperties: {},
+        ...props,
+      },
+    };
+  },
   display: Display,
   builder: Builder,
   readOnly: ReadOnly,

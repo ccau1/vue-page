@@ -14,17 +14,6 @@
       @mouseenter.stop="(ev) => onMouseEnter(ev, widget.id)"
       @mouseleave.stop="(ev) => onMouseLeave(ev, widget.id)"
     >
-      <div class="add-line">
-        <div
-          class="line"
-          @click.stop="(ev) => onAddClick(ev, widget, widgetIndex)"
-        />
-        <a
-          class="add-button"
-          @click.stop="(ev) => onAddClick(ev, widget, widgetIndex)"
-          >+</a
-        >
-      </div>
       <div class="left-actions-wrapper">
         <a
           class="dnd-placeholder"
@@ -38,6 +27,37 @@
         >
       </div>
 
+      <div
+        class="add-line"
+        :class="{ opened: openedAddOptionsIndex === widgetIndex }"
+      >
+        <div
+          class="line"
+          @click.stop="(ev) => toggleShowAddOptions(ev, widget, widgetIndex)"
+        />
+        <a
+          class="add-button"
+          @click.stop="(ev) => toggleShowAddOptions(ev, widget, widgetIndex)"
+        >
+          <span>+</span>
+        </a>
+        <div
+          class="add-options-wrapper"
+          :class="{ open: openedAddOptionsIndex === widgetIndex }"
+        >
+          <div class="add-options-inner-wrapper">
+            <a
+              v-for="widgetControlKey in Object.keys(widgetControls)"
+              :key="widgetControlKey"
+              @click="
+                (ev) => addWidget(ev, widgetControlKey, widget, widgetIndex)
+              "
+            >
+              {{ widgetControlKey }}
+            </a>
+          </div>
+        </div>
+      </div>
       <widget-view
         :widget="widget"
         :widgetControls="widgetControls"
@@ -49,17 +69,39 @@
       />
       <div
         class="add-line"
+        :class="{ opened: openedAddOptionsIndex === widgetIndex + 1 }"
         v-if="widgetIndex === filteredWidgetItemsArr.length - 1"
       >
         <div
           class="line"
-          @click.stop="(ev) => onAddClick(ev, widget, widgetIndex)"
+          @click.stop="
+            (ev) => toggleShowAddOptions(ev, widget, widgetIndex + 1)
+          "
         />
         <a
           class="add-button"
-          @click.stop="(ev) => onAddClick(ev, widget, widgetIndex)"
-          >+</a
+          @click.stop="
+            (ev) => toggleShowAddOptions(ev, widget, widgetIndex + 1)
+          "
         >
+          <span>+</span>
+        </a>
+        <div
+          class="add-options-wrapper"
+          :class="{ open: openedAddOptionsIndex === widgetIndex + 1 }"
+        >
+          <div class="add-options-inner-wrapper">
+            <a
+              v-for="widgetControlKey in Object.keys(widgetControls)"
+              :key="widgetControlKey"
+              @click="
+                (ev) => addWidget(ev, widgetControlKey, widget, widgetIndex + 1)
+              "
+            >
+              {{ widgetControlKey }}
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -88,7 +130,7 @@ export default defineComponent({
     "removeWidget",
   ],
   data() {
-    return { hoveredWidgetId: -1 };
+    return { hoveredWidgetId: -1, openedAddOptionsIndex: -1 };
   },
   computed: {
     view() {
@@ -117,6 +159,15 @@ export default defineComponent({
     },
   },
   methods: {
+    toggleShowAddOptions(ev, widget, widgetIndex) {
+      this.$data.openedAddOptionsIndex =
+        this.$data.openedAddOptionsIndex === widgetIndex ? -1 : widgetIndex;
+    },
+    addWidget(ev, widgetControlKey, widget, widgetIndex) {
+      const newWidget = this.widgetControls[widgetControlKey].create();
+      console.log("create new here", newWidget);
+      this.$data.openedAddOptionsIndex = -1;
+    },
     onDnDPlaceholderMouseDown(ev, widgetId) {
       this.pageState.interactiveState.draggingWidgetId = widgetId;
       this.setPageState(this.pageState);
@@ -205,8 +256,36 @@ export default defineComponent({
   box-shadow: 0px 0px 10px 10px #fff;
   cursor: pointer;
 }
+.add-line.opened .add-button span {
+  transform: rotate(45deg);
+}
 .add-line .add-button:hover {
   background-color: #eaeaea;
+}
+.add-line .add-options-wrapper {
+  margin-left: 15px;
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 100%;
+  display: none;
+}
+.add-line .add-options-wrapper.open {
+  display: block;
+}
+.add-line .add-options-inner-wrapper {
+  width: 100%;
+  padding-bottom: 10px;
+  overflow-x: auto;
+  display: flex;
+  flex-direction: row;
+}
+.add-line .add-options-wrapper a {
+  padding: 2px 4px;
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
 }
 
 .widget-container .dnd-placeholder {

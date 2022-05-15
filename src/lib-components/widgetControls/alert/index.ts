@@ -1,7 +1,9 @@
+import { Widget, WidgetControl } from "../..";
+
 import Builder from "./Builder.vue";
 import Display from "./Display.vue";
 import ReadOnly from "./ReadOnly.vue";
-import { WidgetControl } from "../..";
+import { v4 as uuidv4 } from "uuid";
 
 export interface AlertProperties {
   // what type of alert is this (effects colors)
@@ -13,6 +15,16 @@ export interface AlertProperties {
 }
 
 export default {
+  create(props: Partial<AlertProperties>): Widget<AlertProperties> {
+    return {
+      id: uuidv4(),
+      type: "alert",
+      properties: {
+        type: "default",
+        ...props,
+      },
+    };
+  },
   display: Display,
   builder: Builder,
   readOnly: ReadOnly,

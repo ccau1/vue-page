@@ -1,8 +1,10 @@
+import { Widget, WidgetControl } from "../..";
+
 import Builder from "./Builder.vue";
 import BuilderControl from "./BuilderControl.vue";
 import Display from "./Display.vue";
 import ReadOnly from "./ReadOnly.vue";
-import { WidgetControl } from "../..";
+import { v4 as uuidv4 } from "uuid";
 
 export interface HeaderProperties {
   // the tag type to use
@@ -10,6 +12,16 @@ export interface HeaderProperties {
 }
 
 export default {
+  create(props: Partial<HeaderProperties>): Widget<HeaderProperties> {
+    return {
+      id: uuidv4(),
+      type: "header",
+      properties: {
+        tagType: "h1",
+        ...props,
+      },
+    };
+  },
   display: Display,
   builder: Builder,
   builderControl: BuilderControl,

@@ -1,8 +1,10 @@
+import { Widget, WidgetControl } from "../..";
+
 import Builder from "./Builder.vue";
 import BuilderForm from "./BuilderForm.vue";
 import Display from "./Display.vue";
 import ReadOnly from "./ReadOnly.vue";
-import { WidgetControl } from "../..";
+import { v4 as uuidv4 } from "uuid";
 
 export interface SeparatorProperties {
   dir: "vertical" | "horizontal";
@@ -11,6 +13,18 @@ export interface SeparatorProperties {
 }
 
 export default {
+  create(props: Partial<SeparatorProperties>): Widget<SeparatorProperties> {
+    return {
+      id: uuidv4(),
+      type: "separator",
+      properties: {
+        dir: "horizontal",
+        hasLabel: true,
+        labelPosition: "start",
+        ...props,
+      },
+    };
+  },
   display: Display,
   builder: Builder,
   builderForm: BuilderForm,
