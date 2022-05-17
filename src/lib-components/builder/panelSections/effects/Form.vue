@@ -69,6 +69,7 @@ export default defineComponent({
   right: 0;
   padding: 1px 10px;
   cursor: pointer;
+  font-size: 9pt;
 }
 .effect-header {
   margin: 0 -5px 0 -5px;

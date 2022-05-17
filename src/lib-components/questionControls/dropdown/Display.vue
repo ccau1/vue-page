@@ -167,6 +167,9 @@ export default defineComponent<
         return obj;
       }, {});
 
+      // go through each option and validate them based on its conditions
+      // (if they have any) against responses set above.
+      // Only return ones that meets validate() or does not have conditions at all
       return (
         await Promise.all(
           (

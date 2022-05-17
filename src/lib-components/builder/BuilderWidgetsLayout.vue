@@ -247,7 +247,7 @@ export default defineComponent({
   width: 20px;
   height: 20px;
   background-color: #fff;
-  border: 1px solid #b5b5b5;
+  border: 1px solid #cdcdcd;
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -255,6 +255,20 @@ export default defineComponent({
   padding-top: 2px;
   box-shadow: 0px 0px 10px 10px #fff;
   cursor: pointer;
+  transition: background-color 300ms;
+}
+.add-line.opened .add-button {
+  background-color: #f71414;
+  border: 1px solid #f71414;
+  color: #fff;
+}
+.add-line.opened .add-button:hover {
+  background-color: #dc1212;
+  border: 1px solid #dc1212;
+}
+
+.add-line .add-button span {
+  transition: all 300ms;
 }
 .add-line.opened .add-button span {
   transform: rotate(45deg);

@@ -5,10 +5,6 @@
       :key="ruleIndex"
     >
       <h6 class="sub-header">rule {{ ruleIndex + 1 }}</h6>
-      <div class="error-message-wrapper">
-        <label>error message</label>
-        <textarea :value="t(rule.error, selectedWidgetItem.id)" />
-      </div>
       <div
         class="condition-wrapper"
         v-for="(condition, conditionIndex) in rule.conditions"
@@ -45,6 +41,10 @@
           </select>
           <input type="text" :value="conditionValue(condition.value)" />
         </div>
+      </div>
+      <div class="error-message-wrapper">
+        <label>(conditions not met) error message</label>
+        <textarea :value="t(rule.error, selectedWidgetItem.id)" />
       </div>
     </div>
   </div>

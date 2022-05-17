@@ -299,6 +299,20 @@ export class WidgetItem<Properties = any> {
         this.validationRules.map(async (validation) => {
           const isValid = await this.validate(validation.conditions, {
             properties: this.properties,
+            // FIXME: store somewhere so doesn't need to keep computing this?
+            responses: Object.keys(this.pageState.widgetState).reduce<{
+              [widgetKey: string]: any;
+            }>((responses, wStateKey) => {
+              const wState = this.pageState.widgetState[wStateKey];
+              if (wState.type === "question") {
+                responses[
+                  this._widgetItems[wStateKey].code ||
+                    this._widgetItems[wStateKey].id
+                ] = wState.response;
+              }
+
+              return responses;
+            }, {}),
             response:
               response === undefined || response === "" ? null : response,
           });
