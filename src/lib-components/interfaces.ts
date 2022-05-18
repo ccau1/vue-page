@@ -42,6 +42,7 @@ export interface WidgetControl<Data = any> {
   builder: VueConstructor<Vue>;
   builderControl?: VueConstructor<Vue>;
   builderForm?: VueConstructor<Vue>;
+  widgetTree?: VueConstructor<Vue>;
   widgetItem?: typeof WidgetItem;
   create?: (props: any) => Widget;
 

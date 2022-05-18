@@ -4,6 +4,7 @@ import Builder from "./Builder.vue";
 import Display from "./Display.vue";
 import PagesWidgetItem from "./PagesWidgetItem";
 import ReadOnly from "./ReadOnly.vue";
+import WidgetTree from "./WidgetTree.vue";
 import { v4 as uuidv4 } from "uuid";
 
 export interface PagesPropertiesPage {
@@ -51,4 +52,5 @@ export default {
   builder: Builder,
   readOnly: ReadOnly,
   widgetItem: PagesWidgetItem,
+  widgetTree: WidgetTree,
 } as WidgetControl<PagesProperties>;

@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="panel-section-wrapper"
-    :class="{ isCollapsed }"
-    v-if="!!selectedWidgetItem"
-  >
+  <div class="panel-section-wrapper" :class="{ isCollapsed }">
     <div class="panel-header">
       <div class="collapse-arrow" @click="onToggleCollapse">&#x203A;</div>
       <h5 class="panel-title" @click="onToggleCollapse">
@@ -52,7 +48,7 @@ export default defineComponent({
 <style scoped>
 .panel-header {
   padding: 5px 5px;
-  background-color: #d3f1ff;
+  background-color: #cbf3f0;
   color: #3a3a3a;
   display: flex;
   flex-direction: row;
@@ -72,6 +68,8 @@ export default defineComponent({
 }
 .panel-section-wrapper:not(.isCollapsed) {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .panel-section-wrapper.isCollapsed .panel-content {
   display: none;
@@ -82,5 +80,9 @@ export default defineComponent({
 }
 .panel-section-wrapper:not(.isCollapsed) .collapse-arrow {
   transform: rotate(90deg);
+}
+.panel-section-wrapper:not(.isCollapsed) .panel-content {
+  overflow: auto;
+  flex: 1;
 }
 </style>

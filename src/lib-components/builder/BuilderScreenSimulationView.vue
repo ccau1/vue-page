@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <select @change="setWidthHeight">
+    <select @change="setWidthHeight" class="simulation-device-select">
       <option
         :value="'375px_667px'"
         :selected="width === '375px' && height === '667px'"
@@ -42,7 +42,7 @@ import { defineComponent } from "@vue/composition-api";
 export default defineComponent({
   data() {
     return {
-      width: "500px",
+      width: "100%",
       height: "100%",
     };
   },
@@ -95,5 +95,9 @@ export default defineComponent({
 }
 .device-background {
   background-color: #fff;
+}
+.simulation-device-select {
+  padding: 5px 10px;
+  border-radius: 4px;
 }
 </style>
