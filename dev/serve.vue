@@ -308,5 +308,6 @@ html {
 }
 .content-wrapper {
   flex: 1;
+  position: relative;
 }
 </style>

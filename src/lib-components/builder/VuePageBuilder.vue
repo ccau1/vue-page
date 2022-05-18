@@ -326,8 +326,9 @@ export default defineComponent<VuePageProps, any, VuePageData>({
 <style scoped>
 .main-wrapper {
   font-family: Arial, Helvetica, sans-serif;
-  /* height: 100%; */
-  height: 826px;
+  position: absolute;
+  height: 100%;
+  width: 100%;
   background-color: #fff;
 }
 .widgets-layout-wrapper {
