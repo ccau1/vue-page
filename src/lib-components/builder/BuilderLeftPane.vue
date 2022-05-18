@@ -72,8 +72,15 @@ export default defineComponent({
   padding: 10px 5px;
   border-width: 0 0 4px 0;
   border-color: transparent;
+  position: relative;
 }
-.button-group button.active {
-  border-color: #cbf3f0;
+.button-group button.active::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #cbf3f0;
 }
 </style>
