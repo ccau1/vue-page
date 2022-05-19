@@ -201,6 +201,11 @@ export class WidgetItem<Properties = any> {
     this._properties = await propertiesResponse.json();
   }
 
+  setProperty(field: string, value: any) {
+    this._widget.properties[field] = value;
+    this._update(this);
+  }
+
   setEffectProperties(type: string, properties: any) {
     this._widget.effects = (this.effects || []).map((eff) =>
       eff.type === type ? { ...eff, properties } : eff

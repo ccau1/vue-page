@@ -1,6 +1,7 @@
 import { Widget, WidgetControl } from "../..";
 
 import Builder from "./Builder.vue";
+import BuilderForm from "./BuilderForm.vue";
 import Display from "./Display.vue";
 import PagesWidgetItem from "./PagesWidgetItem";
 import ReadOnly from "./ReadOnly.vue";
@@ -50,6 +51,7 @@ export default {
   },
   display: Display,
   builder: Builder,
+  builderForm: BuilderForm,
   readOnly: ReadOnly,
   widgetItem: PagesWidgetItem,
   widgetTree: WidgetTree,

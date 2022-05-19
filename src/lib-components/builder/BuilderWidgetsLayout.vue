@@ -22,11 +22,10 @@
         >
           &uarr;&darr;
         </a>
-        <a class="delete-button" @click="() => widget.removeWidget()"
-          >&#128465;</a
-        >
+        <a class="delete-button" @click="() => widget.removeWidget()">
+          &#128465;
+        </a>
       </div>
-
       <div
         class="add-line"
         :class="{ opened: openedAddOptionsIndex === widgetIndex }"
