@@ -25,11 +25,17 @@ import BuilderWidgetsLayout from "../../builder/BuilderWidgetsLayout.vue";
 export default defineComponent({
   components: { BuilderWidgetsLayout, WidgetsLayout },
   props: {
-    widget: WidgetItem,
-    widgetItems: Object,
+    widget: Object,
     widgetControls: Object,
+    widgetItems: Object,
+    pageState: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    wrapperRef: HTMLDivElement,
+    t: Function,
   },
-  inject: ["t", "getLocale", "setMessage"],
+  inject: ["getLocale", "setMessage"],
   setup() {},
   computed: {
     label() {

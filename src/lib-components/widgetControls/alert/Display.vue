@@ -5,9 +5,9 @@
     :style="alertStyles"
     :class="{ [widget.properties.type]: true }"
   >
-    <h3 class="title">{{ t("__title", widget.id) }}</h3>
+    <h3 class="title">{{ t("__title") }}</h3>
     <!-- <p>{{ t("__text", widget.id) }}</p> -->
-    <div v-html="t('__text', widget.id)" />
+    <div v-html="t('__text')" />
     <a
       class="close-button"
       @click="onCloseAlert"
@@ -23,8 +23,15 @@ import { defineComponent } from "@vue/composition-api";
 export default defineComponent({
   props: {
     widget: Object,
+    widgetControls: Object,
+    widgetItems: Object,
+    pageState: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    wrapperRef: HTMLDivElement,
+    t: Function,
   },
-  inject: ["t"],
   data() {
     return {
       isOpen: true,

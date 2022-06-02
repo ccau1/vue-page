@@ -19,14 +19,16 @@
           :getWidgetState="getWidgetState"
           :view="view"
           :errors="getWidgetState('errors')"
-          :t="t"
+          :t="(key, data) => t(`control_${key}`, data)"
         />
-        <span
-          class="error"
-          v-for="errorKey in getWidgetState('errors')"
-          :key="errorKey"
-          >{{ t(errorKey, widget.id) }}</span
-        >
+        <template v-if="getWidgetState('dirty')">
+          <span
+            class="error"
+            v-for="errorKey in getWidgetState('errors')"
+            :key="errorKey"
+            >{{ t(errorKey) }}</span
+          >
+        </template>
       </div>
     </div>
   </div>
@@ -43,17 +45,14 @@ export default defineComponent({
     widget: Object,
     widgetControls: Object,
     widgetItems: Object,
+    pageState: Object,
     setWidgetState: Function,
     getWidgetState: Function,
     view: String,
+    wrapperRef: HTMLDivElement,
+    t: Function,
   },
-  inject: [
-    "t",
-    "questionControls",
-    "widgetControls",
-    "getPageState",
-    "setPageState",
-  ],
+  inject: ["questionControls", "widgetControls", "setPageState"],
   created() {
     const widgetState = { ...this.$props.widget.getState() };
     this.widget.setState("type", "question");
@@ -64,11 +63,6 @@ export default defineComponent({
     }
   },
   unmounted() {},
-  computed: {
-    pageState() {
-      return this.getPageState();
-    },
-  },
   methods: {
     onChange(response, ignoreChecks) {
       this.widget.setState("response", response);

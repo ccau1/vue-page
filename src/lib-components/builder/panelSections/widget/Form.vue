@@ -4,6 +4,7 @@
       v-if="!!selectedWidgetItem && widgetControls[selectedWidgetItem.type]"
       :is="widgetControls[selectedWidgetItem.type].builderForm"
       :widget="selectedWidgetItem"
+      :t="selectedWidgetItem.t"
     />
   </div>
 </template>
@@ -17,7 +18,7 @@ export default defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object,
   },
-  inject: ["t", "widgetControls"],
+  inject: ["widgetControls"],
   methods: {
     conditionValue(value: any) {
       if (Array.isArray(value)) {
@@ -31,8 +32,6 @@ export default defineComponent({
       }
     },
     onPropertiesChange(type: string, props: any) {
-      console.log("onPropertiesChange", type, props);
-
       (this.$props.selectedWidgetItem as WidgetItem).setEffectProperties(
         type,
         props

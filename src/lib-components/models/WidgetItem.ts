@@ -1,9 +1,20 @@
 import { ConditionProperties, Engine } from "json-rules-engine";
-import { ValidationRule, WidgetEffect } from "../interfaces";
+import { ValidationRule, WidgetEffect, WidgetError } from "../interfaces";
 import { Widget, WidgetItems } from "..";
 
 import { PageEventListener } from "./PageEventListener";
 import { PageState } from "./PageState";
+
+export interface WidgetItemConstructorOptions {
+  widget: Widget;
+  pageEventListener: PageEventListener;
+  removeWidget: (widgetId: string) => void;
+  emitEvent: (name: string, value: any, widget: Widget) => Promise<void>;
+  getState: () => PageState;
+  setState: (newState: PageState) => void;
+  onUpdate: (newWidgetItem: WidgetItem) => void;
+  t: (key: string | string[], data?: { [key: string]: any }) => string;
+}
 
 export class WidgetItem<Properties = any> {
   protected _widget: Widget<Properties>;
@@ -11,6 +22,10 @@ export class WidgetItem<Properties = any> {
   protected _setPageState: (newState: PageState) => void;
   protected _widgetItems: WidgetItems;
   protected _update: (newWidgetItem?: WidgetItem<Properties>) => void;
+  protected _t: (
+    key: string | string[],
+    data?: { [key: string]: any }
+  ) => string;
   protected _emitEvent: (
     name: string,
     value: any,
@@ -41,6 +56,10 @@ export class WidgetItem<Properties = any> {
 
   async emitEvent(name: string, value?: any): Promise<void> {
     return this._emitEvent(name, value, this);
+  }
+
+  get t() {
+    return this._t;
   }
 
   get id() {
@@ -103,15 +122,9 @@ export class WidgetItem<Properties = any> {
     getState,
     setState,
     onUpdate,
-  }: {
-    widget: Widget;
-    pageEventListener: PageEventListener;
-    removeWidget: (widgetId: string) => void;
-    emitEvent: (name: string, value: any, widget: Widget) => Promise<void>;
-    getState: () => PageState;
-    setState: (newState: PageState) => void;
-    onUpdate: (newWidgetItem: WidgetItem) => void;
-  }) {
+    t,
+  }: WidgetItemConstructorOptions) {
+    this._t = t;
     this._pageEventListener = pageEventListener;
     this._removeWidget = removeWidget;
     this._emitEvent = emitEvent;
@@ -202,7 +215,7 @@ export class WidgetItem<Properties = any> {
   }
 
   setProperty(field: string, value: any) {
-    this._widget.properties[field] = value;
+    (this._widget.properties as { [key: string]: any })[field] = value;
     this._update(this);
   }
 
@@ -211,6 +224,10 @@ export class WidgetItem<Properties = any> {
       eff.type === type ? { ...eff, properties } : eff
     );
     this._update(this);
+  }
+
+  update() {
+    this._update();
   }
 
   addEffect(effect: WidgetEffect) {
@@ -299,33 +316,38 @@ export class WidgetItem<Properties = any> {
     // go through each validation, and return error string if
     // invalid, and null if valid.
     // Only store an array of errors
+
+    const widgetResponses = Object.keys(this.pageState.widgetState).reduce<{
+      [widgetKey: string]: any;
+    }>((responses, wStateKey) => {
+      const wState = this.pageState.widgetState[wStateKey];
+      if (wState.type === "question") {
+        responses[
+          this._widgetItems[wStateKey].code || this._widgetItems[wStateKey].id
+        ] = wState.response;
+      }
+
+      return responses;
+    }, {});
+
     const errors = (
       await Promise.all(
-        this.validationRules.map(async (validation) => {
-          const isValid = await this.validate(validation.conditions, {
-            properties: this.properties,
-            // FIXME: store somewhere so doesn't need to keep computing this?
-            responses: Object.keys(this.pageState.widgetState).reduce<{
-              [widgetKey: string]: any;
-            }>((responses, wStateKey) => {
-              const wState = this.pageState.widgetState[wStateKey];
-              if (wState.type === "question") {
-                responses[
-                  this._widgetItems[wStateKey].code ||
-                    this._widgetItems[wStateKey].id
-                ] = wState.response;
-              }
-
-              return responses;
-            }, {}),
-            response:
-              response === undefined || response === "" ? null : response,
-          });
-          if (!isValid) return validation.error;
-          return null;
-        })
+        this.validationRules.map<Promise<WidgetError | null>>(
+          async (validation) => {
+            const isValid = await this.validate(validation.conditions, {
+              properties: this.properties,
+              // FIXME: store somewhere so doesn't need to keep computing this?
+              ...widgetResponses,
+              response:
+                response === undefined || response === "" ? null : response,
+            });
+            // TODO: need to handle possible data to go with err message
+            if (!isValid) return { err: validation.error };
+            return null;
+          }
+        )
       )
-    ).filter((a) => a) as string[];
+    ).filter((a) => a) as WidgetError[];
     // return error array or null
     return errors.length ? errors : null;
   }
@@ -335,7 +357,7 @@ export class WidgetItem<Properties = any> {
     this._update();
   }
 
-  setChildErrors(childWidgetId: string, errors: string[] | null) {
+  setChildErrors(childWidgetId: string, errors: WidgetError[] | null) {
     const currentChildErrors = this.getState("childErrors") || {};
     if (!errors) {
       delete currentChildErrors[childWidgetId];

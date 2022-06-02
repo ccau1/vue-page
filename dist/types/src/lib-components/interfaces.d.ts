@@ -8,6 +8,11 @@ export interface WidgetEffect {
         [key: string]: any;
     };
 }
+export interface ValidationRule {
+    conditions: ConditionProperties[];
+    error: string;
+}
+export declare type ValidationRules = ValidationRule[];
 export interface Widget<WidgetProperties = any> {
     id: string;
     type: string;
@@ -15,6 +20,8 @@ export interface Widget<WidgetProperties = any> {
     parent?: string;
     style?: string;
     effects?: WidgetEffect[];
+    fetchPropertiesOnWidgetsChange?: string[];
+    fetchPropertiesApi?: string;
     reflexiveRules?: ConditionProperties[];
     validationRules?: Array<{
         conditions: ConditionProperties[];
@@ -29,7 +36,9 @@ export interface WidgetControl<Data = any> {
     builder: VueConstructor<Vue>;
     builderControl?: VueConstructor<Vue>;
     builderForm?: VueConstructor<Vue>;
+    widgetTree?: VueConstructor<Vue>;
     widgetItem?: typeof WidgetItem;
+    create?: (props: any) => Widget;
     removeChild?: (options: {
         child: Widget;
         childId: string;

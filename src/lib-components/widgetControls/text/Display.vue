@@ -9,9 +9,12 @@ import { defineComponent } from "@vue/composition-api";
 
 export default defineComponent({
   props: {
+    properties: Object,
     widget: Object,
+    onChange: Function,
+    value: String,
+    t: Function,
   },
-  inject: ["t"],
 });
 </script>
 

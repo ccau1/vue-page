@@ -6,6 +6,17 @@ export * from "./question";
 export * from "./section";
 export * from "./separator";
 export * from "./text";
+export declare const WidgetControlProps: {
+    widget: ObjectConstructor;
+    widgetControls: ObjectConstructor;
+    widgetItems: ObjectConstructor;
+    pageState: ObjectConstructor;
+    setWidgetState: FunctionConstructor;
+    getWidgetState: FunctionConstructor;
+    view: StringConstructor;
+    wrapperRef: ObjectConstructor;
+    t: ObjectConstructor;
+};
 export declare let widgets: {
     alert: import("..").WidgetControl<import("./alert").AlertProperties>;
     header: import("..").WidgetControl<import("./header").HeaderProperties>;

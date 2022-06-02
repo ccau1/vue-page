@@ -51,9 +51,16 @@ import { defineComponent } from "@vue/composition-api";
 export default defineComponent({
   props: {
     widget: Object,
-    properties: Object,
+    widgetControls: Object,
+    widgetItems: Object,
+    pageState: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    wrapperRef: HTMLDivElement,
+    t: Function,
   },
-  inject: ["t", "getLocale", "setMessage"],
+  inject: ["getLocale", "setMessage"],
   mounted() {
     this.$nextTick(() => {
       (this.$refs.titleInput as HTMLTextAreaElement).style.height = "";

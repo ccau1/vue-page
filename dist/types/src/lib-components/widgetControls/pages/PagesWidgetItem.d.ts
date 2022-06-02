@@ -1,17 +1,8 @@
-import { PageState } from "../../models/PageState";
+import { WidgetItem, WidgetItemConstructorOptions } from "../../models/WidgetItem";
 import { PagesProperties } from ".";
-import { Widget } from "../..";
-import { WidgetItem } from "../../models/WidgetItem";
 export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     protected isSubmitting: boolean;
-    constructor(opts: {
-        widget: Widget;
-        removeWidget: (widgetId: string) => void;
-        emitEvent: (name: string, value: any, widget: Widget) => Promise<void>;
-        getState: () => PageState;
-        setState: (newState: PageState) => void;
-        onUpdate: (newWidget: Widget<PagesProperties>) => void;
-    });
+    constructor(opts: WidgetItemConstructorOptions);
     getSortedPages(): {
         labelKey: string;
         idx?: number | undefined;

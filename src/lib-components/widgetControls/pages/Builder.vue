@@ -65,17 +65,20 @@ export default defineComponent({
   components: { WidgetsLayout, BuilderWidgetsLayout },
   props: {
     widget: Object,
+    widgetControls: Object,
     widgetItems: Object,
     pageState: Object,
     setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
     wrapperRef: HTMLDivElement,
+    t: Function,
   },
   data() {
     return {
       sortedPages: [],
     };
   },
-  inject: ["t"],
   computed: {
     currentPageIndex() {
       return (

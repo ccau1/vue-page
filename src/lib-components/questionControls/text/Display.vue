@@ -23,8 +23,14 @@ import { QuestionControlProps } from "../index";
 export default defineComponent<QuestionControlProps>({
   props: {
     properties: Object,
-    value: String,
+    widget: Object,
     onChange: Function,
+    value: String,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    errors: Array,
+    t: Function,
   },
   methods: {
     onTextChange(ev: Event) {

@@ -26,7 +26,7 @@
           :getWidgetState="getWidgetState"
           :view="view"
           :errors="getWidgetState('errors')"
-          :t="t"
+          :t="(key, data) => t(`control_${key}`, data)"
         />
         <span
           class="error"
@@ -47,12 +47,14 @@ export default defineComponent({
     widget: Object,
     widgetControls: Object,
     widgetItems: Object,
+    pageState: Object,
     setWidgetState: Function,
     getWidgetState: Function,
     view: String,
+    wrapperRef: HTMLDivElement,
+    t: Function,
   },
   inject: [
-    "t",
     "questionControls",
     "widgetControls",
     "getPageState",
@@ -77,12 +79,6 @@ export default defineComponent({
       this.$refs.labelInput.style.height =
         this.$refs.labelInput.scrollHeight + "px";
     });
-  },
-  unmounted() {},
-  computed: {
-    pageState() {
-      return this.getPageState();
-    },
   },
   methods: {
     updateText(name, text) {

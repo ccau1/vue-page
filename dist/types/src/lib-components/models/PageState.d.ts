@@ -20,9 +20,6 @@ export interface PageStateRawObject {
     _widgetCodeToIdMap: {
         [widgetCode: string]: string;
     };
-    _reflexCodeToIdsMap: {
-        [widgetCode: string]: string[];
-    };
     _widgetIdToCodeMap: {
         [widgetId: string]: string;
     };
@@ -38,21 +35,15 @@ export declare class PageState {
     protected _widgetCodeToIdMap: {
         [widgetCode: string]: string;
     };
-    protected _reflexCodeToIdsMap: {
-        [widgetCode: string]: string[];
-    };
     protected _widgetIdToCodeMap: {
         [widgetId: string]: string;
     };
     static from(pageState: PageState | PageStateRawObject): PageState;
-    constructor({ widgetState, interactiveState, widgetCodeToIdMap, reflexCodeToIdsMap, widgetIdToCodeMap, }: PageStateCreate);
+    constructor({ widgetState, interactiveState, widgetCodeToIdMap, widgetIdToCodeMap, }: PageStateCreate);
     get interactiveState(): InteractiveState;
     get widgetState(): WidgetState;
     get widgetCodeToIdMap(): {
         [widgetCode: string]: string;
-    };
-    get reflexCodeToIdsMap(): {
-        [widgetCode: string]: string[];
     };
     get widgetIdToCodeMap(): {
         [widgetId: string]: string;
@@ -65,7 +56,4 @@ export declare class PageState {
     clearWidgetState(widgetId: string, key: string): void;
     registerWidgetCode(widgetCode: string, widgetId: string): void;
     unregisterWidgetCode(widgetCode: string): void;
-    getReflexWidgetIdsByCode(widgetCode: string): string[];
-    registerReflexWatch(widgetId: string, reflexCodes: string[]): void;
-    unregisterReflexWatch(widgetId: string, reflexCodes: string[]): void;
 }

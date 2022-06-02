@@ -20,10 +20,6 @@
 import { defineComponent } from "@vue/composition-api";
 
 export default defineComponent({
-  props: {
-    widget: Object,
-  },
-  inject: ["t"],
   data() {
     return {
       isOpen: true,

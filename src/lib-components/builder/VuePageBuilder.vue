@@ -1,15 +1,18 @@
 <template>
   <div class="main-wrapper">
-    <builder-left-pane :widgetItems="widgetItems">
-      <builder-right-pane :widgetItems="widgetItems">
-        <builder-screen-simulation-view>
-          <builder-widgets-layout
-            :widgetControls="combWidgetControls"
-            :widgetItems="widgetItems"
-          />
-        </builder-screen-simulation-view>
-      </builder-right-pane>
-    </builder-left-pane>
+    <div class="pane-wrapper">
+      <builder-left-pane :widgetItems="widgetItems">
+        <builder-right-pane :widgetItems="widgetItems">
+          <builder-screen-simulation-view>
+            <builder-widgets-layout
+              :widgetControls="combWidgetControls"
+              :widgetItems="widgetItems"
+            />
+          </builder-screen-simulation-view>
+        </builder-right-pane>
+      </builder-left-pane>
+    </div>
+    <builder-bottom-pane :widgetItems="widgetItems" />
   </div>
 </template>
 
@@ -23,14 +26,11 @@ import { Page, Widget } from "..";
 import { PageState } from "../models/PageState";
 import BuilderWidgetsLayout from "./BuilderWidgetsLayout.vue";
 import { WidgetItem } from "../models/WidgetItem";
-import {
-  BuilderWidgetLanguages,
-  WidgetItems,
-  WidgetLanguage,
-} from "@/entry.esm";
+import { BuilderWidgetLanguages, WidgetItems } from "@/entry.esm";
 import { cachedMerge } from "../utils";
 import BuilderRightPane from "./BuilderRightPane.vue";
 import BuilderLeftPane from "./BuilderLeftPane.vue";
+import BuilderBottomPane from "./BuilderBottomPane.vue";
 import { PageEventListener } from "../models/PageEventListener";
 import BuilderScreenSimulationView from "./BuilderScreenSimulationView.vue";
 
@@ -81,6 +81,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     BuilderWidgetsLayout,
     BuilderRightPane,
     BuilderLeftPane,
+    BuilderBottomPane,
     BuilderScreenSimulationView,
   },
   // components: { DynamicPageLayout },
@@ -181,6 +182,8 @@ export default defineComponent<VuePageProps, any, VuePageData>({
               pageEventListener: this.pageEventListener,
               emitEvent: this.emitEvent,
               removeWidget: this.removeWidget,
+              t: (key: string, data?: { [key: string]: any }) =>
+                this.t(`${widget.id}.${key}`, data),
               getState: () => this.$props.state,
               setState: (newPageState: PageState) => {
                 this.$emit("onStateChange", newPageState);
@@ -208,19 +211,21 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     },
   },
   methods: {
-    t(key: string, groupId?: string) {
-      let lang: {
-        [locale: string]: { [locale: string]: WidgetLanguage } | WidgetLanguage;
-      } = this.languages;
-      if (groupId) {
-        lang = groupId.split(".").reduce<{
-          [key: string]: any;
-        }>((obj, g) => {
-          return obj?.[g];
-        }, lang) as { [locale: string]: WidgetLanguage };
-      }
+    t(key: string | string[], data?: { [key: string]: any }) {
+      const lang = (typeof key === "string" ? key.split(".") : key).reduce<
+        { [key: string]: any } | string
+      >((obj, g, gIndex) => {
+        if (typeof obj === "string") return obj;
 
-      return (lang?.[this.$props.locale] as WidgetLanguage)?.message[key];
+        return gIndex > 0
+          ? obj?.[g]
+          : obj?.[g][this.$props.locale].message || {};
+      }, this.languages);
+
+      return lang?.replace(
+        /(\{(\w+)\})/g,
+        (_orig: string, _outer: string, inner: string) => (data || {})[inner]
+      );
     },
     async emitEvent(name: string, value?: any, widget?: WidgetItem) {
       if (Array.isArray(this.$listeners.event)) {
@@ -324,12 +329,17 @@ export default defineComponent<VuePageProps, any, VuePageData>({
 </script>
 
 <style scoped>
+.pane-wrapper {
+  flex: 1;
+}
 .main-wrapper {
   font-family: Arial, Helvetica, sans-serif;
   position: absolute;
   height: 100%;
   width: 100%;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
 }
 .widgets-layout-wrapper {
   padding: 30px;

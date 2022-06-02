@@ -16,8 +16,16 @@ import { defineComponent } from "@vue/composition-api";
 export default defineComponent({
   props: {
     widget: Object,
+    widgetControls: Object,
+    widgetItems: Object,
+    pageState: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    wrapperRef: HTMLDivElement,
+    t: Function,
   },
-  inject: ["t", "getLocale", "setMessage"],
+  inject: ["getLocale", "setMessage"],
   methods: {
     onTextChange(val: Event) {
       (this as any).setMessage({

@@ -33,6 +33,7 @@
         :getWidgetState="(key) => getWidgetState(key, widget)"
         :view="view"
         :wrapperRef="$refs.widgetComponentWrapper"
+        :t="widget.t"
       />
     </div>
   </div>

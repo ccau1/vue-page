@@ -13,8 +13,12 @@ export default defineComponent<QuestionControlProps>({
     properties: Object,
     widget: Object,
     onChange: Function,
-    value: Number,
+    value: String,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    errors: Array,
+    t: Function,
   },
-  inject: ["t"],
 });
 </script>

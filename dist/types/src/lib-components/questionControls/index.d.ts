@@ -1,11 +1,13 @@
 import { WidgetItem } from "../models/WidgetItem";
+import { WidgetItems } from "../interfaces";
 export { default as QuestionControl } from "./QuestionControl";
 export interface QuestionControlProps<Properties = {
     [key: string]: any;
-}, Value = any> {
+}, Value = any, WI = WidgetItem> {
     value: Value;
     properties: Properties;
-    widget: WidgetItem;
+    widget: WI;
+    widgetItems: WidgetItems;
     onChange: (newVal: Value, ignoreChecks?: boolean) => void;
 }
 export * from "./buttonGroup";

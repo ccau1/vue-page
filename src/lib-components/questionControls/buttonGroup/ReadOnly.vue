@@ -15,8 +15,12 @@ export default defineComponent({
     widget: Object,
     onChange: Function,
     value: String,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    errors: Array,
+    t: Function,
   },
-  inject: ["t"],
   data() {
     return { translatedLabel: "" };
   },

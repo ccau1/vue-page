@@ -13,7 +13,7 @@
       @input="onSelectChange"
     /> -->
     <select :value="value || ''" @change="onSelectChange">
-      <option value="" disabled>{{ t("__placeholder", widget.id) }}</option>
+      <option value="" disabled>{{ t("__placeholder") }}</option>
       <option
         v-for="option in options"
         :value="option.value"
@@ -55,11 +55,16 @@ export default defineComponent<
   props: {
     properties: Object,
     widget: Object,
+    widgetItems: Object,
     onChange: Function,
     value: String,
-    widgetItems: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    errors: Array,
+    t: Function,
   },
-  inject: ["t", "pageEventListener", "getPageState"],
+  inject: ["pageEventListener", "getPageState"],
   data() {
     return {
       options: [],
@@ -144,7 +149,7 @@ export default defineComponent<
       this.$data.options = (await (this as any).getFilteredOptions()).map(
         (opt: { labelKey: string; value: string }) => ({
           value: opt.value,
-          label: (this as any).t(opt.labelKey, this.$props.widget.id),
+          label: (this as any).t(opt.labelKey),
         })
       );
     },

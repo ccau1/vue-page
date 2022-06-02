@@ -14,8 +14,12 @@ export default defineComponent<QuestionControlProps>({
     widget: Object,
     onChange: Function,
     value: String,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    errors: Array,
+    t: Function,
   },
-  inject: ["t"],
   computed: {
     label() {
       const selectedOption =

@@ -7,7 +7,9 @@
       :style="{ marginLeft: `${(level || 0) * 10}px` }"
     >
       <div class="tree-item-box">
-        <span class="drag-icon">&#9783;</span> {{ widgetItem.type }}
+        <span class="drag-icon">&#9783;</span>
+        <p>{{ widgetItem.type }}</p>
+        <small>{{ widgetItem.code }}</small>
       </div>
       <template v-if="widgetControls[widgetItem.type].widgetTree">
         <component
@@ -75,7 +77,6 @@ export default defineComponent({
             this.$props.widgetItems as WidgetItems
           ).filter((wi) => wi.parentId === parentId);
         }
-        console.log("this.$data.widgetTree", this.$data.filteredWidgetItems);
       },
       immediate: true,
     },
@@ -89,6 +90,16 @@ export default defineComponent({
   border-radius: 4px;
   padding: 5px;
   margin: 2px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.tree-item-box > * {
+  margin: 0;
+  margin-right: 5px;
+}
+.tree-item-box small {
+  color: #a1a1a1;
 }
 .drag-icon {
   cursor: grab;

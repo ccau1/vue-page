@@ -1,20 +1,49 @@
 import { ConditionProperties } from "json-rules-engine";
+import { ValidationRule, WidgetEffect } from "../interfaces";
 import { Widget, WidgetItems } from "..";
+import { PageEventListener } from "./PageEventListener";
 import { PageState } from "./PageState";
+export interface WidgetItemConstructorOptions {
+    widget: Widget;
+    pageEventListener: PageEventListener;
+    removeWidget: (widgetId: string) => void;
+    emitEvent: (name: string, value: any, widget: Widget) => Promise<void>;
+    getState: () => PageState;
+    setState: (newState: PageState) => void;
+    onUpdate: (newWidgetItem: WidgetItem) => void;
+    t: (key: string, data?: {
+        [key: string]: any;
+    }) => string;
+}
 export declare class WidgetItem<Properties = any> {
     protected _widget: Widget<Properties>;
     protected _getPageState: () => PageState;
     protected _setPageState: (newState: PageState) => void;
     protected _widgetItems: WidgetItems;
-    protected _onUpdate: (newWidgetItem: WidgetItem<Properties>) => void;
+    protected _update: (newWidgetItem?: WidgetItem<Properties>) => void;
+    protected _t: (key: string, data?: {
+        [key: string]: any;
+    }) => string;
     protected _emitEvent: (name: string, value: any, widget: WidgetItem) => Promise<void>;
+    protected _pageEventListener: PageEventListener;
     protected _removeWidget: (widgetId: string) => void;
+    protected _attachedListenerSets: {
+        [setName: string]: {
+            events: string[];
+            fn: Function;
+        };
+    };
+    protected _properties: Properties;
     static getParentIds(widgetId: string, widgetItems: WidgetItems): string[];
     get pageState(): PageState;
     emitEvent(name: string, value?: any): Promise<void>;
+    get t(): (key: string, data?: {
+        [key: string]: any;
+    } | undefined) => string;
     get id(): string;
+    get order(): number | undefined;
     get widget(): Widget<Properties>;
-    get effects(): import("..").WidgetEffect[] | undefined;
+    get effects(): WidgetEffect[] | undefined;
     get type(): string;
     get code(): string | undefined;
     get style(): string | undefined;
@@ -27,14 +56,16 @@ export declare class WidgetItem<Properties = any> {
         conditions: ConditionProperties[];
         error: string;
     }[] | undefined;
-    constructor({ widget, removeWidget, emitEvent, getState, setState, onUpdate, }: {
-        widget: Widget;
-        removeWidget: (widgetId: string) => void;
-        emitEvent: (name: string, value: any, widget: Widget) => Promise<void>;
-        getState: () => PageState;
-        setState: (newState: PageState) => void;
-        onUpdate: (newWidgetItem: WidgetItem) => void;
-    });
+    constructor({ widget, pageEventListener, removeWidget, emitEvent, getState, setState, onUpdate, t, }: WidgetItemConstructorOptions);
+    setListenerSet(setName: string, events: string[], fn: Function): void;
+    syncFetchPropertiesListeners(): void;
+    syncReflexiveListeners(): void;
+    callFetchPropertiesApi(): Promise<void>;
+    setProperty(field: string, value: any): void;
+    setEffectProperties(type: string, properties: any): void;
+    addEffect(effect: WidgetEffect): void;
+    removeEffect(effectType: string): void;
+    emitListener(name: string, data: any): void;
     destroyed(): void;
     removeWidget(): void;
     setWidgetItems(widgetItems: WidgetItems): void;
@@ -43,6 +74,7 @@ export declare class WidgetItem<Properties = any> {
     }): Promise<boolean>;
     runValidations(): Promise<string[] | null>;
     _getValidationErrors(): Promise<string[] | null>;
+    addValidation(validation: ValidationRule): void;
     setChildErrors(childWidgetId: string, errors: string[] | null): void;
     childErrors(): any;
     hasChildErrors(): boolean;

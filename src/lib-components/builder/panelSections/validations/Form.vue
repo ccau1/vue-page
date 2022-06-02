@@ -44,7 +44,7 @@
       </div>
       <div class="error-message-wrapper">
         <label>(conditions not met) error message</label>
-        <textarea :value="t(rule.error, selectedWidgetItem.id)" />
+        <textarea :value="t(`${selectedWidgetItem.id}.${rule.error}`)" />
       </div>
     </div>
   </div>
@@ -73,8 +73,6 @@ export default defineComponent({
       }
     },
     onPropertiesChange(type: string, props: any) {
-      console.log("onPropertiesChange", type, props);
-
       (this.$props.selectedWidgetItem as WidgetItem).setEffectProperties(
         type,
         props

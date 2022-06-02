@@ -1,4 +1,15 @@
-declare const _default: import("vue").ComponentOptions<import("vue").default, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & import("@vue/composition-api").Data, {}, {}, import("@vue/composition-api").ComponentPropsOptions<import("@vue/composition-api").Data>, ({
+import { PageState } from "../../../entry.esm";
+import { PageEventListener } from "../../models/PageEventListener";
+declare const _default: import("vue").ComponentOptions<import("../../../entry.esm").VuePage, import("@vue/composition-api").ShallowUnwrapRef<{
+    options: Array<{
+        label: string;
+        value: string;
+    }>;
+    attachedDependentCodeListeners: [name: string, fn: () => void][];
+    pageEventListener: PageEventListener;
+    setFilteredOptions: () => void;
+    getPageState: () => PageState;
+}> & import("@vue/composition-api").Data, {}, {}, import("@vue/composition-api").ComponentPropsOptions<import("@vue/composition-api").Data>, ({
     [x: number]: string;
 } & {
     [Symbol.iterator]?: IterableIterator<string> | undefined;
@@ -67,7 +78,7 @@ declare const _default: import("vue").ComponentOptions<import("vue").default, im
 }) | ({} & {
     [x: string]: any;
     [x: number]: any;
-})> & Omit<import("vue").VueConstructor<import("vue").default>, never> & (new (...args: any[]) => import("@vue/composition-api").ComponentRenderProxy<(({
+})> & Omit<import("vue").VueConstructor<import("../../../entry.esm").VuePage>, never> & (new (...args: any[]) => import("@vue/composition-api").ComponentRenderProxy<(({
     [x: number]: string;
 } & {
     [Symbol.iterator]?: IterableIterator<string> | undefined;
@@ -136,7 +147,16 @@ declare const _default: import("vue").ComponentOptions<import("vue").default, im
 }) | ({} & {
     [x: string]: any;
     [x: number]: any;
-})) & {}, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data>, import("@vue/composition-api").Data, {}, {}, {}, {}, {}, (({
+})) & {}, import("@vue/composition-api").ShallowUnwrapRef<{
+    options: Array<{
+        label: string;
+        value: string;
+    }>;
+    attachedDependentCodeListeners: [name: string, fn: () => void][];
+    pageEventListener: PageEventListener;
+    setFilteredOptions: () => void;
+    getPageState: () => PageState;
+}>, import("@vue/composition-api").Data, {}, {}, {}, {}, {}, (({
     [x: number]: string;
 } & {
     [Symbol.iterator]?: IterableIterator<string> | undefined;

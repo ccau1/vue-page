@@ -1,32 +1,47 @@
 <template>
   <div>
-    <div class="paging-menu-wrapper">
-      <a
-        class="paging-menu-item"
-        :class="{
-          active: currentPageIndex === pageIndex,
-          errors: pageIndexHasErrors(pageIndex),
-        }"
-        v-for="(page, pageIndex) in sortedPages"
-        :key="pageIndex"
-        v-on:click="() => widget.setState('currentPageIndex', pageIndex)"
-      >
-        {{ t(page.labelKey, widget.id) }}
-      </a>
-    </div>
     <div
-      class="paging-content-item"
       v-for="(page, pageIndex) in sortedPages"
       :key="pageIndex"
+      class="page-wrapper"
     >
-      <div v-if="currentPageIndex === pageIndex">
-        <widgets-layout
+      <div
+        class="page-label"
+        v-if="!widget.getParentPagesWidgets({ first: true })"
+      >
+        {{ t(page.labelKey, widget.id) }}
+      </div>
+      <div>
+        <div class="questions-wrapper">
+          <template
+            v-for="questionWidgetId in page.children.filter((c) =>
+              ['question'].includes(widgetItems[c].type)
+            )"
+          >
+            <div
+              v-if="t('__label', questionWidgetId)"
+              class="question"
+              :key="questionWidgetId"
+            >
+              <label class="question-label">{{
+                t("__label", questionWidgetId)
+              }}</label>
+              <p>{{ pageState.widgetState[questionWidgetId].response }}</p>
+            </div>
+          </template>
+        </div>
+        <pages-read-only
+          v-for="pagesWidgetId in page.children.filter((c) =>
+            ['pages'].includes(widgetItems[c].type)
+          )"
+          :key="pagesWidgetId"
+          :widget="widgetItems[pagesWidgetId]"
           :widgets="widgets"
           :widgetItems="widgetItems"
-          :excludeWidgetIds="[widget.id]"
-          :onlyIncludeWidgetIds="page.children"
-          :forParent="widget.id"
+          :pageState="pageState"
+          :setWidgetState="setWidgetState"
         />
+        <!-- TODO: handle section as well -->
       </div>
     </div>
   </div>
@@ -37,72 +52,47 @@ import { defineComponent } from "@vue/composition-api";
 import WidgetsLayout from "../../WidgetsLayout.vue";
 
 export default defineComponent({
+  name: "PagesReadOnly",
   components: { WidgetsLayout },
   props: {
     widget: Object,
-    widgets: Object,
+    widgetControls: Object,
     widgetItems: Object,
     pageState: Object,
     setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    wrapperRef: HTMLDivElement,
+    t: Function,
   },
   data() {
     return {
-      sortedPages: [],
+      sortedPages: this.$props.widget.getSortedPages(),
     };
-  },
-  inject: ["t"],
-  computed: {
-    currentPageIndex() {
-      return (
-        this.pageState.widgetState?.[this.$props.widget.id]?.currentPageIndex ||
-        0
-      );
-    },
-  },
-  watch: {
-    "widget.properties.pages": {
-      handler() {
-        this.$data.sortedPages = this.$props.widget.getSortedPages();
-      },
-      immediate: true,
-    },
-  },
-  methods: {
-    pageIndexHasErrors(idx) {
-      // get child errors
-      const childErrors = this.$props.widget.getState("pageIdxErrors") || {};
-      // if no childErrors, just return false
-      if (!Object.keys(childErrors).length) return false;
-      // map child error widget ids to paging children index
-      // const children = this.$props.widget.getChildren();
-      return Object.keys(childErrors[idx] || {}).length;
-    },
   },
 });
 </script>
 
 <style scoped>
-.paging-menu-wrapper {
+.page-wrapper {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  margin: 10px 0;
 }
-.paging-menu-item {
-  display: inline-block;
-  padding: 10px 20px;
-  cursor: pointer;
-  border: 1px solid transparent;
+.page-wrapper > *:last-child {
+  flex: 1;
 }
-
-.paging-menu-item.active {
-  background-color: #e8e8e8;
+.page-label {
+  padding: 0 10px 0 0;
 }
-
-.paging-menu-item.errors {
-  border-color: red;
+.question-label {
+  font-weight: bold;
 }
-
-/* .paging-content-item {
-} */
+.questions-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.question {
+  width: 33%;
+}
 </style>

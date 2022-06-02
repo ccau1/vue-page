@@ -10,7 +10,7 @@
         >
           <input
             type="text"
-            :value="t(page.labelKey, widget.id)"
+            :value="t(page.labelKey)"
             @change="(ev) => setPageLabel(pageIndex, ev.target.value)"
           />
           <a class="delete-page-button" @click="() => widget.removeWidget()"
@@ -68,8 +68,9 @@ import PagesWidgetItem from "./PagesWidgetItem";
 export default defineComponent({
   props: {
     widget: Object,
+    t: Function,
   },
-  inject: ["updateWidget", "t", "setMessage", "getLocale"],
+  inject: ["updateWidget", "setMessage", "getLocale"],
   methods: {
     setPageLabel(pageIndex: number, label: string) {
       (this as any).setMessage({
@@ -81,8 +82,6 @@ export default defineComponent({
       });
     },
     setProperty(field: string, value: boolean) {
-      console.log("setProp", field, value);
-
       (this.widget as PagesWidgetItem).setProperty(field, value);
     },
   },

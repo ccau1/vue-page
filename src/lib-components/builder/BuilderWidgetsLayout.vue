@@ -164,7 +164,6 @@ export default defineComponent({
     },
     addWidget(ev, widgetControlKey, widget, widgetIndex) {
       const newWidget = this.widgetControls[widgetControlKey].create();
-      console.log("create new here", newWidget);
       this.$data.openedAddOptionsIndex = -1;
     },
     onDnDPlaceholderMouseDown(ev, widgetId) {

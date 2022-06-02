@@ -38,8 +38,6 @@ export default defineComponent({
   inject: ["widgetEffectControls"],
   methods: {
     onPropertiesChange(type: string, props: any) {
-      console.log("onPropertiesChange", type, props);
-
       (this.$props.selectedWidgetItem as WidgetItem).setEffectProperties(
         type,
         props

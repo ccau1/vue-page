@@ -17,12 +17,12 @@ import { Page, Widget } from ".";
 import { PageState } from "./models/PageState";
 import WidgetsLayout from "./WidgetsLayout.vue";
 import { WidgetItem } from "./models/WidgetItem";
-import { WidgetItems } from "@/entry.esm";
+import { WidgetItemConstructorOptions, WidgetItems } from "@/entry.esm";
 import { cachedMerge } from "./utils";
 import { PageEventListener } from "./models/PageEventListener";
 
 interface VuePageProps {
-  languages: { [widgetId: string]: { [key: string]: string } };
+  languages: { [widgetId: string]: { [key: string]: string } | string };
   page: Page;
   onPageChange: (newPage: Page) => void;
   state: PageState;
@@ -159,6 +159,8 @@ export default defineComponent<VuePageProps, any, VuePageData>({
               widget,
               pageEventListener: this.pageEventListener,
               emitEvent: this.emitEvent,
+              t: (key: string, data?: { [key: string]: any }) =>
+                this.t(`${widget.id}.${key}`, data),
               getState: () => this.$props.state,
               setState: (newPageState: PageState) => {
                 this.$emit("onStateChange", newPageState);
@@ -172,7 +174,7 @@ export default defineComponent<VuePageProps, any, VuePageData>({
                   }),
                 });
               },
-            });
+            } as WidgetItemConstructorOptions);
             return obj;
           },
           {}
@@ -186,14 +188,18 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     },
   },
   methods: {
-    t(key: string, groupId?: string) {
-      let lang = this.languages;
-      if (groupId) {
-        lang = groupId.split(".").reduce<{ [key: string]: any }>((obj, g) => {
-          return obj?.[g];
-        }, lang);
-      }
-      return lang?.[key];
+    t(key: string | string[], data?: { [key: string]: any }) {
+      const lang = (typeof key === "string" ? key.split(".") : key).reduce<
+        { [key: string]: any } | string
+      >((obj, g) => {
+        if (typeof obj === "string") return obj;
+        return obj?.[g];
+      }, this.languages) as string;
+
+      return lang?.replace(
+        /(\{(\w+)\})/g,
+        (_orig: string, _outer: string, inner: string) => (data || {})[inner]
+      );
     },
     async emitEvent(name: string, value?: any, widget?: WidgetItem) {
       if (Array.isArray(this.$listeners.event)) {

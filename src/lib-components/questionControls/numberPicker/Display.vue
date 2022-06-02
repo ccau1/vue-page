@@ -18,8 +18,14 @@ import { QuestionControlProps } from "../index";
 export default defineComponent<QuestionControlProps>({
   props: {
     properties: Object,
-    value: Number,
+    widget: Object,
     onChange: Function,
+    value: Number,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    errors: Array,
+    t: Function,
   },
   created() {
     // if value has not been set and default is set, set value to default

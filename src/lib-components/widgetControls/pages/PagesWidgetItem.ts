@@ -1,21 +1,14 @@
-import { PageEventListener } from "@/lib-components/models/PageEventListener";
-import { PageState } from "../../models/PageState";
+import {
+  WidgetItem,
+  WidgetItemConstructorOptions,
+} from "../../models/WidgetItem";
+
 import { PagesProperties } from ".";
-import { Widget } from "../..";
-import { WidgetItem } from "../../models/WidgetItem";
 
 export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   protected isSubmitting = false;
 
-  constructor(opts: {
-    widget: Widget;
-    removeWidget: (widgetId: string) => void;
-    pageEventListener: PageEventListener;
-    emitEvent: (name: string, value: any, widget: Widget) => Promise<void>;
-    getState: () => PageState;
-    setState: (newState: PageState) => void;
-    onUpdate: (newWidget: Widget<PagesProperties>) => void;
-  }) {
+  constructor(opts: WidgetItemConstructorOptions) {
     super(opts);
   }
 
@@ -156,14 +149,24 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     return opts?.first ? childrenPages[0] : childrenPages;
   }
 
-  pageIndexHasErrors(idx: number, opts?: { allChildPages?: boolean }): boolean {
+  pageIndexHasErrors(
+    idx: number,
+    opts?: { allChildPages?: boolean; skipPristine?: boolean }
+  ): boolean {
     const pageIdxErrors = this.getState("pageIdxErrors") || {};
     // if no pageIdxErrors, just return false
-    if (!Object.keys(pageIdxErrors).length) return false;
+    if (!Object.keys(pageIdxErrors || []).length) return false;
     // if current index doesn't have issues, that means
     // neither this page idx nor its children have any
     // errors, so just return false
-    if (!Object.keys(pageIdxErrors[idx] || {}).length) return false;
+    if (
+      !Object.keys(pageIdxErrors[idx] || {}).filter(
+        (widgetId) =>
+          !opts?.skipPristine ||
+          !this._widgetItems[widgetId].getState("pristine")
+      ).length
+    )
+      return false;
     // if navigation integrate children pages, then check if
     // child pages has error in its CURRENT page idx
     const childPagesWidget = this.properties.navigationIntegrateChildrenPages
@@ -179,7 +182,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     ) {
       return opts?.allChildPages
         ? childPagesWidget.hasChildErrors()
-        : childPagesWidget.currentPageIndexHasErrors();
+        : childPagesWidget.currentPageIndexHasErrors(opts);
     }
 
     // since don't need to handle child pages widget and
@@ -187,8 +190,8 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     return true;
   }
 
-  currentPageIndexHasErrors(): boolean {
-    return this.pageIndexHasErrors(this.currentPageIndex);
+  currentPageIndexHasErrors(opts?: { skipPristine?: boolean }): boolean {
+    return this.pageIndexHasErrors(this.currentPageIndex, opts);
   }
 
   async toNextPage() {
@@ -199,6 +202,11 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     const hasErrors = (
       await Promise.all(
         children.map(async (child) => {
+          if (child.getState("pristine")) {
+            child.setState("pristine", false);
+            child.setState("dirty", true);
+            child.update();
+          }
           return child.runValidations();
         })
       )

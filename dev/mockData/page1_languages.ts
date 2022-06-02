@@ -65,8 +65,8 @@ export default [
     locale: "en",
     message: {
       __label: "Your Gender",
-      opt1: "Male",
-      opt2: "Female",
+      control_opt1: "Male",
+      control_opt2: "Female",
       err1: "field required",
     },
   },
@@ -78,8 +78,8 @@ export default [
     locale: "zh_hk",
     message: {
       __label: "你的性別",
-      opt1: "男",
-      opt2: "女",
+      control_opt1: "男",
+      control_opt2: "女",
       err1: "必填字段",
     },
   },
@@ -91,7 +91,7 @@ export default [
     locale: "en",
     message: {
       __label: "Are you pregnant",
-      __checkboxLabel: "Yes I am pregnant",
+      control___checkboxLabel: "Yes I am pregnant",
     },
   },
   {
@@ -102,7 +102,7 @@ export default [
     locale: "zh_hk",
     message: {
       __label: "懷孕了嗎",
-      __checkboxLabel: "我懷孕了",
+      control___checkboxLabel: "我懷孕了",
     },
   },
   {
@@ -278,7 +278,7 @@ export default [
     version: 1,
     locale: "en",
     message: {
-      __checkboxLabel: "I agree with the above terms and conditions",
+      control___checkboxLabel: "I agree with the above terms and conditions",
       err1: "Please agree to the conditions before proceeding",
     },
   },
@@ -289,7 +289,7 @@ export default [
     version: 1,
     locale: "zh_hk",
     message: {
-      __checkboxLabel: "我同意上述條款和條件",
+      control___checkboxLabel: "我同意上述條款和條件",
       err1: "請在繼續之前同意這些條件",
     },
   },
@@ -320,7 +320,7 @@ export default [
     version: 1,
     locale: "en",
     message: {
-      __label: "Date of accident",
+      control___label: "Date of accident",
     },
   },
   {
@@ -362,9 +362,9 @@ export default [
     message: {
       __label: "Injury",
       __placeholder: "select injury part",
-      opt1: "Knee",
-      opt2: "Shoulder",
-      opt3: "Arm",
+      control_opt1: "Knee",
+      control_opt2: "Shoulder",
+      control_opt3: "Arm",
     },
   },
   {
@@ -375,10 +375,10 @@ export default [
     locale: "zh_hk",
     message: {
       __label: "受傷部位",
-      __placeholder: "受傷部位",
-      opt1: "膝蓋",
-      opt2: "肩膀",
-      opt3: "手臂",
+      control___placeholder: "受傷部位",
+      control_opt1: "膝蓋",
+      control_opt2: "肩膀",
+      control_opt3: "手臂",
     },
   },
   {
@@ -389,11 +389,11 @@ export default [
     locale: "en",
     message: {
       __label: "Injury Type",
-      __placeholder: "select injury type",
-      opt1: "Amputation",
-      opt2: "Burn",
-      opt3: "Cut",
-      opt4: "Dislocation",
+      control___placeholder: "select injury type",
+      control_opt1: "Amputation",
+      control_opt2: "Burn",
+      control_opt3: "Cut",
+      control_opt4: "Dislocation",
     },
   },
   {
@@ -404,11 +404,11 @@ export default [
     locale: "zh_hk",
     message: {
       __label: "傷害類型",
-      __placeholder: "傷害類型",
-      opt1: "截肢",
-      opt2: "燒傷",
-      opt3: "切割",
-      opt4: "關節脫位",
+      control___placeholder: "傷害類型",
+      control_opt1: "截肢",
+      control_opt2: "燒傷",
+      control_opt3: "切割",
+      control_opt4: "關節脫位",
     },
   },
   {
@@ -419,9 +419,9 @@ export default [
     locale: "en",
     message: {
       __label: "Injury 2",
-      opt1: "Knee",
-      opt2: "Shoulder",
-      opt3: "Arm",
+      control_opt1: "Knee",
+      control_opt2: "Shoulder",
+      control_opt3: "Arm",
     },
   },
   {
@@ -432,9 +432,9 @@ export default [
     locale: "zh_hk",
     message: {
       __label: "受傷部位",
-      opt1: "膝蓋",
-      opt2: "肩膀",
-      opt3: "手臂",
+      control_opt1: "膝蓋",
+      control_opt2: "肩膀",
+      control_opt3: "手臂",
     },
   },
 ] as WidgetLanguage[];

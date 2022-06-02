@@ -5,13 +5,5 @@
 <script>
 import { defineComponent } from "@vue/composition-api";
 
-export default defineComponent({
-  props: {
-    widget: Object,
-    widgets: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-  },
-});
+export default defineComponent({});
 </script>

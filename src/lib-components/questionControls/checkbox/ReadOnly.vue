@@ -12,8 +12,12 @@ export default defineComponent({
     properties: Object,
     widget: Object,
     onChange: Function,
-    value: Boolean,
+    value: String,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    errors: Array,
+    t: Function,
   },
-  inject: ["t"],
 });
 </script>

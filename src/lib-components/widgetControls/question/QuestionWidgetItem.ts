@@ -1,30 +1,25 @@
-import { PageEventListener } from "@/lib-components/models/PageEventListener";
-import { PageState } from "../../models/PageState";
+import {
+  WidgetItem,
+  WidgetItemConstructorOptions,
+} from "../../models/WidgetItem";
+
 import { QuestionProperties } from ".";
-import { Widget } from "../..";
-import { WidgetItem } from "../../models/WidgetItem";
+import { WidgetError } from "@/entry.esm";
 
 export default class QuestionWidgetItem extends WidgetItem<QuestionProperties> {
-  protected questionControlErrors: string[] = [];
+  protected questionControlErrors: WidgetError[] = [];
 
-  constructor(opts: {
-    widget: Widget;
-    removeWidget: (widgetId: string) => void;
-    pageEventListener: PageEventListener;
-    emitEvent: (name: string, value?: any) => Promise<void>;
-    getState: () => PageState;
-    setState: (newState: PageState) => void;
-    onUpdate: (newWidget: Widget<QuestionProperties>) => void;
-  }) {
+  constructor(opts: WidgetItemConstructorOptions) {
     super(opts);
   }
 
-  setQuestionErrors(errors: string[]) {
+  async setQuestionErrors(errors: WidgetError[]) {
     this.questionControlErrors = errors;
+    await this.runValidations();
   }
 
-  async runValidations(): Promise<string[] | null> {
-    let errors: string[] | null = [
+  async runValidations(): Promise<WidgetError[] | null> {
+    let errors: WidgetError[] | null = [
       ...((await super.runValidations()) || []),
       ...this.questionControlErrors,
     ];

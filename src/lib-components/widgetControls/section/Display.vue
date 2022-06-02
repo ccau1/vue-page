@@ -17,11 +17,16 @@ import WidgetsLayout from "../../WidgetsLayout.vue";
 export default defineComponent({
   components: { WidgetsLayout },
   props: {
-    widget: WidgetItem,
-    widgetItems: Object,
+    widget: Object,
     widgetControls: Object,
+    widgetItems: Object,
+    pageState: Object,
+    setWidgetState: Function,
+    getWidgetState: Function,
+    view: String,
+    wrapperRef: HTMLDivElement,
+    t: Function,
   },
-  inject: ["t"],
   setup() {},
   computed: {
     label() {

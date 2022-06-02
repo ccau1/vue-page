@@ -7,7 +7,7 @@
       <div class="page-label">
         <small
           ><input
-            :value="t(page.labelKey, widgetItem.id)"
+            :value="t(`${widgetItem.id}.${page.labelKey}`)"
             @change="(ev) => onPageLabelChange(pageIndex, ev.target.value)"
         /></small>
       </div>

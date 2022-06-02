@@ -1,19 +1,12 @@
-import { PageEventListener } from "@/lib-components/models/PageEventListener";
-import { PageState } from "../../models/PageState";
+import {
+  WidgetItem,
+  WidgetItemConstructorOptions,
+} from "../../models/WidgetItem";
+
 import { SectionProperties } from ".";
-import { Widget } from "../..";
-import { WidgetItem } from "../../models/WidgetItem";
 
 export default class SectionWidgetItem extends WidgetItem<SectionProperties> {
-  constructor(opts: {
-    widget: Widget;
-    removeWidget: (widgetId: string) => void;
-    pageEventListener: PageEventListener;
-    emitEvent: (name: string, value?: any) => Promise<void>;
-    getState: () => PageState;
-    setState: (newState: PageState) => void;
-    onUpdate: (newWidget: Widget<SectionProperties>) => void;
-  }) {
+  constructor(opts: WidgetItemConstructorOptions) {
     super(opts);
   }
 

@@ -64,7 +64,7 @@ export default defineComponent({
   height: 100%;
   z-index: 10;
   background-color: #fff;
-  box-shadow: 0 7px 10px #959595;
+  box-shadow: 0 0 4px -2px #000;
   overflow: hidden;
   display: flex;
   flex-direction: column;
