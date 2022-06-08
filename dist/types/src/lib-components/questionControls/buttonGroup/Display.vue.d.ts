@@ -2,6 +2,13 @@ declare const _default: import("vue").ComponentOptions<import("vue").default, im
     [x: number]: string;
 } & {
     [Symbol.iterator]?: IterableIterator<string> | undefined;
+    concat?: string[] | undefined;
+    indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
+    lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
+    slice?: string[] | undefined;
+    length?: number | undefined;
+    includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
+    at?: ((index: number) => string | undefined) | undefined;
     [Symbol.unscopables]?: {
         copyWithin: boolean;
         entries: boolean;
@@ -11,13 +18,6 @@ declare const _default: import("vue").ComponentOptions<import("vue").default, im
         keys: boolean;
         values: boolean;
     } | undefined;
-    concat?: string[] | undefined;
-    indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    slice?: string[] | undefined;
-    length?: number | undefined;
-    includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
-    at?: ((index: number) => string | undefined) | undefined;
     keys?: IterableIterator<number> | undefined;
     values?: IterableIterator<string> | undefined;
     entries?: IterableIterator<[number, string]> | undefined;
@@ -71,6 +71,13 @@ declare const _default: import("vue").ComponentOptions<import("vue").default, im
     [x: number]: string;
 } & {
     [Symbol.iterator]?: IterableIterator<string> | undefined;
+    concat?: string[] | undefined;
+    indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
+    lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
+    slice?: string[] | undefined;
+    length?: number | undefined;
+    includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
+    at?: ((index: number) => string | undefined) | undefined;
     [Symbol.unscopables]?: {
         copyWithin: boolean;
         entries: boolean;
@@ -80,13 +87,6 @@ declare const _default: import("vue").ComponentOptions<import("vue").default, im
         keys: boolean;
         values: boolean;
     } | undefined;
-    concat?: string[] | undefined;
-    indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    slice?: string[] | undefined;
-    length?: number | undefined;
-    includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
-    at?: ((index: number) => string | undefined) | undefined;
     keys?: IterableIterator<number> | undefined;
     values?: IterableIterator<string> | undefined;
     entries?: IterableIterator<[number, string]> | undefined;
@@ -140,6 +140,13 @@ declare const _default: import("vue").ComponentOptions<import("vue").default, im
     [x: number]: string;
 } & {
     [Symbol.iterator]?: IterableIterator<string> | undefined;
+    concat?: string[] | undefined;
+    indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
+    lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
+    slice?: string[] | undefined;
+    length?: number | undefined;
+    includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
+    at?: ((index: number) => string | undefined) | undefined;
     [Symbol.unscopables]?: {
         copyWithin: boolean;
         entries: boolean;
@@ -149,13 +156,6 @@ declare const _default: import("vue").ComponentOptions<import("vue").default, im
         keys: boolean;
         values: boolean;
     } | undefined;
-    concat?: string[] | undefined;
-    indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    slice?: string[] | undefined;
-    length?: number | undefined;
-    includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
-    at?: ((index: number) => string | undefined) | undefined;
     keys?: IterableIterator<number> | undefined;
     values?: IterableIterator<string> | undefined;
     entries?: IterableIterator<[number, string]> | undefined;

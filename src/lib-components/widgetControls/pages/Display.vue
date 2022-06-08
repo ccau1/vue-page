@@ -50,6 +50,9 @@
           class="back-forward-button"
           v-if="widget.hasPreviousButton()"
           @click="() => widget.toPreviousPage()"
+          :disabled="
+            widget.pageIndexHasLoadings(currentPageIndex) || widget.isSubmitting
+          "
         >
           {{ t(`__${widget.previousButtonType()}`, widget.id) }}
         </button>
@@ -62,7 +65,9 @@
             submitting: widget.isSubmitting,
           }"
           :disabled="
-            widget.pageIndexHasErrors(currentPageIndex) || widget.isSubmitting
+            widget.pageIndexHasLoadings(currentPageIndex) ||
+            widget.pageIndexHasErrors(currentPageIndex) ||
+            widget.isSubmitting
           "
           v-if="widget.hasNextButton()"
           @click="() => widget.toNextPage()"

@@ -1,5 +1,5 @@
 import { ConditionProperties } from "json-rules-engine";
-import { ValidationRule, WidgetEffect } from "../interfaces";
+import { ValidationRule, WidgetEffect, WidgetError } from "../interfaces";
 import { Widget, WidgetItems } from "..";
 import { PageEventListener } from "./PageEventListener";
 import { PageState } from "./PageState";
@@ -11,7 +11,7 @@ export interface WidgetItemConstructorOptions {
     getState: () => PageState;
     setState: (newState: PageState) => void;
     onUpdate: (newWidgetItem: WidgetItem) => void;
-    t: (key: string, data?: {
+    t: (key: string | string[], data?: {
         [key: string]: any;
     }) => string;
 }
@@ -21,7 +21,7 @@ export declare class WidgetItem<Properties = any> {
     protected _setPageState: (newState: PageState) => void;
     protected _widgetItems: WidgetItems;
     protected _update: (newWidgetItem?: WidgetItem<Properties>) => void;
-    protected _t: (key: string, data?: {
+    protected _t: (key: string | string[], data?: {
         [key: string]: any;
     }) => string;
     protected _emitEvent: (name: string, value: any, widget: WidgetItem) => Promise<void>;
@@ -37,7 +37,7 @@ export declare class WidgetItem<Properties = any> {
     static getParentIds(widgetId: string, widgetItems: WidgetItems): string[];
     get pageState(): PageState;
     emitEvent(name: string, value?: any): Promise<void>;
-    get t(): (key: string, data?: {
+    get t(): (key: string | string[], data?: {
         [key: string]: any;
     } | undefined) => string;
     get id(): string;
@@ -63,19 +63,24 @@ export declare class WidgetItem<Properties = any> {
     callFetchPropertiesApi(): Promise<void>;
     setProperty(field: string, value: any): void;
     setEffectProperties(type: string, properties: any): void;
+    update(): void;
     addEffect(effect: WidgetEffect): void;
     removeEffect(effectType: string): void;
     emitListener(name: string, data: any): void;
     destroyed(): void;
     removeWidget(): void;
     setWidgetItems(widgetItems: WidgetItems): void;
+    setLoading(isLoading: boolean): void;
     validate(conditions: ConditionProperties[], data: {
         [key: string]: any;
     }): Promise<boolean>;
-    runValidations(): Promise<string[] | null>;
-    _getValidationErrors(): Promise<string[] | null>;
+    runValidations(): Promise<WidgetError[] | null>;
+    _getValidationErrors(): Promise<WidgetError[] | null>;
     addValidation(validation: ValidationRule): void;
-    setChildErrors(childWidgetId: string, errors: string[] | null): void;
+    setChildLoading(childWidgetId: string, isLoading: boolean): void;
+    childLoadings(): any;
+    hasChildLoading(): boolean;
+    setChildErrors(childWidgetId: string, errors: WidgetError[] | null): void;
     childErrors(): any;
     hasChildErrors(): boolean;
     runReflexives(): Promise<void>;

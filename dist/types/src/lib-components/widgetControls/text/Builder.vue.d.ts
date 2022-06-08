@@ -8,8 +8,11 @@ declare const _default: import("vue").ComponentOptions<import("../../../entry.es
     setWidgetState: FunctionConstructor;
     getWidgetState: FunctionConstructor;
     view: StringConstructor;
-    wrapperRef: ObjectConstructor;
-    t: ObjectConstructor;
+    wrapperRef: {
+        new (): HTMLDivElement;
+        prototype: HTMLDivElement;
+    };
+    t: FunctionConstructor;
 }, {} & {
     widget?: Record<string, any> | undefined;
     widgetControls?: Record<string, any> | undefined;
@@ -18,8 +21,8 @@ declare const _default: import("vue").ComponentOptions<import("../../../entry.es
     setWidgetState?: Function | undefined;
     getWidgetState?: Function | undefined;
     view?: string | undefined;
-    wrapperRef?: Record<string, any> | undefined;
-    t?: Record<string, any> | undefined;
+    wrapperRef?: HTMLDivElement | undefined;
+    t?: Function | undefined;
 }> & Omit<import("vue").VueConstructor<import("../../../entry.esm").VuePage>, never> & (new (...args: any[]) => import("@vue/composition-api").ComponentRenderProxy<{} & {
     widget?: Record<string, any> | undefined;
     widgetControls?: Record<string, any> | undefined;
@@ -28,8 +31,8 @@ declare const _default: import("vue").ComponentOptions<import("../../../entry.es
     setWidgetState?: Function | undefined;
     getWidgetState?: Function | undefined;
     view?: string | undefined;
-    wrapperRef?: Record<string, any> | undefined;
-    t?: Record<string, any> | undefined;
+    wrapperRef?: HTMLDivElement | undefined;
+    t?: Function | undefined;
 }, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data>, import("@vue/composition-api").Data, {}, {
     onTextChange(val: Event): void;
 }, {}, {}, {}, {} & {
@@ -40,7 +43,7 @@ declare const _default: import("vue").ComponentOptions<import("../../../entry.es
     setWidgetState?: Function | undefined;
     getWidgetState?: Function | undefined;
     view?: string | undefined;
-    wrapperRef?: Record<string, any> | undefined;
-    t?: Record<string, any> | undefined;
+    wrapperRef?: HTMLDivElement | undefined;
+    t?: Function | undefined;
 }, {}, true>);
 export default _default;

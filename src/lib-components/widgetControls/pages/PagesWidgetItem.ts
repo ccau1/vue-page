@@ -65,6 +65,77 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
       }, []);
   }
 
+  setChildLoading(childWidgetId: string, isLoading: boolean): void {
+    // run original function to store the general state
+    super.setChildLoading(childWidgetId, isLoading);
+
+    // also store widget loading by children index
+
+    // get current page index loading object from state
+    const pageIndexLoadings = this.getState("pageIdxLoadings") || {};
+
+    // find which index this childWidget belongs to
+    const childIndex = this.getChildIndexByWidgetId(childWidgetId);
+
+    if (childIndex === -1) {
+      throw new Error("child widget not in paging");
+    }
+    if (!isLoading) {
+      delete pageIndexLoadings[childIndex]?.[childWidgetId];
+      if (!Object.keys(pageIndexLoadings[childIndex] || {}).length)
+        delete pageIndexLoadings[childIndex];
+    } else {
+      if (!pageIndexLoadings[childIndex]) {
+        pageIndexLoadings[childIndex] = {};
+      }
+      pageIndexLoadings[childIndex][childWidgetId] = isLoading;
+    }
+
+    // save pageIdxErrors to state
+    this.setState(
+      "pageIdxLoadings",
+      Object.keys(pageIndexLoadings).length ? pageIndexLoadings : undefined
+    );
+  }
+
+  pageIndexHasLoadings(
+    idx: number,
+    opts?: { allChildPages?: boolean }
+  ): boolean {
+    const pageIdxLoadings = this.getState("pageIdxLoadings") || {};
+    // if no pageIdxLoadings, just return false
+    if (!Object.keys(pageIdxLoadings || []).length) return false;
+    // if current index doesn't have issues, that means
+    // neither this page idx nor its children have any
+    // loadings, so just return false
+    if (!Object.keys(pageIdxLoadings[idx] || {}).length) return false;
+    // if navigation integrate children pages, then check if
+    // child pages has loadings in its CURRENT page idx
+    const childPagesWidget = this.properties.navigationIntegrateChildrenPages
+      ? (this.getChildrenPagesWidgets({
+          first: true,
+          inPageIndices: [this.currentPageIndex],
+        }) as PagesWidgetItem)
+      : null;
+    if (
+      childPagesWidget &&
+      !childPagesWidget?.properties.detachParentIntegration &&
+      childPagesWidget?.nextButtonType() !== "none"
+    ) {
+      return opts?.allChildPages
+        ? childPagesWidget.hasChildLoading()
+        : childPagesWidget.currentPageIndexHasLoadings(opts);
+    }
+
+    // since don't need to handle child pages widget and
+    // current page idx has errors, return true
+    return true;
+  }
+
+  currentPageIndexHasLoadings(opts?: {}): boolean {
+    return this.pageIndexHasLoadings(this.currentPageIndex, opts);
+  }
+
   setChildErrors(childWidgetId: string, errors: any): void {
     // run original function to store the general state
     super.setChildErrors(childWidgetId, errors);

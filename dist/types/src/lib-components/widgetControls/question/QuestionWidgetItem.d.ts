@@ -1,8 +1,9 @@
 import { WidgetItem, WidgetItemConstructorOptions } from "../../models/WidgetItem";
 import { QuestionProperties } from ".";
+import { WidgetError } from "../../../entry.esm";
 export default class QuestionWidgetItem extends WidgetItem<QuestionProperties> {
-    protected questionControlErrors: string[];
+    protected questionControlErrors: WidgetError[];
     constructor(opts: WidgetItemConstructorOptions);
-    setQuestionErrors(errors: string[]): void;
-    runValidations(): Promise<string[] | null>;
+    setQuestionErrors(errors: WidgetError[]): Promise<void>;
+    runValidations(): Promise<WidgetError[] | null>;
 }

@@ -277,6 +277,14 @@ export class WidgetItem<Properties = any> {
     this._widgetItems = widgetItems;
   }
 
+  setLoading(isLoading: boolean) {
+    this.setState("loading", isLoading);
+    // go through all parent to notify
+    this.getParents().forEach((parentWidgetItem) => {
+      parentWidgetItem.setChildLoading(this.id, isLoading);
+    });
+  }
+
   async validate(
     conditions: ConditionProperties[],
     data: { [key: string]: any }
@@ -299,7 +307,6 @@ export class WidgetItem<Properties = any> {
     const errors = await this._getValidationErrors();
     // save error to widgetState
     this.setState("errors", errors);
-    this._setPageState(this.pageState);
     // update parent fields that they have children errors
     // TODO
     // return errors
@@ -355,6 +362,29 @@ export class WidgetItem<Properties = any> {
   addValidation(validation: ValidationRule) {
     this.validationRules?.push(validation);
     this._update();
+  }
+
+  setChildLoading(childWidgetId: string, isLoading: boolean) {
+    const currentChildLoadings = this.getState("childLoadings") || {};
+    if (!isLoading) {
+      delete currentChildLoadings[childWidgetId];
+    } else {
+      currentChildLoadings[childWidgetId] = isLoading;
+    }
+
+    if (!Object.keys(currentChildLoadings).length) {
+      this.setState("childLoadings", undefined);
+    } else {
+      this.setState("childLoadings", currentChildLoadings);
+    }
+  }
+
+  childLoadings() {
+    return this.getState("childLoadings");
+  }
+
+  hasChildLoading() {
+    return Object.keys(this.childLoadings() || {}).length > 0;
   }
 
   setChildErrors(childWidgetId: string, errors: WidgetError[] | null) {

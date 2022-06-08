@@ -16,6 +16,11 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
         inPageIndices?: number[];
         currentPageIndexOnly?: boolean;
     }): string[];
+    setChildLoading(childWidgetId: string, isLoading: boolean): void;
+    pageIndexHasLoadings(idx: number, opts?: {
+        allChildPages?: boolean;
+    }): boolean;
+    currentPageIndexHasLoadings(opts?: {}): boolean;
     setChildErrors(childWidgetId: string, errors: any): void;
     addChild(childWidget: WidgetItem<any>, meta?: {
         pageIdx: number;
@@ -33,8 +38,11 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     }): PagesWidgetItem[] | PagesWidgetItem;
     pageIndexHasErrors(idx: number, opts?: {
         allChildPages?: boolean;
+        skipPristine?: boolean;
     }): boolean;
-    currentPageIndexHasErrors(): boolean;
+    currentPageIndexHasErrors(opts?: {
+        skipPristine?: boolean;
+    }): boolean;
     toNextPage(): Promise<void>;
     toPreviousPage(): void;
     previousButtonType(): "previous" | "none";
