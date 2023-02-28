@@ -1,9 +1,8 @@
+import { SectionProperties } from '.';
 import {
   WidgetItem,
   WidgetItemConstructorOptions,
-} from "../../models/WidgetItem";
-
-import { SectionProperties } from ".";
+} from '../../models/WidgetItem';
 
 export default class SectionWidgetItem extends WidgetItem<SectionProperties> {
   constructor(opts: WidgetItemConstructorOptions) {

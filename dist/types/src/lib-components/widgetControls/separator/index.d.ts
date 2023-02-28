@@ -1,8 +1,8 @@
-import { WidgetControl } from "../..";
+import { WidgetControl } from '../..';
 export interface SeparatorProperties {
-    dir: "vertical" | "horizontal";
+    dir: 'vertical' | 'horizontal';
     hasLabel?: boolean;
-    labelPosition: "start" | "center" | "end";
+    labelPosition: 'start' | 'center' | 'end';
 }
 declare const _default: WidgetControl<SeparatorProperties>;
 export default _default;

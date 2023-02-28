@@ -45,33 +45,72 @@
 </template>
 
 <script lang="ts">
-import { Widget } from "@/entry.esm";
-import { defineComponent } from "@vue/composition-api";
+import {
+  Widget,
+  WidgetError,
+  WidgetItem,
+  WidgetItems,
+  WidgetControls,
+  PageState,
+} from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
+
+const WidgetControlProps = {
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  widgetControls: {
+    type: Object as () => WidgetControls,
+    required: true as const,
+  },
+  widgetItems: {
+    type: Object as () => WidgetItems,
+    required: true as const,
+  },
+  pageState: {
+    type: Object as () => PageState,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true as const,
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: String,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
 
 export default defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function,
-  },
-  inject: ["getLocale", "setMessage"],
+  props: WidgetControlProps,
+  inject: ['getLocale', 'setMessage'],
   mounted() {
     this.$nextTick(() => {
-      (this.$refs.titleInput as HTMLTextAreaElement).style.height = "";
+      (this.$refs.titleInput as HTMLTextAreaElement).style.height = '';
 
       (this.$refs.titleInput as HTMLTextAreaElement).style.height =
-        (this.$refs.titleInput as HTMLTextAreaElement).scrollHeight + "px";
+        (this.$refs.titleInput as HTMLTextAreaElement).scrollHeight + 'px';
 
-      (this.$refs.textInput as HTMLTextAreaElement).style.height = "";
+      (this.$refs.textInput as HTMLTextAreaElement).style.height = '';
 
       (this.$refs.textInput as HTMLTextAreaElement).style.height =
-        (this.$refs.textInput as HTMLTextAreaElement).scrollHeight + "px";
+        (this.$refs.textInput as HTMLTextAreaElement).scrollHeight + 'px';
     });
   },
   data() {
@@ -89,20 +128,20 @@ export default defineComponent({
         id: (this.$props.widget as Widget).id,
         locale: (this as any).getLocale(),
         key: `__${name}`,
-        value: text.replaceAll(/\n|\r/g, ""),
+        value: text.replaceAll(/\n|\r/g, ''),
       });
     },
   },
   computed: {
     alertStyles(): { [cssProp: string]: number | string } {
       if (
-        this.widget?.properties.type !== "custom" ||
+        this.widget?.properties.type !== 'custom' ||
         this.widget?.properties.customColor
       )
         return {};
       return {
         backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent",
+        borderColor: this.widget.properties.customBorderColor || 'transparent',
         ...(this.widget.properties.customTextColor
           ? { color: this.widget.properties.customTextColor }
           : {}),

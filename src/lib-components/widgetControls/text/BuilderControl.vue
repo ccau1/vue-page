@@ -52,20 +52,58 @@
 </template>
 
 <script lang="ts">
-import { WidgetItem } from "@/lib-components/models/WidgetItem";
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from '@vue/composition-api';
+import { WidgetItem } from '@/lib-components/models';
+import {
+  WidgetControls,
+  WidgetItems,
+  PageState,
+  WidgetError,
+} from '@/entry.esm';
 
-type TagType = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "small";
+const WidgetControlProps = {
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  widgetControls: {
+    type: Object as () => WidgetControls,
+    required: true as const,
+  },
+  widgetItems: {
+    type: Object as () => WidgetItems,
+    required: true as const,
+  },
+  pageState: {
+    type: Object as () => PageState,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: String,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
+
+type TagType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'small';
 
 export default defineComponent({
-  props: {
-    widget: Object,
-    widgets: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-  },
-  inject: ["updateWidget"],
+  props: WidgetControlProps,
+  inject: ['updateWidget'],
   methods: {
     setTagType(type: TagType) {
       (this.widget as WidgetItem).properties.tagType = type;

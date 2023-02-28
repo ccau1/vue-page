@@ -1,5 +1,5 @@
-import { WidgetItem, WidgetItemConstructorOptions } from "../../models/WidgetItem";
-import { SectionProperties } from ".";
+import { SectionProperties } from '.';
+import { WidgetItem, WidgetItemConstructorOptions } from '../../models/WidgetItem';
 export default class SectionWidgetItem extends WidgetItem<SectionProperties> {
     constructor(opts: WidgetItemConstructorOptions);
     getChildrenIds(): string[];

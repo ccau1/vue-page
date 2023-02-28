@@ -53,6 +53,7 @@
           :languages="builderLanguages"
           :view="pageView"
           :locale="locale"
+          :config="config"
           @onStateChange="onStateChange"
           @onLanguageChange="onLanguageChange"
           @onPageChange="onPageChange"
@@ -63,6 +64,7 @@
           :state="state"
           :languages="languages"
           :view="pageView"
+          :config="config"
           @onStateChange="onStateChange"
           @event="onPageEvent"
         />
@@ -83,12 +85,18 @@
         <vue-json-pretty :path="'res'" :data="state" />
       </div>
       <div style="flex: 1; padding: 10px; background-color: #f8f8f8">
-        <h4>Responses</h4>
+        <h4>Responses (generated from state)</h4>
         <vue-json-pretty :path="'res'" :data="responses" />
       </div>
       <div style="flex: 1; padding: 10px">
         <h4>Page</h4>
-        <vue-json-pretty :path="'res'" :data="page" />
+        <vue-json-pretty
+          :path="'res'"
+          :data="{
+            ...page,
+            widgets: page.widgets.map((w) => w._widget || w),
+          }"
+        />
       </div>
       <div style="flex: 1; padding: 10px; background-color: #f8f8f8">
         <h4>Languages</h4>
@@ -99,23 +107,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from '@vue/composition-api';
 import {
   VuePage,
   Page,
   WidgetLanguage,
   BuilderWidgetLanguages,
   WidgetItems,
-} from "../src/lib-components";
-import { PageState } from "../src/lib-components/models/PageState";
-import VueJsonPretty from "vue-json-pretty";
-import "vue-json-pretty/lib/styles.css";
-import { Fragment } from "vue-fragment";
+  PageConfig,
+} from '../src/lib-components';
+import { PageState } from '../src/lib-components/models/PageState';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
+import { Fragment } from 'vue-fragment';
 
 // mock data
-import pageData from "./mockData/page1";
-import _languages from "./mockData/page1_languages";
-import { WidgetItem } from "@/lib-components/models/WidgetItem";
+import pageData from './mockData/page1';
+import _languages from './mockData/page1_languages';
+import { WidgetItem } from '@/lib-components/models/WidgetItem';
 
 interface Response {
   code: string;
@@ -130,11 +139,11 @@ export default defineComponent({
     VueJsonPretty,
   },
   data() {
-    const persistedStateRaw = localStorage.getItem("pageState");
+    const persistedStateRaw = localStorage.getItem('pageState');
 
     return {
-      locale: "en",
-      pageView: "display",
+      locale: 'en',
+      pageView: 'display',
       isPersistState: !!persistedStateRaw,
       responses: [] as Response[],
       languagesRaw: _languages,
@@ -142,11 +151,25 @@ export default defineComponent({
       state: !!persistedStateRaw
         ? PageState.from(JSON.parse(persistedStateRaw))
         : pageData.state,
+      config: {
+        // validations: {
+        //   rules: validationRules,
+        // },
+      },
+    } as {
+      page: Page;
+      locale: string;
+      pageView: string;
+      isPersistState: boolean;
+      responses: Response[];
+      languagesRaw: WidgetLanguage[];
+      state: PageState;
+      config: PageConfig;
     };
   },
   computed: {
     builderLanguages() {
-      return (this.$data.languagesRaw as WidgetLanguage[]).reduce<{
+      return (this.languagesRaw as WidgetLanguage[]).reduce<{
         [widgetId: string]: { [locale: string]: WidgetLanguage };
       }>((obj, l) => {
         if (!obj[l.refId]) obj[l.refId] = {};
@@ -156,7 +179,7 @@ export default defineComponent({
     },
     languages() {
       return (
-        this.$data.languagesRaw as {
+        this.languagesRaw as {
           id: string;
           refId: string;
           type: string;
@@ -167,7 +190,7 @@ export default defineComponent({
       ).reduce<{
         [group: string]: { [key: string]: string };
       }>((obj, l) => {
-        if (l.locale !== this.$data.locale) return obj;
+        if (l.locale !== this.locale) return obj;
 
         if (!obj[l.refId]) {
           obj[l.refId] = {};
@@ -183,53 +206,83 @@ export default defineComponent({
   watch: {
     state: {
       handler(state: PageState) {
-        this.$data.responses = Object.keys(state.widgetState).reduce<
-          Response[]
-        >((responses, wStateKey) => {
-          const wState = state.widgetState[wStateKey];
-          if (wState.type !== "question") return responses;
+        this.responses = Object.keys(state.widgetState).reduce<Response[]>(
+          (responses, wStateKey) => {
+            const wState = state.widgetState[wStateKey];
+            if (wState.type !== 'question') return responses;
 
-          return [
-            ...responses,
-            {
-              code: wState.code,
-              response: wState.response,
-              valid: wState.touched && wState.valid,
-            },
-          ];
-        }, []);
+            return [
+              ...responses,
+              {
+                code: wState.code,
+                response: wState.response,
+                valid: wState.touched && wState.valid,
+              },
+            ];
+          },
+          []
+        );
       },
       immediate: true,
     },
   },
   methods: {
-    togglePersistState() {
-      this.$data.isPersistState = !this.$data.isPersistState;
+    // FIXME: seems a bit heavy to manipulate it every time obj changes,
+    // but only for json display which doesn't effect production
+    removeCircularRef(obj: object) {
+      let m = new Map(),
+        v = new Map(),
+        init: any = null;
 
-      if (!this.$data.isPersistState) localStorage.removeItem("pageState");
-      else localStorage.setItem("pageState", JSON.stringify(this.$data.state));
+      const _this = this;
+
+      const replacer = function (field: string, value: any) {
+        let p =
+          m.get(_this) + (Array.isArray(_this) ? `[${field}]` : '.' + field);
+        let isComplex = value === Object(value);
+
+        if (isComplex) m.set(value, p);
+
+        let pp = v.get(value) || '';
+        let path = p.replace(/undefined\.\.?/, '');
+        let val = pp ? `#REF:${pp[0] == '[' ? '$' : '$.'}${pp}` : value;
+
+        !init ? (init = value) : val === init ? (val = '#REF:$') : 0;
+        if (!pp && isComplex) v.set(value, path);
+
+        return val;
+      };
+
+      return JSON.parse(JSON.stringify(obj, replacer));
+    },
+    togglePersistState() {
+      this.isPersistState = !this.isPersistState;
+
+      if (!this.isPersistState) localStorage.removeItem('pageState');
+      else localStorage.setItem('pageState', JSON.stringify(this.state));
     },
     setLocale(locale: string) {
-      this.$data.locale = locale;
+      this.locale = locale;
     },
-    setPageView(view: "builder" | "page" | "readOnly") {
-      this.$data.pageView = view;
+    setPageView(view: 'builder' | 'page' | 'readOnly') {
+      this.pageView = view;
     },
     onStateChange(newState: any) {
       // FIXME: creating new PageState is the only
       // way to keep state reactive. Better way?
-      this.$data.state = PageState.from(newState);
+      this.state = PageState.from(newState);
 
-      this.$data.isPersistState &&
-        localStorage.setItem("pageState", JSON.stringify(newState));
+      this.isPersistState &&
+        localStorage.setItem('pageState', JSON.stringify(newState));
     },
     onPageChange(newPage: Page) {
-      this.$data.page = newPage;
+      this.page = newPage;
     },
     onLanguageChange(newLanguages: BuilderWidgetLanguages) {
-      this.$data.languagesRaw = Object.values(newLanguages).reduce<
-        WidgetLanguage[]
-      >((arr, val) => [...arr, ...Object.values(val)], []);
+      this.languagesRaw = Object.values(newLanguages).reduce<WidgetLanguage[]>(
+        (arr, val) => [...arr, ...Object.values(val)],
+        []
+      );
     },
     async onPageEvent({
       name,
@@ -242,7 +295,7 @@ export default defineComponent({
       pageState: PageState;
       widgetItems: WidgetItems;
     }) {
-      console.log("onPageEvent", name, value, widget);
+      console.info('onPageEvent', name, value, widget);
       await new Promise((resolve) => setTimeout(resolve, 1000));
     },
   },

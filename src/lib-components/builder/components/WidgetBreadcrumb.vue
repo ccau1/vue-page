@@ -18,15 +18,15 @@
 </template>
 
 <script lang="ts">
-import { WidgetItem } from "@/entry.esm";
-import { defineComponent } from "@vue/composition-api";
+import { WidgetItem } from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   props: {
     widget: Object,
     widgetItems: Object,
   },
-  inject: ["getPageState", "setPageState"],
+  inject: ['getPageState', 'setPageState'],
   methods: {
     setSelectWidget(widget: WidgetItem) {
       const currentState = (this as any).getPageState();
@@ -54,7 +54,7 @@ export default defineComponent({
   cursor: pointer;
 }
 .widget-breadcrumb-item:not(:first-child)::before {
-  content: ">";
+  content: '>';
   position: absolute;
   top: 6px;
   left: 0;

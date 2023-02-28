@@ -5,9 +5,9 @@
 </template>
 
 <script lang="ts">
-import { WidgetEffectControl, WidgetItem } from "@/entry.esm";
-import { defineComponent } from "@vue/composition-api";
-import { panelSections } from "../index";
+import { WidgetEffectControl, WidgetItem } from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
+import { panelSections } from '../index';
 
 export default defineComponent({
   props: {
@@ -15,7 +15,7 @@ export default defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object,
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
   data() {
     return {
       panelSections,

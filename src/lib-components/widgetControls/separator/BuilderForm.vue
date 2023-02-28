@@ -30,9 +30,9 @@
 </template>
 
 <script lang="ts">
-import { WidgetItem } from "@/lib-components/models/WidgetItem";
-import { defineComponent } from "@vue/composition-api";
-import { SeparatorProperties } from ".";
+import { WidgetItem } from '@/lib-components/models/WidgetItem';
+import { defineComponent } from '@vue/composition-api';
+import { SeparatorProperties } from '.';
 
 export default defineComponent({
   props: {
@@ -41,9 +41,9 @@ export default defineComponent({
       required: true,
     },
   },
-  inject: ["updateWidget"],
+  inject: ['updateWidget'],
   methods: {
-    setLabelPosition(labelPosition: "start" | "center" | "end") {
+    setLabelPosition(labelPosition: 'start' | 'center' | 'end') {
       (this.$props.widget.properties as SeparatorProperties).labelPosition =
         labelPosition;
       (this as any).updateWidget(this.$props.widget);

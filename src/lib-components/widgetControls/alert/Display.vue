@@ -1,61 +1,104 @@
 <template>
   <div
-    class="alert"
     v-if="isOpen"
+    class="alert"
     :style="alertStyles"
     :class="{ [widget.properties.type]: true }"
   >
-    <h3 class="title">{{ t("__title") }}</h3>
+    <h3 class="title">
+      {{ t('__title') }}
+    </h3>
     <!-- <p>{{ t("__text", widget.id) }}</p> -->
     <div v-html="t('__text')" />
     <a
+      v-if="widget.properties.showCloseBtn"
       class="close-button"
       @click="onCloseAlert"
-      v-if="widget.properties.showCloseBtn"
       >x</a
     >
   </div>
 </template>
 
-<script>
-import { defineComponent } from "@vue/composition-api";
+<script lang="ts">
+import {
+  WidgetItem,
+  WidgetControls,
+  WidgetItems,
+  PageState,
+  WidgetError,
+} from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
+
+const WidgetControlProps = {
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  widgetControls: {
+    type: Object as () => WidgetControls,
+    required: true,
+  },
+  widgetItems: {
+    type: Object as () => WidgetItems,
+    required: true,
+  },
+  pageState: {
+    type: Object as () => PageState,
+    required: true,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true,
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true,
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true,
+  },
+  onChange: Function,
+  value: {
+    type: String,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false,
+  },
+};
 
 export default defineComponent({
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function,
+    ...WidgetControlProps,
   },
   data() {
     return {
       isOpen: true,
     };
   },
-  methods: {
-    onCloseAlert() {
-      this.$data.isOpen = false;
-    },
-  },
   computed: {
-    alertStyles() {
+    alertStyles(): Partial<CSSStyleDeclaration> {
       if (
-        this.widget.properties.type !== "custom" ||
+        this.widget.properties.type !== 'custom' ||
         this.widget.properties.customColor
       )
         return {};
       return {
         backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent",
+        borderColor: this.widget.properties.customBorderColor || 'transparent',
         ...(this.widget.properties.customTextColor
           ? { color: this.widget.properties.customTextColor }
           : {}),
       };
+    },
+  },
+  methods: {
+    onCloseAlert() {
+      this.$data.isOpen = false;
     },
   },
 });

@@ -1,4 +1,4 @@
-import BuilderWidgetTree from "../../BuilderWidgetTree.vue";
+import BuilderWidgetTree from '../../BuilderWidgetTree.vue';
 declare const _default: import("vue").ComponentOptions<BuilderWidgetTree, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & import("@vue/composition-api").Data, {}, {}, {
     widgetItems: ObjectConstructor;
     selectedWidgetItem: ObjectConstructor;

@@ -1,10 +1,10 @@
-import PanelSection from "./PanelSection";
-import addWidget from "./addWidget";
-import effects from "./effects";
-import reflexives from "./reflexives";
-import validations from "./validations";
-import widget from "./widget";
-import widgetTree from "./widgetTree";
+import addWidget from './addWidget';
+import effects from './effects';
+import PanelSection from './PanelSection';
+import reflexives from './reflexives';
+import validations from './validations';
+import widget from './widget';
+import widgetTree from './widgetTree';
 
 export const panelSections = {
   [addWidget.key]: addWidget,

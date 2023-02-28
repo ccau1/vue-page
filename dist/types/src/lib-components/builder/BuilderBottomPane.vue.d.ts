@@ -1,5 +1,5 @@
 import { WidgetItem } from "../../entry.esm";
-import WidgetBreadcrumb from "./components/WidgetBreadcrumb.vue";
+import WidgetBreadcrumb from './components/WidgetBreadcrumb.vue';
 declare const _default: import("vue").ComponentOptions<WidgetBreadcrumb, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & import("@vue/composition-api").Data, {}, {
     selectedWidgetItem(): WidgetItem | null;
 }, {

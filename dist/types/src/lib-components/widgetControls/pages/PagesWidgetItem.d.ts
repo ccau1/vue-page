@@ -1,5 +1,5 @@
-import { WidgetItem, WidgetItemConstructorOptions } from "../../models/WidgetItem";
-import { PagesProperties } from ".";
+import { WidgetItem, WidgetItemConstructorOptions } from '../../models/WidgetItem';
+import { PagesProperties } from '.';
 export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     protected isSubmitting: boolean;
     constructor(opts: WidgetItemConstructorOptions);
@@ -20,8 +20,10 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     pageIndexHasLoadings(idx: number, opts?: {
         allChildPages?: boolean;
     }): boolean;
-    currentPageIndexHasLoadings(opts?: {}): boolean;
-    setChildErrors(childWidgetId: string, errors: any): void;
+    currentPageIndexHasLoadings(opts?: {
+        allChildPages?: boolean;
+    }): boolean;
+    setChildErrors(childWidgetId: string, errors: any): Promise<void>;
     addChild(childWidget: WidgetItem<any>, meta?: {
         pageIdx: number;
         childIdx: number;
@@ -39,14 +41,15 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     pageIndexHasErrors(idx: number, opts?: {
         allChildPages?: boolean;
         skipPristine?: boolean;
+        includeWarnings?: boolean;
     }): boolean;
     currentPageIndexHasErrors(opts?: {
         skipPristine?: boolean;
     }): boolean;
     toNextPage(): Promise<void>;
     toPreviousPage(): void;
-    previousButtonType(): "previous" | "none";
-    nextButtonType(): "next" | "complete" | "none";
+    previousButtonType(): 'previous' | 'none';
+    nextButtonType(): 'next' | 'complete' | 'none';
     hasPreviousButton(): boolean;
     hasNextButton(): boolean;
 }

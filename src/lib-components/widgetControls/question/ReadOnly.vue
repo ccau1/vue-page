@@ -2,17 +2,17 @@
   <div v-if="!getWidgetState('reflexiveHide')">
     <div class="question-wrapper">
       <label v-if="!widget.properties.hideLabel">{{
-        t("__label", widget.id)
+        t('__label', widget.id)
       }}</label>
       <div>
         <component
           :is="questionControls[widget.properties.control].readOnly"
           :properties="widget.properties.controlProperties"
           :widget="widget"
-          :onChange="onChange"
+          :on-change="onChange"
           :value="getWidgetState('response')"
-          :setWidgetState="setWidgetState"
-          :getWidgetState="getWidgetState"
+          :set-widget-state="setWidgetState"
+          :get-widget-state="getWidgetState"
           :view="view"
           :t="t"
         />
@@ -21,37 +21,76 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from "@vue/composition-api";
+<script lang="ts">
+import {
+  WidgetError,
+  WidgetItem,
+  WidgetItems,
+  WidgetControls,
+  PageState,
+} from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
+
+let WidgetControlProps = {
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true,
+  },
+  widgetControls: {
+    type: Object as () => WidgetControls,
+    required: true,
+  },
+  widgetItems: {
+    type: Object as () => WidgetItems,
+    required: true,
+  },
+  pageState: {
+    type: Object as () => PageState,
+    required: true,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true,
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true,
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true,
+  },
+  onChange: Function,
+  value: {
+    type: String,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false,
+  },
+};
 
 export default defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function,
-  },
   inject: [
-    "questionControls",
-    "widgetControls",
-    "getPageState",
-    "setPageState",
+    'questionControls',
+    'widgetControls',
+    'getPageState',
+    'setPageState',
   ],
-  created() {},
-  unmounted() {},
+  props: WidgetControlProps,
   computed: {
-    pageState() {
-      return this.getPageState();
+    pageState(): PageState {
+      return (this as any).getPageState();
     },
   },
+  created() {},
+  unmounted() {},
   methods: {
-    onChange(response) {
-      this.setWidgetState("response", response);
+    onChange(response: any) {
+      (this as any).setWidgetState('response', response);
     },
   },
 });

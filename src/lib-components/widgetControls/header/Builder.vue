@@ -10,28 +10,18 @@
 </template>
 
 <script lang="ts">
-import { Widget } from "@/entry.esm";
-import { defineComponent } from "@vue/composition-api";
+import { Widget, WidgetControlProps } from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function,
-  },
-  inject: ["getLocale", "setMessage"],
+  props: WidgetControlProps,
+  inject: ['getLocale', 'setMessage'],
   methods: {
     onTextChange(val: Event) {
       (this as any).setMessage({
         id: (this.$props.widget as Widget).id,
         locale: (this as any).getLocale(),
-        key: "__label",
+        key: '__label',
         value: (val.target as HTMLInputElement).value,
       });
     },

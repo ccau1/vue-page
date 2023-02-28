@@ -1,7 +1,9 @@
 <template>
   <div>
-    <div class="pages-menu-wrapper" v-if="widget.properties.tabsVisible">
+    <div v-if="widget.properties.tabsVisible" class="pages-menu-wrapper">
       <a
+        v-for="(page, pageIndex) in sortedPages"
+        :key="pageIndex"
         class="pages-menu-item"
         :class="{
           active: currentPageIndex === pageIndex,
@@ -10,33 +12,31 @@
             pageIndex
           ),
         }"
-        v-for="(page, pageIndex) in sortedPages"
-        :key="pageIndex"
-        v-on:click="() => widget.onChangePageIndex(pageIndex)"
+        @click="() => widget.onChangePageIndex(pageIndex)"
       >
         {{ t(page.labelKey, widget.id) }}
       </a>
     </div>
     <div class="pages-content-item">
       <builder-widgets-layout
-        :widgetItems="widgetItems"
-        :excludeWidgetIds="[widget.id]"
-        :onlyIncludeWidgetIds="
+        :widget-items="widgetItems"
+        :exclude-widget-ids="[widget.id]"
+        :only-include-widget-ids="
           sortedPages.length && currentPageIndex > -1
             ? sortedPages[currentPageIndex].children
             : []
         "
-        :forParent="widget.id"
+        :for-parent="widget.id"
       />
     </div>
     <div
-      class="back-forward-wrapper"
       v-if="widget.properties.navigationVisible"
+      class="back-forward-wrapper"
     >
       <div>
         <button
-          class="back-forward-button"
           v-if="widget.hasPreviousButton()"
+          class="back-forward-button"
           @click="() => widget.toPreviousPage()"
         >
           {{ t(`__${widget.previousButtonType()}`, widget.id) }}
@@ -44,9 +44,9 @@
       </div>
       <div>
         <button
+          v-if="widget.hasNextButton()"
           class="back-forward-button"
           :class="{ errors: widget.pageIndexHasErrors(currentPageIndex) }"
-          v-if="widget.hasNextButton()"
           @click="() => widget.toNextPage()"
         >
           {{ t(`__${widget.nextButtonType()}`, widget.id) }}
@@ -56,50 +56,102 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from "@vue/composition-api";
-import WidgetsLayout from "../../WidgetsLayout.vue";
-import BuilderWidgetsLayout from "../../builder/BuilderWidgetsLayout.vue";
+<script lang="ts">
+import {
+  WidgetItem,
+  WidgetControls,
+  WidgetItems,
+  PageState,
+  WidgetError,
+  PagesPropertiesPage,
+  PagesProperties,
+} from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
+import BuilderWidgetsLayout from '../../builder/BuilderWidgetsLayout.vue';
+import WidgetsLayout from '../../WidgetsLayout.vue';
+import PagesWidgetItem from './PagesWidgetItem';
+
+const WidgetControlProps = {
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  widgetControls: {
+    type: Object as () => WidgetControls,
+    required: true as const,
+  },
+  widgetItems: {
+    type: Object as () => WidgetItems,
+    required: true as const,
+  },
+  pageState: {
+    type: Object as () => PageState,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true as const,
+  },
+  t: Function,
+  properties: {
+    type: Object as () => PagesProperties,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: String,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
 
 export default defineComponent({
   components: { WidgetsLayout, BuilderWidgetsLayout },
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function,
+    ...WidgetControlProps,
+    widget: {
+      type: PagesWidgetItem,
+      required: true,
+    },
   },
   data() {
     return {
       sortedPages: [],
+    } as {
+      sortedPages: PagesPropertiesPage[];
     };
   },
   computed: {
-    currentPageIndex() {
+    currentPageIndex(): number {
       return (
-        this.pageState.widgetState?.[this.$props.widget.id]?.currentPageIndex ||
-        0
+        this.pageState.widgetState?.[this.widget.id]?.currentPageIndex || 0
       );
     },
   },
   watch: {
     currentPageIndex: {
       handler() {
-        const viewedIndices = this.$props.widget.getState("viewedIndices");
-        this.$props.widget.setState("viewedIndices", [
-          ...new Set([...(viewedIndices || []), this.currentPageIndex]),
-        ]);
+        const viewedIndices = this.widget.getState('viewedIndices') || [];
+        if (!viewedIndices.includes(this.currentPageIndex)) {
+          this.widget.setState('viewedIndices', [
+            ...viewedIndices,
+            this.currentPageIndex,
+          ]);
+        }
       },
       immediate: true,
     },
-    "widget.properties.pages": {
+    'widget.properties.pages': {
       handler() {
-        this.$data.sortedPages = this.$props.widget.getSortedPages();
+        this.sortedPages = this.widget.getSortedPages();
       },
       immediate: true,
     },

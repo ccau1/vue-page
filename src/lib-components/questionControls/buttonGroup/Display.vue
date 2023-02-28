@@ -15,50 +15,82 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import { QuestionControlProps } from "../index";
+import { defineComponent } from '@vue/composition-api';
+import { ButtonGroupProperties, WidgetItem, WidgetError } from '@/entry.esm';
 
-export default defineComponent<QuestionControlProps>({
+interface Option {
+  label: string;
+  value: string;
+}
+
+const QuestionControlProps = {
+  properties: {
+    type: Object,
+    required: true as const,
+  },
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true as const,
+  },
+  t: {
+    type: Function,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
+
+export default defineComponent({
   props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function,
+    ...QuestionControlProps,
+    properties: {
+      type: Object as () => ButtonGroupProperties,
+      required: true,
+    },
+    value: {
+      type: String,
+    },
   },
   data() {
     return {
       options: [],
+    } as {
+      options: Option[];
     };
   },
   watch: {
-    ["properties.options"]: {
+    ['properties.options']: {
       handler() {
         // FIXME: need to handle on locale switch as well
-        this.$data.options = this.$props.properties.options.map(
-          (opt: { labelKey: string; value: string }) => ({
-            value: opt.value,
-            label: (this as any).t(opt.labelKey, this.$props.widget.id),
-          })
-        );
+        this.options = this.properties.options.map((opt) => ({
+          value: opt.value,
+          label: (this as any).t(opt.labelKey, this.widget!.id),
+        }));
       },
       immediate: true,
     },
   },
   computed: {
-    selectedValue() {
-      return (
-        this.$data.options as Array<{ label: string; value: string }>
-      ).find((o) => o.value === this.$props.value);
+    selectedValue(): Option | undefined {
+      return this.options.find((o) => o.value === this.value);
     },
   },
   methods: {
     onSelectChange(value: string) {
-      this.$props.onChange(value);
+      this.onChange?.(value);
     },
   },
 });

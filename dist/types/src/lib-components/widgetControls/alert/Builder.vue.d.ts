@@ -1,3 +1,4 @@
+import { WidgetError, WidgetItem, WidgetItems, WidgetControls, PageState } from "../../../entry.esm";
 declare const _default: import("vue").ComponentOptions<import("../../../entry.esm").VuePage, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & {
     isOpen: boolean;
 }, {
@@ -8,38 +9,78 @@ declare const _default: import("vue").ComponentOptions<import("../../../entry.es
         [cssProp: string]: string | number;
     };
 }, {
-    widget: ObjectConstructor;
-    widgetControls: ObjectConstructor;
-    widgetItems: ObjectConstructor;
-    pageState: ObjectConstructor;
+    widget: {
+        type: () => WidgetItem<any>;
+        required: true;
+    };
+    widgetControls: {
+        type: () => WidgetControls;
+        required: true;
+    };
+    widgetItems: {
+        type: () => WidgetItems;
+        required: true;
+    };
+    pageState: {
+        type: () => PageState;
+        required: true;
+    };
     setWidgetState: FunctionConstructor;
     getWidgetState: FunctionConstructor;
-    view: StringConstructor;
+    view: {
+        type: StringConstructor;
+        required: true;
+    };
     wrapperRef: {
-        new (): HTMLDivElement;
-        prototype: HTMLDivElement;
+        type: {
+            new (): HTMLDivElement;
+            prototype: HTMLDivElement;
+        };
+        required: true;
     };
     t: FunctionConstructor;
-}, {} & {
-    widget?: Record<string, any> | undefined;
-    widgetControls?: Record<string, any> | undefined;
-    widgetItems?: Record<string, any> | undefined;
-    pageState?: Record<string, any> | undefined;
+    properties: {
+        type: ObjectConstructor;
+        required: true;
+    };
+    onChange: FunctionConstructor;
+    value: {
+        type: StringConstructor;
+    };
+    errors: {
+        type: () => WidgetError[];
+        required: false;
+    };
+}, {
+    widget: WidgetItem<any>;
+    widgetControls: WidgetControls;
+    widgetItems: WidgetItems;
+    pageState: PageState;
+    view: string;
+    wrapperRef: HTMLDivElement;
+    properties: Record<string, any>;
+} & {
     setWidgetState?: Function | undefined;
     getWidgetState?: Function | undefined;
-    view?: string | undefined;
-    wrapperRef?: HTMLDivElement | undefined;
     t?: Function | undefined;
-}> & Omit<import("vue").VueConstructor<import("../../../entry.esm").VuePage>, never> & (new (...args: any[]) => import("@vue/composition-api").ComponentRenderProxy<{} & {
-    widget?: Record<string, any> | undefined;
-    widgetControls?: Record<string, any> | undefined;
-    widgetItems?: Record<string, any> | undefined;
-    pageState?: Record<string, any> | undefined;
+    onChange?: Function | undefined;
+    value?: string | undefined;
+    errors?: WidgetError[] | undefined;
+}> & Omit<import("vue").VueConstructor<import("../../../entry.esm").VuePage>, never> & (new (...args: any[]) => import("@vue/composition-api").ComponentRenderProxy<{
+    widget: WidgetItem<any>;
+    widgetControls: WidgetControls;
+    widgetItems: WidgetItems;
+    pageState: PageState;
+    view: string;
+    wrapperRef: HTMLDivElement;
+    properties: Record<string, any>;
+} & {
     setWidgetState?: Function | undefined;
     getWidgetState?: Function | undefined;
-    view?: string | undefined;
-    wrapperRef?: HTMLDivElement | undefined;
     t?: Function | undefined;
+    onChange?: Function | undefined;
+    value?: string | undefined;
+    errors?: WidgetError[] | undefined;
 }, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data>, {
     isOpen: boolean;
 }, {
@@ -49,15 +90,20 @@ declare const _default: import("vue").ComponentOptions<import("../../../entry.es
 }, {
     onCloseAlert(): void;
     updateText(name: string, text: string): void;
-}, {}, {}, {}, {} & {
-    widget?: Record<string, any> | undefined;
-    widgetControls?: Record<string, any> | undefined;
-    widgetItems?: Record<string, any> | undefined;
-    pageState?: Record<string, any> | undefined;
+}, {}, {}, {}, {
+    widget: WidgetItem<any>;
+    widgetControls: WidgetControls;
+    widgetItems: WidgetItems;
+    pageState: PageState;
+    view: string;
+    wrapperRef: HTMLDivElement;
+    properties: Record<string, any>;
+} & {
     setWidgetState?: Function | undefined;
     getWidgetState?: Function | undefined;
-    view?: string | undefined;
-    wrapperRef?: HTMLDivElement | undefined;
     t?: Function | undefined;
+    onChange?: Function | undefined;
+    value?: string | undefined;
+    errors?: WidgetError[] | undefined;
 }, {}, true>);
 export default _default;

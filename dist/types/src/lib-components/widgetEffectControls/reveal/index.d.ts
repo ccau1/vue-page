@@ -1,4 +1,4 @@
-import { WidgetEffectControl } from "../../models/WidgetEffectControl";
+import { WidgetEffectControl } from '../../models/WidgetEffectControl';
 export interface RevealEffectProperties {
     delay?: number;
     distance?: string;
@@ -7,7 +7,7 @@ export interface RevealEffectProperties {
     easing?: string;
     interval?: number;
     opacity?: number | null;
-    origin?: "top" | "bottom" | "left" | "right";
+    origin?: 'top' | 'bottom' | 'left' | 'right';
     rotate?: {
         x: number;
         y: number;

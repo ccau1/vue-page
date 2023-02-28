@@ -62,15 +62,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import PagesWidgetItem from "./PagesWidgetItem";
+import { defineComponent } from '@vue/composition-api';
+import PagesWidgetItem from './PagesWidgetItem';
 
 export default defineComponent({
   props: {
     widget: Object,
     t: Function,
   },
-  inject: ["updateWidget", "setMessage", "getLocale"],
+  inject: ['updateWidget', 'setMessage', 'getLocale'],
   methods: {
     setPageLabel(pageIndex: number, label: string) {
       (this as any).setMessage({

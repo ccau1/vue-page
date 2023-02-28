@@ -1,6 +1,6 @@
-import Display from "./Display.vue";
-import QuestionControl from "../QuestionControl";
-import ReadOnly from "./ReadOnly.vue";
+import QuestionControl from '../QuestionControl';
+import Display from './Display.vue';
+import ReadOnly from './ReadOnly.vue';
 
 export interface TextQuestionProperties {
   // whether text input will be multiline

@@ -1,4 +1,5 @@
-import { WidgetControl } from "../..";
+import { WidgetControl } from '../..';
+export { default as PagesWidgetItem } from './PagesWidgetItem';
 export interface PagesPropertiesPage {
     labelKey: string;
     idx?: number;

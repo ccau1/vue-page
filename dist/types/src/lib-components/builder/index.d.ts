@@ -1,1 +1,1 @@
-export { default as VuePageBuilder } from "./VuePageBuilder.vue";
+export { default as VuePageBuilder } from './VuePageBuilder.vue';

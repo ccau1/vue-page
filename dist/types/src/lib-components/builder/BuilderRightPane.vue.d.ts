@@ -1,5 +1,5 @@
-import { WidgetItem } from "../models/WidgetItem";
-import Pane from "./components/Pane.vue";
+import { WidgetItem } from '../models/WidgetItem';
+import Pane from './components/Pane.vue';
 declare const _default: import("vue").ComponentOptions<Pane, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & {
     panelSections: {
         [key: string]: import("./panelSections/PanelSection").default;

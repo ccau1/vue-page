@@ -1,12 +1,14 @@
-import { Widget, WidgetControl } from "../..";
+import { v4 as uuidv4 } from 'uuid';
+import { Widget, WidgetControl } from '../..';
 
-import Builder from "./Builder.vue";
-import Display from "./Display.vue";
-import QuestionWidgetItem from "./QuestionWidgetItem";
-import ReadOnly from "./ReadOnly.vue";
-import { v4 as uuidv4 } from "uuid";
+import Builder from './Builder.vue';
+import Display from './Display.vue';
+import QuestionWidgetItem from './QuestionWidgetItem';
+import ReadOnly from './ReadOnly.vue';
 
-export interface QuestionProperties {
+export interface QuestionProperties<
+  ControlProperties = { [key: string]: any }
+> {
   // the response data type (ie. BOOLEAN, TEXT)
   responseType: string;
   // whether to hide the label
@@ -14,18 +16,20 @@ export interface QuestionProperties {
   // the control type
   control: string;
   // properties associated with the control type
-  controlProperties: { [key: string]: any };
+  controlProperties: ControlProperties;
 }
+
+export { default as QuestionWidgetItem } from './QuestionWidgetItem';
 
 export default {
   create(props: Partial<QuestionProperties>): Widget<QuestionProperties> {
     return {
       id: uuidv4(),
-      type: "question",
+      type: 'question',
       properties: {
-        responseType: "",
+        responseType: '',
         hideLabel: false,
-        control: "",
+        control: '',
         controlProperties: {},
         ...props,
       },

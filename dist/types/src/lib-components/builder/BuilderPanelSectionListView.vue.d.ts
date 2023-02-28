@@ -1,4 +1,4 @@
-import BuilderPanelSectionView from "./BuilderPanelSectionView.vue";
+import BuilderPanelSectionView from './BuilderPanelSectionView.vue';
 declare const _default: import("vue").ComponentOptions<BuilderPanelSectionView, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & {
     collapsed: {
         [sectionName: string]: boolean;

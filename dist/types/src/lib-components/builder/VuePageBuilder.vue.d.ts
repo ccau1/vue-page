@@ -1,216 +1,159 @@
-import BuilderWidgetsLayout from "./BuilderWidgetsLayout.vue";
-import { WidgetItems } from "../../entry.esm";
-interface VuePageData {
+import { Page, Widget } from '..';
+import { PageState } from '../models/PageState';
+import BuilderWidgetsLayout from './BuilderWidgetsLayout.vue';
+import { WidgetItem } from '../models/WidgetItem';
+import { BuilderWidgetLanguages, PageConfig, WidgetItems } from "../../entry.esm";
+import { TranslateKey, TranslateData, WidgetError, WidgetControls, PageConfigValidations } from '../interfaces';
+import { PageEventListener } from '../models/PageEventListener';
+import { QuestionControls } from '../questionControls/QuestionControl';
+import { WidgetEffectControls } from '../models';
+import { Engine } from 'json-rules-engine';
+import Validator from '../models/Validator';
+declare const _default: import("vue").ComponentOptions<BuilderWidgetsLayout, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & {
     widgetItems: WidgetItems;
-}
-declare const _default: import("vue").ComponentOptions<BuilderWidgetsLayout, import("@vue/composition-api").ShallowUnwrapRef<any> & VuePageData, {}, {}, import("@vue/composition-api").ComponentPropsOptions<import("@vue/composition-api").Data>, ({
-    [x: number]: string;
+    pageEventListener: PageEventListener;
+}, {
+    _onPageChange(newPage: Page): void;
+    t(key: TranslateKey, data?: TranslateData | undefined): string;
+    getConfig(): PageConfig;
+    getValidator(): Validator;
+    getRuleEngine(): Engine;
+    excludeWidgets(widgetIdsOrCodes: string[]): void;
+    emitEvent(name: string, value?: any, widget?: WidgetItem<any> | undefined): Promise<void>;
+    validateAll(opts?: {
+        setDirty?: boolean | undefined;
+    } | undefined): Promise<{
+        [widgetCodeOrId: string]: WidgetError[];
+    }>;
+    setMessage({ id, locale, key, value, type, }: {
+        id: string;
+        locale: string;
+        key: string;
+        value: string;
+        type?: string | undefined;
+    }): void;
+    updatePage(page: Page): void;
+    updateWidget(widget: WidgetItem): void;
+    removeWidget(widgetId: string): void;
+}, {
+    widgetItemsArr(): Widget[];
+    combWidgetControls(): WidgetControls;
+    combWidgetEffectControls(): WidgetEffectControls;
+    combQuestionControls(): QuestionControls;
+    validations(): PageConfigValidations;
+    pageState(): PageState;
+}, {
+    languages: {
+        type: () => BuilderWidgetLanguages;
+        required: true;
+    };
+    locale: StringConstructor;
+    page: {
+        type: () => Page;
+        required: true;
+    };
+    onPageChange: FunctionConstructor;
+    state: {
+        type: () => PageState;
+        required: true;
+    };
+    onStateChange: FunctionConstructor;
+    widgetControls: () => WidgetControls;
+    questionControls: () => QuestionControls;
+    widgetEffectControls: () => WidgetEffectControls;
+    plugins: () => Array<{
+        widgetControls: Object;
+        widgetEffectControls: Object;
+        questionControls: Object;
+    }>;
+    view: StringConstructor;
+    config: () => PageConfig;
+}, {
+    languages: BuilderWidgetLanguages;
+    page: Page;
+    state: PageState;
 } & {
-    [Symbol.iterator]?: IterableIterator<string> | undefined;
-    [Symbol.unscopables]?: {
-        copyWithin: boolean;
-        entries: boolean;
-        fill: boolean;
-        find: boolean;
-        findIndex: boolean;
-        keys: boolean;
-        values: boolean;
-    } | undefined;
-    keys?: IterableIterator<number> | undefined;
-    values?: IterableIterator<string> | undefined;
-    entries?: IterableIterator<[number, string]> | undefined;
-    concat?: string[] | undefined;
-    indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    slice?: string[] | undefined;
-    length?: number | undefined;
-    includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
-    at?: ((index: number) => string | undefined) | undefined;
-    filter?: {
-        <S extends string>(predicate: (value: string, index: number, array: string[]) => value is S, thisArg?: any): S[];
-        (predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any): string[];
-    } | undefined;
-    toString?: string | undefined;
-    toLocaleString?: string | undefined;
-    pop?: string | undefined;
-    push?: number | undefined;
-    join?: string | undefined;
-    reverse?: string[] | undefined;
-    shift?: string | undefined;
-    sort?: string[] | undefined;
-    splice?: {
-        (start: number, deleteCount?: number | undefined): string[];
-        (start: number, deleteCount: number, ...items: string[]): string[];
-    } | undefined;
-    unshift?: number | undefined;
-    every?: {
-        <S_1 extends string>(predicate: (value: string, index: number, array: string[]) => value is S_1, thisArg?: any): this is S_1[];
-        (predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any): boolean;
-    } | undefined;
-    some?: ((predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any) => boolean) | undefined;
-    forEach?: ((callbackfn: (value: string, index: number, array: string[]) => void, thisArg?: any) => void) | undefined;
-    map?: (<U>(callbackfn: (value: string, index: number, array: string[]) => U, thisArg?: any) => U[]) | undefined;
-    reduce?: {
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
-        <U_1>(callbackfn: (previousValue: U_1, currentValue: string, currentIndex: number, array: string[]) => U_1, initialValue: U_1): U_1;
-    } | undefined;
-    reduceRight?: {
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
-        <U_2>(callbackfn: (previousValue: U_2, currentValue: string, currentIndex: number, array: string[]) => U_2, initialValue: U_2): U_2;
-    } | undefined;
-    find?: {
-        <S_2 extends string>(predicate: (this: void, value: string, index: number, obj: string[]) => value is S_2, thisArg?: any): S_2 | undefined;
-        (predicate: (value: string, index: number, obj: string[]) => unknown, thisArg?: any): string | undefined;
-    } | undefined;
-    findIndex?: ((predicate: (value: string, index: number, obj: string[]) => unknown, thisArg?: any) => number) | undefined;
-    fill?: ((value: string, start?: number | undefined, end?: number | undefined) => string[]) | undefined;
-    copyWithin?: ((target: number, start: number, end?: number | undefined) => string[]) | undefined;
-    flatMap?: (<U_3, This = undefined>(callback: (this: This, value: string, index: number, array: string[]) => U_3 | readonly U_3[], thisArg?: This | undefined) => U_3[]) | undefined;
-    flat?: unknown[] | undefined;
-}) | ({} & {
-    [x: string]: any;
-    [x: number]: any;
-})> & Omit<import("vue").VueConstructor<BuilderWidgetsLayout>, never> & (new (...args: any[]) => import("@vue/composition-api").ComponentRenderProxy<(({
-    [x: number]: string;
+    locale?: string | undefined;
+    onPageChange?: Function | undefined;
+    onStateChange?: Function | undefined;
+    view?: string | undefined;
+    widgetControls?: WidgetControls | undefined;
+    questionControls?: QuestionControls | undefined;
+    widgetEffectControls?: WidgetEffectControls | undefined;
+    plugins?: {
+        widgetControls: Object;
+        widgetEffectControls: Object;
+        questionControls: Object;
+    }[] | undefined;
+    config?: PageConfig | undefined;
+}> & Omit<import("vue").VueConstructor<BuilderWidgetsLayout>, never> & (new (...args: any[]) => import("@vue/composition-api").ComponentRenderProxy<{
+    languages: BuilderWidgetLanguages;
+    page: Page;
+    state: PageState;
 } & {
-    [Symbol.iterator]?: IterableIterator<string> | undefined;
-    [Symbol.unscopables]?: {
-        copyWithin: boolean;
-        entries: boolean;
-        fill: boolean;
-        find: boolean;
-        findIndex: boolean;
-        keys: boolean;
-        values: boolean;
-    } | undefined;
-    keys?: IterableIterator<number> | undefined;
-    values?: IterableIterator<string> | undefined;
-    entries?: IterableIterator<[number, string]> | undefined;
-    concat?: string[] | undefined;
-    indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    slice?: string[] | undefined;
-    length?: number | undefined;
-    includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
-    at?: ((index: number) => string | undefined) | undefined;
-    filter?: {
-        <S extends string>(predicate: (value: string, index: number, array: string[]) => value is S, thisArg?: any): S[];
-        (predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any): string[];
-    } | undefined;
-    toString?: string | undefined;
-    toLocaleString?: string | undefined;
-    pop?: string | undefined;
-    push?: number | undefined;
-    join?: string | undefined;
-    reverse?: string[] | undefined;
-    shift?: string | undefined;
-    sort?: string[] | undefined;
-    splice?: {
-        (start: number, deleteCount?: number | undefined): string[];
-        (start: number, deleteCount: number, ...items: string[]): string[];
-    } | undefined;
-    unshift?: number | undefined;
-    every?: {
-        <S_1 extends string>(predicate: (value: string, index: number, array: string[]) => value is S_1, thisArg?: any): this is S_1[];
-        (predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any): boolean;
-    } | undefined;
-    some?: ((predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any) => boolean) | undefined;
-    forEach?: ((callbackfn: (value: string, index: number, array: string[]) => void, thisArg?: any) => void) | undefined;
-    map?: (<U>(callbackfn: (value: string, index: number, array: string[]) => U, thisArg?: any) => U[]) | undefined;
-    reduce?: {
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
-        <U_1>(callbackfn: (previousValue: U_1, currentValue: string, currentIndex: number, array: string[]) => U_1, initialValue: U_1): U_1;
-    } | undefined;
-    reduceRight?: {
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
-        <U_2>(callbackfn: (previousValue: U_2, currentValue: string, currentIndex: number, array: string[]) => U_2, initialValue: U_2): U_2;
-    } | undefined;
-    find?: {
-        <S_2 extends string>(predicate: (this: void, value: string, index: number, obj: string[]) => value is S_2, thisArg?: any): S_2 | undefined;
-        (predicate: (value: string, index: number, obj: string[]) => unknown, thisArg?: any): string | undefined;
-    } | undefined;
-    findIndex?: ((predicate: (value: string, index: number, obj: string[]) => unknown, thisArg?: any) => number) | undefined;
-    fill?: ((value: string, start?: number | undefined, end?: number | undefined) => string[]) | undefined;
-    copyWithin?: ((target: number, start: number, end?: number | undefined) => string[]) | undefined;
-    flatMap?: (<U_3, This = undefined>(callback: (this: This, value: string, index: number, array: string[]) => U_3 | readonly U_3[], thisArg?: This | undefined) => U_3[]) | undefined;
-    flat?: unknown[] | undefined;
-}) | ({} & {
-    [x: string]: any;
-    [x: number]: any;
-})) & {}, import("@vue/composition-api").ShallowUnwrapRef<any>, VuePageData, {}, {}, {}, {}, {}, (({
-    [x: number]: string;
+    locale?: string | undefined;
+    onPageChange?: Function | undefined;
+    onStateChange?: Function | undefined;
+    view?: string | undefined;
+    widgetControls?: WidgetControls | undefined;
+    questionControls?: QuestionControls | undefined;
+    widgetEffectControls?: WidgetEffectControls | undefined;
+    plugins?: {
+        widgetControls: Object;
+        widgetEffectControls: Object;
+        questionControls: Object;
+    }[] | undefined;
+    config?: PageConfig | undefined;
+}, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data>, {
+    widgetItems: WidgetItems;
+    pageEventListener: PageEventListener;
+}, {
+    widgetItemsArr(): Widget[];
+    combWidgetControls(): WidgetControls;
+    combWidgetEffectControls(): WidgetEffectControls;
+    combQuestionControls(): QuestionControls;
+    validations(): PageConfigValidations;
+    pageState(): PageState;
+}, {
+    _onPageChange(newPage: Page): void;
+    t(key: TranslateKey, data?: TranslateData | undefined): string;
+    getConfig(): PageConfig;
+    getValidator(): Validator;
+    getRuleEngine(): Engine;
+    excludeWidgets(widgetIdsOrCodes: string[]): void;
+    emitEvent(name: string, value?: any, widget?: WidgetItem<any> | undefined): Promise<void>;
+    validateAll(opts?: {
+        setDirty?: boolean | undefined;
+    } | undefined): Promise<{
+        [widgetCodeOrId: string]: WidgetError[];
+    }>;
+    setMessage({ id, locale, key, value, type, }: {
+        id: string;
+        locale: string;
+        key: string;
+        value: string;
+        type?: string | undefined;
+    }): void;
+    updatePage(page: Page): void;
+    updateWidget(widget: WidgetItem): void;
+    removeWidget(widgetId: string): void;
+}, {}, {}, {}, {
+    languages: BuilderWidgetLanguages;
+    page: Page;
+    state: PageState;
 } & {
-    [Symbol.iterator]?: IterableIterator<string> | undefined;
-    [Symbol.unscopables]?: {
-        copyWithin: boolean;
-        entries: boolean;
-        fill: boolean;
-        find: boolean;
-        findIndex: boolean;
-        keys: boolean;
-        values: boolean;
-    } | undefined;
-    keys?: IterableIterator<number> | undefined;
-    values?: IterableIterator<string> | undefined;
-    entries?: IterableIterator<[number, string]> | undefined;
-    concat?: string[] | undefined;
-    indexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    lastIndexOf?: ((searchElement: string, fromIndex?: number | undefined) => number) | undefined;
-    slice?: string[] | undefined;
-    length?: number | undefined;
-    includes?: ((searchElement: string, fromIndex?: number | undefined) => boolean) | undefined;
-    at?: ((index: number) => string | undefined) | undefined;
-    filter?: {
-        <S extends string>(predicate: (value: string, index: number, array: string[]) => value is S, thisArg?: any): S[];
-        (predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any): string[];
-    } | undefined;
-    toString?: string | undefined;
-    toLocaleString?: string | undefined;
-    pop?: string | undefined;
-    push?: number | undefined;
-    join?: string | undefined;
-    reverse?: string[] | undefined;
-    shift?: string | undefined;
-    sort?: string[] | undefined;
-    splice?: {
-        (start: number, deleteCount?: number | undefined): string[];
-        (start: number, deleteCount: number, ...items: string[]): string[];
-    } | undefined;
-    unshift?: number | undefined;
-    every?: {
-        <S_1 extends string>(predicate: (value: string, index: number, array: string[]) => value is S_1, thisArg?: any): this is S_1[];
-        (predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any): boolean;
-    } | undefined;
-    some?: ((predicate: (value: string, index: number, array: string[]) => unknown, thisArg?: any) => boolean) | undefined;
-    forEach?: ((callbackfn: (value: string, index: number, array: string[]) => void, thisArg?: any) => void) | undefined;
-    map?: (<U>(callbackfn: (value: string, index: number, array: string[]) => U, thisArg?: any) => U[]) | undefined;
-    reduce?: {
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
-        <U_1>(callbackfn: (previousValue: U_1, currentValue: string, currentIndex: number, array: string[]) => U_1, initialValue: U_1): U_1;
-    } | undefined;
-    reduceRight?: {
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
-        (callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
-        <U_2>(callbackfn: (previousValue: U_2, currentValue: string, currentIndex: number, array: string[]) => U_2, initialValue: U_2): U_2;
-    } | undefined;
-    find?: {
-        <S_2 extends string>(predicate: (this: void, value: string, index: number, obj: string[]) => value is S_2, thisArg?: any): S_2 | undefined;
-        (predicate: (value: string, index: number, obj: string[]) => unknown, thisArg?: any): string | undefined;
-    } | undefined;
-    findIndex?: ((predicate: (value: string, index: number, obj: string[]) => unknown, thisArg?: any) => number) | undefined;
-    fill?: ((value: string, start?: number | undefined, end?: number | undefined) => string[]) | undefined;
-    copyWithin?: ((target: number, start: number, end?: number | undefined) => string[]) | undefined;
-    flatMap?: (<U_3, This = undefined>(callback: (this: This, value: string, index: number, array: string[]) => U_3 | readonly U_3[], thisArg?: This | undefined) => U_3[]) | undefined;
-    flat?: unknown[] | undefined;
-}) | ({} & {
-    [x: string]: any;
-    [x: number]: any;
-})) & {}, {
-    [x: number]: string;
-} | {}, true>);
+    locale?: string | undefined;
+    onPageChange?: Function | undefined;
+    onStateChange?: Function | undefined;
+    view?: string | undefined;
+    widgetControls?: WidgetControls | undefined;
+    questionControls?: QuestionControls | undefined;
+    widgetEffectControls?: WidgetEffectControls | undefined;
+    plugins?: {
+        widgetControls: Object;
+        widgetEffectControls: Object;
+        questionControls: Object;
+    }[] | undefined;
+    config?: PageConfig | undefined;
+}, {}, true>);
 export default _default;

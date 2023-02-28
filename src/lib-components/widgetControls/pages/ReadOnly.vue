@@ -3,96 +3,171 @@
     <div
       v-for="(page, pageIndex) in sortedPages"
       :key="pageIndex"
-      class="page-wrapper"
+      :id="`pages-${widget.id}-${pageIndex}`"
     >
-      <div
-        class="page-label"
-        v-if="!widget.getParentPagesWidgets({ first: true })"
-      >
-        {{ t(page.labelKey, widget.id) }}
-      </div>
-      <div>
-        <div class="questions-wrapper">
-          <template
-            v-for="questionWidgetId in page.children.filter((c) =>
-              ['question'].includes(widgetItems[c].type)
-            )"
-          >
-            <div
-              v-if="t('__label', questionWidgetId)"
-              class="question"
-              :key="questionWidgetId"
-            >
-              <label class="question-label">{{
-                t("__label", questionWidgetId)
-              }}</label>
-              <p>{{ pageState.widgetState[questionWidgetId].response }}</p>
-            </div>
-          </template>
-        </div>
-        <pages-read-only
-          v-for="pagesWidgetId in page.children.filter((c) =>
-            ['pages'].includes(widgetItems[c].type)
-          )"
-          :key="pagesWidgetId"
-          :widget="widgetItems[pagesWidgetId]"
-          :widgets="widgets"
-          :widgetItems="widgetItems"
-          :pageState="pageState"
-          :setWidgetState="setWidgetState"
-        />
-        <!-- TODO: handle section as well -->
-      </div>
+      <h3>{{ t(page.labelKey, widget.id) }}</h3>
+      <widgets-layout
+        :widget-items="widgetItems"
+        :exclude-widget-ids="[widget.id]"
+        :only-include-widget-ids="page.children"
+        :widgets-order="page.children"
+        :for-parent="widget.id"
+      />
     </div>
   </div>
 </template>
 
-<script>
-import { defineComponent } from "@vue/composition-api";
-import WidgetsLayout from "../../WidgetsLayout.vue";
+<script lang="ts">
+import {
+  PagesPropertiesPage,
+  WidgetItem,
+  WidgetControls,
+  WidgetItems,
+  PageState,
+} from '@/entry.esm';
+import { WidgetError } from '@/lib-components/interfaces';
+import { defineComponent } from '@vue/composition-api';
+import WidgetsLayout from '../../WidgetsLayout.vue';
+import PagesWidgetItem from './PagesWidgetItem';
+
+let WidgetControlProps = {
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true,
+  },
+  widgetControls: {
+    type: Object as () => WidgetControls,
+    required: true,
+  },
+  widgetItems: {
+    type: Object as () => WidgetItems,
+    required: true,
+  },
+  pageState: {
+    type: Object as () => PageState,
+    required: true,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true,
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true,
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true,
+  },
+  onChange: Function,
+  value: {
+    type: String,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false,
+  },
+};
 
 export default defineComponent({
-  name: "PagesReadOnly",
   components: { WidgetsLayout },
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
+    ...WidgetControlProps,
+    widget: {
+      type: Object as () => PagesWidgetItem,
+      required: true,
+    },
     t: Function,
   },
   data() {
     return {
-      sortedPages: this.$props.widget.getSortedPages(),
+      sortedPages: [],
+    } as {
+      sortedPages: PagesPropertiesPage[];
     };
+  },
+  computed: {
+    currentPageIndex(): number {
+      return (
+        this.pageState?.widgetState?.[this.widget.id]?.currentPageIndex || 0
+      );
+    },
+  },
+  watch: {
+    currentPageIndex: {
+      handler() {
+        const viewedIndices = this.widget.getState('viewedIndices') || [];
+        if (!viewedIndices.includes(this.currentPageIndex)) {
+          this.widget.setState('viewedIndices', [
+            ...viewedIndices,
+            this.currentPageIndex,
+          ]);
+        }
+      },
+      immediate: true,
+    },
+    'widget.properties.pages': {
+      handler() {
+        this.sortedPages = this.widget.getSortedPages();
+      },
+      immediate: true,
+    },
   },
 });
 </script>
 
 <style scoped>
-.page-wrapper {
+.pages-menu-wrapper {
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  margin: 10px 0;
 }
-.page-wrapper > *:last-child {
-  flex: 1;
+.pages-menu-item {
+  display: inline-block;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-align: center;
 }
-.page-label {
-  padding: 0 10px 0 0;
+.pages-menu-item.unopened {
+  opacity: 0.3;
+  cursor: default;
 }
-.question-label {
-  font-weight: bold;
+.pages-menu-item.active {
+  border-bottom: 3px solid #03a9f4;
 }
-.questions-wrapper {
+
+.pages-menu-item.errors {
+  border-color: red;
+}
+
+/* .pages-content-item {
+} */
+
+.back-forward-wrapper {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  justify-content: space-between;
 }
-.question {
-  width: 33%;
+
+.back-forward-button {
+  padding: 10px 20px;
+  margin: 10px;
+  border: 1px solid transparent;
+  background-color: #03a9f4;
+  color: #fff;
+  cursor: pointer;
+}
+.back-forward-button.errors {
+  background-color: #f00;
+  color: #fff;
+  opacity: 0.2;
+  cursor: default;
+}
+.back-forward-button.submitting {
+  opacity: 0.2;
 }
 </style>

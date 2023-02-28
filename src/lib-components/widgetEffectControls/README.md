@@ -38,7 +38,7 @@ interface RevealEffectProperties {
   // specifies the opacity they have prior to being revealed (null = skip opacity)
   opacity?: number | null;
   // direction widget comes from when revealed
-  origin?: "top" | "bottom" | "left" | "right";
+  origin?: 'top' | 'bottom' | 'left' | 'right';
   // rotation widget have prior to being revealed
   rotate?: { x: number; y: number; z: number };
   // scale widget have prior to being revealed

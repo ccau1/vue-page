@@ -5,20 +5,43 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import { QuestionControlProps } from "../index";
+import { WidgetItem, WidgetError } from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
 
-export default defineComponent<QuestionControlProps>({
+const QuestionControlProps = {
+  properties: {
+    type: Object,
+    required: true as const,
+  },
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true as const,
+  },
+  t: {
+    type: Function,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
+
+export default defineComponent({
   props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function,
+    ...QuestionControlProps,
+    value: Number,
   },
 });
 </script>

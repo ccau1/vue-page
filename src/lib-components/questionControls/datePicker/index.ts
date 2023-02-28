@@ -1,6 +1,6 @@
-import QuestionControl from "../QuestionControl";
-import Display from "./Display.vue";
-import ReadOnly from "./ReadOnly.vue";
+import Display from './Display.vue';
+import QuestionControl from '../QuestionControl';
+import ReadOnly from './ReadOnly.vue';
 
 export interface DatePickerProperties {
   // string can be a date string or one of the following:
@@ -13,8 +13,6 @@ export interface DatePickerProperties {
   minDate: string | Date;
   maxDate: string | Date;
 }
-
-export * from "./utils";
 
 export default new QuestionControl<DatePickerProperties>({
   display: Display,

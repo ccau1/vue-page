@@ -52,7 +52,7 @@ export declare class PageState {
     getWidgetCodeById(widgetId: string): string;
     onUpdate(): void;
     getWidgetState(widgetId: string, key?: string): any;
-    setWidgetState(widgetId: string, key: string, value?: any): void;
+    setWidgetState(widgetId: string, key: string | Object, value?: any): void;
     clearWidgetState(widgetId: string, key: string): void;
     registerWidgetCode(widgetCode: string, widgetId: string): void;
     unregisterWidgetCode(widgetCode: string): void;

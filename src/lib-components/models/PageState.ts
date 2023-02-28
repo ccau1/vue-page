@@ -94,13 +94,20 @@ export class PageState {
       : this._widgetState[widgetId];
   }
 
-  setWidgetState(widgetId: string, key: string, value?: any) {
+  setWidgetState(widgetId: string, key: string | Object, value?: any) {
     if (!this._widgetState[widgetId]) this._widgetState[widgetId] = {};
 
-    if (value === undefined) {
-      delete this._widgetState[widgetId]?.[key];
-    } else {
-      this._widgetState[widgetId][key] = value;
+    if (typeof key === 'string') {
+      if (value === undefined) {
+        delete this._widgetState[widgetId]?.[key];
+      } else {
+        this._widgetState[widgetId][key] = value;
+      }
+    } else if (typeof key === 'object') {
+      this._widgetState[widgetId] = {
+        ...this._widgetState[widgetId],
+        ...key,
+      };
     }
 
     // FIXME: this is not updating parent in App.vue
@@ -113,7 +120,7 @@ export class PageState {
   registerWidgetCode(widgetCode: string, widgetId: string) {
     this._widgetCodeToIdMap[widgetCode] = widgetId;
     this._widgetIdToCodeMap[widgetId] = widgetCode;
-    this.setWidgetState(widgetId, "code", widgetCode);
+    this.setWidgetState(widgetId, 'code', widgetCode);
   }
 
   unregisterWidgetCode(widgetCode: string) {

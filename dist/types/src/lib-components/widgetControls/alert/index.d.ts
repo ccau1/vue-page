@@ -1,6 +1,6 @@
-import { WidgetControl } from "../..";
+import { WidgetControl } from '../..';
 export interface AlertProperties {
-    type: "default" | "info" | "success" | "danger" | "warning" | "custom";
+    type: 'default' | 'info' | 'success' | 'danger' | 'warning' | 'custom';
     customColor?: string;
     showCloseBtn?: boolean;
 }

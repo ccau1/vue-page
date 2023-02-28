@@ -10,23 +10,23 @@
 </template>
 
 <script lang="ts">
-import { WidgetEffect, WidgetItem } from "@/entry.esm";
-import { defineComponent } from "@vue/composition-api";
+import { WidgetEffect, WidgetItem } from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   props: {
     widgetItems: Object,
     selectedWidgetItem: Object,
   },
-  inject: ["widgetControls"],
+  inject: ['widgetControls'],
   methods: {
     conditionValue(value: any) {
       if (Array.isArray(value)) {
-        return value.join(", ");
+        return value.join(', ');
       } else if (value === null) {
-        return "null";
+        return 'null';
       } else if (value === undefined) {
-        return "undefined";
+        return 'undefined';
       } else {
         return value;
       }

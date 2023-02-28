@@ -1,4 +1,4 @@
-import { VueConstructor } from "vue";
+import { VueConstructor } from 'vue';
 
 export default class PanelSection {
   protected _form: VueConstructor;

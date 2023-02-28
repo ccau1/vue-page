@@ -7,13 +7,13 @@
         :name="widget.id"
         v-on:click="onToggle"
       />
-      {{ t("__checkboxLabel", widget.id) }}
+      {{ t('__checkboxLabel', widget.id) }}
     </label>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   props: {

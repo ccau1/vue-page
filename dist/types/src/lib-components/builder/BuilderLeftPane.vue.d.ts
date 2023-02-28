@@ -1,4 +1,4 @@
-import Pane from "./components/Pane.vue";
+import Pane from './components/Pane.vue';
 import { WidgetItem } from "../../entry.esm";
 declare const _default: import("vue").ComponentOptions<Pane, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & {
     panelSections: {

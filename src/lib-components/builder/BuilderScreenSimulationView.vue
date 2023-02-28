@@ -26,24 +26,23 @@
         Full
       </option>
     </select>
-    <div class="device-wrapper">
-      <div class="device-inner-wrapper" :style="deviceStyles">
-        <div class="device-background">
-          <slot />
-        </div>
+    <div class="device-wrapper" :style="{ height: deviceStyles.height }">
+      <div class="device-background" :style="deviceStyles"></div>
+      <div class="device-inner-wrapper" :style="{ width: deviceStyles.width }">
+        <slot />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   data() {
     return {
-      width: "100%",
-      height: "100%",
+      width: '100%',
+      height: '100%',
     };
   },
   computed: {
@@ -56,7 +55,7 @@ export default defineComponent({
   },
   methods: {
     setWidthHeight(ev: Event) {
-      const [w, h] = (ev.target as HTMLSelectElement).value.split("_");
+      const [w, h] = (ev.target as HTMLSelectElement).value.split('_');
       this.$data.width = w;
       this.$data.height = h;
     },
@@ -80,21 +79,24 @@ export default defineComponent({
   height: 100%;
   width: 100%;
   padding: 30px 30px 30px 30px;
+  overflow-y: auto;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   overflow: auto;
 }
 .device-inner-wrapper {
   min-height: 100px;
-  background-color: #fff;
+  height: 100%;
   border-radius: 8px;
   position: relative;
 }
 .device-background {
   background-color: #fff;
+  border-radius: 8px;
+  margin: -30px auto 0 auto;
+  position: absolute;
 }
 .simulation-device-select {
   padding: 5px 10px;

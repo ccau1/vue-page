@@ -1,6 +1,6 @@
 <template>
   <div class="main-wrapper">
-    <div class="pane-wrapper">
+    <div class="main-pane-wrapper">
       <builder-left-pane :widgetItems="widgetItems">
         <builder-right-pane :widgetItems="widgetItems">
           <builder-screen-simulation-view>
@@ -17,66 +17,42 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import { widgets as sysWidgets } from "../widgetControls";
-import { widgetEffects as sysWidgetEffectControls } from "../widgetEffectControls";
-import { questionControls as sysQuestionControls } from "../questionControls";
-import { shape, arrayOf, string, bool, instanceOf } from "vue-types";
-import { Page, Widget } from "..";
-import { PageState } from "../models/PageState";
-import BuilderWidgetsLayout from "./BuilderWidgetsLayout.vue";
-import { WidgetItem } from "../models/WidgetItem";
-import { BuilderWidgetLanguages, WidgetItems } from "@/entry.esm";
-import { cachedMerge } from "../utils";
-import BuilderRightPane from "./BuilderRightPane.vue";
-import BuilderLeftPane from "./BuilderLeftPane.vue";
-import BuilderBottomPane from "./BuilderBottomPane.vue";
-import { PageEventListener } from "../models/PageEventListener";
-import BuilderScreenSimulationView from "./BuilderScreenSimulationView.vue";
+import { defineComponent } from '@vue/composition-api';
+import { widgets as sysWidgets } from '../widgetControls';
+import { widgetEffects as sysWidgetEffectControls } from '../widgetEffectControls';
+import { questionControls as sysQuestionControls } from '../questionControls';
+import { Page, Widget } from '..';
+import { PageState } from '../models/PageState';
+import BuilderWidgetsLayout from './BuilderWidgetsLayout.vue';
+import { WidgetItem } from '../models/WidgetItem';
+import {
+  BuilderWidgetLanguages,
+  Event,
+  flattenTranslateKey,
+  PageConfig,
+  PagesProperties,
+  WidgetItems,
+} from '@/entry.esm';
+import {
+  TranslateKey,
+  TranslateData,
+  WidgetError,
+  WidgetControls,
+  PageConfigValidations,
+} from '../interfaces';
+import { cachedMerge } from '../utils';
+import BuilderRightPane from './BuilderRightPane.vue';
+import BuilderLeftPane from './BuilderLeftPane.vue';
+import BuilderBottomPane from './BuilderBottomPane.vue';
+import { PageEventListener } from '../models/PageEventListener';
+import BuilderScreenSimulationView from './BuilderScreenSimulationView.vue';
+import { QuestionControls } from '../questionControls/QuestionControl';
+import { WidgetEffectControls } from '../models';
+import { Engine } from 'json-rules-engine';
+import validationRules from '../validationRules';
+import Validator from '../models/Validator';
 
-interface VuePageProps {
-  languages: BuilderWidgetLanguages;
-  locale: string;
-  page: Page;
-  onPageChange: (newPage: Page) => void;
-  state: PageState;
-  onStateChange: (newState: PageState) => void;
-  widgetControls?: WidgetItems;
-  questionControls?: Object;
-  widgetEffectControls?: Object;
-  view?: "display" | "readOnly";
-  plugins?: Array<{
-    widgetControls?: Object;
-    questionControls?: Object;
-    widgetEffectControls?: Object;
-  }>;
-  configs: {
-    widgets: {
-      disableInternalControls: boolean;
-      blacklist: string[];
-      whitelist: string[];
-      filters: { [key: string]: any };
-    };
-    questionControls: {
-      disableInternalControls: boolean;
-      blacklist: string[];
-      whitelist: string[];
-      filters: { [key: string]: any };
-    };
-    widgetEffectControls: {
-      disableInternalControls: boolean;
-      blacklist: string[];
-      whitelist: string[];
-      filters: { [key: string]: any };
-    };
-  };
-}
-
-interface VuePageData {
-  widgetItems: WidgetItems;
-}
-
-export default defineComponent<VuePageProps, any, VuePageData>({
+export default defineComponent({
   components: {
     BuilderWidgetsLayout,
     BuilderRightPane,
@@ -86,42 +62,32 @@ export default defineComponent<VuePageProps, any, VuePageData>({
   },
   // components: { DynamicPageLayout },
   props: {
-    languages: Object,
+    languages: {
+      type: Object as () => BuilderWidgetLanguages,
+      required: true,
+    },
     locale: String,
-    page: Object as () => Page,
-    // eslint-disable-next-line no-unused-vars
-    onPageChange: Function, // func<(page: Page) => void>().isRequired,
-    state: instanceOf(PageState).isRequired,
-    // eslint-disable-next-line no-unused-vars
-    onStateChange: Function, // func<(state: PageState) => void>().isRequired,
-    widgetControls: Object, // shape(QuestionControl),
-    questionControls: Object,
-    plugins: arrayOf(
-      shape({
-        widgetControls: Object,
-        widgetEffectControls: Object,
-        questionControls: Object,
-      })
-    ),
+    page: {
+      type: Object as () => Page,
+      required: true,
+    },
+    onPageChange: Function,
+    state: {
+      type: Object as () => PageState,
+      required: true,
+    },
+    onStateChange: Function,
+    widgetControls: Object as () => WidgetControls,
+    questionControls: Object as () => QuestionControls,
+    widgetEffectControls: Object as () => WidgetEffectControls,
+    plugins: Array as () => Array<{
+      widgetControls: Object;
+      widgetEffectControls: Object;
+      questionControls: Object;
+    }>,
     // display | page | readOnly
     view: String,
-    configs: shape({
-      widgets: shape({
-        // whether or not to use controls
-        disableInternalControls: bool(),
-        blacklist: arrayOf(string()),
-        whitelist: arrayOf(string()),
-        filters: Object,
-      }),
-      questionControls: shape({
-        // whether or not to use controls
-        //
-        disableInternalControls: bool(),
-        blacklist: arrayOf(string()),
-        whitelist: arrayOf(string()),
-        filters: Object,
-      }),
-    }),
+    config: Object as () => PageConfig,
   },
   data() {
     return {
@@ -135,43 +101,62 @@ export default defineComponent<VuePageProps, any, VuePageData>({
     };
   },
   computed: {
-    widgetItemsArr() {
-      return this.$props.page.widgets;
+    widgetItemsArr(): Widget[] {
+      return this.page.widgets;
     },
-    combWidgetControls() {
+    combWidgetControls(): WidgetControls {
       return cachedMerge(
-        "widgetControls",
-        this.$props.configs?.widgets.disableInternalControls ? {} : sysWidgets,
-        ...(this.$props.plugins || [])?.map((p) => p.widgetControls),
-        this.$props.widgetControls
+        'widgetControls',
+        this.config?.widgetControls?.disableInternalControls ? {} : sysWidgets,
+        ...(this.plugins || [])?.map((p) => p.widgetControls),
+        this.widgetControls
       );
     },
-    combWidgetEffectControls() {
+    combWidgetEffectControls(): WidgetEffectControls {
       return cachedMerge(
-        "widgetEffectControls",
-        this.$props.configs?.widgetEffectControls.disableInternalControls
+        'widgetEffectControls',
+        this.config?.widgetEffectControls?.disableInternalControls
           ? {}
           : sysWidgetEffectControls,
-        ...(this.$props.plugins || [])?.map((p) => p.widgetEffectControls),
-        this.$props.widgetEffectControls
+        ...(this.plugins || [])?.map((p) => p.widgetEffectControls),
+        this.widgetEffectControls
       );
     },
-    combQuestionControls() {
+    combQuestionControls(): QuestionControls {
       return cachedMerge(
-        "questionControls",
-        this.$props.configs?.questionControls.disableInternalControls
+        'questionControls',
+        this.config?.questionControls?.disableInternalControls
           ? {}
           : sysQuestionControls,
-        ...(this.$props.plugins || [])?.map((p) => p.questionControls),
-        this.$props.questionControls
+        ...(this.plugins || [])?.map((p) => p.questionControls),
+        this.questionControls
       );
     },
-    pageState() {
-      return this.$props.state;
+    validations(): PageConfigValidations {
+      return {
+        rules: {
+          ...validationRules,
+          ...this.config?.validations?.rules,
+        },
+        facts: {
+          ...this.config?.validations?.facts,
+        },
+      };
+    },
+    pageState(): PageState {
+      return this.state;
     },
   },
   watch: {
-    "page.widgets": {
+    languages: {
+      handler() {
+        (this.pageEventListener as PageEventListener).emit(
+          Event.LANGUAGE_CHANGED,
+          {}
+        );
+      },
+    },
+    'page.widgets': {
       handler(newPageWidgetArr) {
         this.$data.widgetItems = newPageWidgetArr.reduce(
           (obj: { [widgetId: string]: WidgetItem }, widget: Widget) => {
@@ -182,21 +167,32 @@ export default defineComponent<VuePageProps, any, VuePageData>({
               pageEventListener: this.pageEventListener,
               emitEvent: this.emitEvent,
               removeWidget: this.removeWidget,
-              t: (key: string, data?: { [key: string]: any }) =>
-                this.t(`${widget.id}.${key}`, data),
-              getState: () => this.$props.state,
+              t: (key: string | string[], data?: { [key: string]: any }) =>
+                this.t([widget.id, key], data),
+              getState: () => this.state,
               setState: (newPageState: PageState) => {
-                this.$emit("onStateChange", newPageState);
+                this.$emit('onStateChange', newPageState);
               },
               onUpdate: (newWidget: WidgetItem) => {
-                this.$props.onPageChange?.({
-                  ...this.$props.page,
+                this._onPageChange({
+                  ...this.page,
                   widgets: Object.values({
                     ...this.$data.widgetItems,
-                    [newWidget.id]: newWidget,
+                    // clone widget object to trigger change
+                    [newWidget.id]: Object.assign(
+                      Object.create(Object.getPrototypeOf(newWidget)),
+                      newWidget
+                    ),
                   }),
                 });
               },
+              getQuestionControls: () => this.combQuestionControls,
+              getConfig: () => ({
+                ...this.getConfig(),
+                validations: this.validations,
+              }),
+              getWidgetMeta: () => this.getConfig()?.meta?.[widget.type],
+              getValidator: this.getValidator,
             });
             return obj;
           },
@@ -205,21 +201,49 @@ export default defineComponent<VuePageProps, any, VuePageData>({
         Object.values(this.$data.widgetItems).forEach((widgetItem) => {
           (widgetItem as WidgetItem).setWidgetItems(this.$data.widgetItems);
         });
+        if (this.config?.widgetsToExclude?.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
       },
       immediate: true,
       deep: true,
     },
+    'config.validations.facts': {
+      handler(validations?: PageConfigValidations) {
+        const ruleEngine = new Engine(undefined, { allowUndefinedFacts: true });
+        if (validations?.facts && Object.keys(validations?.facts).length) {
+          Object.keys(validations.facts).forEach((factKey) => {
+            ruleEngine.addFact(factKey, validations.facts?.[factKey]);
+          });
+        }
+
+        this.ruleEngine = ruleEngine;
+      },
+      deep: true,
+    },
+    'config.widgetsToExclude': {
+      handler() {
+        if (this.config?.widgetsToExclude?.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
+      },
+      deep: true,
+    },
   },
   methods: {
-    t(key: string | string[], data?: { [key: string]: any }) {
-      const lang = (typeof key === "string" ? key.split(".") : key).reduce<
+    _onPageChange(newPage: Page): void {
+      this.onPageChange?.(newPage);
+      this.$emit('onPageChange', newPage);
+    },
+    t(key: TranslateKey, data?: TranslateData): string {
+      const lang = flattenTranslateKey(key).reduce<
         { [key: string]: any } | string
       >((obj, g, gIndex) => {
-        if (typeof obj === "string") return obj;
+        if (typeof obj === 'string') return obj;
 
         return gIndex > 0
           ? obj?.[g]
-          : obj?.[g][this.$props.locale].message || {};
+          : obj?.[g][this.locale || ''].message || {};
       }, this.languages);
 
       return lang?.replace(
@@ -227,7 +251,54 @@ export default defineComponent<VuePageProps, any, VuePageData>({
         (_orig: string, _outer: string, inner: string) => (data || {})[inner]
       );
     },
-    async emitEvent(name: string, value?: any, widget?: WidgetItem) {
+    getConfig(): PageConfig {
+      return this.config || {};
+    },
+    getValidator(): Validator {
+      const validator = new Validator(this.validations);
+
+      return validator;
+    },
+    getRuleEngine(): Engine {
+      return this.getValidator().getRuleEngine();
+    },
+    excludeWidgets(widgetIdsOrCodes: string[]) {
+      // map and ensure a list of ids (config.widgetsToExclude can be code or id)
+      const excludedWidgetIds = Object.values(this.widgetItems)
+        .filter(
+          (w) =>
+            widgetIdsOrCodes.includes(w.id) ||
+            widgetIdsOrCodes.includes(w.code || '')
+        )
+        .map((w) => w.id);
+      // go through widgets and remove all widgets
+      excludedWidgetIds.forEach((widgetId) => {
+        delete this.widgetItems[widgetId];
+      });
+      // go through all pages and remove all pages that only holds excluded widgets
+      Object.values(this.widgetItems).forEach((widget) => {
+        if (widget.type === 'pages') {
+          const pageIdxToRemove: number[] = [];
+          (widget.properties as PagesProperties).pages.forEach(
+            (page, pageIdx) => {
+              if (page.children.every((c) => excludedWidgetIds.includes(c))) {
+                pageIdxToRemove.push(pageIdx);
+              }
+            }
+          );
+          if (pageIdxToRemove.length) {
+            pageIdxToRemove.reverse().forEach((idx) => {
+              (widget.properties as PagesProperties).pages.splice(idx, 1);
+            });
+          }
+        }
+      });
+    },
+    async emitEvent(
+      name: string,
+      value?: any,
+      widget?: WidgetItem
+    ): Promise<void> {
       if (Array.isArray(this.$listeners.event)) {
         await Promise.all(
           this.$listeners.event.map((evFn) =>
@@ -250,12 +321,32 @@ export default defineComponent<VuePageProps, any, VuePageData>({
         });
       }
     },
+    async validateAll(opts?: {
+      setDirty?: boolean;
+    }): Promise<{ [widgetCodeOrId: string]: WidgetError[] }> {
+      const validationResults = await Object.values(this.widgetItems).reduce<
+        Promise<{ [widgetCodeOrId: string]: WidgetError[] }>
+      >(async (obj, wi) => {
+        const _obj = await obj;
+        const result = await wi.runValidations({
+          setDirty: opts?.setDirty || false,
+        });
+        if (!result) {
+          return _obj;
+        }
+        _obj[wi.code || wi.id] = result;
+
+        return _obj;
+      }, Promise.resolve({}));
+
+      return validationResults;
+    },
     setMessage({
       id,
       locale,
       key,
       value,
-      type = "pageItem",
+      type = 'pageItem',
     }: {
       id: string;
       locale: string;
@@ -263,11 +354,11 @@ export default defineComponent<VuePageProps, any, VuePageData>({
       value: string;
       type?: string;
     }) {
-      const newLanguages = { ...this.$props.languages };
+      const newLanguages = { ...this.languages };
       if (!newLanguages[id]) newLanguages[id] = {};
       if (!newLanguages[id][locale])
         newLanguages[id][locale] = {
-          id: "",
+          id: '',
           refId: id,
           type,
           version: 1,
@@ -276,21 +367,21 @@ export default defineComponent<VuePageProps, any, VuePageData>({
         };
 
       newLanguages[id][locale].message[key] = value;
-      this.$emit("onLanguageChange", newLanguages);
+      this.$emit('onLanguageChange', newLanguages);
     },
-    updatePage(page: Page) {
-      this.$emit("onPageChange", page);
+    updatePage(page: Page): void {
+      this.$emit('onPageChange', page);
     },
-    updateWidget(widget: WidgetItem) {
+    updateWidget(widget: WidgetItem): void {
       this.$data.widgetItems[widget.id] = widget;
       this.updatePage({
-        ...this.$props.page,
+        ...this.page,
         widgets: Object.values(this.$data.widgetItems).map((m) => m.widget),
       });
     },
-    removeWidget(widgetId: string) {
+    removeWidget(widgetId: string): void {
       this.updatePage({
-        ...this.$props.page,
+        ...this.page,
         widgets: Object.keys(this.$data.widgetItems).reduce<Widget[]>(
           (arr, _widgetId) => {
             if (_widgetId === widgetId) return arr;
@@ -300,37 +391,43 @@ export default defineComponent<VuePageProps, any, VuePageData>({
         ),
       });
       // remove languages
-      const newLanguages = { ...this.$props.languages };
+      const newLanguages = { ...this.languages };
       delete newLanguages[widgetId];
-      this.$emit("onLanguageChange", newLanguages);
+      this.$emit('onLanguageChange', newLanguages);
     },
   },
   provide() {
     return {
-      getView: () => this.$props.view,
-      t: (this as any).t,
+      getConfig: () => this.configs,
+      getView: () => this.view,
+      t: this.t,
       pageEventListener: this.pageEventListener,
       emitEvent: this.emitEvent,
-      getLocale: () => this.$props.locale,
-      languages: this.$props.languages,
-      setMessage: (this as any).setMessage,
-      updateWidget: (this as any).updateWidget,
-      removeWidget: (this as any).removeWidget,
-      getPageState: () => this.$props.state,
+      getLocale: () => this.locale,
+      languages: this.languages,
+      setMessage: this.setMessage,
+      updateWidget: this.updateWidget,
+      removeWidget: this.removeWidget,
+      getPageState: () => this.state,
       setPageState: (newPageState: PageState) => {
-        this.$emit("onStateChange", newPageState);
+        this.$emit('onStateChange', newPageState);
       },
       widgetEffectControls: this.combWidgetEffectControls,
       widgetControls: this.combWidgetControls,
       questionControls: this.combQuestionControls,
+      validateAll: this.validateAll,
+      validations: this.validations,
+      getRuleEngine: this.getRuleEngine,
     };
   },
+  expose: ['validateAll'],
 });
 </script>
 
 <style scoped>
-.pane-wrapper {
+.main-pane-wrapper {
   flex: 1;
+  overflow: auto;
 }
 .main-wrapper {
   font-family: Arial, Helvetica, sans-serif;

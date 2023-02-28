@@ -24,6 +24,16 @@ function _objectSpread2(target) {
   return target;
 }
 
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, _typeof(obj);
+}
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -287,7 +297,133 @@ function _nonIterableSpread() {
 
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}/*! *****************************************************************************
+}
+
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+
+  if (!it) {
+    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+      if (it) o = it;
+      var i = 0;
+
+      var F = function () {};
+
+      return {
+        s: F,
+        n: function () {
+          if (i >= o.length) return {
+            done: true
+          };
+          return {
+            done: false,
+            value: o[i++]
+          };
+        },
+        e: function (e) {
+          throw e;
+        },
+        f: F
+      };
+    }
+
+    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  var normalCompletion = true,
+      didErr = false,
+      err;
+  return {
+    s: function () {
+      it = it.call(o);
+    },
+    n: function () {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function (e) {
+      didErr = true;
+      err = e;
+    },
+    f: function () {
+      try {
+        if (!normalCompletion && it.return != null) it.return();
+      } finally {
+        if (didErr) throw err;
+      }
+    }
+  };
+}var QuestionControlProps$b = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var WidgetControlProps$j = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};/*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -1338,27 +1474,113 @@ function defineComponent(options) {
 // auto install when using CDN
 if (typeof window !== 'undefined' && window.Vue) {
     window.Vue.use(Plugin);
-}var script$1b = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+}const rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
+
+let poolPtr = rnds8Pool.length;
+function rng() {
+  if (poolPtr > rnds8Pool.length - 16) {
+    crypto__default["default"].randomFillSync(rnds8Pool);
+    poolPtr = 0;
+  }
+
+  return rnds8Pool.slice(poolPtr, poolPtr += 16);
+}var REGEX = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;function validate(uuid) {
+  return typeof uuid === 'string' && REGEX.test(uuid);
+}/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+
+const byteToHex = [];
+
+for (let i = 0; i < 256; ++i) {
+  byteToHex.push((i + 0x100).toString(16).substr(1));
+}
+
+function stringify$1(arr, offset = 0) {
+  // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  // of the following:
+  // - One or more input array values don't map to a hex octet (leading to
+  // "undefined" in the uuid)
+  // - Invalid input values for the RFC `version` or `variant` fields
+
+  if (!validate(uuid)) {
+    throw TypeError('Stringified UUID is invalid');
+  }
+
+  return uuid;
+}function v4(options, buf, offset) {
+  options = options || {};
+  const rnds = options.random || (options.rng || rng)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+  rnds[6] = rnds[6] & 0x0f | 0x40;
+  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+  if (buf) {
+    offset = offset || 0;
+
+    for (let i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
+    }
+
+    return buf;
+  }
+
+  return stringify$1(rnds);
+}var WidgetControlProps$i = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["getLocale", "setMessage"],
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$1b = defineComponent({
+  props: WidgetControlProps$i,
+  inject: ['getLocale', 'setMessage'],
   mounted: function mounted() {
     var _this = this;
 
     this.$nextTick(function () {
-      _this.$refs.titleInput.style.height = "";
-      _this.$refs.titleInput.style.height = _this.$refs.titleInput.scrollHeight + "px";
-      _this.$refs.textInput.style.height = "";
-      _this.$refs.textInput.style.height = _this.$refs.textInput.scrollHeight + "px";
+      _this.$refs.titleInput.style.height = '';
+      _this.$refs.titleInput.style.height = _this.$refs.titleInput.scrollHeight + 'px';
+      _this.$refs.textInput.style.height = '';
+      _this.$refs.textInput.style.height = _this.$refs.textInput.scrollHeight + 'px';
     });
   },
   data: function data() {
@@ -1380,7 +1602,7 @@ if (typeof window !== 'undefined' && window.Vue) {
         id: this.$props.widget.id,
         locale: this.getLocale(),
         key: "__".concat(name),
-        value: text.replaceAll(/\n|\r/g, "")
+        value: text.replaceAll(/\n|\r/g, '')
       });
     }
   },
@@ -1388,10 +1610,10 @@ if (typeof window !== 'undefined' && window.Vue) {
     alertStyles: function alertStyles() {
       var _this$widget, _this$widget2;
 
-      if (((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.type) !== "custom" || (_this$widget2 = this.widget) !== null && _this$widget2 !== void 0 && _this$widget2.properties.customColor) return {};
+      if (((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.type) !== 'custom' || (_this$widget2 = this.widget) !== null && _this$widget2 !== void 0 && _this$widget2.properties.customColor) return {};
       return _objectSpread2({
         backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent"
+        borderColor: this.widget.properties.customBorderColor || 'transparent'
       }, this.widget.properties.customTextColor ? {
         color: this.widget.properties.customTextColor
       } : {});
@@ -1527,7 +1749,7 @@ var __vue_render__$1b = function __vue_render__() {
     staticClass: "alert",
     class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
     style: _vm.alertStyles
-  }, [_vm._ssrNode("<h3 class=\"title\" data-v-743050cb><textarea oninput=\"this.style.height = \"\";this.style.height = this.scrollHeight + \"px\"\"" + _vm._ssrAttr("value", _vm.t('__title', _vm.widget.id)) + " class=\"text-input\" data-v-743050cb></textarea></h3> <p data-v-743050cb><textarea oninput=\"this.style.height = \"\";this.style.height = this.scrollHeight + \"px\"\"" + _vm._ssrAttr("value", _vm.t('__text', _vm.widget.id)) + " class=\"text-input\" data-v-743050cb></textarea></p> " + (_vm.widget.properties.showCloseBtn ? "<a class=\"close-button\" data-v-743050cb>x</a>" : "<!---->"))]) : _vm._e();
+  }, [_vm._ssrNode("<h3 class=\"title\" data-v-1c7a8776><textarea oninput=\"this.style.height = \"\";this.style.height = this.scrollHeight + \"px\"\"" + _vm._ssrAttr("value", _vm.t('__title', _vm.widget.id)) + " class=\"text-input\" data-v-1c7a8776></textarea></h3> <p data-v-1c7a8776><textarea oninput=\"this.style.height = \"\";this.style.height = this.scrollHeight + \"px\"\"" + _vm._ssrAttr("value", _vm.t('__text', _vm.widget.id)) + " class=\"text-input\" data-v-1c7a8776></textarea></p> " + (_vm.widget.properties.showCloseBtn ? "<a class=\"close-button\" data-v-1c7a8776>x</a>" : "<!---->"))]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$1b = [];
@@ -1535,8 +1757,8 @@ var __vue_staticRenderFns__$1b = [];
 
 var __vue_inject_styles__$1b = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-743050cb_0", {
-    source: ".alert[data-v-743050cb]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-743050cb]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-743050cb]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-743050cb]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-743050cb]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-743050cb]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-743050cb]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}.text-input[data-v-743050cb]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
+  inject("data-v-1c7a8776_0", {
+    source: ".alert[data-v-1c7a8776]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-1c7a8776]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-1c7a8776]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-1c7a8776]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-1c7a8776]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-1c7a8776]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-1c7a8776]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}.text-input[data-v-1c7a8776]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
     map: undefined,
     media: undefined
   });
@@ -1544,10 +1766,10 @@ var __vue_inject_styles__$1b = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$1b = "data-v-743050cb";
+var __vue_scope_id__$1b = "data-v-1c7a8776";
 /* module identifier */
 
-var __vue_module_identifier__$1b = "data-v-743050cb";
+var __vue_module_identifier__$1b = "data-v-1c7a8776";
 /* functional template */
 
 var __vue_is_functional_template__$1b = false;
@@ -1558,37 +1780,68 @@ var __vue_component__$1d = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$1b
 }, __vue_inject_styles__$1b, __vue_script__$1b, __vue_scope_id__$1b, __vue_is_functional_template__$1b, __vue_module_identifier__$1b, false, undefined, createInjectorSSR, undefined);
 
-var Builder$8 = __vue_component__$1d;var script$1a = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+var Builder$8 = __vue_component__$1d;var WidgetControlProps$h = {
+  widget: {
+    type: Object,
+    required: true
   },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$1a = defineComponent({
+  props: _objectSpread2({}, WidgetControlProps$h),
   data: function data() {
     return {
       isOpen: true
     };
   },
-  methods: {
-    onCloseAlert: function onCloseAlert() {
-      this.$data.isOpen = false;
-    }
-  },
   computed: {
     alertStyles: function alertStyles() {
-      if (this.widget.properties.type !== "custom" || this.widget.properties.customColor) return {};
+      if (this.widget.properties.type !== 'custom' || this.widget.properties.customColor) return {};
       return _objectSpread2({
         backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent"
+        borderColor: this.widget.properties.customBorderColor || 'transparent'
       }, this.widget.properties.customTextColor ? {
         color: this.widget.properties.customTextColor
       } : {});
+    }
+  },
+  methods: {
+    onCloseAlert: function onCloseAlert() {
+      this.$data.isOpen = false;
     }
   }
 });/* script */
@@ -1608,7 +1861,7 @@ var __vue_render__$1a = function __vue_render__() {
     staticClass: "alert",
     class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
     style: _vm.alertStyles
-  }, [_vm._ssrNode("<h3 class=\"title\" data-v-54aa1783>" + _vm._ssrEscape(_vm._s(_vm.t("__title"))) + "</h3> <div data-v-54aa1783>" + _vm._s(_vm.t('__text')) + "</div> " + (_vm.widget.properties.showCloseBtn ? "<a class=\"close-button\" data-v-54aa1783>x</a>" : "<!---->"))]) : _vm._e();
+  }, [_vm._ssrNode("<h3 class=\"title\" data-v-6da03338>" + _vm._ssrEscape("\n    " + _vm._s(_vm.t('__title')) + "\n  ") + "</h3> <div data-v-6da03338>" + _vm._s(_vm.t('__text')) + "</div> " + (_vm.widget.properties.showCloseBtn ? "<a class=\"close-button\" data-v-6da03338>x</a>" : "<!---->"))]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$1a = [];
@@ -1616,8 +1869,8 @@ var __vue_staticRenderFns__$1a = [];
 
 var __vue_inject_styles__$1a = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-54aa1783_0", {
-    source: ".alert[data-v-54aa1783]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-54aa1783]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-54aa1783]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-54aa1783]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-54aa1783]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-54aa1783]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-54aa1783]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}",
+  inject("data-v-6da03338_0", {
+    source: ".alert[data-v-6da03338]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-6da03338]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-6da03338]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-6da03338]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-6da03338]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-6da03338]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-6da03338]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}",
     map: undefined,
     media: undefined
   });
@@ -1625,10 +1878,10 @@ var __vue_inject_styles__$1a = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$1a = "data-v-54aa1783";
+var __vue_scope_id__$1a = "data-v-6da03338";
 /* module identifier */
 
-var __vue_module_identifier__$1a = "data-v-54aa1783";
+var __vue_module_identifier__$1a = "data-v-6da03338";
 /* functional template */
 
 var __vue_is_functional_template__$1a = false;
@@ -1639,26 +1892,70 @@ var __vue_component__$1c = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$1a
 }, __vue_inject_styles__$1a, __vue_script__$1a, __vue_scope_id__$1a, __vue_is_functional_template__$1a, __vue_module_identifier__$1a, false, undefined, createInjectorSSR, undefined);
 
-var Display$e = __vue_component__$1c;var script$19 = defineComponent({
+var Display$e = __vue_component__$1c;var WidgetControlProps$g = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$19 = defineComponent({
+  props: WidgetControlProps$g,
   data: function data() {
     return {
       isOpen: true
     };
   },
+  computed: {
+    alertStyles: function alertStyles() {
+      var _this$widget, _this$widget2, _this$widget3, _this$widget4, _this$widget5, _this$widget6;
+
+      if (((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.type) !== 'custom' || (_this$widget2 = this.widget) !== null && _this$widget2 !== void 0 && _this$widget2.properties.customColor) return {};
+      return _objectSpread2({
+        backgroundColor: (_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.properties.customBackgroundColor,
+        borderColor: ((_this$widget4 = this.widget) === null || _this$widget4 === void 0 ? void 0 : _this$widget4.properties.customBorderColor) || 'transparent'
+      }, (_this$widget5 = this.widget) !== null && _this$widget5 !== void 0 && _this$widget5.properties.customTextColor ? {
+        color: (_this$widget6 = this.widget) === null || _this$widget6 === void 0 ? void 0 : _this$widget6.properties.customTextColor
+      } : {});
+    }
+  },
   methods: {
     onCloseAlert: function onCloseAlert() {
       this.$data.isOpen = false;
-    }
-  },
-  computed: {
-    alertStyles: function alertStyles() {
-      if (this.widget.properties.type !== "custom" || this.widget.properties.customColor) return {};
-      return _objectSpread2({
-        backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent"
-      }, this.widget.properties.customTextColor ? {
-        color: this.widget.properties.customTextColor
-      } : {});
     }
   }
 });/* script */
@@ -1678,7 +1975,7 @@ var __vue_render__$19 = function __vue_render__() {
     staticClass: "alert",
     class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
     style: _vm.alertStyles
-  }, [_vm._ssrNode("<h3 data-v-2eec7e47>" + _vm._ssrEscape(_vm._s(_vm.t("__title", _vm.widget.id))) + "</h3> <p data-v-2eec7e47>" + _vm._ssrEscape(_vm._s(_vm.t("__text", _vm.widget.id))) + "</p> " + (_vm.widget.properties.showCloseBtn ? "<a class=\"close-button\" data-v-2eec7e47>x</a>" : "<!---->"))]) : _vm._e();
+  }, [_vm._ssrNode("<h3 data-v-20431722>" + _vm._ssrEscape(_vm._s(_vm.t('__title', _vm.widget.id))) + "</h3> <p data-v-20431722>" + _vm._ssrEscape(_vm._s(_vm.t('__text', _vm.widget.id))) + "</p> " + (_vm.widget.properties.showCloseBtn ? "<a class=\"close-button\" data-v-20431722>x</a>" : "<!---->"))]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$19 = [];
@@ -1686,8 +1983,8 @@ var __vue_staticRenderFns__$19 = [];
 
 var __vue_inject_styles__$19 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-2eec7e47_0", {
-    source: ".alert[data-v-2eec7e47]{padding:10px;margin:10px;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-2eec7e47]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-2eec7e47]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-2eec7e47]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-2eec7e47]{background-color:#fef8ea;border-color:#f4eada}.alert>.close-button[data-v-2eec7e47]{position:absolute;top:0;right:0;padding:10px 15px;cursor:pointer;transform:scaleX(1.2)}",
+  inject("data-v-20431722_0", {
+    source: ".alert[data-v-20431722]{padding:10px;margin:10px;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-20431722]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-20431722]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-20431722]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-20431722]{background-color:#fef8ea;border-color:#f4eada}.alert>.close-button[data-v-20431722]{position:absolute;top:0;right:0;padding:10px 15px;cursor:pointer;transform:scaleX(1.2)}",
     map: undefined,
     media: undefined
   });
@@ -1695,10 +1992,10 @@ var __vue_inject_styles__$19 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$19 = "data-v-2eec7e47";
+var __vue_scope_id__$19 = "data-v-20431722";
 /* module identifier */
 
-var __vue_module_identifier__$19 = "data-v-2eec7e47";
+var __vue_module_identifier__$19 = "data-v-20431722";
 /* functional template */
 
 var __vue_is_functional_template__$19 = false;
@@ -1709,68 +2006,13 @@ var __vue_component__$1b = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$19
 }, __vue_inject_styles__$19, __vue_script__$19, __vue_scope_id__$19, __vue_is_functional_template__$19, __vue_module_identifier__$19, false, undefined, createInjectorSSR, undefined);
 
-var ReadOnly$e = __vue_component__$1b;const rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
-
-let poolPtr = rnds8Pool.length;
-function rng() {
-  if (poolPtr > rnds8Pool.length - 16) {
-    crypto__default["default"].randomFillSync(rnds8Pool);
-    poolPtr = 0;
-  }
-
-  return rnds8Pool.slice(poolPtr, poolPtr += 16);
-}var REGEX = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;function validate(uuid) {
-  return typeof uuid === 'string' && REGEX.test(uuid);
-}/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-
-const byteToHex = [];
-
-for (let i = 0; i < 256; ++i) {
-  byteToHex.push((i + 0x100).toString(16).substr(1));
-}
-
-function stringify$1(arr, offset = 0) {
-  // Note: Be careful editing this code!  It's been tuned for performance
-  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
-  // of the following:
-  // - One or more input array values don't map to a hex octet (leading to
-  // "undefined" in the uuid)
-  // - Invalid input values for the RFC `version` or `variant` fields
-
-  if (!validate(uuid)) {
-    throw TypeError('Stringified UUID is invalid');
-  }
-
-  return uuid;
-}function v4(options, buf, offset) {
-  options = options || {};
-  const rnds = options.random || (options.rng || rng)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-
-  rnds[6] = rnds[6] & 0x0f | 0x40;
-  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
-
-  if (buf) {
-    offset = offset || 0;
-
-    for (let i = 0; i < 16; ++i) {
-      buf[offset + i] = rnds[i];
-    }
-
-    return buf;
-  }
-
-  return stringify$1(rnds);
-}var alert = {
+var ReadOnly$e = __vue_component__$1b;var alert = {
   create: function create(props) {
     return {
       id: v4(),
-      type: "alert",
+      type: 'alert',
       properties: _objectSpread2({
-        type: "default"
+        type: 'default'
       }, props)
     };
   },
@@ -1778,24 +2020,14 @@ function stringify$1(arr, offset = 0) {
   builder: Builder$8,
   readOnly: ReadOnly$e
 };var script$18 = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
-  inject: ["getLocale", "setMessage"],
+  props: WidgetControlProps$j,
+  inject: ['getLocale', 'setMessage'],
   methods: {
     onTextChange: function onTextChange(val) {
       this.setMessage({
         id: this.$props.widget.id,
         locale: this.getLocale(),
-        key: "__label",
+        key: '__label',
         value: val.target.value
       });
     }
@@ -1833,8 +2065,8 @@ var __vue_staticRenderFns__$18 = [];
 
 var __vue_inject_styles__$18 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-1550b213_0", {
-    source: ".header-input[data-v-1550b213]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
+  inject("data-v-724eb4fb_0", {
+    source: ".header-input[data-v-724eb4fb]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
     map: undefined,
     media: undefined
   });
@@ -1842,10 +2074,10 @@ var __vue_inject_styles__$18 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$18 = "data-v-1550b213";
+var __vue_scope_id__$18 = "data-v-724eb4fb";
 /* module identifier */
 
-var __vue_module_identifier__$18 = "data-v-1550b213";
+var __vue_module_identifier__$18 = "data-v-724eb4fb";
 /* functional template */
 
 var __vue_is_functional_template__$18 = false;
@@ -1864,7 +2096,7 @@ var Builder$7 = __vue_component__$1a;var script$17 = defineComponent({
     pageState: Object,
     setWidgetState: Function
   },
-  inject: ["updateWidget"],
+  inject: ['updateWidget'],
   methods: {
     setTagType: function setTagType(type) {
       this.widget.properties.tagType = type;
@@ -1886,17 +2118,17 @@ var __vue_render__$17 = function __vue_render__() {
     staticClass: "control-wrapper"
   }, [_vm._ssrNode("<a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h1'
-  }) + " data-v-6615e780>H1</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-04ea9b20>H1</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h2'
-  }) + " data-v-6615e780>H2</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-04ea9b20>H2</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h3'
-  }) + " data-v-6615e780>H3</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-04ea9b20>H3</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h4'
-  }) + " data-v-6615e780>H4</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-04ea9b20>H4</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h5'
-  }) + " data-v-6615e780>H5</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-04ea9b20>H5</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h6'
-  }) + " data-v-6615e780>H6</a>")]);
+  }) + " data-v-04ea9b20>H6</a>")]);
 };
 
 var __vue_staticRenderFns__$17 = [];
@@ -1904,8 +2136,8 @@ var __vue_staticRenderFns__$17 = [];
 
 var __vue_inject_styles__$17 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-6615e780_0", {
-    source: ".control-wrapper[data-v-6615e780]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-6615e780]{height:30px;width:40px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-6615e780]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-6615e780]{background-color:#03a9f4;color:#fff}",
+  inject("data-v-04ea9b20_0", {
+    source: ".control-wrapper[data-v-04ea9b20]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-04ea9b20]{height:30px;width:40px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-04ea9b20]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-04ea9b20]{background-color:#03a9f4;color:#fff}",
     map: undefined,
     media: undefined
   });
@@ -1913,10 +2145,10 @@ var __vue_inject_styles__$17 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$17 = "data-v-6615e780";
+var __vue_scope_id__$17 = "data-v-04ea9b20";
 /* module identifier */
 
-var __vue_module_identifier__$17 = "data-v-6615e780";
+var __vue_module_identifier__$17 = "data-v-04ea9b20";
 /* functional template */
 
 var __vue_is_functional_template__$17 = false;
@@ -1942,7 +2174,7 @@ var __vue_render__$16 = function __vue_render__() {
   return _c(_vm.widget.properties.tagType, {
     tag: "component",
     staticClass: "header"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+  }, [_vm._v("\n    " + _vm._s(_vm.t('__label', _vm.widget.id)) + "\n  ")]);
 };
 
 var __vue_staticRenderFns__$16 = [];
@@ -1951,10 +2183,10 @@ var __vue_staticRenderFns__$16 = [];
 var __vue_inject_styles__$16 = undefined;
 /* scoped */
 
-var __vue_scope_id__$16 = "data-v-3e7718be";
+var __vue_scope_id__$16 = "data-v-5a79aac4";
 /* module identifier */
 
-var __vue_module_identifier__$16 = "data-v-3e7718be";
+var __vue_module_identifier__$16 = "data-v-5a79aac4";
 /* functional template */
 
 var __vue_is_functional_template__$16 = false;
@@ -1984,7 +2216,7 @@ var __vue_render__$15 = function __vue_render__() {
   return _c(_vm.widget.properties.tagType, {
     tag: "component",
     staticClass: "header"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+  }, [_vm._v("\n    " + _vm._s(_vm.t('__label')) + "\n  ")]);
 };
 
 var __vue_staticRenderFns__$15 = [];
@@ -1992,8 +2224,8 @@ var __vue_staticRenderFns__$15 = [];
 
 var __vue_inject_styles__$15 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-3a71698b_0", {
-    source: ".header[data-v-3a71698b]{padding:0 10px}",
+  inject("data-v-a2123f0c_0", {
+    source: ".header[data-v-a2123f0c]{padding:0 10px}",
     map: undefined,
     media: undefined
   });
@@ -2001,10 +2233,10 @@ var __vue_inject_styles__$15 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$15 = "data-v-3a71698b";
+var __vue_scope_id__$15 = "data-v-a2123f0c";
 /* module identifier */
 
-var __vue_module_identifier__$15 = "data-v-3a71698b";
+var __vue_module_identifier__$15 = "data-v-a2123f0c";
 /* functional template */
 
 var __vue_is_functional_template__$15 = false;
@@ -2019,9 +2251,9 @@ var ReadOnly$d = __vue_component__$17;var header = {
   create: function create(props) {
     return {
       id: v4(),
-      type: "header",
+      type: 'header',
       properties: _objectSpread2({
-        tagType: "h1"
+        tagType: 'h1'
       }, props)
     };
   },
@@ -2029,19 +2261,49 @@ var ReadOnly$d = __vue_component__$17;var header = {
   builder: Builder$7,
   builderControl: BuilderControl$1,
   readOnly: ReadOnly$d
-};//
-var script$14 = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+};var WidgetControlProps$f = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
   }
+};
+var script$14 = defineComponent({
+  props: WidgetControlProps$f
 });/* script */
 var __vue_script__$14 = script$14;
 /* template */
@@ -2067,10 +2329,10 @@ var __vue_staticRenderFns__$14 = [];
 var __vue_inject_styles__$14 = undefined;
 /* scoped */
 
-var __vue_scope_id__$14 = "data-v-01854e0d";
+var __vue_scope_id__$14 = "data-v-34dadf78";
 /* module identifier */
 
-var __vue_module_identifier__$14 = "data-v-01854e0d";
+var __vue_module_identifier__$14 = "data-v-34dadf78";
 /* functional template */
 
 var __vue_is_functional_template__$14 = false;
@@ -2085,19 +2347,49 @@ var __vue_component__$16 = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$14
 }, __vue_inject_styles__$14, __vue_script__$14, __vue_scope_id__$14, __vue_is_functional_template__$14, __vue_module_identifier__$14, false, undefined, undefined, undefined);
 
-var Builder$6 = __vue_component__$16;//
-var script$13 = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+var Builder$6 = __vue_component__$16;var WidgetControlProps$e = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
   }
+};
+var script$13 = defineComponent({
+  props: _objectSpread2({}, WidgetControlProps$e)
 });/* script */
 var __vue_script__$13 = script$13;
 /* template */
@@ -2123,10 +2415,10 @@ var __vue_staticRenderFns__$13 = [];
 var __vue_inject_styles__$13 = undefined;
 /* scoped */
 
-var __vue_scope_id__$13 = "data-v-7eacb6b9";
+var __vue_scope_id__$13 = "data-v-29b29f8c";
 /* module identifier */
 
-var __vue_module_identifier__$13 = "data-v-7eacb6b9";
+var __vue_module_identifier__$13 = "data-v-29b29f8c";
 /* functional template */
 
 var __vue_is_functional_template__$13 = false;
@@ -2141,8 +2433,50 @@ var __vue_component__$15 = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$13
 }, __vue_inject_styles__$13, __vue_script__$13, __vue_scope_id__$13, __vue_is_functional_template__$13, __vue_module_identifier__$13, false, undefined, undefined, undefined);
 
-var Display$c = __vue_component__$15;//
-var script$12 = defineComponent({});/* script */
+var Display$c = __vue_component__$15;var WidgetControlProps$d = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$12 = defineComponent({
+  props: WidgetControlProps$d
+});/* script */
 var __vue_script__$12 = script$12;
 /* template */
 
@@ -2169,7 +2503,7 @@ var __vue_inject_styles__$12 = undefined;
 var __vue_scope_id__$12 = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$12 = "data-v-6a161a40";
+var __vue_module_identifier__$12 = "data-v-4eab8dd7";
 /* functional template */
 
 var __vue_is_functional_template__$12 = false;
@@ -2188,9 +2522,9 @@ var ReadOnly$c = __vue_component__$14;var html = {
   create: function create(props) {
     return {
       id: v4(),
-      type: "html",
+      type: 'html',
       properties: _objectSpread2({
-        from: "default"
+        from: 'default'
       }, props)
     };
   },
@@ -2228,220 +2562,7 @@ function isPlainObject(o) {
 
   // Most likely a plain Object
   return true;
-}var c=Object.prototype,l=c.toString,s=c.hasOwnProperty,v=/^\s*function (\w+)/;function p(e){var t,n=null!==(t=null==e?void 0:e.type)&&void 0!==t?t:e;if(n){var r=n.toString().match(v);return r?r[1]:""}return ""}var y=isPlainObject,d=function(e){return e},h=d;var g=function(e,t){return s.call(e,t)},m=Array.isArray||function(e){return "[object Array]"===l.call(e)},j=function(e){return "[object Function]"===l.call(e)},_=function(e){return y(e)&&g(e,"_vueTypes_name")},T=function(e){return y(e)&&(g(e,"type")||["_vueTypes_name","validator","default","required"].some(function(t){return g(e,t)}))};function w(e,t){return Object.defineProperty(e.bind(t),"__original",{value:e})}function k(e,t,n){var r;void 0===n&&(n=!1);var i=!0,o="";r=y(e)?e:{type:e};var u=_(r)?r._vueTypes_name+" - ":"";if(T(r)&&null!==r.type){if(void 0===r.type||!0===r.type)return i;if(!r.required&&void 0===t)return i;m(r.type)?(i=r.type.some(function(e){return !0===k(e,t,!0)}),o=r.type.map(function(e){return p(e)}).join(" or ")):i="Array"===(o=p(r))?m(t):"Object"===o?y(t):"String"===o||"Number"===o||"Boolean"===o||"Function"===o?function(e){if(null==e)return "";var t=e.constructor.toString().match(v);return t?t[1]:""}(t)===o:t instanceof r.type;}if(!i){var a=u+'value "'+t+'" should be of type "'+o+'"';return !1===n?(h(a),!1):a}if(g(r,"validator")&&j(r.validator)){var f=h,c=[];if(h=function(e){c.push(e);},i=r.validator(t),h=f,!i){var l=(c.length>1?"* ":"")+c.join("\n* ");return c.length=0,!1===n?(h(l),i):l}}return i}function P(e,t){var n=Object.defineProperties(t,{_vueTypes_name:{value:e,writable:!0},isRequired:{get:function(){return this.required=!0,this}},def:{value:function(e){return void 0===e?(g(this,"default")&&delete this.default,this):j(e)||!0===k(this,e,!0)?(this.default=m(e)?function(){return [].concat(e)}:y(e)?function(){return Object.assign({},e)}:e,this):(h(this._vueTypes_name+' - invalid default value: "'+e+'"'),this)}}}),r=n.validator;return j(r)&&(n.validator=w(r,n)),n}function x(e,t){var n=P(e,t);return Object.defineProperty(n,"validate",{value:function(e){return j(this.validator)&&h(this._vueTypes_name+" - calling .validate() will overwrite the current custom validator function. Validator info:\n"+JSON.stringify(this)),this.validator=w(e,this),this}})}function N(e){return e.replace(/^(?!\s*$)/gm,"  ")}var V=function(){return x("boolean",{type:Boolean})},S=function(){return x("string",{type:String})};function R(e){return P("arrayOf",{type:Array,validator:function(t){var n="",r=t.every(function(t){return !0===(n=k(e,t,!0))});return r||h("arrayOf - value validation error:\n"+N(n)),r}})}function $(e){return P("instanceOf",{type:e})}function C(e){var t=Object.keys(e),n=t.filter(function(t){var n;return !(null===(n=e[t])||void 0===n||!n.required)}),r=P("shape",{type:Object,validator:function(r){var i=this;if(!y(r))return !1;var o=Object.keys(r);if(n.length>0&&n.some(function(e){return -1===o.indexOf(e)})){var u=n.filter(function(e){return -1===o.indexOf(e)});return h(1===u.length?'shape - required property "'+u[0]+'" is not defined.':'shape - required properties "'+u.join('", "')+'" are not defined.'),!1}return o.every(function(n){if(-1===t.indexOf(n))return !0===i._vueTypes_isLoose||(h('shape - shape definition does not include a "'+n+'" property. Allowed keys: "'+t.join('", "')+'".'),!1);var o=k(e[n],r[n],!0);return "string"==typeof o&&h('shape - "'+n+'" property validation error:\n '+N(o)),!0===o})}});return Object.defineProperty(r,"_vueTypes_isLoose",{writable:!0,value:!1}),Object.defineProperty(r,"loose",{get:function(){return this._vueTypes_isLoose=!0,this}}),r}//
-var script$11 = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String
-  },
-  inject: ["widgetEffectControls"]
-});/* script */
-var __vue_script__$11 = script$11;
-/* template */
-
-var __vue_render__$11 = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', {
-    staticClass: "widget-wrapper"
-  }, [_vm.widget.style ? _c('style', {
-    tag: "component",
-    attrs: {
-      "scoped": ""
-    }
-  }, [_vm._v("\n    " + _vm._s(_vm.widget.style) + "\n  ")]) : _vm._e(), _vm._ssrNode(" "), _vm.view === 'builder' ? _vm._ssrNode("<div class=\"widget-form-control\" data-v-76487044>", "</div>", [_c(_vm.widgetControls[_vm.widget.type].builderControl, {
-    tag: "component",
-    attrs: {
-      "widget": _vm.widget,
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "pageState": _vm.pageState,
-      "setWidgetState": function setWidgetState(key, value) {
-        return _vm.setWidgetState(key, value, _vm.widget);
-      },
-      "getWidgetState": function getWidgetState(key) {
-        return _vm.getWidgetState(key, _vm.widget);
-      },
-      "view": _vm.view
-    }
-  })], 1) : _vm._e(), _vm._ssrNode(" "), _vm._ssrNode("<div class=\"widget-component-wrapper\" data-v-76487044>", "</div>", [_vm._l(_vm.widget.effects, function (widgetEffect) {
-    return _c(_vm.widgetEffectControls[widgetEffect.type].display, {
-      key: widgetEffect.type,
-      tag: "component",
-      attrs: {
-        "properties": widgetEffect.properties,
-        "wrapperRef": _vm.$refs.widgetComponentWrapper
-      }
-    });
-  }), _vm._ssrNode(" "), _c(_vm.widgetControls[_vm.widget.type][_vm.view || 'display'], {
-    tag: "component",
-    attrs: {
-      "widget": _vm.widget,
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "pageState": _vm.pageState,
-      "setWidgetState": function setWidgetState(key, value) {
-        return _vm.setWidgetState(key, value, _vm.widget);
-      },
-      "getWidgetState": function getWidgetState(key) {
-        return _vm.getWidgetState(key, _vm.widget);
-      },
-      "view": _vm.view,
-      "wrapperRef": _vm.$refs.widgetComponentWrapper,
-      "t": _vm.widget.t
-    }
-  })], 2)], 2);
-};
-
-var __vue_staticRenderFns__$11 = [];
-/* style */
-
-var __vue_inject_styles__$11 = function __vue_inject_styles__(inject) {
-  if (!inject) return;
-  inject("data-v-76487044_0", {
-    source: ".widget-component-wrapper[data-v-76487044]{position:relative}.widget-wrapper[data-v-76487044]{padding:0 10px}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-var __vue_scope_id__$11 = "data-v-76487044";
-/* module identifier */
-
-var __vue_module_identifier__$11 = "data-v-76487044";
-/* functional template */
-
-var __vue_is_functional_template__$11 = false;
-/* style inject shadow dom */
-
-var __vue_component__$13 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$11,
-  staticRenderFns: __vue_staticRenderFns__$11
-}, __vue_inject_styles__$11, __vue_script__$11, __vue_scope_id__$11, __vue_is_functional_template__$11, __vue_module_identifier__$11, false, undefined, createInjectorSSR, undefined);
-
-var WidgetView$1 = __vue_component__$13;//
-var script$10 = defineComponent({
-  components: {
-    WidgetView: WidgetView$1
-  },
-  props: {
-    widgetControls: Object,
-    widgetItems: Object,
-    excludeWidgetIds: R(String),
-    onlyIncludeWidgetIds: R(String),
-    widgetsOrder: R(String),
-    forParent: String
-  },
-  inject: ["widgetControls", "getPageState", "getView", "setPageState"],
-  computed: {
-    view: function view() {
-      return this.getView();
-    },
-    pageState: function pageState() {
-      return this.getPageState();
-    },
-    widgetItemsArr: function widgetItemsArr() {
-      return Object.values(this.$props.widgetItems);
-    },
-    filteredWidgetItemsArr: function filteredWidgetItemsArr() {
-      var _this = this;
-
-      var filteredArr = this.widgetItemsArr.filter(function (f) {
-        return (!_this.forParent && !f.parentId || f.parentId === _this.forParent) && (!_this.$props.onlyIncludeWidgetIds || _this.$props.onlyIncludeWidgetIds.includes(f.id)) && (!(_this.excludeWidgetIds || []).length || !_this.excludeWidgetIds.includes(f.id));
-      }).sort(function (a, b) {
-        var aOrder = (_this.$props.widgetsOrder || []).includes(a.id) ? _this.$props.widgetsOrder.indexOf(a.id) : a.order || 0;
-        var bOrder = (_this.$props.widgetsOrder || []).includes(b.id) ? _this.$props.widgetsOrder.indexOf(b.id) : b.order || 0;
-        return aOrder - bOrder;
-      });
-      return filteredArr;
-    }
-  },
-  methods: {
-    setWidgetState: function setWidgetState(key, value, widget) {
-      var pageState = this.pageState;
-
-      if (value === undefined) {
-        if (!pageState.widgetState[widget.id]) return;
-        delete pageState.widgetState[widget.id][key];
-      } else {
-        if (!pageState.widgetState[widget.id]) pageState.widgetState[widget.id] = {};
-        pageState.widgetState[widget.id][key] = value;
-      }
-
-      this.setPageState(pageState);
-    },
-    getWidgetState: function getWidgetState(key, widget) {
-      var _this$pageState$widge;
-
-      return (_this$pageState$widge = this.pageState.widgetState[widget.id]) === null || _this$pageState$widge === void 0 ? void 0 : _this$pageState$widge[key];
-    }
-  }
-});/* script */
-var __vue_script__$10 = script$10;
-/* template */
-
-var __vue_render__$10 = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', _vm._l(_vm.filteredWidgetItemsArr, function (widget) {
-    return _vm._ssrNode("<div class=\"widget-container\" data-v-301b8b22>", "</div>", [_c('widget-view', {
-      attrs: {
-        "widget": widget,
-        "widgetControls": _vm.widgetControls,
-        "widgetItems": _vm.widgetItems,
-        "pageState": _vm.pageState,
-        "setWidgetState": _vm.setWidgetState,
-        "getWidgetState": _vm.getWidgetState,
-        "view": _vm.view
-      }
-    })], 1);
-  }), 0);
-};
-
-var __vue_staticRenderFns__$10 = [];
-/* style */
-
-var __vue_inject_styles__$10 = function __vue_inject_styles__(inject) {
-  if (!inject) return;
-  inject("data-v-301b8b22_0", {
-    source: ".widget-container[data-v-301b8b22]{position:relative}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-var __vue_scope_id__$10 = "data-v-301b8b22";
-/* module identifier */
-
-var __vue_module_identifier__$10 = "data-v-301b8b22";
-/* functional template */
-
-var __vue_is_functional_template__$10 = false;
-/* style inject shadow dom */
-
-var __vue_component__$12 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$10,
-  staticRenderFns: __vue_staticRenderFns__$10
-}, __vue_inject_styles__$10, __vue_script__$10, __vue_scope_id__$10, __vue_is_functional_template__$10, __vue_module_identifier__$10, false, undefined, createInjectorSSR, undefined);
-
-var WidgetsLayout = __vue_component__$12;var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+}var c=Object.prototype,l=c.toString,s=c.hasOwnProperty,v=/^\s*function (\w+)/;function p(e){var t,n=null!==(t=null==e?void 0:e.type)&&void 0!==t?t:e;if(n){var r=n.toString().match(v);return r?r[1]:""}return ""}var y=isPlainObject,d=function(e){return e},h=d;var g=function(e,t){return s.call(e,t)},m=Array.isArray||function(e){return "[object Array]"===l.call(e)},j=function(e){return "[object Function]"===l.call(e)},_=function(e){return y(e)&&g(e,"_vueTypes_name")},T=function(e){return y(e)&&(g(e,"type")||["_vueTypes_name","validator","default","required"].some(function(t){return g(e,t)}))};function w(e,t){return Object.defineProperty(e.bind(t),"__original",{value:e})}function k(e,t,n){var r;void 0===n&&(n=!1);var i=!0,o="";r=y(e)?e:{type:e};var u=_(r)?r._vueTypes_name+" - ":"";if(T(r)&&null!==r.type){if(void 0===r.type||!0===r.type)return i;if(!r.required&&void 0===t)return i;m(r.type)?(i=r.type.some(function(e){return !0===k(e,t,!0)}),o=r.type.map(function(e){return p(e)}).join(" or ")):i="Array"===(o=p(r))?m(t):"Object"===o?y(t):"String"===o||"Number"===o||"Boolean"===o||"Function"===o?function(e){if(null==e)return "";var t=e.constructor.toString().match(v);return t?t[1]:""}(t)===o:t instanceof r.type;}if(!i){var a=u+'value "'+t+'" should be of type "'+o+'"';return !1===n?(h(a),!1):a}if(g(r,"validator")&&j(r.validator)){var f=h,c=[];if(h=function(e){c.push(e);},i=r.validator(t),h=f,!i){var l=(c.length>1?"* ":"")+c.join("\n* ");return c.length=0,!1===n?(h(l),i):l}}return i}function P(e,t){var n=Object.defineProperties(t,{_vueTypes_name:{value:e,writable:!0},isRequired:{get:function(){return this.required=!0,this}},def:{value:function(e){return void 0===e?(g(this,"default")&&delete this.default,this):j(e)||!0===k(this,e,!0)?(this.default=m(e)?function(){return [].concat(e)}:y(e)?function(){return Object.assign({},e)}:e,this):(h(this._vueTypes_name+' - invalid default value: "'+e+'"'),this)}}}),r=n.validator;return j(r)&&(n.validator=w(r,n)),n}function N(e){return e.replace(/^(?!\s*$)/gm,"  ")}function R(e){return P("arrayOf",{type:Array,validator:function(t){var n="",r=t.every(function(t){return !0===(n=k(e,t,!0))});return r||h("arrayOf - value validation error:\n"+N(n)),r}})}var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function createCommonjsModule(fn, basedir, module) {
 	return module = {
@@ -7133,9 +7254,989 @@ exports.Fact = _fact2.default;
 exports.Rule = _rule2.default;
 exports.Operator = _operator2.default;
 exports.Engine = _engine2.default;
-});var dist = jsonRulesEngine;var WidgetItem = /*#__PURE__*/function () {
-  function WidgetItem(_ref) {
+});var dist = jsonRulesEngine;var dayjs_min = createCommonjsModule(function (module, exports) {
+!function(t,e){module.exports=e();}(commonjsGlobal,(function(){var t=1e3,e=6e4,n=36e5,r="millisecond",i="second",s="minute",u="hour",a="day",o="week",f="month",h="quarter",c="year",d="date",$="Invalid Date",l=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,y=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,M={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},m=function(t,e,n){var r=String(t);return !r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},g={s:m,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return (e<=0?"+":"-")+m(r,2,"0")+":"+m(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return -t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,f),s=n-i<0,u=e.clone().add(r+(s?-1:1),f);return +(-(r+(n-i)/(s?i-u:u-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(t){return {M:f,y:c,w:o,d:a,D:d,h:u,m:s,s:i,ms:r,Q:h}[t]||String(t||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},v="en",D={};D[v]=M;var p=function(t){return t instanceof _},S=function t(e,n,r){var i;if(!e)return v;if("string"==typeof e){var s=e.toLowerCase();D[s]&&(i=s),n&&(D[s]=n,i=s);var u=e.split("-");if(!i&&u.length>1)return t(u[0])}else {var a=e.name;D[a]=e,i=a;}return !r&&i&&(v=i),i||!r&&v},w=function(t,e){if(p(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new _(n)},O=g;O.l=S,O.i=p,O.w=function(t,e){return w(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var _=function(){function M(t){this.$L=S(t.locale,null,!0),this.parse(t);}var m=M.prototype;return m.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(O.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(l);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init();},m.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds();},m.$utils=function(){return O},m.isValid=function(){return !(this.$d.toString()===$)},m.isSame=function(t,e){var n=w(t);return this.startOf(e)<=n&&n<=this.endOf(e)},m.isAfter=function(t,e){return w(t)<this.startOf(e)},m.isBefore=function(t,e){return this.endOf(e)<w(t)},m.$g=function(t,e,n){return O.u(t)?this[e]:this.set(n,t)},m.unix=function(){return Math.floor(this.valueOf()/1e3)},m.valueOf=function(){return this.$d.getTime()},m.startOf=function(t,e){var n=this,r=!!O.u(e)||e,h=O.p(t),$=function(t,e){var i=O.w(n.$u?Date.UTC(n.$y,e,t):new Date(n.$y,e,t),n);return r?i:i.endOf(a)},l=function(t,e){return O.w(n.toDate()[t].apply(n.toDate("s"),(r?[0,0,0,0]:[23,59,59,999]).slice(e)),n)},y=this.$W,M=this.$M,m=this.$D,g="set"+(this.$u?"UTC":"");switch(h){case c:return r?$(1,0):$(31,11);case f:return r?$(1,M):$(0,M+1);case o:var v=this.$locale().weekStart||0,D=(y<v?y+7:y)-v;return $(r?m-D:m+(6-D),M);case a:case d:return l(g+"Hours",0);case u:return l(g+"Minutes",1);case s:return l(g+"Seconds",2);case i:return l(g+"Milliseconds",3);default:return this.clone()}},m.endOf=function(t){return this.startOf(t,!1)},m.$set=function(t,e){var n,o=O.p(t),h="set"+(this.$u?"UTC":""),$=(n={},n[a]=h+"Date",n[d]=h+"Date",n[f]=h+"Month",n[c]=h+"FullYear",n[u]=h+"Hours",n[s]=h+"Minutes",n[i]=h+"Seconds",n[r]=h+"Milliseconds",n)[o],l=o===a?this.$D+(e-this.$W):e;if(o===f||o===c){var y=this.clone().set(d,1);y.$d[$](l),y.init(),this.$d=y.set(d,Math.min(this.$D,y.daysInMonth())).$d;}else $&&this.$d[$](l);return this.init(),this},m.set=function(t,e){return this.clone().$set(t,e)},m.get=function(t){return this[O.p(t)]()},m.add=function(r,h){var d,$=this;r=Number(r);var l=O.p(h),y=function(t){var e=w($);return O.w(e.date(e.date()+Math.round(t*r)),$)};if(l===f)return this.set(f,this.$M+r);if(l===c)return this.set(c,this.$y+r);if(l===a)return y(1);if(l===o)return y(7);var M=(d={},d[s]=e,d[u]=n,d[i]=t,d)[l]||1,m=this.$d.getTime()+r*M;return O.w(m,this)},m.subtract=function(t,e){return this.add(-1*t,e)},m.format=function(t){var e=this,n=this.$locale();if(!this.isValid())return n.invalidDate||$;var r=t||"YYYY-MM-DDTHH:mm:ssZ",i=O.z(this),s=this.$H,u=this.$m,a=this.$M,o=n.weekdays,f=n.months,h=function(t,n,i,s){return t&&(t[n]||t(e,r))||i[n].substr(0,s)},c=function(t){return O.s(s%12||12,t,"0")},d=n.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:O.s(a+1,2,"0"),MMM:h(n.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:O.s(this.$D,2,"0"),d:String(this.$W),dd:h(n.weekdaysMin,this.$W,o,2),ddd:h(n.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:O.s(s,2,"0"),h:c(1),hh:c(2),a:d(s,u,!0),A:d(s,u,!1),m:String(u),mm:O.s(u,2,"0"),s:String(this.$s),ss:O.s(this.$s,2,"0"),SSS:O.s(this.$ms,3,"0"),Z:i};return r.replace(y,(function(t,e){return e||l[t]||i.replace(":","")}))},m.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},m.diff=function(r,d,$){var l,y=O.p(d),M=w(r),m=(M.utcOffset()-this.utcOffset())*e,g=this-M,v=O.m(this,M);return v=(l={},l[c]=v/12,l[f]=v,l[h]=v/3,l[o]=(g-m)/6048e5,l[a]=(g-m)/864e5,l[u]=g/n,l[s]=g/e,l[i]=g/t,l)[y]||g,$?v:O.a(v)},m.daysInMonth=function(){return this.endOf(f).$D},m.$locale=function(){return D[this.$L]},m.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=S(t,e,!0);return r&&(n.$L=r),n},m.clone=function(){return O.w(this.$d,this)},m.toDate=function(){return new Date(this.valueOf())},m.toJSON=function(){return this.isValid()?this.toISOString():null},m.toISOString=function(){return this.$d.toISOString()},m.toString=function(){return this.$d.toUTCString()},M}(),b=_.prototype;return w.prototype=b,[["$ms",r],["$s",i],["$m",s],["$H",u],["$W",a],["$M",f],["$y",c],["$D",d]].forEach((function(t){b[t[1]]=function(e){return this.$g(e,t[0],t[1])};})),w.extend=function(t,e){return t.$i||(t(e,_,w),t.$i=!0),w},w.locale=S,w.isDayjs=p,w.unix=function(t){return w(1e3*t)},w.en=D[v],w.Ls=D,w.p={},w}));
+});var ABS = {
+  regex: /^ABS\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var subParts = (matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"));
+
+    if (subParts.length !== 1) {
+      throw new Error("ABS() requires 1 parameter, received ".concat(subParts.length));
+    }
+
+    return Math.abs(parseFloat(stringParser(subParts[0], variables, options)));
+  }
+};var AND = {
+  regex: /^AND\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var parts = matchParts[0].split(splitRootRegex("\\s*,\\s*")) || [];
+
+    if (!parts.length) {
+      throw new Error("AND() requires 1 or more parameters, received ".concat(parts.length));
+    }
+
+    return parts.every(function (p) {
+      return stringParser(p, variables, options);
+    });
+  }
+};var AVG = {
+  regex: /^AVG\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var subParts = (matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"));
+
+    if (subParts.length === 0) {
+      throw new Error('AVG() requires 1 or more parameters, received 0');
+    }
+
+    return subParts.reduce(function (sum, num) {
+      return sum + parseFloat(stringParser(num, variables, options));
+    }, 0) / subParts.length;
+  }
+};var DATE = {
+  regex: /^(Date.now|new Date|dayjs)/,
+  parse: function parse(cmd, variables) {
+    return getDateByPropertyValue(cmd, variables);
+  }
+};var IF = {
+  regex: /^IF\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var subParts = (matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"));
+
+    if (subParts.length !== 3) {
+      throw new Error('IF() requires 3 parameters');
+    }
+
+    var _subParts = _slicedToArray(subParts, 3),
+        isTrue = _subParts[0],
+        trueResult = _subParts[1],
+        falseResult = _subParts[2];
+
+    return stringParser(stringParser(isTrue, variables, options) ? stringParser(trueResult, variables, options) : stringParser(falseResult, variables, options), variables, options);
+  }
+};var IFNA = {
+  regex: /^IFNA\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+
+    var _iterator = _createForOfIteratorHelper((matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"))),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var subCmd = _step.value;
+        var result = stringParser(subCmd, variables, options);
+
+        if (result) {
+          return result;
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+  }
+};var LOWER = {
+  regex: /^LOWER\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var subParts = (matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"));
+
+    if (subParts.length !== 1) {
+      throw new Error("LOWER() requires 1 parameter, received ".concat(subParts.length));
+    }
+
+    return stringParser(subParts[0], variables, options).toLowerCase();
+  }
+};var MAX = {
+  regex: /^MAX\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var max = -Infinity;
+
+    var _iterator = _createForOfIteratorHelper((matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"))),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var subCmd = _step.value;
+        var result = stringParser(subCmd, variables, options);
+
+        if (typeof result === 'number') {
+          if (result > max) max = result;
+        } else if (typeof result === 'string') {
+          if (result.localeCompare(max) > 0) {
+            max = result;
+          }
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    return max;
+  }
+};var MIN = {
+  regex: /^MIN\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var min = Infinity;
+
+    var _iterator = _createForOfIteratorHelper((matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"))),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var subCmd = _step.value;
+        var result = stringParser(subCmd, variables, options);
+
+        if (typeof result === 'number') {
+          if (result < min) min = result;
+        } else if (typeof result === 'string') {
+          if (result.localeCompare(min) < 0) {
+            min = result;
+          }
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    return min;
+  }
+};var NOT = {
+  regex: /^NOT\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    return !stringParser(matchParts[0], variables, options);
+  }
+};var OR = {
+  regex: /^OR\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var parts = matchParts[0].split(splitRootRegex("\\s*,\\s*")) || [];
+
+    if (!parts.length) {
+      throw new Error("OR() requires 1 or more parameters, received ".concat(parts.length));
+    }
+
+    return parts.some(function (p) {
+      return stringParser(p, variables, options);
+    });
+  }
+};var SUM = {
+  regex: /^SUM\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var subParts = (matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"));
+
+    if (subParts.length === 0) {
+      throw new Error('SUM() requires 1 or more parameters');
+    }
+
+    return subParts.reduce(function (sum, num) {
+      return sum + parseFloat(stringParser(num, variables, options));
+    }, 0);
+  }
+};var UPPER = {
+  regex: /^UPPER\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var subParts = (matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"));
+
+    if (subParts.length !== 1) {
+      throw new Error("UPPER() requires 1 parameter, received ".concat(subParts.length));
+    }
+
+    return stringParser(subParts[0], variables, options).toUpperCase();
+  }
+};var VARIABLE = {
+  regex: /^\$(.*)$/,
+  parse: function parse(_cmd, variables, matched, options) {
+    return /^\$\(/.test(matched[0]) ? variables[stringParser(matched[0].replace(/^\$\((.*)\)$/, '$1'), variables, options)] : variables[matched[0]];
+  }
+};var TRIM = {
+  regex: /^TRIM\((.*)\)$/,
+  parse: function parse(_cmd, variables) {
+    var matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var options = arguments.length > 3 ? arguments[3] : undefined;
+    var subParts = (matchParts[0] || '').split(splitRootRegex("\\s*,\\s*"));
+
+    if (subParts.length !== 1) {
+      throw new Error("TRIM() requires 1 parameter, received ".concat(subParts.length));
+    }
+
+    return stringParser(subParts[0], variables, options).trim();
+  }
+};var parserCommands = {
+  ABS: ABS,
+  AND: AND,
+  AVG: AVG,
+  DATE: DATE,
+  IF: IF,
+  IFNA: IFNA,
+  LOWER: LOWER,
+  MAX: MAX,
+  MIN: MIN,
+  NOT: NOT,
+  OR: OR,
+  SUM: SUM,
+  UPPER: UPPER,
+  TRIM: TRIM,
+  VARIABLE: VARIABLE
+};/**
+ * split a string by a delimiter while respecting brackets and only
+ * split root delimiters
+ *
+ * @param delimiter {string} string to separate them by
+ * @returns {string[]} array of string
+ */
+
+var splitRootRegex = function splitRootRegex(delimiter) {
+  return new RegExp("".concat(delimiter, "(?![^\\(]*\\))"), 'g');
+};
+/**
+ * parse a string with commands and variable getters
+ *
+ * @param cmd {string} command string
+ * @param variables {Object} a key-value object for cmd to access
+ * @returns {string | Date | number | boolean} result of cmd parsing
+ */
+
+var stringParser = function stringParser(cmd, variables, options) {
+  var commands = (options === null || options === void 0 ? void 0 : options.commands) || parserCommands; // if it is not a string, there's nothing to parse, just return it
+
+  if (typeof cmd !== 'string') {
+    return cmd;
+  } // split command by "&" and handle each command part
+  // then merge concat them back together
+
+
+  var result = cmd.replace(/^=/, '').split(splitRootRegex("\\s*&\\s*")).map(function (splitCmd) {
+    var parserCommand = null;
+    var regexMatched = null;
+    var isFound = false; // find command by key
+
+    if (commands[splitCmd.replace(/\(.*$/, '')]) {
+      parserCommand = commands[splitCmd.replace(/\(.*$/, '')];
+      regexMatched = parserCommand.regex ? splitCmd.match(parserCommand.regex) : null;
+
+      if (regexMatched || !parserCommand.regex) {
+        // if regex has no match OR command doesn't have regex
+        isFound = true;
+      }
+    } // find command by regex
+
+
+    if (!isFound) {
+      for (var _i = 0, _Object$entries = Object.entries(commands); _i < _Object$entries.length; _i++) {
+        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2);
+            _Object$entries$_i[0];
+            var _parserCommand = _Object$entries$_i[1];
+
+        regexMatched = _parserCommand.regex ? splitCmd.match(_parserCommand.regex) : null;
+
+        if (regexMatched) {
+          parserCommand = _parserCommand;
+          isFound = true;
+          break;
+        }
+      }
+    } // if no command found, just return string as is
+    // if command found, parse and return result
+
+
+    return isFound && parserCommand ? parserCommand.parse(splitCmd, variables, (regexMatched || []).slice(1), options) : splitCmd;
+  }); // if result only has one (no &), do not join because it'll make
+  // the result into a string. If it has &, then join them
+
+  return result.length > 1 ? result.join('') : result[0];
+};var combineValidations = (function () {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  return args.reduce(function (validations, arg) {
+    Object.keys(arg.rules || {}).forEach(function (rule) {
+      var _validations$rules;
+
+      if ((_validations$rules = validations.rules) !== null && _validations$rules !== void 0 && _validations$rules[rule]) {
+        console.warn("validation rule [".concat(rule, "] has been defined more than once"));
+      }
+    });
+    Object.keys(arg.facts || {}).forEach(function (fact) {
+      var _validations$facts;
+
+      if ((_validations$facts = validations.facts) !== null && _validations$facts !== void 0 && _validations$facts[fact]) {
+        console.warn("validation fact [".concat(fact, "] has been defined more than once"));
+      }
+    });
+    return {
+      rules: _objectSpread2(_objectSpread2({}, validations.rules), arg.rules),
+      facts: _objectSpread2(_objectSpread2({}, validations.facts), arg.facts)
+    };
+  }, {
+    rules: {},
+    facts: {}
+  });
+});var flatten = function flatten(arr, opts) {
+  return arr.reduce(function (_arr, item) {
+    if (opts !== null && opts !== void 0 && opts.deep) {
+      var newList = Array.isArray(item) ? item : [item];
+      return [].concat(_toConsumableArray(_arr), _toConsumableArray(newList.some(function (i) {
+        return Array.isArray(i);
+      }) ? flatten(newList) : newList));
+    }
+
+    return [].concat(_toConsumableArray(_arr), _toConsumableArray(Array.isArray(item) ? item : [item]));
+  }, []);
+};
+var cachedArgs = {};
+var cachedMerge = function cachedMerge(key) {
+  if (!cachedArgs[key]) cachedArgs[key] = {
+    cached: [],
+    result: null
+  };
+
+  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    args[_key - 1] = arguments[_key];
+  }
+
+  if (!args.length) return null;
+
+  if (args.length !== cachedArgs[key].cached.length || args.some(function (a, aIndex) {
+    return a !== cachedArgs[key].cached[aIndex];
+  })) {
+    cachedArgs[key].cached = args; // cached not matched, update cache args and result
+
+    if (Array.isArray(args[0])) {
+      cachedArgs[key].result = args.reduce(function (arr, arg) {
+        return [].concat(_toConsumableArray(arr), _toConsumableArray(arg));
+      }, []);
+    } else {
+      cachedArgs[key].result = args.reduce(function (obj, argObj) {
+        return _objectSpread2(_objectSpread2({}, obj), argObj);
+      }, {});
+    }
+  }
+
+  return cachedArgs[key].result;
+};
+var flattenTranslateKey = function flattenTranslateKey(input) {
+  if (Array.isArray(input)) {
+    return input.reduce(function (arr, i) {
+      if (Array.isArray(i)) {
+        return [].concat(_toConsumableArray(arr), _toConsumableArray(flattenTranslateKey(i)));
+      } else {
+        return [].concat(_toConsumableArray(arr), [i]);
+      }
+    }, []);
+  } else {
+    // it is a string, break it up now
+    return input.split('.');
+  }
+};
+var translate = function translate(languages, key, data) {
+  var lang = flattenTranslateKey(key).reduce(function (obj, g) {
+    if (typeof obj === 'string') {
+      return obj;
+    }
+
+    return (obj === null || obj === void 0 ? void 0 : obj[g]) || (obj === null || obj === void 0 ? void 0 : obj["control_".concat(g)]);
+  }, languages);
+  return lang === null || lang === void 0 ? void 0 : lang.replace(/(\{(\w+)\})/g, function (_orig, outer, inner) {
+    return (data || {})[inner] || outer;
+  });
+};
+var formatDateString = function formatDateString(date) {
+  if (!date) return undefined;
+  return new Date(date).toLocaleString('en-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+};
+/**
+ * generate a date (or number) based on the string method passed into
+ * the date param
+ *
+ * dayjs($startDate).add(2, 'day') = a date that is 2 days after startDate
+ * dayjs().diff($startDate, 'day') = day count (number) from startDate to now
+ *
+ * @param date the string or date to render
+ * @param variables object of variables used to substitute $variable
+ * @returns a date or number
+ */
+
+var getDateByPropertyValue = function getDateByPropertyValue(date, variables) {
+  if (!date) {
+    return undefined;
+  }
+
+  if (date instanceof Date) {
+    return date;
+  }
+
+  var parsedDate = Date.parse(date);
+
+  if (!isNaN(parsedDate)) {
+    // is a proper date timestamp, return date with it
+    return new Date(parsedDate);
+  }
+
+  if (/^Date.now(\(\))*$/.test(date) || /^new Date(\(\))*$/.test(date)) {
+    // if date string is Date.now or new Date, return current date
+    return new Date();
+  }
+
+  if (/(^dayjs|^[\w]+\([^\)]*\))/.test(date)) {
+    // if it is a dayjs handling, run it through dayjs
+    // examples:
+    // - subtract(1, 'month') (based on current date)
+    // - dayjs($incidentDate).subtract(1, 'day')
+    var dateResult = date.split('.').reduce(function (accDate, part) {
+      var _ref;
+
+      var parts = part.match(/([\w]+)\(([^\)]*)\)/); // if part doesn't match needed format, just short circuit return
+
+      if (!parts) return accDate;
+
+      switch (parts[1]) {
+        case 'dayjs':
+          // if command is dayjs, replace current dayjs instance
+          // with this dayjs (to define specific date)
+          if (parts[2]) {
+            if (/^\$/.test(parts[2])) {
+              var responseResult = parts[2].replace(/^\$/, '').split('.').reduce(function (response, part) {
+                return response[part];
+              }, variables || {});
+              return dayjs_min(responseResult);
+            } else {
+              return dayjs_min(parts[2]);
+            }
+          }
+
+          return accDate;
+
+        default:
+          return (_ref = accDate)[parts[1]].apply(_ref, _toConsumableArray(parts[2].split(/\s*,\s*/).map(function (a) {
+            var parsedNum = parseFloat(a);
+
+            if (isNaN(parsedNum)) {
+              if (/^\$/.test(a)) {
+                // starts with a $, it is looking for a variable
+                return a.replace(/^\$/, '').split('.').reduce(function (response, part) {
+                  return response[part];
+                }, variables || {});
+              } // else just return sanitised text back
+
+
+              return a.replaceAll(/[\'\"]+/g, '');
+            } else {
+              return parsedNum;
+            }
+          })));
+      }
+    }, dayjs_min()); // if date result is a dayjs, return the Date version of it,
+    // else return it as is
+
+    return dateResult instanceof dayjs_min ? dateResult.toDate() : dateResult;
+  } else if (/^\$/.test(date)) {
+    // if date field is a variable (ie. $incidentDate), we'll fetch this
+    // field from variables
+    var responseResult = date.replace(/^\$/, '').split('.').reduce(function (response, part) {
+      return response[part];
+    }, variables || {}); // return date instance of drilled down field
+
+    return new Date(responseResult);
+  }
+
+  return undefined;
+};var equal = function equal() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 1) {
+    throw new Error("requires 1 argument, received ".concat(args.length));
+  }
+
+  var equal = args[0];
+  return [{
+    fact: 'response',
+    operator: 'equal',
+    value: Validator.validationRuleValue(equal, {})
+  }];
+};var inRange = function inRange() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 2) {
+    throw new Error("require 2 arguments, received ".concat(args.length));
+  }
+
+  var from = args[0],
+      to = args[1];
+  return [{
+    fact: 'response',
+    operator: 'greaterThanInclusive',
+    value: Validator.validationRuleValue(from, {})
+  }, {
+    fact: 'response',
+    operator: 'lessThanInclusive',
+    value: Validator.validationRuleValue(to, {})
+  }];
+};var isEmpty = [{
+  fact: 'response',
+  operator: 'equal',
+  value: null
+}];var isFalse = [{
+  fact: 'response',
+  operator: 'equal',
+  value: false
+}];var isFieldEmpty = function isFieldEmpty() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length === 0) {
+    throw new Error("requires 1 or more arguments, received ".concat(args.length));
+  }
+
+  return args.map(function (field) {
+    return {
+      fact: field,
+      operator: 'equal',
+      value: null
+    };
+  });
+};var isTrue = [{
+  fact: 'response',
+  operator: 'equal',
+  value: true
+}];var max = function max() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 1) {
+    throw new Error("requires 1 argument, received ".concat(args.length));
+  }
+
+  var max = args[0];
+  return [{
+    fact: 'response',
+    operator: 'lessThanInclusive',
+    value: Validator.validationRuleValue(max, {})
+  }];
+};var min = function min() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 1) {
+    throw new Error("requires 1 argument, received ".concat(args.length));
+  }
+
+  var min = args[0];
+  return [{
+    fact: 'response',
+    operator: 'greaterThanInclusive',
+    value: Validator.validationRuleValue(min, {})
+  }];
+};var notEqual = function notEqual() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 1) {
+    throw new Error("requires 1 argument, received ".concat(args.length));
+  }
+
+  var notEqual = args[0];
+  return [{
+    fact: 'response',
+    operator: 'notEqual',
+    value: Validator.validationRuleValue(notEqual, {})
+  }];
+};var positiveNumber = [{
+  fact: 'response',
+  operator: 'greaterThanInclusive',
+  value: 0
+}];var required = [{
+  fact: 'response',
+  operator: 'notEqual',
+  value: null
+}];var validationRules = {
+  equal: equal,
+  inRange: inRange,
+  isEmpty: isEmpty,
+  isFieldEmpty: isFieldEmpty,
+  isFalse: isFalse,
+  isTrue: isTrue,
+  max: max,
+  min: min,
+  notEqual: notEqual,
+  positiveNumber: positiveNumber,
+  required: required
+};var CMD_DATE_REGEX = /^(Date.now|new Date|dayjs)/;
+
+var Validator = /*#__PURE__*/function () {
+  function Validator(_presetValidations) {
     var _this = this;
+
+    _classCallCheck(this, Validator);
+
+    _defineProperty(this, "_presetValidations", {});
+
+    _defineProperty(this, "setPresetValidations", function (presetValidations) {
+      _this._presetValidations = {
+        // FIXME: all validation deps mixed together
+        deps: presetValidations.deps,
+        rules: _objectSpread2(_objectSpread2({}, validationRules), presetValidations.rules),
+        facts: _objectSpread2({}, presetValidations.facts)
+      };
+    });
+
+    _defineProperty(this, "getRuleEngine", function () {
+      var validations = _this._presetValidations || {};
+      var ruleEngine = new dist.Engine(undefined, {
+        allowUndefinedFacts: true
+      });
+
+      if (validations.facts && Object.keys(validations.facts).length) {
+        Object.keys(validations.facts).forEach(function (factKey) {
+          var _validations$facts;
+
+          ruleEngine.addFact(factKey, (_validations$facts = validations.facts) === null || _validations$facts === void 0 ? void 0 : _validations$facts[factKey]);
+        });
+      }
+
+      return ruleEngine;
+    });
+
+    // TODO: should just pass config.validations?
+    // is this reactive? or need to recreate class
+    // with new config to be reactive???
+    // use fn getConfig() instead??
+    this.setPresetValidations(_presetValidations || {});
+  }
+
+  _createClass(Validator, [{
+    key: "rules",
+    get: function get() {
+      return this._presetValidations.rules || {};
+    }
+  }, {
+    key: "getRuleConditions",
+    value: function getRuleConditions(rule, facts) {
+      return Validator.getRuleConditions(rule, facts, this._presetValidations.rules);
+    }
+  }, {
+    key: "getRuleFacts",
+    value: function getRuleFacts(rule, facts) {
+      return Validator.getRuleFacts(rule, facts);
+    }
+  }, {
+    key: "validationRuleValue",
+    value: function validationRuleValue(value, facts) {
+      return Validator.validationRuleValue(value, facts);
+    }
+  }, {
+    key: "sanitizeFacts",
+    value: function sanitizeFacts(facts) {
+      return Validator.sanitizeFacts(facts);
+    }
+  }, {
+    key: "generateValidateGenericData",
+    value: function generateValidateGenericData() {
+      return Validator.generateValidateGenericData();
+    }
+  }, {
+    key: "validateMultiple",
+    value: function () {
+      var _validateMultiple = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(conditions, facts) {
+        var engine, genericData, sanitizedFacts;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                engine = this.getRuleEngine();
+                _context.next = 3;
+                return Validator.generateValidateGenericData();
+
+              case 3:
+                genericData = _context.sent;
+                sanitizedFacts = Validator.sanitizeFacts(_objectSpread2(_objectSpread2({}, facts), genericData));
+                conditions.forEach(function (c) {
+                  var validateConditions = Validator.getRuleConditions(c.conditions, sanitizedFacts);
+                  engine.addRule({
+                    conditions: {
+                      all: validateConditions
+                    },
+                    event: {
+                      type: c.error
+                    }
+                  });
+                });
+                _context.next = 8;
+                return engine.run(sanitizedFacts);
+
+              case 8:
+                return _context.abrupt("return", _context.sent.failureEvents.map(function (e) {
+                  return e.type;
+                }));
+
+              case 9:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function validateMultiple(_x, _x2) {
+        return _validateMultiple.apply(this, arguments);
+      }
+
+      return validateMultiple;
+    }()
+  }, {
+    key: "validate",
+    value: function () {
+      var _validate = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(conditions, facts) {
+        var genericData, sanitizedFacts, engine, validateConditions, result;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return Validator.generateValidateGenericData();
+
+              case 2:
+                genericData = _context2.sent;
+                sanitizedFacts = Validator.sanitizeFacts(_objectSpread2(_objectSpread2({}, facts), genericData));
+                engine = this.getRuleEngine();
+                validateConditions = Validator.getRuleConditions(conditions, sanitizedFacts);
+                engine.addRule({
+                  conditions: {
+                    all: validateConditions
+                  },
+                  event: {
+                    type: 'isTruthy'
+                  }
+                });
+                _context2.next = 9;
+                return engine.run(sanitizedFacts);
+
+              case 9:
+                result = _context2.sent;
+                return _context2.abrupt("return", result.events.some(function (e) {
+                  return e.type === 'isTruthy';
+                }));
+
+              case 11:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function validate(_x3, _x4) {
+        return _validate.apply(this, arguments);
+      }
+
+      return validate;
+    }()
+  }], [{
+    key: "getRuleConditions",
+    value: function getRuleConditions(rule, facts, commands) {
+      return (Array.isArray(rule) ? rule : [rule]).reduce(function (arr, cond) {
+        var _all, _any;
+
+        if (typeof cond === 'string') {
+          var matched = cond.match(/^([^\(]+)(\((.*)\))*/);
+
+          if (!matched) {
+            throw new Error("rule [".concat(cond, "] has incorrect format"));
+          }
+
+          var _matched = _slicedToArray(matched, 4);
+              _matched[0];
+              var command = _matched[1];
+              _matched[2];
+              var params = _matched[3];
+
+          if (!(commands !== null && commands !== void 0 && commands[command])) {
+            throw new Error("rule [".concat(cond, "] does not exist in predefined rules"));
+          }
+
+          if (params && typeof (commands === null || commands === void 0 ? void 0 : commands[command]) !== 'function') {
+            throw new Error("rule [".concat(cond, "] expects ").concat(command, " to be a function but is not"));
+          }
+
+          try {
+            var _commands$command;
+
+            return [].concat(_toConsumableArray(arr), _toConsumableArray(params ? typeof (commands === null || commands === void 0 ? void 0 : commands[command]) === 'function' ? commands === null || commands === void 0 ? void 0 : (_commands$command = commands[command]) === null || _commands$command === void 0 ? void 0 : _commands$command.call.apply(_commands$command, [commands].concat(_toConsumableArray((params || '').split(/\s*,\s*/)))) : commands === null || commands === void 0 ? void 0 : commands[command] : (commands === null || commands === void 0 ? void 0 : commands[command]) || []));
+          } catch (err) {
+            throw new Error("rule [".concat(command, "] ").concat(err.message));
+          }
+        } else if ((_all = cond.all) !== null && _all !== void 0 && _all.length) {
+          return [].concat(_toConsumableArray(arr), [{
+            all: Validator.getRuleConditions(cond.all, facts, commands)
+          }]);
+        } else if ((_any = cond.any) !== null && _any !== void 0 && _any.length) {
+          return [].concat(_toConsumableArray(arr), [{
+            any: Validator.getRuleConditions(cond.any, facts, commands)
+          }]);
+        } else {
+          return [].concat(_toConsumableArray(arr), [_objectSpread2(_objectSpread2({}, cond), {}, {
+            value: Validator.validationRuleValue(cond.value, facts)
+          })]);
+        }
+      }, []);
+    }
+  }, {
+    key: "getRuleFacts",
+    value: function getRuleFacts(rule, facts) {
+      var _ref,
+          _this2 = this;
+
+      // define conditions from rule. rule can be:
+      //  - FormValidationCondition
+      //  - string that maps to rules from config
+      var conditions = Validator.getRuleConditions(rule, facts); // with each condition, extract facts into a
+      // final array
+
+      return (_ref = conditions || []) === null || _ref === void 0 ? void 0 : _ref.reduce(function (_arr, c) {
+        var _all2, _any2;
+
+        if ((_all2 = c.all) !== null && _all2 !== void 0 && _all2.length) {
+          // it is a AllConditions
+          return [].concat(_toConsumableArray(_arr), _toConsumableArray(_this2.getRuleFacts(c.all, facts)));
+        } else if ((_any2 = c.any) !== null && _any2 !== void 0 && _any2.length) {
+          // it is a AnyConditions
+          return [].concat(_toConsumableArray(_arr), _toConsumableArray(_this2.getRuleFacts(c.any, facts)));
+        } else {
+          var _value;
+
+          // default to ConditionProperties
+          return [].concat(_toConsumableArray(_arr), [c.fact], _toConsumableArray((_value = c.value) !== null && _value !== void 0 && _value.fact ? [c.value.fact] : []));
+        }
+      }, []);
+    }
+  }, {
+    key: "validationRuleValue",
+    value: function validationRuleValue(value, facts) {
+      if (!value) return value;
+      var isFact = /^\$/.test(value.toString());
+
+      if (isFact) {
+        return {
+          fact: value.toString().replace(/^$/, '')
+        };
+      }
+
+      if (value.fact) {
+        return {
+          fact: Validator.validationRuleValue(value.fact, facts)
+        };
+      }
+
+      if (CMD_DATE_REGEX.test(value.toString())) {
+        return getDateByPropertyValue(value.toString(), facts);
+      }
+
+      if (value === 'false') {
+        return false;
+      } else if (value === 'true') {
+        return true;
+      } else if (!isNaN(parseFloat(value.toString()))) {
+        return parseFloat(value.toString());
+      }
+
+      return value;
+    }
+  }, {
+    key: "sanitizeFacts",
+    value: function sanitizeFacts(facts) {
+      var _this3 = this;
+
+      return Object.keys(facts).reduce(function (newObj, factKey) {
+        if (facts[factKey] === undefined || facts[factKey] === '') {
+          newObj[factKey] = null;
+        } else if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/.test(facts[factKey]) || facts[factKey] instanceof Date) {
+          newObj[factKey] = new Date(facts[factKey]).valueOf();
+
+          if (isNaN(newObj[factKey])) {
+            newObj[factKey] = null;
+          }
+        } else if (Array.isArray(facts[factKey])) {
+          newObj[factKey] = facts[factKey].map(function (f) {
+            return _this3.sanitizeFacts(f);
+          });
+        } else if (facts[factKey] instanceof Object) {
+          newObj[factKey] = _this3.sanitizeFacts(facts[factKey]);
+        } else if (CMD_DATE_REGEX.test(facts[factKey])) {
+          newObj[factKey] = getDateByPropertyValue(facts[factKey], facts);
+        } else {
+          newObj[factKey] = facts[factKey];
+        }
+
+        return newObj;
+      }, {});
+    }
+  }]);
+
+  return Validator;
+}();
+
+_defineProperty(Validator, "generateValidateGenericData", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+  return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          return _context3.abrupt("return", {
+            'Date.now': Date.now(),
+            currentDate: new Date(),
+            currentDateString: formatDateString(new Date())
+          });
+
+        case 1:
+        case "end":
+          return _context3.stop();
+      }
+    }
+  }, _callee3);
+})));var WidgetItem = /*#__PURE__*/function () {
+  function WidgetItem(_ref) {
+    var _toJSON,
+        _ref2,
+        _this = this;
 
     var widget = _ref.widget,
         pageEventListener = _ref.pageEventListener,
@@ -7144,7 +8245,10 @@ exports.Engine = _engine2.default;
         getState = _ref.getState,
         setState = _ref.setState,
         onUpdate = _ref.onUpdate,
-        t = _ref.t;
+        t = _ref.t,
+        getWidgetMeta = _ref.getWidgetMeta,
+        getConfig = _ref.getConfig,
+        getValidator = _ref.getValidator;
 
     _classCallCheck(this, WidgetItem);
 
@@ -7168,14 +8272,22 @@ exports.Engine = _engine2.default;
 
     _defineProperty(this, "_attachedListenerSets", {});
 
+    _defineProperty(this, "_getWidgetMeta", void 0);
+
+    _defineProperty(this, "_getConfig", void 0);
+
     _defineProperty(this, "_properties", void 0);
+
+    _defineProperty(this, "_getValidator", void 0);
 
     this._t = t;
     this._pageEventListener = pageEventListener;
     this._removeWidget = removeWidget;
     this._emitEvent = emitEvent;
     this._widgetItems = {};
-    this._widget = widget;
+    this._widget = ((_toJSON = (_ref2 = widget).toJSON) === null || _toJSON === void 0 ? void 0 : _toJSON.call(_ref2)) || widget;
+    this._getWidgetMeta = getWidgetMeta;
+    this._getConfig = getConfig;
     this._getPageState = getState;
     this._setPageState = setState;
 
@@ -7185,9 +8297,12 @@ exports.Engine = _engine2.default;
     };
 
     this._properties = widget.properties;
+    this._getValidator = getValidator;
     if (this.code) getState().registerWidgetCode(this.code, this.id);
     this.syncReflexiveListeners();
+    this.syncValidationListeners();
     this.syncFetchPropertiesListeners();
+    this.emitListener('change');
   }
 
   _createClass(WidgetItem, [{
@@ -7288,8 +8403,18 @@ exports.Engine = _engine2.default;
       return this._widget.validationRules;
     }
   }, {
-    key: "setListenerSet",
-    value: function setListenerSet(setName, events, fn) {
+    key: "widgetMeta",
+    get: function get() {
+      return this._getWidgetMeta();
+    }
+  }, {
+    key: "validator",
+    get: function get() {
+      return this._getValidator();
+    }
+  }, {
+    key: "removeListenerSet",
+    value: function removeListenerSet(setName) {
       var _this2 = this;
 
       if (this._attachedListenerSets[setName]) {
@@ -7304,9 +8429,16 @@ exports.Engine = _engine2.default;
             return null;
           }
         };
-      } // if no events passed/defined, no point keeping this listener set,
-      // so remove it and skip the rest
+      }
+    }
+  }, {
+    key: "setListenerSet",
+    value: function setListenerSet(setName, events, fn) {
+      var _this3 = this;
 
+      // clear previous listeners
+      this.removeListenerSet(setName); // if no events passed/defined, no point keeping this listener set,
+      // so remove it and skip the rest
 
       if (!(events !== null && events !== void 0 && events.length)) {
         delete this._attachedListenerSets[setName];
@@ -7318,16 +8450,16 @@ exports.Engine = _engine2.default;
       this._attachedListenerSets[setName].fn = fn; // add fn to event listener
 
       this._attachedListenerSets[setName].events.forEach(function (eventName) {
-        _this2._pageEventListener.add(eventName, _this2._attachedListenerSets[setName].fn);
+        _this3._pageEventListener.add(eventName, _this3._attachedListenerSets[setName].fn);
       });
     }
   }, {
     key: "syncFetchPropertiesListeners",
     value: function syncFetchPropertiesListeners() {
       var _this$widget$fetchPro,
-          _this3 = this;
+          _this4 = this;
 
-      this.setListenerSet("fetchProperties", ((_this$widget$fetchPro = this.widget.fetchPropertiesOnWidgetsChange) === null || _this$widget$fetchPro === void 0 ? void 0 : _this$widget$fetchPro.map(function (c) {
+      this.setListenerSet('fetchProperties', ((_this$widget$fetchPro = this.widget.fetchPropertiesOnWidgetsChange) === null || _this$widget$fetchPro === void 0 ? void 0 : _this$widget$fetchPro.map(function (c) {
         return "".concat(c, "_change");
       })) || [], /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -7335,7 +8467,7 @@ exports.Engine = _engine2.default;
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return _this3.callFetchPropertiesApi();
+                return _this4.callFetchPropertiesApi();
 
               case 2:
               case "end":
@@ -7346,15 +8478,39 @@ exports.Engine = _engine2.default;
       })));
     }
   }, {
+    key: "syncValidationListeners",
+    value: function syncValidationListeners() {
+      var _this$validationRules,
+          _this5 = this;
+
+      this.setListenerSet('validations', ((_this$validationRules = this.validationRules) === null || _this$validationRules === void 0 ? void 0 : _this$validationRules.reduce(function (arr, c) {
+        return [].concat(_toConsumableArray(arr), _toConsumableArray((c.conditions || []).reduce(function (arr, cond) {
+          return [].concat(_toConsumableArray(arr), _toConsumableArray(_this5.validator.getRuleFacts(_this5.validator.getRuleConditions([cond].flat(1), _this5.validationFacts), _this5.validationFacts).map(function (c) {
+            return "".concat(c, "_change");
+          })));
+        }, [])));
+      }, []).filter(function (c) {
+        return c !== 'response';
+      })) || [], function () {
+        return _this5.runValidations();
+      });
+    }
+  }, {
     key: "syncReflexiveListeners",
     value: function syncReflexiveListeners() {
-      var _this$reflexiveRules,
-          _this4 = this;
+      var _this$validator$getRu,
+          _this$reflexiveRules,
+          _this6 = this;
 
-      this.setListenerSet("reflexives", ((_this$reflexiveRules = this.reflexiveRules) === null || _this$reflexiveRules === void 0 ? void 0 : _this$reflexiveRules.map(function (c) {
-        return "".concat(c.fact, "_change");
+      var reflexiveFacts = this.reflexiveRulesFacts;
+      this.setListenerSet('reflexives', ((_this$validator$getRu = this.validator.getRuleConditions(((_this$reflexiveRules = this.reflexiveRules) === null || _this$reflexiveRules === void 0 ? void 0 : _this$reflexiveRules.flat(1)) || [], reflexiveFacts)) === null || _this$validator$getRu === void 0 ? void 0 : _this$validator$getRu.reduce(function (arr, c) {
+        return [].concat(_toConsumableArray(arr), _toConsumableArray(_this6.validator.getRuleFacts(c, reflexiveFacts).map(function (a) {
+          return "".concat(a, "_change");
+        })));
+      }, []).filter(function (c) {
+        return c !== 'response';
       })) || [], function () {
-        return _this4.runReflexives();
+        return _this6.runReflexives();
       }); // initial run
 
       this.runReflexives();
@@ -7382,7 +8538,7 @@ exports.Engine = _engine2.default;
                 };
                 _context3.next = 5;
                 return fetch(this.widget.fetchPropertiesApi, {
-                  method: "POST",
+                  method: 'POST',
                   body: JSON.stringify(body)
                 });
 
@@ -7421,24 +8577,32 @@ exports.Engine = _engine2.default;
     key: "setProperty",
     value: function setProperty(field, value) {
       this._widget.properties[field] = value;
-
-      this._update(this);
+      this.update();
     }
   }, {
     key: "setEffectProperties",
     value: function setEffectProperties(type, properties) {
-      this._widget.effects = (this.effects || []).map(function (eff) {
-        return eff.type === type ? _objectSpread2(_objectSpread2({}, eff), {}, {
-          properties: properties
-        }) : eff;
-      });
+      var _this$_widget$effects;
 
-      this._update(this);
+      // if effects was never instantiated, nothing to update, skip
+      if (!this._widget.effects) return; // get effect index by type
+
+      var effectIdx = (_this$_widget$effects = this._widget.effects) === null || _this$_widget$effects === void 0 ? void 0 : _this$_widget$effects.findIndex(function (e) {
+        return e.type === type;
+      }); // if no effect was found with param type, just return
+
+      if (effectIdx === -1) return; // update properties at effect idx
+
+      this._widget.effects[effectIdx] = _objectSpread2(_objectSpread2({}, this._widget.effects[effectIdx]), {}, {
+        properties: properties
+      }); // trigger update for widget in UI
+
+      this.update();
     }
   }, {
     key: "update",
     value: function update() {
-      this._update();
+      this._update(this);
     }
   }, {
     key: "addEffect",
@@ -7457,18 +8621,17 @@ exports.Engine = _engine2.default;
 
       (_this$effects2 = this.effects) === null || _this$effects2 === void 0 ? void 0 : _this$effects2.push(effect); // trigger update
 
-      this._update();
+      this.update();
     }
   }, {
     key: "removeEffect",
     value: function removeEffect(effectType) {
-      var _this$_widget$effects;
+      var _this$_widget$effects2;
 
-      this._widget.effects = (_this$_widget$effects = this._widget.effects) === null || _this$_widget$effects === void 0 ? void 0 : _this$_widget$effects.filter(function (e) {
+      this._widget.effects = (_this$_widget$effects2 = this._widget.effects) === null || _this$_widget$effects2 === void 0 ? void 0 : _this$_widget$effects2.filter(function (e) {
         return e.type !== effectType;
       });
-
-      this._update();
+      this.update();
     }
   }, {
     key: "emitListener",
@@ -7484,18 +8647,23 @@ exports.Engine = _engine2.default;
       }
     }
   }, {
-    key: "destroyed",
-    value: function destroyed() {}
+    key: "destroy",
+    value: function destroy() {}
+  }, {
+    key: "toJSON",
+    value: function toJSON() {
+      return this._widget;
+    }
   }, {
     key: "removeWidget",
     value: function removeWidget() {
       // if there is a parent, let them know to remove you
       if (this.parentId) {
         this._widgetItems[this.parentId].removeChild(this);
-      } // trigger destroyed method for clean up
+      } // trigger destroy method for clean up
 
 
-      this.destroyed(); // remove self
+      this.destroy(); // remove self
 
       this._removeWidget(this.id);
     }
@@ -7507,86 +8675,74 @@ exports.Engine = _engine2.default;
   }, {
     key: "setLoading",
     value: function setLoading(isLoading) {
-      var _this5 = this;
+      var _this7 = this;
 
-      this.setState("loading", isLoading); // go through all parent to notify
+      this.setState('loading', isLoading);
+      this.emitEvent('isLoading', isLoading); // go through all parent to notify
 
       this.getParents().forEach(function (parentWidgetItem) {
-        parentWidgetItem.setChildLoading(_this5.id, isLoading);
+        parentWidgetItem.setChildLoading(_this7.id, isLoading);
       });
     }
   }, {
-    key: "validate",
+    key: "setDirty",
+    value: function setDirty() {
+      var dirty = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      this.setState({
+        touched: dirty,
+        pristine: !dirty,
+        dirty: dirty
+      });
+      this.update();
+    }
+  }, {
+    key: "runValidations",
     value: function () {
-      var _validate = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(conditions, data) {
-        var engine;
+      var _runValidations = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(opts) {
+        var _errors,
+            _this8 = this;
+
+        var errors, parentIds;
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                engine = new dist.Engine(undefined, {
-                  allowUndefinedFacts: true
-                });
-                engine.addRule({
-                  conditions: {
-                    all: conditions
-                  },
-                  event: {
-                    type: "isTruthy"
-                  }
-                });
-                _context4.next = 4;
-                return engine.run(data);
+                if (opts !== null && opts !== void 0 && opts.setDirty) {
+                  this.setDirty();
+                } // get errors (or null if none)
 
-              case 4:
-                return _context4.abrupt("return", _context4.sent.events.some(function (e) {
-                  return e.type === "isTruthy";
-                }));
 
-              case 5:
+                _context4.next = 3;
+                return this._getValidationErrors();
+
+              case 3:
+                errors = _context4.sent;
+                if (!((_errors = errors) !== null && _errors !== void 0 && _errors.length)) errors = null; // save error to widgetState
+
+                this.setState({
+                  errors: errors || [],
+                  valid: !errors,
+                  hasErrors: !!errors
+                }); // update parent fields that they have children errors
+
+                parentIds = this.getParentIds(); // go through each parent and notify them of children error changes
+
+                (parentIds || []).forEach(function (parentId) {
+                  _this8._widgetItems[parentId].setChildErrors(_this8.id, errors);
+                });
+                this.update(); // return errors
+
+                return _context4.abrupt("return", errors);
+
+              case 10:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4);
+        }, _callee4, this);
       }));
 
-      function validate(_x3, _x4) {
-        return _validate.apply(this, arguments);
-      }
-
-      return validate;
-    }()
-  }, {
-    key: "runValidations",
-    value: function () {
-      var _runValidations = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-        var errors;
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
-          while (1) {
-            switch (_context5.prev = _context5.next) {
-              case 0:
-                _context5.next = 2;
-                return this._getValidationErrors();
-
-              case 2:
-                errors = _context5.sent;
-                // save error to widgetState
-                this.setState("errors", errors); // update parent fields that they have children errors
-                // TODO
-                // return errors
-
-                return _context5.abrupt("return", errors);
-
-              case 5:
-              case "end":
-                return _context5.stop();
-            }
-          }
-        }, _callee5, this);
-      }));
-
-      function runValidations() {
+      function runValidations(_x3) {
         return _runValidations.apply(this, arguments);
       }
 
@@ -7595,106 +8751,108 @@ exports.Engine = _engine2.default;
   }, {
     key: "_getValidationErrors",
     value: function () {
-      var _getValidationErrors2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
-        var _this$validationRules,
-            _this6 = this;
+      var _getValidationErrors2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+        var _this$validationRules2,
+            _this9 = this;
 
-        var response, widgetResponses, errors;
-        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+        var response, widgetResponses, genericData, errors;
+        return regeneratorRuntime.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context7.prev = _context7.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
-                _context7.t0 = !((_this$validationRules = this.validationRules) !== null && _this$validationRules !== void 0 && _this$validationRules.length);
+                _context6.t0 = !((_this$validationRules2 = this.validationRules) !== null && _this$validationRules2 !== void 0 && _this$validationRules2.length);
 
-                if (_context7.t0) {
-                  _context7.next = 5;
+                if (_context6.t0) {
+                  _context6.next = 5;
                   break;
                 }
 
-                _context7.next = 4;
+                _context6.next = 4;
                 return this.isReflexive();
 
               case 4:
-                _context7.t0 = !_context7.sent;
+                _context6.t0 = !_context6.sent;
 
               case 5:
-                if (!_context7.t0) {
-                  _context7.next = 7;
+                if (!_context6.t0) {
+                  _context6.next = 7;
                   break;
                 }
 
-                return _context7.abrupt("return", null);
+                return _context6.abrupt("return", null);
 
               case 7:
                 // get current widget's response
-                response = this.getState("response"); // go through each validation, and return error string if
+                response = this.getState('response'); // go through each validation, and return error string if
                 // invalid, and null if valid.
                 // Only store an array of errors
 
-                widgetResponses = Object.keys(this.pageState.widgetState).reduce(function (responses, wStateKey) {
-                  var wState = _this6.pageState.widgetState[wStateKey];
+                widgetResponses = this.responses;
+                _context6.next = 11;
+                return this.validator.generateValidateGenericData();
 
-                  if (wState.type === "question") {
-                    responses[_this6._widgetItems[wStateKey].code || _this6._widgetItems[wStateKey].id] = wState.response;
-                  }
-
-                  return responses;
-                }, {});
-                _context7.next = 11;
+              case 11:
+                genericData = _context6.sent;
+                _context6.next = 14;
                 return Promise.all(this.validationRules.map( /*#__PURE__*/function () {
-                  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(validation) {
-                    var isValid;
-                    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+                  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(validation) {
+                    var data, conditions, isValid;
+                    return regeneratorRuntime.wrap(function _callee5$(_context5) {
                       while (1) {
-                        switch (_context6.prev = _context6.next) {
+                        switch (_context5.prev = _context5.next) {
                           case 0:
-                            _context6.next = 2;
-                            return _this6.validate(validation.conditions, _objectSpread2(_objectSpread2({
-                              properties: _this6.properties
+                            data = _this9.validator.sanitizeFacts(_objectSpread2(_objectSpread2(_objectSpread2({}, genericData), {}, {
+                              properties: _this9.properties
                             }, widgetResponses), {}, {
-                              response: response === undefined || response === "" ? null : response
+                              response: response === undefined || response === '' ? null : response
                             }));
+                            conditions = validation.conditions.map(function (c) {
+                              return _this9.validator.getRuleConditions(c, data);
+                            }).flat(2);
+                            _context5.next = 4;
+                            return _this9.validator.validate(conditions, data);
 
-                          case 2:
-                            isValid = _context6.sent;
+                          case 4:
+                            isValid = _context5.sent;
 
                             if (isValid) {
-                              _context6.next = 5;
+                              _context5.next = 7;
                               break;
                             }
 
-                            return _context6.abrupt("return", {
-                              err: validation.error
+                            return _context5.abrupt("return", {
+                              err: validation.error,
+                              isWarning: validation.isWarning
                             });
 
-                          case 5:
-                            return _context6.abrupt("return", null);
+                          case 7:
+                            return _context5.abrupt("return", null);
 
-                          case 6:
+                          case 8:
                           case "end":
-                            return _context6.stop();
+                            return _context5.stop();
                         }
                       }
-                    }, _callee6);
+                    }, _callee5);
                   }));
 
-                  return function (_x5) {
-                    return _ref3.apply(this, arguments);
+                  return function (_x4) {
+                    return _ref4.apply(this, arguments);
                   };
                 }()));
 
-              case 11:
-                errors = _context7.sent.filter(function (a) {
+              case 14:
+                errors = _context6.sent.filter(function (a) {
                   return a;
                 });
-                return _context7.abrupt("return", errors.length ? errors : null);
+                return _context6.abrupt("return", errors.length ? errors : null);
 
-              case 13:
+              case 16:
               case "end":
-                return _context7.stop();
+                return _context6.stop();
             }
           }
-        }, _callee7, this);
+        }, _callee6, this);
       }));
 
       function _getValidationErrors() {
@@ -7706,16 +8864,15 @@ exports.Engine = _engine2.default;
   }, {
     key: "addValidation",
     value: function addValidation(validation) {
-      var _this$validationRules2;
+      var _this$validationRules3;
 
-      (_this$validationRules2 = this.validationRules) === null || _this$validationRules2 === void 0 ? void 0 : _this$validationRules2.push(validation);
-
-      this._update();
+      (_this$validationRules3 = this.validationRules) === null || _this$validationRules3 === void 0 ? void 0 : _this$validationRules3.push(validation);
+      this.update();
     }
   }, {
     key: "setChildLoading",
     value: function setChildLoading(childWidgetId, isLoading) {
-      var currentChildLoadings = this.getState("childLoadings") || {};
+      var currentChildLoadings = this.getState('childLoadings') || {};
 
       if (!isLoading) {
         delete currentChildLoadings[childWidgetId];
@@ -7724,15 +8881,15 @@ exports.Engine = _engine2.default;
       }
 
       if (!Object.keys(currentChildLoadings).length) {
-        this.setState("childLoadings", undefined);
+        this.setState('childLoadings', undefined);
       } else {
-        this.setState("childLoadings", currentChildLoadings);
+        this.setState('childLoadings', currentChildLoadings);
       }
     }
   }, {
     key: "childLoadings",
     value: function childLoadings() {
-      return this.getState("childLoadings");
+      return this.getState('childLoadings');
     }
   }, {
     key: "hasChildLoading",
@@ -7741,25 +8898,57 @@ exports.Engine = _engine2.default;
     }
   }, {
     key: "setChildErrors",
-    value: function setChildErrors(childWidgetId, errors) {
-      var currentChildErrors = this.getState("childErrors") || {};
+    value: function () {
+      var _setChildErrors = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(childWidgetId, errors) {
+        var originalChildErrors, currentChildErrors;
+        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                originalChildErrors = this.getState('childErrors') || {};
+                currentChildErrors = _objectSpread2({}, this.getState('childErrors')) || {};
 
-      if (!errors) {
-        delete currentChildErrors[childWidgetId];
-      } else {
-        currentChildErrors[childWidgetId] = errors;
+                if (!errors) {
+                  delete currentChildErrors[childWidgetId];
+                } else {
+                  currentChildErrors[childWidgetId] = errors;
+                } // nothing to set, just return
+
+
+                if (!(Object.keys(currentChildErrors).length === Object.keys(originalChildErrors).length && Object.keys(currentChildErrors).every(function (key) {
+                  return originalChildErrors[key] === currentChildErrors[key];
+                }))) {
+                  _context7.next = 5;
+                  break;
+                }
+
+                return _context7.abrupt("return");
+
+              case 5:
+                if (!Object.keys(currentChildErrors).length) {
+                  this.setState('childErrors', undefined);
+                } else {
+                  this.setState('childErrors', currentChildErrors);
+                }
+
+              case 6:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7, this);
+      }));
+
+      function setChildErrors(_x5, _x6) {
+        return _setChildErrors.apply(this, arguments);
       }
 
-      if (!Object.keys(currentChildErrors).length) {
-        this.setState("childErrors", undefined);
-      } else {
-        this.setState("childErrors", currentChildErrors);
-      }
-    }
+      return setChildErrors;
+    }()
   }, {
     key: "childErrors",
     value: function childErrors() {
-      return this.getState("childErrors");
+      return this.getState('childErrors');
     }
   }, {
     key: "hasChildErrors",
@@ -7780,10 +8969,10 @@ exports.Engine = _engine2.default;
 
               case 2:
                 isHide = !_context8.sent;
-                stateIsHide = !!this.getState("reflexiveHide");
+                stateIsHide = !!this.getState('reflexiveHide');
 
                 if (!(isHide !== stateIsHide)) {
-                  _context8.next = 7;
+                  _context8.next = 8;
                   break;
                 }
 
@@ -7791,9 +8980,16 @@ exports.Engine = _engine2.default;
                 return this.runValidations();
 
               case 7:
-                this.setState("reflexiveHide", isHide);
+                this.setState('reflexiveHide', isHide);
 
               case 8:
+                if (isHide) {
+                  this.setState({
+                    response: null
+                  });
+                }
+
+              case 9:
               case "end":
                 return _context8.stop();
             }
@@ -7808,12 +9004,64 @@ exports.Engine = _engine2.default;
       return runReflexives;
     }()
   }, {
+    key: "getResponsesByCodesOrIds",
+    value: function getResponsesByCodesOrIds(codesOrIds) {
+      var _this10 = this;
+
+      return codesOrIds.reduce(function (obj, codeOrId) {
+        var _this10$pageState$wid;
+
+        var widgetIdByCode = _this10.pageState.widgetCodeToIdMap[codeOrId]; // TODO: what if I want to be more generic
+        // and run rule by any param in widgetState and data
+
+        var response = (_this10$pageState$wid = _this10.pageState.widgetState[widgetIdByCode]) === null || _this10$pageState$wid === void 0 ? void 0 : _this10$pageState$wid.response;
+        obj[codeOrId] = response;
+        return obj;
+      }, {});
+    }
+  }, {
+    key: "responses",
+    get: function get() {
+      var _this11 = this;
+
+      if (!Object.keys(this._widgetItems).length) {
+        return {};
+      }
+
+      return Object.keys(this.pageState.widgetState).reduce(function (responses, wStateKey) {
+        var wState = _this11.pageState.widgetState[wStateKey];
+
+        if (wState.type === 'question' && _this11._widgetItems[wStateKey]) {
+          var _this11$_widgetItems$, _this11$_widgetItems$2;
+
+          responses[((_this11$_widgetItems$ = _this11._widgetItems[wStateKey]) === null || _this11$_widgetItems$ === void 0 ? void 0 : _this11$_widgetItems$.code) || ((_this11$_widgetItems$2 = _this11._widgetItems[wStateKey]) === null || _this11$_widgetItems$2 === void 0 ? void 0 : _this11$_widgetItems$2.id)] = wState.response;
+        }
+
+        return responses;
+      }, {});
+    }
+  }, {
+    key: "validationFacts",
+    get: function get() {
+      return Validator.sanitizeFacts(_objectSpread2(_objectSpread2({}, Validator.generateValidateGenericData()), this.responses));
+    }
+  }, {
+    key: "reflexiveRulesFacts",
+    get: function get() {
+      var _this12 = this;
+
+      return this.getResponsesByCodesOrIds((this.reflexiveRules || []).reduce(function (arr, rule) {
+        return [].concat(_toConsumableArray(arr), _toConsumableArray(_this12.validator.getRuleFacts(rule, _this12.responses)));
+      }, []));
+    }
+  }, {
     key: "isReflexive",
     value: function () {
       var _isReflexive = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
         var _this$reflexiveRules2,
-            _this7 = this;
+            _this13 = this;
 
+        var rules, facts, isReflexive, stateIsHide;
         return regeneratorRuntime.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
@@ -7826,20 +9074,28 @@ exports.Engine = _engine2.default;
                 return _context9.abrupt("return", true);
 
               case 2:
-                return _context9.abrupt("return", this.validate(this.reflexiveRules, this.reflexiveRules.reduce(function (obj, reflexive) {
-                  var _this7$pageState$widg;
+                // extract all rules from reflexiveRules
+                rules = this.reflexiveRules.map(function (r) {
+                  return _this13.validator.getRuleConditions(r, _this13.validationFacts);
+                }).flat(2); // go through each reflexive rule to generate
+                // a list of variable dependencies
 
-                  var widgetIdByCode = _this7.pageState.widgetCodeToIdMap[reflexive.fact]; // TODO: what if I want to be more generic
-                  // and run rule by any param in widgetState and data
+                facts = this.reflexiveRulesFacts; // validate reflexive rules
 
-                  // TODO: what if I want to be more generic
-                  // and run rule by any param in widgetState and data
-                  var response = (_this7$pageState$widg = _this7.pageState.widgetState[widgetIdByCode]) === null || _this7$pageState$widg === void 0 ? void 0 : _this7$pageState$widg.response;
-                  obj[reflexive.fact] = response;
-                  return obj;
-                }, {})));
+                _context9.next = 6;
+                return this.validator.validate(rules, facts);
 
-              case 3:
+              case 6:
+                isReflexive = _context9.sent;
+                stateIsHide = !!this.getState('reflexiveHide');
+
+                if (isReflexive === stateIsHide) {
+                  this.setState('reflexiveHide', !isReflexive);
+                }
+
+                return _context9.abrupt("return", isReflexive);
+
+              case 10:
               case "end":
                 return _context9.stop();
             }
@@ -7877,16 +9133,16 @@ exports.Engine = _engine2.default;
   }, {
     key: "getParents",
     value: function getParents() {
-      var _this8 = this;
+      var _this14 = this;
 
       return this.getParentIds().map(function (pId) {
-        return _this8._widgetItems[pId];
+        return _this14._widgetItems[pId];
       });
     }
   }, {
     key: "getParent",
     value: function getParent() {
-      return this._widgetItems[this.parentId || ""] || null;
+      return this._widgetItems[this.parentId || ''] || null;
     }
   }, {
     key: "getChildrenIds",
@@ -7897,10 +9153,10 @@ exports.Engine = _engine2.default;
   }, {
     key: "getChildren",
     value: function getChildren(opts, meta) {
-      var _this9 = this;
+      var _this15 = this;
 
       return this.getChildrenIds(opts, meta).map(function (c) {
-        return _this9._widgetItems[c];
+        return _this15._widgetItems[c];
       });
     }
   }, {
@@ -7925,36 +9181,95 @@ exports.Engine = _engine2.default;
   }]);
 
   return WidgetItem;
-}();//
-var script$$ = defineComponent({
+}();var script$11 = defineComponent({
+  inject: ['widgetEffectControls', 'setPageState'],
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
     view: String
   },
-  inject: ["widgetEffectControls", "setPageState"],
+  data: function data() {
+    return {
+      isMounted: false
+    };
+  },
+  computed: {
+    widgetView: function widgetView() {
+      return this.view || 'display';
+    }
+  },
+  mounted: function mounted() {
+    this.isMounted = true;
+  },
   methods: {
     onWidgetSelect: function onWidgetSelect() {
       // if (
-      //   this.$props.pageState.interactiveState.selectedWidgetId ===
-      //   this.$props.widget.id
+      //   this.pageState.interactiveState.selectedWidgetId ===
+      //   this.widget.id
       // ) {
-      //   this.$props.pageState.interactiveState.selectedWidgetId = "";
+      //   this.pageState.interactiveState.selectedWidgetId = "";
       // } else {
-      this.$props.pageState.interactiveState.selectedWidgetId = this.$props.widget.id; // }
+      this.pageState.interactiveState.selectedWidgetId = this.widget.id; // }
 
-      this.setPageState(this.$props.pageState);
+      this.setPageState(this.pageState);
+    },
+    getWidgetRender: function getWidgetRender() {
+      var _this$widget;
+
+      var view = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'display';
+      var opts = arguments.length > 1 ? arguments[1] : undefined;
+      var widgetType = this.widgetControls[((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.type) || ''];
+
+      if (!widgetType) {
+        var _this$widget2;
+
+        if (opts !== null && opts !== void 0 && opts.nullable) {
+          return null;
+        }
+
+        throw new Error("widget type [".concat((_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.type, "] from widget [").concat(this.widget.id, "] was not found. Maybe the widget control was not imported"));
+      }
+
+      var widgetRender = widgetType[view];
+
+      if (!widgetRender) {
+        if (opts !== null && opts !== void 0 && opts.nullable) {
+          return null;
+        }
+
+        throw new Error("widget view [".concat(view, "] does not exist for widget type [").concat(this.widget.type, "]"));
+      }
+
+      return widgetRender;
     }
   }
 });/* script */
-var __vue_script__$$ = script$$;
+var __vue_script__$11 = script$11;
 /* template */
 
-var __vue_render__$$ = function __vue_render__() {
+var __vue_render__$11 = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -7976,17 +9291,18 @@ var __vue_render__$$ = function __vue_render__() {
     }
   }, [_vm._v("\n    " + _vm._s(_vm.widget.style) + "\n  ")]) : _vm._e(), _vm._ssrNode(" "), _vm.view === 'builder' && _vm.widgetControls[_vm.widget.type].builderControl ? _vm._ssrNode("<div" + _vm._ssrClass("widget-builder-control", {
     hovered: _vm.pageState.interactiveState.hoveredWidgetId === _vm.widget.id
-  }) + " data-v-cde56c1a>", "</div>", [_c(_vm.widgetControls[_vm.widget.type].builderControl, {
+  }) + " data-v-74e97d1a>", "</div>", [_c(_vm.widgetControls[_vm.widget.type].builderControl, {
     tag: "component",
     attrs: {
       "widget": _vm.widget,
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "pageState": _vm.pageState,
-      "setWidgetState": function setWidgetState(key, value) {
+      "properties": _vm.widget.properties,
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "page-state": _vm.pageState,
+      "set-widget-state": function setWidgetState(key, value) {
         return _vm.setWidgetState(key, value, _vm.widget);
       },
-      "getWidgetState": function getWidgetState(key) {
+      "get-widget-state": function getWidgetState(key) {
         return _vm.getWidgetState(key, _vm.widget);
       },
       "view": _vm.view
@@ -7994,42 +9310,53 @@ var __vue_render__$$ = function __vue_render__() {
   })], 1) : _vm._e(), _vm._ssrNode(" "), _vm._ssrNode("<div" + _vm._ssrClass("widget-component-wrapper", {
     selected: _vm.pageState.interactiveState.selectedWidgetId === _vm.widget.id,
     unselected: _vm.pageState.interactiveState.selectedWidgetId && _vm.pageState.interactiveState.selectedWidgetId !== _vm.widget.id
-  }) + " data-v-cde56c1a>", "</div>", [_vm._l(_vm.widget.effects, function (widgetEffect) {
+  }) + " data-v-74e97d1a>", "</div>", [_vm.isMounted ? [_vm._l(_vm.widget.effects, function (widgetEffect) {
     return _c(_vm.widgetEffectControls[widgetEffect.type].display, {
       key: widgetEffect.type,
       tag: "component",
       attrs: {
         "properties": widgetEffect.properties,
-        "wrapperRef": _vm.$refs.widgetComponentWrapper
+        "wrapper-ref": _vm.$refs.widgetComponentWrapper
       }
     });
-  }), _vm._ssrNode(" "), _c(_vm.widgetControls[_vm.widget.type][_vm.view || 'display'], {
+  }), _vm._ssrNode(" "), _c(_vm.getWidgetRender(_vm.widgetView), {
     tag: "component",
     attrs: {
+      "id": "widget-" + _vm.widget.id,
+      "data-test": "widget-" + _vm.widget.code,
       "widget": _vm.widget,
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "pageState": _vm.pageState,
+      "properties": _vm.widget.properties,
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "page-state": _vm.pageState,
+      "set-widget-state": function setWidgetState(key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "get-widget-state": function getWidgetState(key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      },
+      "view": _vm.view,
+      "wrapper-ref": _vm.$refs.widgetComponentWrapper,
+      "t": _vm.widget.t
+    },
+    on: {
       "setWidgetState": function setWidgetState(key, value) {
         return _vm.setWidgetState(key, value, _vm.widget);
       },
       "getWidgetState": function getWidgetState(key) {
         return _vm.getWidgetState(key, _vm.widget);
-      },
-      "view": _vm.view,
-      "wrapperRef": _vm.$refs.widgetComponentWrapper,
-      "t": _vm.widget.t
+      }
     }
-  })], 2)], 2);
+  })] : _vm._e()], 2)], 2);
 };
 
-var __vue_staticRenderFns__$$ = [];
+var __vue_staticRenderFns__$11 = [];
 /* style */
 
-var __vue_inject_styles__$$ = function __vue_inject_styles__(inject) {
+var __vue_inject_styles__$11 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-cde56c1a_0", {
-    source: ".widget-component-wrapper[data-v-cde56c1a]{position:relative}.widget-component-wrapper.selected[data-v-cde56c1a]{background-color:#fff;border:1px solid #86d5fa;border-radius:8px;padding:0 10px;margin:-1px -11px -1px -11px}.widget-wrapper[data-v-cde56c1a]{padding:0 10px}.widget-builder-control[data-v-cde56c1a]{position:absolute;top:-10px;left:10px;opacity:0;transition:opacity .2s;z-index:10}.widget-builder-control.hovered[data-v-cde56c1a]{opacity:1}",
+  inject("data-v-74e97d1a_0", {
+    source: ".widget-component-wrapper[data-v-74e97d1a]{position:relative}.widget-component-wrapper.selected[data-v-74e97d1a]{background-color:#fff;border:1px solid #86d5fa;border-radius:8px;padding:0 10px;margin:-1px -11px -1px -11px}.widget-wrapper[data-v-74e97d1a]{padding:0}.widget-builder-control[data-v-74e97d1a]{position:absolute;top:-10px;left:10px;opacity:0;transition:opacity .2s;z-index:10}.widget-builder-control.hovered[data-v-74e97d1a]{opacity:1}",
     map: undefined,
     media: undefined
   });
@@ -8037,24 +9364,24 @@ var __vue_inject_styles__$$ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$$ = "data-v-cde56c1a";
+var __vue_scope_id__$11 = "data-v-74e97d1a";
 /* module identifier */
 
-var __vue_module_identifier__$$ = "data-v-cde56c1a";
+var __vue_module_identifier__$11 = "data-v-74e97d1a";
 /* functional template */
 
-var __vue_is_functional_template__$$ = false;
+var __vue_is_functional_template__$11 = false;
 /* style inject shadow dom */
 
-var __vue_component__$11 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$$,
-  staticRenderFns: __vue_staticRenderFns__$$
-}, __vue_inject_styles__$$, __vue_script__$$, __vue_scope_id__$$, __vue_is_functional_template__$$, __vue_module_identifier__$$, false, undefined, createInjectorSSR, undefined);
+var __vue_component__$13 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$11,
+  staticRenderFns: __vue_staticRenderFns__$11
+}, __vue_inject_styles__$11, __vue_script__$11, __vue_scope_id__$11, __vue_is_functional_template__$11, __vue_module_identifier__$11, false, undefined, createInjectorSSR, undefined);
 
-var WidgetView = __vue_component__$11;//
-var script$_ = defineComponent({
+var BuilderWidgetView = __vue_component__$13;//
+var script$10 = defineComponent({
   components: {
-    WidgetView: WidgetView
+    BuilderWidgetView: BuilderWidgetView
   },
   props: {
     widgetControls: Object,
@@ -8063,7 +9390,7 @@ var script$_ = defineComponent({
     onlyIncludeWidgetIds: R(String),
     forParent: String
   },
-  inject: ["widgetControls", "getPageState", "getView", "setPageState", "removeWidget"],
+  inject: ['widgetControls', 'getPageState', 'getView', 'setPageState', 'removeWidget'],
   data: function data() {
     return {
       hoveredWidgetId: -1,
@@ -8083,12 +9410,11 @@ var script$_ = defineComponent({
     filteredWidgetItemsArr: function filteredWidgetItemsArr() {
       var _this = this;
 
-      var filteredArr = this.widgetItemsArr.filter(function (f) {
+      return this.widgetItemsArr.filter(function (f) {
         return (!_this.forParent && !f.parentId || f.parentId === _this.forParent) && (!_this.$props.onlyIncludeWidgetIds || _this.$props.onlyIncludeWidgetIds.includes(f.id)) && (!(_this.excludeWidgetIds || []).length || !_this.excludeWidgetIds.includes(f.id));
       }).sort(function (a, b) {
         return (a.order || 0) - (b.order || 0);
       });
-      return filteredArr;
     }
   },
   methods: {
@@ -8104,7 +9430,7 @@ var script$_ = defineComponent({
       this.setPageState(this.pageState);
     },
     onDnDPlaceholderMouseUp: function onDnDPlaceholderMouseUp(ev, widgetId) {
-      this.pageState.interactiveState.draggingWidgetId = "";
+      this.pageState.interactiveState.draggingWidgetId = '';
       this.setPageState(this.pageState);
     },
     onMouseEnter: function onMouseEnter(ev, widgetId) {
@@ -8116,7 +9442,7 @@ var script$_ = defineComponent({
     onMouseLeave: function onMouseLeave(ev, widgetId) {
       if (this.$data.hoveredWidgetId !== widgetId) return;
       this.$data.hoveredWidgetId = -1;
-      this.pageState.interactiveState.hoveredWidgetId = "";
+      this.pageState.interactiveState.hoveredWidgetId = '';
       this.setPageState(this.pageState);
     },
     setWidgetState: function setWidgetState(key, value, widget) {
@@ -8139,10 +9465,10 @@ var script$_ = defineComponent({
     }
   }
 });/* script */
-var __vue_script__$_ = script$_;
+var __vue_script__$10 = script$10;
 /* template */
 
-var __vue_render__$_ = function __vue_render__() {
+var __vue_render__$10 = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -8154,29 +9480,349 @@ var __vue_render__$_ = function __vue_render__() {
       hovering: _vm.hoveredWidgetId === widget.id,
       dragging: _vm.pageState.interactiveState.draggingWidgetId === widget.id,
       notDragging: _vm.pageState.interactiveState.draggingWidgetId && _vm.pageState.interactiveState.draggingWidgetId !== widget.id
-    }) + " data-v-1bdc9e34>", "</div>", [_vm._ssrNode("<div class=\"left-actions-wrapper\" data-v-1bdc9e34><a class=\"dnd-placeholder\" data-v-1bdc9e34>\n        ↑↓\n      </a> <a class=\"delete-button\" data-v-1bdc9e34>\n        🗑\n      </a></div> <div" + _vm._ssrClass("add-line", {
+    }) + " data-v-68166712>", "</div>", [_vm._ssrNode("<div class=\"left-actions-wrapper\" data-v-68166712><a class=\"dnd-placeholder\" data-v-68166712>\n          ↑↓\n        </a> <a class=\"delete-button\" data-v-68166712>\n          🗑\n        </a></div> <div" + _vm._ssrClass("add-line", {
       opened: _vm.openedAddOptionsIndex === widgetIndex
-    }) + " data-v-1bdc9e34><div class=\"line\" data-v-1bdc9e34></div> <a class=\"add-button\" data-v-1bdc9e34><span data-v-1bdc9e34>+</span></a> <div" + _vm._ssrClass("add-options-wrapper", {
+    }) + " data-v-68166712><div class=\"line\" data-v-68166712></div> <a class=\"add-button\" data-v-68166712><span data-v-68166712>+</span></a> <div" + _vm._ssrClass("add-options-wrapper", {
       open: _vm.openedAddOptionsIndex === widgetIndex
-    }) + " data-v-1bdc9e34><div class=\"add-options-inner-wrapper\" data-v-1bdc9e34>" + _vm._ssrList(Object.keys(_vm.widgetControls), function (widgetControlKey) {
-      return "<a data-v-1bdc9e34>" + _vm._ssrEscape("\n            " + _vm._s(widgetControlKey) + "\n          ") + "</a>";
-    }) + "</div></div></div> "), _c('widget-view', {
+    }) + " data-v-68166712><div class=\"add-options-inner-wrapper\" data-v-68166712>" + _vm._ssrList(Object.keys(_vm.widgetControls), function (widgetControlKey) {
+      return "<a data-v-68166712>" + _vm._ssrEscape("\n              " + _vm._s(widgetControlKey) + "\n            ") + "</a>";
+    }) + "</div></div></div> "), _c('builder-widget-view', {
       attrs: {
         "widget": widget,
-        "widgetControls": _vm.widgetControls,
-        "widgetItems": _vm.widgetItems,
-        "pageState": _vm.pageState,
-        "setWidgetState": _vm.setWidgetState,
-        "getWidgetState": _vm.getWidgetState,
+        "widget-controls": _vm.widgetControls,
+        "widget-items": _vm.widgetItems,
+        "page-state": _vm.pageState,
+        "set-widget-state": _vm.setWidgetState,
+        "get-widget-state": _vm.getWidgetState,
         "view": _vm.view
       }
     }), _vm._ssrNode(" " + (widgetIndex === _vm.filteredWidgetItemsArr.length - 1 ? "<div" + _vm._ssrClass("add-line", {
       opened: _vm.openedAddOptionsIndex === widgetIndex + 1
-    }) + " data-v-1bdc9e34><div class=\"line\" data-v-1bdc9e34></div> <a class=\"add-button\" data-v-1bdc9e34><span data-v-1bdc9e34>+</span></a> <div" + _vm._ssrClass("add-options-wrapper", {
+    }) + " data-v-68166712><div class=\"line\" data-v-68166712></div> <a class=\"add-button\" data-v-68166712><span data-v-68166712>+</span></a> <div" + _vm._ssrClass("add-options-wrapper", {
       open: _vm.openedAddOptionsIndex === widgetIndex + 1
-    }) + " data-v-1bdc9e34><div class=\"add-options-inner-wrapper\" data-v-1bdc9e34>" + _vm._ssrList(Object.keys(_vm.widgetControls), function (widgetControlKey) {
-      return "<a data-v-1bdc9e34>" + _vm._ssrEscape("\n            " + _vm._s(widgetControlKey) + "\n          ") + "</a>";
+    }) + " data-v-68166712><div class=\"add-options-inner-wrapper\" data-v-68166712>" + _vm._ssrList(Object.keys(_vm.widgetControls), function (widgetControlKey) {
+      return "<a data-v-68166712>" + _vm._ssrEscape("\n              " + _vm._s(widgetControlKey) + "\n            ") + "</a>";
     }) + "</div></div></div>" : "<!---->"))], 2);
+  }), 0);
+};
+
+var __vue_staticRenderFns__$10 = [];
+/* style */
+
+var __vue_inject_styles__$10 = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-68166712_0", {
+    source: ".widget-container[data-v-68166712]{position:relative}.widget-container.notDragging[data-v-68166712]{opacity:.4}.widget-container.dragging[data-v-68166712]{opacity:1}.widget-form-control[data-v-68166712]{position:absolute;top:-40px;left:0}.add-line[data-v-68166712]{position:relative;padding:10px 0;margin:-10.5px 0;opacity:0;transition:opacity .2s;z-index:10}.add-line[data-v-68166712]:hover{opacity:1}.add-line .line[data-v-68166712]{width:100%;height:1px;background-color:#b5b5b5;cursor:pointer}.add-line .add-button[data-v-68166712]{position:absolute;top:-2px;left:-10px;width:20px;height:20px;background-color:#fff;border:1px solid #cdcdcd;border-radius:4px;display:flex;justify-content:center;align-items:center;padding-top:2px;box-shadow:0 0 10px 10px #fff;cursor:pointer;transition:background-color .3s}.add-line.opened .add-button[data-v-68166712]{background-color:#f71414;border:1px solid #f71414;color:#fff}.add-line.opened .add-button[data-v-68166712]:hover{background-color:#dc1212;border:1px solid #dc1212}.add-line .add-button span[data-v-68166712]{transition:all .3s}.add-line.opened .add-button span[data-v-68166712]{transform:rotate(45deg)}.add-line .add-button[data-v-68166712]:hover{background-color:#eaeaea}.add-line .add-options-wrapper[data-v-68166712]{margin-left:15px;position:absolute;top:-2px;left:0;width:100%;display:none}.add-line .add-options-wrapper.open[data-v-68166712]{display:block}.add-line .add-options-inner-wrapper[data-v-68166712]{width:100%;padding-bottom:10px;overflow-x:auto;display:flex;flex-direction:row}.add-line .add-options-wrapper a[data-v-68166712]{padding:2px 4px;cursor:pointer;background-color:#fff;border:1px solid #e8e8e8;border-radius:4px}.widget-container .dnd-placeholder[data-v-68166712]{width:20px;height:25px;padding-bottom:2px;background-color:#fafafa;border:1px dashed #dadada;cursor:grab;font-size:9pt;display:flex;justify-content:center;align-items:center;border-radius:4px}.widget-container .dnd-placeholder[data-v-68166712]:hover{background-color:#eaeaea}.left-actions-wrapper[data-v-68166712]{position:absolute;top:15px;left:-40px;padding:10px;opacity:0;transition:opacity .2s;width:25px;display:flex;flex-direction:column;align-items:center}.widget-container.hovering>.left-actions-wrapper[data-v-68166712]{opacity:1}.delete-button[data-v-68166712]{font-size:12px;margin:2px 0;padding:1px 0;cursor:pointer;color:red}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$10 = "data-v-68166712";
+/* module identifier */
+
+var __vue_module_identifier__$10 = "data-v-68166712";
+/* functional template */
+
+var __vue_is_functional_template__$10 = false;
+/* style inject shadow dom */
+
+var __vue_component__$12 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$10,
+  staticRenderFns: __vue_staticRenderFns__$10
+}, __vue_inject_styles__$10, __vue_script__$10, __vue_scope_id__$10, __vue_is_functional_template__$10, __vue_module_identifier__$10, false, undefined, createInjectorSSR, undefined);
+
+var BuilderWidgetsLayout = __vue_component__$12;var script$$ = defineComponent({
+  props: {
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
+    view: String
+  },
+  inject: ['widgetEffectControls'],
+  data: function data() {
+    return {
+      isMounted: false
+    };
+  },
+  computed: {
+    widgetView: function widgetView() {
+      return this.view || 'display';
+    }
+  },
+  mounted: function mounted() {
+    this.isMounted = true;
+  },
+  methods: {
+    getWidgetEffectRender: function getWidgetEffectRender(effectType) {
+      var view = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'display';
+      var widgetEffectType = this.widgetEffectControls[effectType];
+
+      if (!widgetEffectType) {
+        throw new Error("widget effect type [".concat(effectType, "] from widget [").concat(this.widget.id, "] was not found. Maybe the widget effect control was not imported"));
+      }
+
+      var widgetRender = widgetEffectType[view];
+
+      if (!widgetRender) {
+        throw new Error("widget view [".concat(view, "] does not exist for widget effect type [").concat(effectType, "]"));
+      }
+
+      return widgetRender;
+    },
+    getWidgetRender: function getWidgetRender() {
+      var _this$widget;
+
+      var view = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'display';
+      var opts = arguments.length > 1 ? arguments[1] : undefined;
+      var widgetType = this.widgetControls[((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.type) || ''];
+
+      if (!widgetType) {
+        var _this$widget2;
+
+        if (opts !== null && opts !== void 0 && opts.nullable) {
+          return null;
+        }
+
+        throw new Error("widget type [".concat((_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.type, "] from widget [").concat(this.widget.id, "] was not found. Maybe the widget control was not imported"));
+      }
+
+      var widgetRender = widgetType[view];
+
+      if (!widgetRender) {
+        if (opts !== null && opts !== void 0 && opts.nullable) {
+          return null;
+        }
+
+        throw new Error("widget view [".concat(view, "] does not exist for widget type [").concat(this.widget.type, "]"));
+      }
+
+      return widgetRender;
+    }
+  }
+});/* script */
+var __vue_script__$$ = script$$;
+/* template */
+
+var __vue_render__$$ = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "widget-wrapper",
+    attrs: {
+      "widget-id": _vm.widget.id,
+      "widget-code": _vm.widget.code
+    }
+  }, [_vm.widget.style ? _c('style', {
+    tag: "component",
+    attrs: {
+      "scoped": ""
+    }
+  }, [_vm._v("\n    " + _vm._s(_vm.widget.style) + "\n  ")]) : _vm._e(), _vm._ssrNode(" "), _vm.view === 'builder' ? _vm._ssrNode("<div class=\"widget-form-control\" data-v-ed524fac>", "</div>", [_c(_vm.getWidgetRender('builderControl', {
+    nullable: true
+  }), {
+    tag: "component",
+    attrs: {
+      "widget": _vm.widget,
+      "properties": _vm.widget.properties,
+      "widgetControls": _vm.widgetControls,
+      "widgetItems": _vm.widgetItems,
+      "pageState": _vm.pageState,
+      "setWidgetState": function setWidgetState(key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function getWidgetState(key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      },
+      "view": _vm.widgetView
+    },
+    on: {
+      "setWidgetState": function setWidgetState(key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function getWidgetState(key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      }
+    }
+  })], 1) : _vm._e(), _vm._ssrNode(" "), _vm._ssrNode("<div" + _vm._ssrAttr("id", "widget-wrapper-" + _vm.widget.id) + _vm._ssrAttr("data-test", "widget-wrapper-" + _vm.widget.code) + _vm._ssrClass(null, ['widget-component-wrapper', "view-" + _vm.widgetView]) + " data-v-ed524fac>", "</div>", [_vm.isMounted ? [_vm._l(_vm.widget.effects, function (widgetEffect) {
+    return _c(_vm.getWidgetEffectRender(widgetEffect.type, 'display'), {
+      key: widgetEffect.type,
+      tag: "component",
+      attrs: {
+        "properties": widgetEffect.properties,
+        "wrapperRef": _vm.$refs.widgetComponentWrapper
+      }
+    });
+  }), _vm._ssrNode(" "), _vm.widget ? _c(_vm.getWidgetRender(_vm.widgetView), {
+    tag: "component",
+    attrs: {
+      "id": "widget-" + _vm.widget.id,
+      "data-test": "widget-" + _vm.widget.code,
+      "widget": _vm.widget,
+      "properties": _vm.widget.properties,
+      "widgetControls": _vm.widgetControls,
+      "widgetItems": _vm.widgetItems,
+      "pageState": _vm.pageState,
+      "setWidgetState": function setWidgetState(key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function getWidgetState(key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      },
+      "view": _vm.widgetView,
+      "wrapperRef": _vm.$refs.widgetComponentWrapper,
+      "t": _vm.widget.t
+    },
+    on: {
+      "setWidgetState": function setWidgetState(key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function getWidgetState(key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      }
+    }
+  }) : _vm._e()] : _vm._e()], 2)], 2);
+};
+
+var __vue_staticRenderFns__$$ = [];
+/* style */
+
+var __vue_inject_styles__$$ = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-ed524fac_0", {
+    source: ".widget-component-wrapper[data-v-ed524fac]{position:relative}.widget-wrapper[data-v-ed524fac]{padding:0;scroll-margin:100px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$$ = "data-v-ed524fac";
+/* module identifier */
+
+var __vue_module_identifier__$$ = "data-v-ed524fac";
+/* functional template */
+
+var __vue_is_functional_template__$$ = false;
+/* style inject shadow dom */
+
+var __vue_component__$11 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$$,
+  staticRenderFns: __vue_staticRenderFns__$$
+}, __vue_inject_styles__$$, __vue_script__$$, __vue_scope_id__$$, __vue_is_functional_template__$$, __vue_module_identifier__$$, false, undefined, createInjectorSSR, undefined);
+
+var WidgetView = __vue_component__$11;//
+var script$_ = defineComponent({
+  components: {
+    WidgetView: WidgetView
+  },
+  props: {
+    widgetControls: Object,
+    widgetItems: Object,
+    excludeWidgetIds: R(String),
+    onlyIncludeWidgetIds: R(String),
+    widgetsOrder: R(String),
+    forParent: String,
+    view: String
+  },
+  inject: ['widgetControls', 'getPageState', 'getView', 'setPageState'],
+  computed: {
+    widgetView: function widgetView() {
+      return this.view || this.getView();
+    },
+    pageState: function pageState() {
+      return this.getPageState();
+    },
+    widgetItemsArr: function widgetItemsArr() {
+      return Object.values(this.widgetItems);
+    },
+    filteredWidgetItemsArr: function filteredWidgetItemsArr() {
+      var _this = this;
+
+      return this.widgetItemsArr.filter(function (f) {
+        return (!_this.forParent && !f.parentId || f.parentId === _this.forParent) && (!_this.onlyIncludeWidgetIds || _this.onlyIncludeWidgetIds.includes(f.id)) && (!(_this.excludeWidgetIds || []).length || !_this.excludeWidgetIds.includes(f.id));
+      }).sort(function (a, b) {
+        var aOrder = (_this.widgetsOrder || []).includes(a.id) ? _this.widgetsOrder.indexOf(a.id) : a.order || 0;
+        var bOrder = (_this.widgetsOrder || []).includes(b.id) ? _this.widgetsOrder.indexOf(b.id) : b.order || 0;
+        return aOrder - bOrder;
+      });
+    }
+  },
+  methods: {
+    setWidgetState: function setWidgetState(key, value, widget) {
+      var pageState = this.pageState;
+
+      if (value === undefined) {
+        if (!pageState.widgetState[widget.id]) return;
+        delete pageState.widgetState[widget.id][key];
+      } else {
+        if (!pageState.widgetState[widget.id]) pageState.widgetState[widget.id] = {};
+        pageState.widgetState[widget.id][key] = value;
+      }
+
+      this.setPageState(pageState);
+    },
+    getWidgetState: function getWidgetState(key, widget) {
+      var _this$pageState$widge;
+
+      if (!key) {
+        return this.pageState.widgetState[widget.id];
+      }
+
+      return (_this$pageState$widge = this.pageState.widgetState[widget.id]) === null || _this$pageState$widge === void 0 ? void 0 : _this$pageState$widge[key];
+    }
+  }
+});/* script */
+var __vue_script__$_ = script$_;
+/* template */
+
+var __vue_render__$_ = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', _vm._l(_vm.filteredWidgetItemsArr, function (widget) {
+    return _vm._ssrNode("<div class=\"widget-container\" data-v-68b249e9>", "</div>", [!widget.getState('reflexiveHide') ? _c('widget-view', {
+      attrs: {
+        "widget": widget,
+        "widget-controls": _vm.widgetControls,
+        "widget-items": _vm.widgetItems,
+        "page-state": _vm.pageState,
+        "set-widget-state": _vm.setWidgetState,
+        "get-widget-state": _vm.getWidgetState,
+        "view": _vm.widgetView
+      }
+    }) : _vm._e()], 1);
   }), 0);
 };
 
@@ -8185,8 +9831,8 @@ var __vue_staticRenderFns__$_ = [];
 
 var __vue_inject_styles__$_ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-1bdc9e34_0", {
-    source: ".widget-container[data-v-1bdc9e34]{position:relative}.widget-container.notDragging[data-v-1bdc9e34]{opacity:.4}.widget-container.dragging[data-v-1bdc9e34]{opacity:1}.widget-form-control[data-v-1bdc9e34]{position:absolute;top:-40px;left:0}.add-line[data-v-1bdc9e34]{position:relative;padding:10px 0;margin:-10.5px 0;opacity:0;transition:opacity .2s;z-index:10}.add-line[data-v-1bdc9e34]:hover{opacity:1}.add-line .line[data-v-1bdc9e34]{width:100%;height:1px;background-color:#b5b5b5;cursor:pointer}.add-line .add-button[data-v-1bdc9e34]{position:absolute;top:-2px;left:-10px;width:20px;height:20px;background-color:#fff;border:1px solid #cdcdcd;border-radius:4px;display:flex;justify-content:center;align-items:center;padding-top:2px;box-shadow:0 0 10px 10px #fff;cursor:pointer;transition:background-color .3s}.add-line.opened .add-button[data-v-1bdc9e34]{background-color:#f71414;border:1px solid #f71414;color:#fff}.add-line.opened .add-button[data-v-1bdc9e34]:hover{background-color:#dc1212;border:1px solid #dc1212}.add-line .add-button span[data-v-1bdc9e34]{transition:all .3s}.add-line.opened .add-button span[data-v-1bdc9e34]{transform:rotate(45deg)}.add-line .add-button[data-v-1bdc9e34]:hover{background-color:#eaeaea}.add-line .add-options-wrapper[data-v-1bdc9e34]{margin-left:15px;position:absolute;top:-2px;left:0;width:100%;display:none}.add-line .add-options-wrapper.open[data-v-1bdc9e34]{display:block}.add-line .add-options-inner-wrapper[data-v-1bdc9e34]{width:100%;padding-bottom:10px;overflow-x:auto;display:flex;flex-direction:row}.add-line .add-options-wrapper a[data-v-1bdc9e34]{padding:2px 4px;cursor:pointer;background-color:#fff;border:1px solid #e8e8e8;border-radius:4px}.widget-container .dnd-placeholder[data-v-1bdc9e34]{width:20px;height:25px;padding-bottom:2px;background-color:#fafafa;border:1px dashed #dadada;cursor:grab;font-size:9pt;display:flex;justify-content:center;align-items:center;border-radius:4px}.widget-container .dnd-placeholder[data-v-1bdc9e34]:hover{background-color:#eaeaea}.left-actions-wrapper[data-v-1bdc9e34]{position:absolute;top:15px;left:-40px;padding:10px;opacity:0;transition:opacity .2s;width:25px;display:flex;flex-direction:column;align-items:center}.widget-container.hovering>.left-actions-wrapper[data-v-1bdc9e34]{opacity:1}.delete-button[data-v-1bdc9e34]{font-size:12px;margin:2px 0;padding:1px 0;cursor:pointer;color:red}",
+  inject("data-v-68b249e9_0", {
+    source: ".widget-container[data-v-68b249e9]{position:relative}",
     map: undefined,
     media: undefined
   });
@@ -8194,10 +9840,10 @@ var __vue_inject_styles__$_ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$_ = "data-v-1bdc9e34";
+var __vue_scope_id__$_ = "data-v-68b249e9";
 /* module identifier */
 
-var __vue_module_identifier__$_ = "data-v-1bdc9e34";
+var __vue_module_identifier__$_ = "data-v-68b249e9";
 /* functional template */
 
 var __vue_is_functional_template__$_ = false;
@@ -8208,275 +9854,7 @@ var __vue_component__$10 = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$_
 }, __vue_inject_styles__$_, __vue_script__$_, __vue_scope_id__$_, __vue_is_functional_template__$_, __vue_module_identifier__$_, false, undefined, createInjectorSSR, undefined);
 
-var BuilderWidgetsLayout = __vue_component__$10;var script$Z = defineComponent({
-  components: {
-    WidgetsLayout: WidgetsLayout,
-    BuilderWidgetsLayout: BuilderWidgetsLayout
-  },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
-  data: function data() {
-    return {
-      sortedPages: []
-    };
-  },
-  computed: {
-    currentPageIndex: function currentPageIndex() {
-      var _this$pageState$widge, _this$pageState$widge2;
-
-      return ((_this$pageState$widge = this.pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.$props.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
-    }
-  },
-  watch: {
-    currentPageIndex: {
-      handler: function handler() {
-        var viewedIndices = this.$props.widget.getState("viewedIndices");
-        this.$props.widget.setState("viewedIndices", _toConsumableArray(new Set([].concat(_toConsumableArray(viewedIndices || []), [this.currentPageIndex]))));
-      },
-      immediate: true
-    },
-    "widget.properties.pages": {
-      handler: function handler() {
-        this.$data.sortedPages = this.$props.widget.getSortedPages();
-      },
-      immediate: true
-    }
-  }
-});/* script */
-var __vue_script__$Z = script$Z;
-/* template */
-
-var __vue_render__$Z = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_vm._ssrNode((_vm.widget.properties.tabsVisible ? "<div class=\"pages-menu-wrapper\" data-v-37b95a70>" + _vm._ssrList(_vm.sortedPages, function (page, pageIndex) {
-    return "<a" + _vm._ssrClass("pages-menu-item", {
-      active: _vm.currentPageIndex === pageIndex,
-      errors: _vm.widget.pageIndexHasErrors(pageIndex, {
-        allChildPages: true
-      }),
-      unopened: !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)
-    }) + " data-v-37b95a70>" + _vm._ssrEscape("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ") + "</a>";
-  }) + "</div>" : "<!---->") + " "), _vm._ssrNode("<div class=\"pages-content-item\" data-v-37b95a70>", "</div>", [_c('builder-widgets-layout', {
-    attrs: {
-      "widgetItems": _vm.widgetItems,
-      "excludeWidgetIds": [_vm.widget.id],
-      "onlyIncludeWidgetIds": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : [],
-      "forParent": _vm.widget.id
-    }
-  })], 1), _vm._ssrNode(" " + (_vm.widget.properties.navigationVisible ? "<div class=\"back-forward-wrapper\" data-v-37b95a70><div data-v-37b95a70>" + (_vm.widget.hasPreviousButton() ? "<button class=\"back-forward-button\" data-v-37b95a70>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.previousButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div> <div data-v-37b95a70>" + (_vm.widget.hasNextButton() ? "<button" + _vm._ssrClass("back-forward-button", {
-    errors: _vm.widget.pageIndexHasErrors(_vm.currentPageIndex)
-  }) + " data-v-37b95a70>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.nextButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div></div>" : "<!---->"))], 2);
-};
-
-var __vue_staticRenderFns__$Z = [];
-/* style */
-
-var __vue_inject_styles__$Z = function __vue_inject_styles__(inject) {
-  if (!inject) return;
-  inject("data-v-37b95a70_0", {
-    source: ".pages-menu-wrapper[data-v-37b95a70]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-37b95a70]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-37b95a70]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-37b95a70]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-37b95a70]{border-color:red}.back-forward-wrapper[data-v-37b95a70]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-37b95a70]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-37b95a70]{background-color:red;color:#fff;opacity:.2;cursor:default}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-var __vue_scope_id__$Z = "data-v-37b95a70";
-/* module identifier */
-
-var __vue_module_identifier__$Z = "data-v-37b95a70";
-/* functional template */
-
-var __vue_is_functional_template__$Z = false;
-/* style inject shadow dom */
-
-var __vue_component__$$ = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$Z,
-  staticRenderFns: __vue_staticRenderFns__$Z
-}, __vue_inject_styles__$Z, __vue_script__$Z, __vue_scope_id__$Z, __vue_is_functional_template__$Z, __vue_module_identifier__$Z, false, undefined, createInjectorSSR, undefined);
-
-var Builder$5 = __vue_component__$$;var script$Y = defineComponent({
-  props: {
-    widget: Object,
-    t: Function
-  },
-  inject: ["updateWidget", "setMessage", "getLocale"],
-  methods: {
-    setPageLabel: function setPageLabel(pageIndex, label) {
-      this.setMessage({
-        id: this.$props.widget.id,
-        locale: this.getLocale(),
-        key: this.$props.widget.properties.pages[pageIndex].labelKey,
-        value: label
-      });
-    },
-    setProperty: function setProperty(field, value) {
-      this.widget.setProperty(field, value);
-    }
-  }
-});/* script */
-var __vue_script__$Y = script$Y;
-/* template */
-
-var __vue_render__$Y = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_vm._ssrNode("<div class=\"section\" data-v-48a49774><label data-v-48a49774>Pages</label> <div class=\"pages-list-wrapper\" data-v-48a49774>" + _vm._ssrList(_vm.widget.properties.pages, function (page, pageIndex) {
-    return "<div class=\"page-item\" data-v-48a49774><input type=\"text\"" + _vm._ssrAttr("value", _vm.t(page.labelKey)) + " data-v-48a49774> <a class=\"delete-page-button\" data-v-48a49774>🗑</a></div>";
-  }) + "</div></div> <div class=\"section\" data-v-48a49774><label data-v-48a49774>Options</label> <label data-v-48a49774><input type=\"checkbox\"" + _vm._ssrAttr("checked", _vm.widget.properties.hasCompleteButton) + " data-v-48a49774>\n      has complete button\n    </label> <label data-v-48a49774><input type=\"checkbox\"" + _vm._ssrAttr("checked", _vm.widget.properties.tabsVisible) + " data-v-48a49774>\n      show tabs\n    </label> <label data-v-48a49774><input type=\"checkbox\"" + _vm._ssrAttr("checked", _vm.widget.properties.navigationVisible) + " data-v-48a49774>\n      show navigation\n    </label> <label data-v-48a49774><input type=\"checkbox\"" + _vm._ssrAttr("checked", _vm.widget.properties.navigationIntegrateChildrenPages) + " data-v-48a49774>\n      integrate children pages\n    </label></div>")]);
-};
-
-var __vue_staticRenderFns__$Y = [];
-/* style */
-
-var __vue_inject_styles__$Y = function __vue_inject_styles__(inject) {
-  if (!inject) return;
-  inject("data-v-48a49774_0", {
-    source: ".section[data-v-48a49774]{padding:15px 5px}label[data-v-48a49774]{display:block;padding:5px 0}.page-item[data-v-48a49774]{padding:5px 0;display:flex;flex-direction:row;justify-content:space-between}.page-item input[data-v-48a49774]{flex:1;border-width:0 0 1px 0;outline:0}.page-item .delete-page-button[data-v-48a49774]{padding-right:5px;padding-left:5px}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-var __vue_scope_id__$Y = "data-v-48a49774";
-/* module identifier */
-
-var __vue_module_identifier__$Y = "data-v-48a49774";
-/* functional template */
-
-var __vue_is_functional_template__$Y = false;
-/* style inject shadow dom */
-
-var __vue_component__$_ = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$Y,
-  staticRenderFns: __vue_staticRenderFns__$Y
-}, __vue_inject_styles__$Y, __vue_script__$Y, __vue_scope_id__$Y, __vue_is_functional_template__$Y, __vue_module_identifier__$Y, false, undefined, createInjectorSSR, undefined);
-
-var BuilderForm$2 = __vue_component__$_;var script$X = defineComponent({
-  components: {
-    WidgetsLayout: WidgetsLayout
-  },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
-  data: function data() {
-    return {
-      sortedPages: []
-    };
-  },
-  computed: {
-    currentPageIndex: function currentPageIndex() {
-      var _this$pageState$widge, _this$pageState$widge2;
-
-      return ((_this$pageState$widge = this.pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.$props.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
-    }
-  },
-  watch: {
-    currentPageIndex: {
-      handler: function handler() {
-        var viewedIndices = this.$props.widget.getState("viewedIndices");
-        this.$props.widget.setState("viewedIndices", _toConsumableArray(new Set([].concat(_toConsumableArray(viewedIndices || []), [this.currentPageIndex]))));
-      },
-      immediate: true
-    },
-    "widget.properties.pages": {
-      handler: function handler() {
-        this.$data.sortedPages = this.$props.widget.getSortedPages();
-      },
-      immediate: true
-    }
-  }
-});/* script */
-var __vue_script__$X = script$X;
-/* template */
-
-var __vue_render__$X = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', [_vm._ssrNode((_vm.widget.properties.tabsVisible ? "<div class=\"pages-menu-wrapper\" data-v-f939f234>" + _vm._ssrList(_vm.sortedPages, function (page, pageIndex) {
-    return "<a" + _vm._ssrAttr("disabled", !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)) + _vm._ssrClass("pages-menu-item", {
-      active: _vm.currentPageIndex === pageIndex,
-      errors: _vm.widget.pageIndexHasErrors(pageIndex, {
-        allChildPages: true
-      }),
-      unopened: !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)
-    }) + " data-v-f939f234>" + _vm._ssrEscape("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ") + "</a>";
-  }) + "</div>" : "<!---->") + " "), _vm._ssrNode("<div class=\"pages-content-item\" data-v-f939f234>", "</div>", [_c('widgets-layout', {
-    attrs: {
-      "widgetItems": _vm.widgetItems,
-      "excludeWidgetIds": [_vm.widget.id],
-      "onlyIncludeWidgetIds": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : undefined,
-      "widgetsOrder": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : undefined,
-      "forParent": _vm.widget.id
-    }
-  })], 1), _vm._ssrNode(" " + (_vm.widget.properties.navigationVisible ? "<div class=\"back-forward-wrapper\" data-v-f939f234><div data-v-f939f234>" + (_vm.widget.hasPreviousButton() ? "<button" + _vm._ssrAttr("disabled", _vm.widget.pageIndexHasLoadings(_vm.currentPageIndex) || _vm.widget.isSubmitting) + " class=\"back-forward-button\" data-v-f939f234>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.previousButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div> <div data-v-f939f234>" + (_vm.widget.hasNextButton() ? "<button" + _vm._ssrAttr("disabled", _vm.widget.pageIndexHasLoadings(_vm.currentPageIndex) || _vm.widget.pageIndexHasErrors(_vm.currentPageIndex) || _vm.widget.isSubmitting) + _vm._ssrClass("back-forward-button", {
-    errors: _vm.widget.pageIndexHasErrors(_vm.currentPageIndex),
-    submitting: _vm.widget.isSubmitting
-  }) + " data-v-f939f234>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.nextButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div></div>" : "<!---->"))], 2);
-};
-
-var __vue_staticRenderFns__$X = [];
-/* style */
-
-var __vue_inject_styles__$X = function __vue_inject_styles__(inject) {
-  if (!inject) return;
-  inject("data-v-f939f234_0", {
-    source: ".pages-menu-wrapper[data-v-f939f234]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-f939f234]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-f939f234]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-f939f234]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-f939f234]{border-color:red}.back-forward-wrapper[data-v-f939f234]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-f939f234]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-f939f234]{background-color:red;color:#fff;opacity:.2;cursor:default}.back-forward-button.submitting[data-v-f939f234]{opacity:.2}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-var __vue_scope_id__$X = "data-v-f939f234";
-/* module identifier */
-
-var __vue_module_identifier__$X = "data-v-f939f234";
-/* functional template */
-
-var __vue_is_functional_template__$X = false;
-/* style inject shadow dom */
-
-var __vue_component__$Z = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$X,
-  staticRenderFns: __vue_staticRenderFns__$X
-}, __vue_inject_styles__$X, __vue_script__$X, __vue_scope_id__$X, __vue_is_functional_template__$X, __vue_module_identifier__$X, false, undefined, createInjectorSSR, undefined);
-
-var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function (_WidgetItem) {
+var WidgetsLayout = __vue_component__$10;var PagesWidgetItem = /*#__PURE__*/function (_WidgetItem) {
   _inherits(PagesWidgetItem, _WidgetItem);
 
   var _super = _createSuper(PagesWidgetItem);
@@ -8546,12 +9924,12 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
       // get current page index loading object from state
 
 
-      var pageIndexLoadings = this.getState("pageIdxLoadings") || {}; // find which index this childWidget belongs to
+      var pageIndexLoadings = this.getState('pageIdxLoadings') || {}; // find which index this childWidget belongs to
 
       var childIndex = this.getChildIndexByWidgetId(childWidgetId);
 
       if (childIndex === -1) {
-        throw new Error("child widget not in paging");
+        throw new Error("child widget [".concat(childWidgetId, "] not in paging ").concat(this.id));
       }
 
       if (!isLoading) {
@@ -8568,12 +9946,12 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
       } // save pageIdxErrors to state
 
 
-      this.setState("pageIdxLoadings", Object.keys(pageIndexLoadings).length ? pageIndexLoadings : undefined);
+      this.setState('pageIdxLoadings', Object.keys(pageIndexLoadings).length ? pageIndexLoadings : undefined);
     }
   }, {
     key: "pageIndexHasLoadings",
     value: function pageIndexHasLoadings(idx, opts) {
-      var pageIdxLoadings = this.getState("pageIdxLoadings") || {}; // if no pageIdxLoadings, just return false
+      var pageIdxLoadings = this.getState('pageIdxLoadings') || {}; // if no pageIdxLoadings, just return false
 
       if (!Object.keys(pageIdxLoadings || []).length) return false; // if current index doesn't have issues, that means
       // neither this page idx nor its children have any
@@ -8587,7 +9965,7 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
         inPageIndices: [this.currentPageIndex]
       }) : null;
 
-      if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
+      if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== 'none') {
         return opts !== null && opts !== void 0 && opts.allChildPages ? childPagesWidget.hasChildLoading() : childPagesWidget.currentPageIndexHasLoadings(opts);
       } // since don't need to handle child pages widget and
       // current page idx has errors, return true
@@ -8602,36 +9980,89 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
     }
   }, {
     key: "setChildErrors",
-    value: function setChildErrors(childWidgetId, errors) {
-      // run original function to store the general state
-      _get(_getPrototypeOf(PagesWidgetItem.prototype), "setChildErrors", this).call(this, childWidgetId, errors); // also store widget errors by children index
-      // get current page index errors object from state
+    value: function () {
+      var _setChildErrors = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(childWidgetId, errors) {
+        var err, originalPageIndexErrors, pageIndexErrors, childIndex, _pageIndexErrors$chil;
+
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // run original function to store the general state
+                _get(_getPrototypeOf(PagesWidgetItem.prototype), "setChildErrors", this).call(this, childWidgetId, errors);
+
+                _context.next = 3;
+                return this._widgetItems[childWidgetId].isReflexive();
+
+              case 3:
+                if (!_context.sent) {
+                  _context.next = 7;
+                  break;
+                }
+
+                _context.t0 = errors;
+                _context.next = 8;
+                break;
+
+              case 7:
+                _context.t0 = null;
+
+              case 8:
+                err = _context.t0;
+                // also store widget errors by children index
+                // get current page index errors object from state
+                originalPageIndexErrors = this.getState('pageIdxErrors') || {};
+                pageIndexErrors = _objectSpread2({}, this.getState('pageIdxErrors')) || {}; // find which index this childWidget belongs to
+
+                childIndex = this.getChildIndexByWidgetId(childWidgetId);
+
+                if (!(childIndex === -1)) {
+                  _context.next = 14;
+                  break;
+                }
+
+                throw new Error("child widget [".concat(childWidgetId, "] not in paging ").concat(this.id));
+
+              case 14:
+                if (!err) {
+                  (_pageIndexErrors$chil = pageIndexErrors[childIndex]) === null || _pageIndexErrors$chil === void 0 ? true : delete _pageIndexErrors$chil[childWidgetId];
+                  if (!Object.keys(pageIndexErrors[childIndex] || {}).length) delete pageIndexErrors[childIndex];
+                } else {
+                  if (!pageIndexErrors[childIndex]) {
+                    pageIndexErrors[childIndex] = {};
+                  }
+
+                  pageIndexErrors[childIndex][childWidgetId] = err;
+                } // nothing to set, just return
 
 
-      var pageIndexErrors = this.getState("pageIdxErrors") || {}; // find which index this childWidget belongs to
+                if (!(Object.keys(pageIndexErrors).length === Object.keys(originalPageIndexErrors).length && Object.keys(pageIndexErrors).every(function (key) {
+                  return originalPageIndexErrors[key] === pageIndexErrors[key];
+                }))) {
+                  _context.next = 17;
+                  break;
+                }
 
-      var childIndex = this.getChildIndexByWidgetId(childWidgetId);
+                return _context.abrupt("return");
 
-      if (childIndex === -1) {
-        throw new Error("child widget not in paging");
+              case 17:
+                // save pageIdxErrors to state
+                this.setState('pageIdxErrors', Object.keys(pageIndexErrors).length ? pageIndexErrors : undefined);
+
+              case 18:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function setChildErrors(_x, _x2) {
+        return _setChildErrors.apply(this, arguments);
       }
 
-      if (!errors) {
-        var _pageIndexErrors$chil;
-
-        (_pageIndexErrors$chil = pageIndexErrors[childIndex]) === null || _pageIndexErrors$chil === void 0 ? true : delete _pageIndexErrors$chil[childWidgetId];
-        if (!Object.keys(pageIndexErrors[childIndex] || {}).length) delete pageIndexErrors[childIndex];
-      } else {
-        if (!pageIndexErrors[childIndex]) {
-          pageIndexErrors[childIndex] = {};
-        }
-
-        pageIndexErrors[childIndex][childWidgetId] = errors;
-      } // save pageIdxErrors to state
-
-
-      this.setState("pageIdxErrors", Object.keys(pageIndexErrors).length ? pageIndexErrors : undefined);
-    }
+      return setChildErrors;
+    }()
   }, {
     key: "addChild",
     value: function addChild(childWidget, meta) {
@@ -8658,18 +10089,18 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
       var sortedPages = this.getSortedPages();
       if (toIndex < 0) return;
       if (toIndex > sortedPages.length - 1) return;
-      this.setState("currentPageIndex", toIndex);
+      this.setState('currentPageIndex', toIndex);
     }
   }, {
     key: "currentPageIndex",
     get: function get() {
-      return this.getState("currentPageIndex") || 0;
+      return this.getState('currentPageIndex') || 0;
     }
   }, {
     key: "getParentPagesWidgets",
     value: function getParentPagesWidgets(opts) {
       var parentPages = this.getParents().filter(function (w) {
-        return w.type === "pages";
+        return w.type === 'pages';
       });
       return opts !== null && opts !== void 0 && opts.first ? parentPages[0] : parentPages;
     }
@@ -8681,7 +10112,7 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
       }, {
         inPageIndices: opts === null || opts === void 0 ? void 0 : opts.inPageIndices
       }).filter(function (w) {
-        return w.type === "pages";
+        return w.type === 'pages';
       });
       return opts !== null && opts !== void 0 && opts.first ? childrenPages[0] : childrenPages;
     }
@@ -8690,14 +10121,14 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
     value: function pageIndexHasErrors(idx, opts) {
       var _this5 = this;
 
-      var pageIdxErrors = this.getState("pageIdxErrors") || {}; // if no pageIdxErrors, just return false
+      var pageIdxErrors = this.getState('pageIdxErrors') || {}; // if no pageIdxErrors, just return false
 
       if (!Object.keys(pageIdxErrors || []).length) return false; // if current index doesn't have issues, that means
       // neither this page idx nor its children have any
       // errors, so just return false
 
       if (!Object.keys(pageIdxErrors[idx] || {}).filter(function (widgetId) {
-        return !(opts !== null && opts !== void 0 && opts.skipPristine) || !_this5._widgetItems[widgetId].getState("pristine");
+        return !(opts !== null && opts !== void 0 && opts.skipPristine) || !_this5._widgetItems[widgetId].getState('pristine');
       }).length) return false; // if navigation integrate children pages, then check if
       // child pages has error in its CURRENT page idx
 
@@ -8706,7 +10137,7 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
         inPageIndices: [this.currentPageIndex]
       }) : null;
 
-      if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
+      if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== 'none') {
         return opts !== null && opts !== void 0 && opts.allChildPages ? childPagesWidget.hasChildErrors() : childPagesWidget.currentPageIndexHasErrors(opts);
       } // since don't need to handle child pages widget and
       // current page idx has errors, return true
@@ -8722,54 +10153,75 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
   }, {
     key: "toNextPage",
     value: function () {
-      var _toNextPage = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+      var _toNextPage = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
         var _this6 = this;
 
         var children, hasErrors, nextType, pageErrors, childPagesWidget;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
                 children = this.getChildren({
                   deep: true
                 }, {
                   currentPageIndexOnly: true
                 });
-                _context2.next = 3;
+                _context3.next = 3;
                 return Promise.all(children.map( /*#__PURE__*/function () {
-                  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(child) {
-                    return regeneratorRuntime.wrap(function _callee$(_context) {
+                  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(child) {
+                    return regeneratorRuntime.wrap(function _callee2$(_context2) {
                       while (1) {
-                        switch (_context.prev = _context.next) {
+                        switch (_context2.prev = _context2.next) {
                           case 0:
-                            if (child.getState("pristine")) {
-                              child.setState("pristine", false);
-                              child.setState("dirty", true);
+                            if (child.getState('pristine')) {
+                              child.setState({
+                                pristine: false,
+                                dirty: true
+                              });
                               child.update();
                             }
 
-                            return _context.abrupt("return", child.runValidations());
+                            _context2.next = 3;
+                            return child.isReflexive();
 
-                          case 2:
+                          case 3:
+                            if (!_context2.sent) {
+                              _context2.next = 7;
+                              break;
+                            }
+
+                            _context2.t0 = child.runValidations();
+                            _context2.next = 8;
+                            break;
+
+                          case 7:
+                            _context2.t0 = null;
+
+                          case 8:
+                            return _context2.abrupt("return", _context2.t0);
+
+                          case 9:
                           case "end":
-                            return _context.stop();
+                            return _context2.stop();
                         }
                       }
-                    }, _callee);
+                    }, _callee2);
                   }));
 
-                  return function (_x) {
+                  return function (_x3) {
                     return _ref.apply(this, arguments);
                   };
                 }()));
 
               case 3:
-                hasErrors = _context2.sent.some(function (err) {
-                  return err;
+                hasErrors = _context3.sent.some(function (err) {
+                  return (err || []).some(function (e) {
+                    return !e.isWarning;
+                  });
                 });
 
                 if (hasErrors) {
-                  _context2.next = 20;
+                  _context3.next = 20;
                   break;
                 }
 
@@ -8779,19 +10231,20 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
                 // get next type first to determine which to update
                 nextType = this.nextButtonType();
 
-                if (!(nextType === "complete")) {
-                  _context2.next = 14;
+                if (!(nextType === 'complete')) {
+                  _context3.next = 14;
                   break;
                 }
 
                 pageErrors = this.properties.pages.map(function (_, pageIdx) {
                   return _this6.pageIndexHasErrors(pageIdx, {
-                    allChildPages: true
+                    allChildPages: true,
+                    includeWarnings: false
                   });
                 });
                 this.isSubmitting = true;
-                _context2.next = 11;
-                return this.emitEvent("pages_complete", {
+                _context3.next = 11;
+                return this.emitEvent('pages_complete', {
                   pageErrors: pageErrors,
                   hasErrors: pageErrors.some(function (hasError) {
                     return hasError;
@@ -8801,16 +10254,16 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
 
               case 11:
                 this.isSubmitting = false;
-                _context2.next = 20;
+                _context3.next = 20;
                 break;
 
               case 14:
-                if (!(nextType === "none")) {
-                  _context2.next = 18;
+                if (!(nextType === 'none')) {
+                  _context3.next = 18;
                   break;
                 }
 
-                return _context2.abrupt("return");
+                return _context3.abrupt("return");
 
               case 18:
                 // current pages at end, so update parent's
@@ -8819,18 +10272,19 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
                   inPageIndices: [this.currentPageIndex]
                 }) : null;
 
-                if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
+                if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== 'none') {
                   childPagesWidget.toNextPage();
                 } else {
                   this.onChangePageIndex(this.currentPageIndex + 1);
+                  this.emitEvent('pages_page_change', this.currentPageIndex);
                 }
 
               case 20:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
       function toNextPage() {
@@ -8845,7 +10299,7 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
       // get previous type first to determine which to update
       var previousType = this.previousButtonType();
 
-      if (previousType === "none") {
+      if (previousType === 'none') {
         // wasn't suppose to be clicked, so just ignore
         return;
       }
@@ -8855,10 +10309,11 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
         inPageIndices: [this.currentPageIndex]
       }) : null;
 
-      if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.previousButtonType()) !== "none") {
+      if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.previousButtonType()) !== 'none') {
         childPagesWidget.toPreviousPage();
       } else {
         this.onChangePageIndex(this.currentPageIndex - 1);
+        this.emitEvent('pages_page_change', this.currentPageIndex);
       }
     }
   }, {
@@ -8875,10 +10330,10 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
 
       if (!this.properties.navigationIntegrateChildrenPages || !childPages || childPages.properties.detachParentIntegration || !isCurrentPageAtEnd) {
         if (isCurrentPageAtEnd) {
-          return "none";
+          return 'none';
         }
 
-        return "previous";
+        return 'previous';
       } // return whether parent should be at its end
 
 
@@ -8896,12 +10351,12 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
       // current pages is not at its end yet, just return
       // based on current pages' state
 
-      if (!this.properties.navigationIntegrateChildrenPages || !childPages || childPages.nextButtonType() === "none" || childPages.properties.detachParentIntegration || !isCurrentPageAtEnd) {
+      if (!this.properties.navigationIntegrateChildrenPages || !childPages || childPages.nextButtonType() === 'none' || childPages.properties.detachParentIntegration || !isCurrentPageAtEnd) {
         if (isCurrentPageAtEnd) {
-          return this.properties.hasCompleteButton ? "complete" : "none";
+          return this.properties.hasCompleteButton ? 'complete' : 'none';
         }
 
-        return "next";
+        return 'next';
       } // return whether parent should be at its end
 
 
@@ -8910,37 +10365,444 @@ var Display$b = __vue_component__$Z;var PagesWidgetItem = /*#__PURE__*/function 
   }, {
     key: "hasPreviousButton",
     value: function hasPreviousButton() {
-      return !!this.properties.navigationVisible && this.previousButtonType() !== "none";
+      return !!this.properties.navigationVisible && this.previousButtonType() !== 'none';
     }
   }, {
     key: "hasNextButton",
     value: function hasNextButton() {
-      return !!this.properties.navigationVisible && this.nextButtonType() !== "none";
+      return !!this.properties.navigationVisible && this.nextButtonType() !== 'none';
     }
   }]);
 
   return PagesWidgetItem;
-}(WidgetItem);//
-var script$W = defineComponent({
-  name: "PagesReadOnly",
+}(WidgetItem);var WidgetControlProps$c = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$Z = defineComponent({
+  components: {
+    WidgetsLayout: WidgetsLayout,
+    BuilderWidgetsLayout: BuilderWidgetsLayout
+  },
+  props: _objectSpread2(_objectSpread2({}, WidgetControlProps$c), {}, {
+    widget: {
+      type: PagesWidgetItem,
+      required: true
+    }
+  }),
+  data: function data() {
+    return {
+      sortedPages: []
+    };
+  },
+  computed: {
+    currentPageIndex: function currentPageIndex() {
+      var _this$pageState$widge, _this$pageState$widge2;
+
+      return ((_this$pageState$widge = this.pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
+    }
+  },
+  watch: {
+    currentPageIndex: {
+      handler: function handler() {
+        var viewedIndices = this.widget.getState('viewedIndices') || [];
+
+        if (!viewedIndices.includes(this.currentPageIndex)) {
+          this.widget.setState('viewedIndices', [].concat(_toConsumableArray(viewedIndices), [this.currentPageIndex]));
+        }
+      },
+      immediate: true
+    },
+    'widget.properties.pages': {
+      handler: function handler() {
+        this.sortedPages = this.widget.getSortedPages();
+      },
+      immediate: true
+    }
+  }
+});/* script */
+var __vue_script__$Z = script$Z;
+/* template */
+
+var __vue_render__$Z = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode((_vm.widget.properties.tabsVisible ? "<div class=\"pages-menu-wrapper\" data-v-6a25db02>" + _vm._ssrList(_vm.sortedPages, function (page, pageIndex) {
+    return "<a" + _vm._ssrClass("pages-menu-item", {
+      active: _vm.currentPageIndex === pageIndex,
+      errors: _vm.widget.pageIndexHasErrors(pageIndex, {
+        allChildPages: true
+      }),
+      unopened: !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)
+    }) + " data-v-6a25db02>" + _vm._ssrEscape("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ") + "</a>";
+  }) + "</div>" : "<!---->") + " "), _vm._ssrNode("<div class=\"pages-content-item\" data-v-6a25db02>", "</div>", [_c('builder-widgets-layout', {
+    attrs: {
+      "widget-items": _vm.widgetItems,
+      "exclude-widget-ids": [_vm.widget.id],
+      "only-include-widget-ids": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : [],
+      "for-parent": _vm.widget.id
+    }
+  })], 1), _vm._ssrNode(" " + (_vm.widget.properties.navigationVisible ? "<div class=\"back-forward-wrapper\" data-v-6a25db02><div data-v-6a25db02>" + (_vm.widget.hasPreviousButton() ? "<button class=\"back-forward-button\" data-v-6a25db02>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.previousButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div> <div data-v-6a25db02>" + (_vm.widget.hasNextButton() ? "<button" + _vm._ssrClass("back-forward-button", {
+    errors: _vm.widget.pageIndexHasErrors(_vm.currentPageIndex)
+  }) + " data-v-6a25db02>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.nextButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div></div>" : "<!---->"))], 2);
+};
+
+var __vue_staticRenderFns__$Z = [];
+/* style */
+
+var __vue_inject_styles__$Z = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-6a25db02_0", {
+    source: ".pages-menu-wrapper[data-v-6a25db02]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-6a25db02]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-6a25db02]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-6a25db02]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-6a25db02]{border-color:red}.back-forward-wrapper[data-v-6a25db02]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-6a25db02]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-6a25db02]{background-color:red;color:#fff;opacity:.2;cursor:default}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$Z = "data-v-6a25db02";
+/* module identifier */
+
+var __vue_module_identifier__$Z = "data-v-6a25db02";
+/* functional template */
+
+var __vue_is_functional_template__$Z = false;
+/* style inject shadow dom */
+
+var __vue_component__$$ = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$Z,
+  staticRenderFns: __vue_staticRenderFns__$Z
+}, __vue_inject_styles__$Z, __vue_script__$Z, __vue_scope_id__$Z, __vue_is_functional_template__$Z, __vue_module_identifier__$Z, false, undefined, createInjectorSSR, undefined);
+
+var Builder$5 = __vue_component__$$;var script$Y = defineComponent({
+  props: {
+    widget: Object,
+    t: Function
+  },
+  inject: ['updateWidget', 'setMessage', 'getLocale'],
+  methods: {
+    setPageLabel: function setPageLabel(pageIndex, label) {
+      this.setMessage({
+        id: this.$props.widget.id,
+        locale: this.getLocale(),
+        key: this.$props.widget.properties.pages[pageIndex].labelKey,
+        value: label
+      });
+    },
+    setProperty: function setProperty(field, value) {
+      this.widget.setProperty(field, value);
+    }
+  }
+});/* script */
+var __vue_script__$Y = script$Y;
+/* template */
+
+var __vue_render__$Y = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode("<div class=\"section\" data-v-47418e34><label data-v-47418e34>Pages</label> <div class=\"pages-list-wrapper\" data-v-47418e34>" + _vm._ssrList(_vm.widget.properties.pages, function (page, pageIndex) {
+    return "<div class=\"page-item\" data-v-47418e34><input type=\"text\"" + _vm._ssrAttr("value", _vm.t(page.labelKey)) + " data-v-47418e34> <a class=\"delete-page-button\" data-v-47418e34>🗑</a></div>";
+  }) + "</div></div> <div class=\"section\" data-v-47418e34><label data-v-47418e34>Options</label> <label data-v-47418e34><input type=\"checkbox\"" + _vm._ssrAttr("checked", _vm.widget.properties.hasCompleteButton) + " data-v-47418e34>\n      has complete button\n    </label> <label data-v-47418e34><input type=\"checkbox\"" + _vm._ssrAttr("checked", _vm.widget.properties.tabsVisible) + " data-v-47418e34>\n      show tabs\n    </label> <label data-v-47418e34><input type=\"checkbox\"" + _vm._ssrAttr("checked", _vm.widget.properties.navigationVisible) + " data-v-47418e34>\n      show navigation\n    </label> <label data-v-47418e34><input type=\"checkbox\"" + _vm._ssrAttr("checked", _vm.widget.properties.navigationIntegrateChildrenPages) + " data-v-47418e34>\n      integrate children pages\n    </label></div>")]);
+};
+
+var __vue_staticRenderFns__$Y = [];
+/* style */
+
+var __vue_inject_styles__$Y = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-47418e34_0", {
+    source: ".section[data-v-47418e34]{padding:15px 5px}label[data-v-47418e34]{display:block;padding:5px 0}.page-item[data-v-47418e34]{padding:5px 0;display:flex;flex-direction:row;justify-content:space-between}.page-item input[data-v-47418e34]{flex:1;border-width:0 0 1px 0;outline:0}.page-item .delete-page-button[data-v-47418e34]{padding-right:5px;padding-left:5px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$Y = "data-v-47418e34";
+/* module identifier */
+
+var __vue_module_identifier__$Y = "data-v-47418e34";
+/* functional template */
+
+var __vue_is_functional_template__$Y = false;
+/* style inject shadow dom */
+
+var __vue_component__$_ = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$Y,
+  staticRenderFns: __vue_staticRenderFns__$Y
+}, __vue_inject_styles__$Y, __vue_script__$Y, __vue_scope_id__$Y, __vue_is_functional_template__$Y, __vue_module_identifier__$Y, false, undefined, createInjectorSSR, undefined);
+
+var BuilderForm$2 = __vue_component__$_;var WidgetControlProps$b = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$X = defineComponent({
   components: {
     WidgetsLayout: WidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
+  props: _objectSpread2(_objectSpread2({}, WidgetControlProps$b), {}, {
+    widget: {
+      type: Object,
+      required: true
+    },
     t: Function
-  },
+  }),
   data: function data() {
     return {
-      sortedPages: this.$props.widget.getSortedPages()
+      sortedPages: []
     };
+  },
+  computed: {
+    currentPageIndex: function currentPageIndex() {
+      var _this$pageState, _this$pageState$widge, _this$pageState$widge2;
+
+      return ((_this$pageState = this.pageState) === null || _this$pageState === void 0 ? void 0 : (_this$pageState$widge = _this$pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
+    }
+  },
+  watch: {
+    currentPageIndex: {
+      handler: function handler() {
+        var viewedIndices = this.widget.getState('viewedIndices') || [];
+
+        if (!viewedIndices.includes(this.currentPageIndex)) {
+          this.widget.setState('viewedIndices', [].concat(_toConsumableArray(viewedIndices), [this.currentPageIndex]));
+        }
+      },
+      immediate: true
+    },
+    'widget.properties.pages': {
+      handler: function handler() {
+        this.sortedPages = this.widget.getSortedPages();
+      },
+      immediate: true
+    }
+  }
+});/* script */
+var __vue_script__$X = script$X;
+/* template */
+
+var __vue_render__$X = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', [_vm._ssrNode((_vm.widget.properties.tabsVisible ? "<div class=\"pages-menu-wrapper\" data-v-8d79d2a6>" + _vm._ssrList(_vm.sortedPages, function (page, pageIndex) {
+    return "<a" + _vm._ssrAttr("id", "pages-" + _vm.widget.id + "-" + pageIndex) + _vm._ssrAttr("data-test", "pages-" + _vm.widget.code + "-" + pageIndex) + _vm._ssrAttr("disabled", !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)) + _vm._ssrClass("pages-menu-item", {
+      active: _vm.currentPageIndex === pageIndex,
+      errors: _vm.widget.pageIndexHasErrors(pageIndex, {
+        allChildPages: true
+      }),
+      unopened: !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)
+    }) + " data-v-8d79d2a6>" + _vm._ssrEscape("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ") + "</a>";
+  }) + "</div>" : "<!---->") + " "), _vm._ssrNode("<div class=\"pages-content-item\" data-v-8d79d2a6>", "</div>", [_c('widgets-layout', {
+    attrs: {
+      "widget-items": _vm.widgetItems,
+      "exclude-widget-ids": [_vm.widget.id],
+      "only-include-widget-ids": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : undefined,
+      "widgets-order": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : undefined,
+      "for-parent": _vm.widget.id
+    }
+  })], 1), _vm._ssrNode(" " + (_vm.widget.properties.navigationVisible ? "<div class=\"back-forward-wrapper\" data-v-8d79d2a6><div data-v-8d79d2a6>" + (_vm.widget.hasPreviousButton() ? "<button" + _vm._ssrAttr("disabled", _vm.widget.pageIndexHasLoadings(_vm.currentPageIndex) || _vm.widget.isSubmitting) + " class=\"back-forward-button\" data-v-8d79d2a6>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.previousButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div> <div data-v-8d79d2a6>" + (_vm.widget.hasNextButton() ? "<button" + _vm._ssrAttr("disabled", _vm.widget.pageIndexHasLoadings(_vm.currentPageIndex) || _vm.widget.pageIndexHasErrors(_vm.currentPageIndex) || _vm.widget.isSubmitting) + _vm._ssrClass("back-forward-button", {
+    errors: _vm.widget.pageIndexHasErrors(_vm.currentPageIndex),
+    submitting: _vm.widget.isSubmitting
+  }) + " data-v-8d79d2a6>" + _vm._ssrEscape("\n        " + _vm._s(_vm.t("__" + _vm.widget.nextButtonType(), _vm.widget.id)) + "\n      ") + "</button>" : "<!---->") + "</div></div>" : "<!---->"))], 2);
+};
+
+var __vue_staticRenderFns__$X = [];
+/* style */
+
+var __vue_inject_styles__$X = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-8d79d2a6_0", {
+    source: ".pages-menu-wrapper[data-v-8d79d2a6]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-8d79d2a6]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-8d79d2a6]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-8d79d2a6]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-8d79d2a6]{border-color:red}.back-forward-wrapper[data-v-8d79d2a6]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-8d79d2a6]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-8d79d2a6]{background-color:red;color:#fff;opacity:.2;cursor:default}.back-forward-button.submitting[data-v-8d79d2a6]{opacity:.2}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$X = "data-v-8d79d2a6";
+/* module identifier */
+
+var __vue_module_identifier__$X = "data-v-8d79d2a6";
+/* functional template */
+
+var __vue_is_functional_template__$X = false;
+/* style inject shadow dom */
+
+var __vue_component__$Z = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$X,
+  staticRenderFns: __vue_staticRenderFns__$X
+}, __vue_inject_styles__$X, __vue_script__$X, __vue_scope_id__$X, __vue_is_functional_template__$X, __vue_module_identifier__$X, false, undefined, createInjectorSSR, undefined);
+
+var Display$b = __vue_component__$Z;var WidgetControlProps$a = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$W = defineComponent({
+  components: {
+    WidgetsLayout: WidgetsLayout
+  },
+  props: _objectSpread2(_objectSpread2({}, WidgetControlProps$a), {}, {
+    widget: {
+      type: Object,
+      required: true
+    },
+    t: Function
+  }),
+  data: function data() {
+    return {
+      sortedPages: []
+    };
+  },
+  computed: {
+    currentPageIndex: function currentPageIndex() {
+      var _this$pageState, _this$pageState$widge, _this$pageState$widge2;
+
+      return ((_this$pageState = this.pageState) === null || _this$pageState === void 0 ? void 0 : (_this$pageState$widge = _this$pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
+    }
+  },
+  watch: {
+    currentPageIndex: {
+      handler: function handler() {
+        var viewedIndices = this.widget.getState('viewedIndices') || [];
+
+        if (!viewedIndices.includes(this.currentPageIndex)) {
+          this.widget.setState('viewedIndices', [].concat(_toConsumableArray(viewedIndices), [this.currentPageIndex]));
+        }
+      },
+      immediate: true
+    },
+    'widget.properties.pages': {
+      handler: function handler() {
+        this.sortedPages = this.widget.getSortedPages();
+      },
+      immediate: true
+    }
   }
 });/* script */
 var __vue_script__$W = script$W;
@@ -8954,26 +10816,15 @@ var __vue_render__$W = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _c('div', _vm._l(_vm.sortedPages, function (page, pageIndex) {
-    return _vm._ssrNode("<div class=\"page-wrapper\" data-v-2b3f76d4>", "</div>", [_vm._ssrNode((!_vm.widget.getParentPagesWidgets({
-      first: true
-    }) ? "<div class=\"page-label\" data-v-2b3f76d4>" + _vm._ssrEscape("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ") + "</div>" : "<!---->") + " "), _vm._ssrNode("<div data-v-2b3f76d4>", "</div>", [_vm._ssrNode("<div class=\"questions-wrapper\" data-v-2b3f76d4>" + _vm._ssrList(page.children.filter(function (c) {
-      return ['question'].includes(_vm.widgetItems[c].type);
-    }), function (questionWidgetId) {
-      return _vm.t('__label', questionWidgetId) ? "<div class=\"question\" data-v-2b3f76d4><label class=\"question-label\" data-v-2b3f76d4>" + _vm._ssrEscape(_vm._s(_vm.t("__label", questionWidgetId))) + "</label> <p data-v-2b3f76d4>" + _vm._ssrEscape(_vm._s(_vm.pageState.widgetState[questionWidgetId].response)) + "</p></div>" : "<!---->";
-    }) + "</div> "), _vm._l(page.children.filter(function (c) {
-      return ['pages'].includes(_vm.widgetItems[c].type);
-    }), function (pagesWidgetId) {
-      return _c('pages-read-only', {
-        key: pagesWidgetId,
-        attrs: {
-          "widget": _vm.widgetItems[pagesWidgetId],
-          "widgets": _vm.widgets,
-          "widgetItems": _vm.widgetItems,
-          "pageState": _vm.pageState,
-          "setWidgetState": _vm.setWidgetState
-        }
-      });
-    })], 2)], 2);
+    return _vm._ssrNode("<div" + _vm._ssrAttr("id", "pages-" + _vm.widget.id + "-" + pageIndex) + " data-v-1e28174e>", "</div>", [_vm._ssrNode("<h3 data-v-1e28174e>" + _vm._ssrEscape(_vm._s(_vm.t(page.labelKey, _vm.widget.id))) + "</h3> "), _c('widgets-layout', {
+      attrs: {
+        "widget-items": _vm.widgetItems,
+        "exclude-widget-ids": [_vm.widget.id],
+        "only-include-widget-ids": page.children,
+        "widgets-order": page.children,
+        "for-parent": _vm.widget.id
+      }
+    })], 2);
   }), 0);
 };
 
@@ -8982,8 +10833,8 @@ var __vue_staticRenderFns__$W = [];
 
 var __vue_inject_styles__$W = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-2b3f76d4_0", {
-    source: ".page-wrapper[data-v-2b3f76d4]{display:flex;flex-direction:row}.page-wrapper[data-v-2b3f76d4]>:last-child{flex:1}.page-label[data-v-2b3f76d4]{padding:0 10px 0 0}.question-label[data-v-2b3f76d4]{font-weight:700}.questions-wrapper[data-v-2b3f76d4]{display:flex;flex-direction:row;flex-wrap:wrap}.question[data-v-2b3f76d4]{width:33%}",
+  inject("data-v-1e28174e_0", {
+    source: ".pages-menu-wrapper[data-v-1e28174e]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-1e28174e]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-1e28174e]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-1e28174e]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-1e28174e]{border-color:red}.back-forward-wrapper[data-v-1e28174e]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-1e28174e]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-1e28174e]{background-color:red;color:#fff;opacity:.2;cursor:default}.back-forward-button.submitting[data-v-1e28174e]{opacity:.2}",
     map: undefined,
     media: undefined
   });
@@ -8991,10 +10842,10 @@ var __vue_inject_styles__$W = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$W = "data-v-2b3f76d4";
+var __vue_scope_id__$W = "data-v-1e28174e";
 /* module identifier */
 
-var __vue_module_identifier__$W = "data-v-2b3f76d4";
+var __vue_module_identifier__$W = "data-v-1e28174e";
 /* functional template */
 
 var __vue_is_functional_template__$W = false;
@@ -9006,7 +10857,7 @@ var __vue_component__$Y = /*#__PURE__*/normalizeComponent({
 }, __vue_inject_styles__$W, __vue_script__$W, __vue_scope_id__$W, __vue_is_functional_template__$W, __vue_module_identifier__$W, false, undefined, createInjectorSSR, undefined);
 
 var ReadOnly$b = __vue_component__$Y;var script$V = defineComponent({
-  name: "BuilderWidgetTree",
+  name: 'BuilderWidgetTree',
   props: {
     widgetItems: Object,
     parentId: String,
@@ -9015,7 +10866,7 @@ var ReadOnly$b = __vue_component__$Y;var script$V = defineComponent({
     listIds: Array,
     level: Number
   },
-  inject: ["widgetControls"],
+  inject: ['widgetControls'],
   data: function data() {
     return {
       filteredWidgetItems: []
@@ -9066,7 +10917,7 @@ var __vue_render__$V = function __vue_render__() {
   }, _vm._l(_vm.filteredWidgetItems, function (widgetItem) {
     return _vm._ssrNode("<div class=\"tree-item\"" + _vm._ssrStyle(null, {
       marginLeft: (_vm.level || 0) * 10 + "px"
-    }, null) + " data-v-13a6db36>", "</div>", [_vm._ssrNode("<div class=\"tree-item-box\" data-v-13a6db36><span class=\"drag-icon\" data-v-13a6db36>☷</span> <p data-v-13a6db36>" + _vm._ssrEscape(_vm._s(widgetItem.type)) + "</p> <small data-v-13a6db36>" + _vm._ssrEscape(_vm._s(widgetItem.code)) + "</small></div> "), _vm.widgetControls[widgetItem.type].widgetTree ? [_c(_vm.widgetControls[widgetItem.type].widgetTree, {
+    }, null) + " data-v-3c1fc8b6>", "</div>", [_vm._ssrNode("<div class=\"tree-item-box\" data-v-3c1fc8b6><span class=\"drag-icon\" data-v-3c1fc8b6>☷</span> <p data-v-3c1fc8b6>" + _vm._ssrEscape(_vm._s(widgetItem.type)) + "</p> <small data-v-3c1fc8b6>" + _vm._ssrEscape(_vm._s(widgetItem.code)) + "</small></div> "), _vm.widgetControls[widgetItem.type].widgetTree ? [_c(_vm.widgetControls[widgetItem.type].widgetTree, {
       tag: "component",
       attrs: {
         "widgetItems": _vm.widgetItems,
@@ -9089,8 +10940,8 @@ var __vue_staticRenderFns__$V = [];
 
 var __vue_inject_styles__$V = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-13a6db36_0", {
-    source: ".tree-item-box[data-v-13a6db36]{border:1px solid #f2f2f2;border-radius:4px;padding:5px;margin:2px 0;display:flex;flex-direction:row;align-items:center}.tree-item-box>*[data-v-13a6db36]{margin:0;margin-right:5px}.tree-item-box small[data-v-13a6db36]{color:#a1a1a1}.drag-icon[data-v-13a6db36]{cursor:grab}.drag-icon[data-v-13a6db36]:active{cursor:grabbing}",
+  inject("data-v-3c1fc8b6_0", {
+    source: ".tree-item-box[data-v-3c1fc8b6]{border:1px solid #f2f2f2;border-radius:4px;padding:5px;margin:2px 0;display:flex;flex-direction:row;align-items:center}.tree-item-box>*[data-v-3c1fc8b6]{margin:0;margin-right:5px}.tree-item-box small[data-v-3c1fc8b6]{color:#a1a1a1}.drag-icon[data-v-3c1fc8b6]{cursor:grab}.drag-icon[data-v-3c1fc8b6]:active{cursor:grabbing}",
     map: undefined,
     media: undefined
   });
@@ -9098,10 +10949,10 @@ var __vue_inject_styles__$V = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$V = "data-v-13a6db36";
+var __vue_scope_id__$V = "data-v-3c1fc8b6";
 /* module identifier */
 
-var __vue_module_identifier__$V = "data-v-13a6db36";
+var __vue_module_identifier__$V = "data-v-3c1fc8b6";
 /* functional template */
 
 var __vue_is_functional_template__$V = false;
@@ -9122,7 +10973,7 @@ var BuilderWidgetTree = __vue_component__$X;var script$U = defineComponent({
     parentId: String,
     level: Number
   },
-  inject: ["t", "setMessage", "getLocale"],
+  inject: ['t', 'setMessage', 'getLocale'],
   methods: {
     onPageLabelChange: function onPageLabelChange(pageIndex, label) {
       this.setMessage({
@@ -9145,7 +10996,7 @@ var __vue_render__$U = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _c('div', _vm._l(_vm.widgetItem.properties.pages, function (page, pageIndex) {
-    return _vm._ssrNode("<div data-v-01d02769>", "</div>", [_vm._ssrNode("<div class=\"page-label\" data-v-01d02769><small data-v-01d02769><input" + _vm._ssrAttr("value", _vm.t(_vm.widgetItem.id + "." + page.labelKey)) + " data-v-01d02769></small></div> "), _c('builder-widget-tree', {
+    return _vm._ssrNode("<div data-v-d2da775a>", "</div>", [_vm._ssrNode("<div class=\"page-label\" data-v-d2da775a><small data-v-d2da775a><input" + _vm._ssrAttr("value", _vm.t(_vm.widgetItem.id + "." + page.labelKey)) + " data-v-d2da775a></small></div> "), _c('builder-widget-tree', {
       attrs: {
         "widgetItems": _vm.widgetItems,
         "level": 1,
@@ -9160,8 +11011,8 @@ var __vue_staticRenderFns__$U = [];
 
 var __vue_inject_styles__$U = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-01d02769_0", {
-    source: ".page-label[data-v-01d02769]{padding:6px}.page-label input[data-v-01d02769]{border:none;outline:0}",
+  inject("data-v-d2da775a_0", {
+    source: ".page-label[data-v-d2da775a]{padding:6px}.page-label input[data-v-d2da775a]{border:none;outline:0}",
     map: undefined,
     media: undefined
   });
@@ -9169,10 +11020,10 @@ var __vue_inject_styles__$U = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$U = "data-v-01d02769";
+var __vue_scope_id__$U = "data-v-d2da775a";
 /* module identifier */
 
-var __vue_module_identifier__$U = "data-v-01d02769";
+var __vue_module_identifier__$U = "data-v-d2da775a";
 /* functional template */
 
 var __vue_is_functional_template__$U = false;
@@ -9187,10 +11038,10 @@ var WidgetTree = __vue_component__$W;var pages = {
   create: function create(props) {
     return {
       id: v4(),
-      type: "pages",
+      type: 'pages',
       properties: _objectSpread2({
         pages: [{
-          labelKey: "",
+          labelKey: '',
           children: []
         }],
         navigationVisible: true,
@@ -9208,40 +11059,53 @@ var WidgetTree = __vue_component__$W;var pages = {
   widgetItem: PagesWidgetItem,
   widgetTree: WidgetTree
 };var script$T = defineComponent({
+  inject: ['questionControls', 'widgetControls', 'getPageState', 'setPageState', 'getLocale', 'setMessage'],
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
+    t: Function,
+    view: String
   },
-  inject: ["questionControls", "widgetControls", "getPageState", "setPageState", "getLocale", "setMessage"],
   created: function created() {
-    var _this$$props$widget, _this$widget;
+    var _this$widget$getState;
 
-    var widgetState = _objectSpread2({}, (_this$$props$widget = this.$props.widget) === null || _this$$props$widget === void 0 ? void 0 : _this$$props$widget.getState());
-
-    (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.setState("type", "question");
-
-    if ((widgetState === null || widgetState === void 0 ? void 0 : widgetState.touched) === undefined) {
-      var _this$widget2, _this$widget3, _this$widget4;
-
-      (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.setState("touched", false);
-      (_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.setState("pristine", true);
-      (_this$widget4 = this.widget) === null || _this$widget4 === void 0 ? void 0 : _this$widget4.setState("dirty", false);
-    }
+    this.widget.setState(_objectSpread2({
+      type: 'question'
+    }, ((_this$widget$getState = this.widget.getState()) === null || _this$widget$getState === void 0 ? void 0 : _this$widget$getState.touched) === undefined ? {
+      touched: false,
+      pristine: true,
+      dirty: false
+    } : {}));
   },
   mounted: function mounted() {
     var _this = this;
 
     this.$nextTick(function () {
       if (!_this.$refs.labelInput) return;
-      _this.$refs.labelInput.style.height = "";
-      _this.$refs.labelInput.style.height = _this.$refs.labelInput.scrollHeight + "px";
+      _this.$refs.labelInput.style.height = '';
+      _this.$refs.labelInput.style.height = _this.$refs.labelInput.scrollHeight + 'px';
     });
   },
   methods: {
@@ -9250,17 +11114,21 @@ var WidgetTree = __vue_component__$W;var pages = {
         id: this.$props.widget.id,
         locale: this.getLocale(),
         key: "__".concat(name),
-        value: text.replaceAll(/\n|\r/g, "")
+        value: text.replaceAll(/\n|\r/g, '')
       });
     },
     onChange: function onChange(response, ignoreChecks) {
-      var _this2 = this;
+      var _this$widget,
+          _this2 = this;
 
-      this.widget.setState("response", response);
+      (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.setState(_objectSpread2({
+        response: response
+      }, !ignoreChecks ? {
+        touched: true,
+        pristine: false,
+        dirty: true
+      } : {}));
       if (ignoreChecks) return;
-      this.widget.setState("touched", true);
-      this.widget.setState("pristine", false);
-      this.widget.setState("dirty", true);
 
       _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -9268,10 +11136,10 @@ var WidgetTree = __vue_component__$W;var pages = {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return _this2.$props.widget.runValidations();
+                return _this2.widget.runValidations();
 
               case 2:
-                _this2.$props.widget.emitListener("change");
+                _this2.widget.emitListener('change');
 
               case 3:
               case "end":
@@ -9293,27 +11161,27 @@ var __vue_render__$T = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return !_vm.widget.getState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-2a1b7fb2>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label" + _vm._ssrAttr("for", _vm.widget.code || _vm.widget.id) + _vm._ssrClass(null, {
+  return !_vm.widget.getState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-0020c860>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label" + _vm._ssrAttr("for", _vm.widget.code || _vm.widget.id) + _vm._ssrClass(null, {
     errors: (_vm.getWidgetState('errors') || []).length
-  }) + " data-v-2a1b7fb2><textarea oninput=\"this.style.height = \"\";this.style.height = this.scrollHeight + \"px\"\"" + _vm._ssrAttr("value", _vm.t('__label', _vm.widget.id)) + " class=\"text-input\" data-v-2a1b7fb2></textarea></label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-2a1b7fb2>", "</div>", [_c(_vm.questionControls[_vm.widget.properties.control].display, {
+  }) + " data-v-0020c860><textarea oninput=\"this.style.height = \"\";this.style.height = this.scrollHeight + \"px\"\"" + _vm._ssrAttr("value", _vm.t('__label', _vm.widget.id)) + " class=\"text-input\" data-v-0020c860></textarea></label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-0020c860>", "</div>", [_c(_vm.questionControls[_vm.widget.properties.control].display, {
     tag: "component",
     attrs: {
       "properties": _vm.widget.properties.controlProperties,
       "widget": _vm.widget,
-      "widgetItems": _vm.widgetItems,
-      "onChange": _vm.onChange,
+      "widget-items": _vm.widgetItems,
+      "on-change": _vm.onChange,
       "value": _vm.widget.getState('response'),
-      "setWidgetState": _vm.setWidgetState,
-      "getWidgetState": _vm.getWidgetState,
+      "set-widget-state": _vm.setWidgetState,
+      "get-widget-state": _vm.getWidgetState,
       "view": _vm.view,
       "errors": _vm.getWidgetState('errors'),
       "t": function t(key, data) {
         return _vm.t("control_" + key, data);
       }
     }
-  }), _vm._ssrNode(" " + _vm._ssrList(_vm.getWidgetState('errors'), function (errorKey) {
-    return "<span class=\"error\" data-v-2a1b7fb2>" + _vm._ssrEscape(_vm._s(_vm.t(errorKey, _vm.widget.id))) + "</span>";
-  }))], 2)], 2)]) : _vm._e();
+  }), _vm._ssrNode(" " + (_vm.getWidgetState('dirty') && _vm.getWidgetState('errors') ? _vm._ssrList(_vm.getWidgetState('errors').slice(0, 1), function (errorKey, errorKeyIndex) {
+    return "<span class=\"error\" data-v-0020c860>" + (_vm.t("control_" + errorKey.err) ? _vm._ssrEscape(_vm._s(_vm.t("control_" + errorKey.err, errorKey.data))) : _vm._ssrEscape(_vm._s(_vm.t("" + errorKey.err, errorKey.data)))) + "</span>";
+  }) : "<!---->"))], 2)], 2)]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$T = [];
@@ -9321,8 +11189,8 @@ var __vue_staticRenderFns__$T = [];
 
 var __vue_inject_styles__$T = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-2a1b7fb2_0", {
-    source: ".question-wrapper[data-v-2a1b7fb2]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-2a1b7fb2]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-2a1b7fb2]{color:red}.question-wrapper>div[data-v-2a1b7fb2]{flex:2;padding:20px 0}.error[data-v-2a1b7fb2]{display:block;color:red;margin-top:10px}.text-input[data-v-2a1b7fb2]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
+  inject("data-v-0020c860_0", {
+    source: ".question-wrapper[data-v-0020c860]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-0020c860]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-0020c860]{color:red}.question-wrapper>div[data-v-0020c860]{flex:2;padding:20px 0}.error[data-v-0020c860]{display:block;color:red;margin-top:10px}.text-input[data-v-0020c860]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
     map: undefined,
     media: undefined
   });
@@ -9330,10 +11198,10 @@ var __vue_inject_styles__$T = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$T = "data-v-2a1b7fb2";
+var __vue_scope_id__$T = "data-v-0020c860";
 /* module identifier */
 
-var __vue_module_identifier__$T = "data-v-2a1b7fb2";
+var __vue_module_identifier__$T = "data-v-0020c860";
 /* functional template */
 
 var __vue_is_functional_template__$T = false;
@@ -9344,53 +11212,82 @@ var __vue_component__$V = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$T
 }, __vue_inject_styles__$T, __vue_script__$T, __vue_scope_id__$T, __vue_is_functional_template__$T, __vue_module_identifier__$T, false, undefined, createInjectorSSR, undefined);
 
-var Builder$4 = __vue_component__$V;// import { validateWidget } from "../../validateUtils";
-
+var Builder$4 = __vue_component__$V;// import { getParents } from "../../utils";
+// import { validateWidget } from "../../validateUtils";
 var script$S = defineComponent({
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
+    t: Function,
+    view: String
   },
-  inject: ["questionControls", "widgetControls", "setPageState"],
+  inject: ['questionControls', 'widgetControls', 'setPageState'],
   created: function created() {
-    var widgetState = _objectSpread2({}, this.$props.widget.getState());
+    var _this$widget;
 
-    this.widget.setState("type", "question");
+    var widgetState = ((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.getState()) || {};
 
-    if ((widgetState === null || widgetState === void 0 ? void 0 : widgetState.touched) === undefined) {
-      this.widget.setState("touched", false);
-      this.widget.setState("pristine", true);
-      this.widget.setState("dirty", false);
+    if (!widgetState.type || widgetState.touched === undefined) {
+      var _this$widget2;
+
+      (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.setState(_objectSpread2({
+        type: 'question'
+      }, widgetState.touched === undefined ? {
+        touched: false,
+        pristine: true,
+        dirty: false
+      } : {}));
     }
   },
   unmounted: function unmounted() {},
   methods: {
     onChange: function onChange(response, ignoreChecks) {
-      var _this = this;
+      var _this$widget3,
+          _this = this;
 
-      this.widget.setState("response", response);
+      (_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.setState(_objectSpread2({
+        response: response
+      }, !ignoreChecks ? {
+        touched: true,
+        pristine: false,
+        dirty: true
+      } : {}));
       if (ignoreChecks) return;
-      this.widget.setState("touched", true);
-      this.widget.setState("pristine", false);
-      this.widget.setState("dirty", true);
 
       _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var _this$widget4, _this$widget5;
+
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return _this.$props.widget.runValidations();
+                return (_this$widget4 = _this.widget) === null || _this$widget4 === void 0 ? void 0 : _this$widget4.runValidations();
 
               case 2:
-                _this.$props.widget.emitListener("change");
+                (_this$widget5 = _this.widget) === null || _this$widget5 === void 0 ? void 0 : _this$widget5.emitListener('change');
 
               case 3:
               case "end":
@@ -9399,6 +11296,26 @@ var script$S = defineComponent({
           }
         }, _callee);
       }))();
+    },
+    getQuestionControlRender: function getQuestionControlRender(type) {
+      var _questionControls;
+
+      var view = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'display';
+      var widgetType = (_questionControls = this.questionControls) === null || _questionControls === void 0 ? void 0 : _questionControls[type];
+
+      if (!widgetType) {
+        var _this$widget6;
+
+        throw new Error("question control type [".concat(type, "] from widget [").concat((_this$widget6 = this.widget) === null || _this$widget6 === void 0 ? void 0 : _this$widget6.id, "] was not found. Maybe the question control was not imported"));
+      }
+
+      var widgetRender = widgetType[view];
+
+      if (!widgetRender) {
+        throw new Error("widget view [".concat(view, "] does not exist for question control type [").concat(type, "]"));
+      }
+
+      return widgetRender;
     }
   }
 });/* script */
@@ -9412,14 +11329,17 @@ var __vue_render__$S = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return !_vm.widget.getState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-1c36d998>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label" + _vm._ssrAttr("for", _vm.widget.code || _vm.widget.id) + _vm._ssrClass(null, {
+  return !_vm.widget.getState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-fe1414d8>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label" + _vm._ssrAttr("for", _vm.widget.code || _vm.widget.id) + _vm._ssrClass(null, {
     errors: (_vm.getWidgetState('errors') || []).length
-  }) + " data-v-1c36d998>" + _vm._ssrEscape(_vm._s(_vm.t("__label", _vm.widget.id))) + "</label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-1c36d998>", "</div>", [_c(_vm.questionControls[_vm.widget.properties.control].display, {
+  }) + " data-v-fe1414d8>" + _vm._ssrEscape(_vm._s(_vm.t('__label', _vm.widget.id))) + "</label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-fe1414d8>", "</div>", [_c(_vm.getQuestionControlRender(_vm.widget.properties.control), {
     tag: "component",
     attrs: {
+      "id": "widget_question_" + _vm.widget.id,
+      "data-test": "widget_question_" + _vm.widget.code,
       "properties": _vm.widget.properties.controlProperties,
       "widget": _vm.widget,
       "widgetItems": _vm.widgetItems,
+      "questionItem": _vm.widget.questionItem,
       "onChange": _vm.onChange,
       "value": _vm.widget.getState('response'),
       "setWidgetState": _vm.setWidgetState,
@@ -9429,9 +11349,17 @@ var __vue_render__$S = function __vue_render__() {
       "t": function t(key, data) {
         return _vm.t("control_" + key, data);
       }
+    },
+    on: {
+      "onChange": _vm.onChange,
+      "t": function t(key, data) {
+        return _vm.t("control_" + key, data);
+      },
+      "setWidgetState": _vm.setWidgetState,
+      "getWidgetState": _vm.getWidgetState
     }
-  }), _vm._ssrNode(" " + (_vm.getWidgetState('dirty') ? _vm._ssrList(_vm.getWidgetState('errors'), function (errorKey) {
-    return "<span class=\"error\" data-v-1c36d998>" + _vm._ssrEscape(_vm._s(_vm.t(errorKey))) + "</span>";
+  }), _vm._ssrNode(" " + (_vm.getWidgetState('dirty') && _vm.getWidgetState('errors') ? _vm._ssrList(_vm.getWidgetState('errors').slice(0, 1), function (errorKey, errorKeyIndex) {
+    return "<span class=\"error\" data-v-fe1414d8>" + (_vm.t("control_" + errorKey.err) ? _vm._ssrEscape(_vm._s(_vm.t("control_" + errorKey.err, errorKey.data))) : _vm._ssrEscape(_vm._s(_vm.t("" + errorKey.err, errorKey.data)))) + "</span>";
   }) : "<!---->"))], 2)], 2)]) : _vm._e();
 };
 
@@ -9440,8 +11368,8 @@ var __vue_staticRenderFns__$S = [];
 
 var __vue_inject_styles__$S = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-1c36d998_0", {
-    source: ".question-wrapper[data-v-1c36d998]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-1c36d998]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-1c36d998]{color:red}.question-wrapper>div[data-v-1c36d998]{flex:2;padding:20px 0}.error[data-v-1c36d998]{display:block;color:red}@media only screen and (max-width:600px){.question-wrapper[data-v-1c36d998]{flex-direction:column}.question-wrapper>label[data-v-1c36d998]{border-right:none;padding:10px 0 5px 0}.question-wrapper>label.errors[data-v-1c36d998]{color:#000}.question-wrapper>div[data-v-1c36d998]{padding:5px 0 10px 0}}",
+  inject("data-v-fe1414d8_0", {
+    source: ".question-wrapper[data-v-fe1414d8]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-fe1414d8]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-fe1414d8]{color:red}.question-wrapper>div[data-v-fe1414d8]{flex:2;padding:20px 0}.error[data-v-fe1414d8]{display:block;color:red}@media only screen and (max-width:600px){.question-wrapper[data-v-fe1414d8]{flex-direction:column}.question-wrapper>label[data-v-fe1414d8]{border-right:none;padding:10px 0 5px 0}.question-wrapper>label.errors[data-v-fe1414d8]{color:#000}.question-wrapper>div[data-v-fe1414d8]{padding:5px 0 10px 0}}",
     map: undefined,
     media: undefined
   });
@@ -9449,10 +11377,10 @@ var __vue_inject_styles__$S = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$S = "data-v-1c36d998";
+var __vue_scope_id__$S = "data-v-fe1414d8";
 /* module identifier */
 
-var __vue_module_identifier__$S = "data-v-1c36d998";
+var __vue_module_identifier__$S = "data-v-fe1414d8";
 /* functional template */
 
 var __vue_is_functional_template__$S = false;
@@ -9463,7 +11391,29 @@ var __vue_component__$U = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$S
 }, __vue_inject_styles__$S, __vue_script__$S, __vue_scope_id__$S, __vue_is_functional_template__$S, __vue_module_identifier__$S, false, undefined, createInjectorSSR, undefined);
 
-var Display$a = __vue_component__$U;var QuestionWidgetItem = /*#__PURE__*/function (_WidgetItem) {
+var Display$a = __vue_component__$U;var QuestionItem = /*#__PURE__*/function () {
+  function QuestionItem(_ref) {
+    var widget = _ref.widget;
+
+    _classCallCheck(this, QuestionItem);
+
+    _defineProperty(this, "_widget", void 0);
+
+    this._widget = widget;
+  }
+
+  _createClass(QuestionItem, [{
+    key: "widget",
+    get: function get() {
+      return this._widget;
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {}
+  }]);
+
+  return QuestionItem;
+}();var QuestionWidgetItem = /*#__PURE__*/function (_WidgetItem) {
   _inherits(QuestionWidgetItem, _WidgetItem);
 
   var _super = _createSuper(QuestionWidgetItem);
@@ -9477,10 +11427,21 @@ var Display$a = __vue_component__$U;var QuestionWidgetItem = /*#__PURE__*/functi
 
     _defineProperty(_assertThisInitialized(_this), "questionControlErrors", []);
 
+    _defineProperty(_assertThisInitialized(_this), "_questionItem", void 0);
+
+    var QuestionItemClass = opts.getQuestionControls()[_this._widget.properties.control].questionItem || QuestionItem;
+    _this._questionItem = new QuestionItemClass({
+      widget: _assertThisInitialized(_this)
+    });
     return _this;
   }
 
   _createClass(QuestionWidgetItem, [{
+    key: "questionItem",
+    get: function get() {
+      return this._questionItem;
+    }
+  }, {
     key: "setQuestionErrors",
     value: function () {
       var _setQuestionErrors = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(errors) {
@@ -9509,8 +11470,9 @@ var Display$a = __vue_component__$U;var QuestionWidgetItem = /*#__PURE__*/functi
   }, {
     key: "runValidations",
     value: function () {
-      var _runValidations = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var _this2 = this;
+      var _runValidations = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(opts) {
+        var _errors,
+            _this2 = this;
 
         var errors, parentIds;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -9518,41 +11480,38 @@ var Display$a = __vue_component__$U;var QuestionWidgetItem = /*#__PURE__*/functi
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.t0 = [];
-                _context2.t1 = _toConsumableArray;
-                _context2.next = 4;
-                return _get(_getPrototypeOf(QuestionWidgetItem.prototype), "runValidations", this).call(this);
+                _context2.t1 = _toConsumableArray(this.questionControlErrors);
+                _context2.t2 = _toConsumableArray;
+                _context2.next = 5;
+                return _get(_getPrototypeOf(QuestionWidgetItem.prototype), "runValidations", this).call(this, opts);
 
-              case 4:
-                _context2.t2 = _context2.sent;
+              case 5:
+                _context2.t3 = _context2.sent;
 
-                if (_context2.t2) {
-                  _context2.next = 7;
+                if (_context2.t3) {
+                  _context2.next = 8;
                   break;
                 }
 
-                _context2.t2 = [];
+                _context2.t3 = [];
 
-              case 7:
-                _context2.t3 = _context2.t2;
-                _context2.t4 = (0, _context2.t1)(_context2.t3);
-                _context2.t5 = _toConsumableArray(this.questionControlErrors);
-                errors = _context2.t0.concat.call(_context2.t0, _context2.t4, _context2.t5);
-                // FIXME: super.runValidations() also runs the following
-                // two lines. Can reduce?
-                this.setState("errors", errors);
-
-                this._setPageState(this.pageState);
-
-                if (!errors.length) errors = null;
-                this.setState("valid", !errors);
-                this.setState("hasErrors", !!errors);
+              case 8:
+                _context2.t4 = _context2.t3;
+                _context2.t5 = (0, _context2.t2)(_context2.t4);
+                errors = _context2.t0.concat.call(_context2.t0, _context2.t1, _context2.t5);
+                if (!((_errors = errors) !== null && _errors !== void 0 && _errors.length)) errors = null;
+                this.setState({
+                  errors: errors || [],
+                  valid: !errors,
+                  hasErrors: !!errors
+                });
                 parentIds = this.getParentIds();
                 (parentIds || []).forEach(function (parentId) {
                   _this2._widgetItems[parentId].setChildErrors(_this2.id, errors);
                 });
                 return _context2.abrupt("return", errors);
 
-              case 19:
+              case 16:
               case "end":
                 return _context2.stop();
             }
@@ -9560,39 +11519,76 @@ var Display$a = __vue_component__$U;var QuestionWidgetItem = /*#__PURE__*/functi
         }, _callee2, this);
       }));
 
-      function runValidations() {
+      function runValidations(_x2) {
         return _runValidations.apply(this, arguments);
       }
 
       return runValidations;
     }()
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      _get(_getPrototypeOf(QuestionWidgetItem.prototype), "destroy", this).call(this);
+
+      this.questionItem.destroy();
+    }
   }]);
 
   return QuestionWidgetItem;
-}(WidgetItem);//
-var script$R = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+}(WidgetItem);var WidgetControlProps$9 = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["questionControls", "widgetControls", "getPageState", "setPageState"],
-  created: function created() {},
-  unmounted: function unmounted() {},
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$R = defineComponent({
+  inject: ['questionControls', 'widgetControls', 'getPageState', 'setPageState'],
+  props: WidgetControlProps$9,
   computed: {
     pageState: function pageState() {
       return this.getPageState();
     }
   },
+  created: function created() {},
+  unmounted: function unmounted() {},
   methods: {
     onChange: function onChange(response) {
-      this.setWidgetState("response", response);
+      this.setWidgetState('response', response);
     }
   }
 });/* script */
@@ -9606,15 +11602,15 @@ var __vue_render__$R = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return !_vm.getWidgetState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-5a073ee4>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label data-v-5a073ee4>" + _vm._ssrEscape(_vm._s(_vm.t("__label", _vm.widget.id))) + "</label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-5a073ee4>", "</div>", [_c(_vm.questionControls[_vm.widget.properties.control].readOnly, {
+  return !_vm.getWidgetState('reflexiveHide') ? _c('div', [_vm._ssrNode("<div class=\"question-wrapper\" data-v-38a5845c>", "</div>", [_vm._ssrNode((!_vm.widget.properties.hideLabel ? "<label data-v-38a5845c>" + _vm._ssrEscape(_vm._s(_vm.t('__label', _vm.widget.id))) + "</label>" : "<!---->") + " "), _vm._ssrNode("<div data-v-38a5845c>", "</div>", [_c(_vm.questionControls[_vm.widget.properties.control].readOnly, {
     tag: "component",
     attrs: {
       "properties": _vm.widget.properties.controlProperties,
       "widget": _vm.widget,
-      "onChange": _vm.onChange,
+      "on-change": _vm.onChange,
       "value": _vm.getWidgetState('response'),
-      "setWidgetState": _vm.setWidgetState,
-      "getWidgetState": _vm.getWidgetState,
+      "set-widget-state": _vm.setWidgetState,
+      "get-widget-state": _vm.getWidgetState,
       "view": _vm.view,
       "t": _vm.t
     }
@@ -9626,8 +11622,8 @@ var __vue_staticRenderFns__$R = [];
 
 var __vue_inject_styles__$R = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-5a073ee4_0", {
-    source: ".question-wrapper[data-v-5a073ee4]{width:100%;display:flex;flex-direction:row;padding:10px 10px}.question-wrapper>label[data-v-5a073ee4]{flex:1;max-width:300px;border-right:1px solid #393939;padding:10px 0}.question-wrapper>div[data-v-5a073ee4]{flex:2;padding:10px 20px}",
+  inject("data-v-38a5845c_0", {
+    source: ".question-wrapper[data-v-38a5845c]{width:100%;display:flex;flex-direction:row;padding:10px 10px}.question-wrapper>label[data-v-38a5845c]{flex:1;max-width:300px;border-right:1px solid #393939;padding:10px 0}.question-wrapper>div[data-v-38a5845c]{flex:2;padding:10px 20px}",
     map: undefined,
     media: undefined
   });
@@ -9635,10 +11631,10 @@ var __vue_inject_styles__$R = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$R = "data-v-5a073ee4";
+var __vue_scope_id__$R = "data-v-38a5845c";
 /* module identifier */
 
-var __vue_module_identifier__$R = "data-v-5a073ee4";
+var __vue_module_identifier__$R = "data-v-38a5845c";
 /* functional template */
 
 var __vue_is_functional_template__$R = false;
@@ -9653,11 +11649,11 @@ var ReadOnly$a = __vue_component__$T;var question = {
   create: function create(props) {
     return {
       id: v4(),
-      type: "question",
+      type: 'question',
       properties: _objectSpread2({
-        responseType: "",
+        responseType: '',
         hideLabel: false,
-        control: "",
+        control: '',
         controlProperties: {}
       }, props)
     };
@@ -9666,49 +11662,81 @@ var ReadOnly$a = __vue_component__$T;var question = {
   builder: Builder$4,
   readOnly: ReadOnly$a,
   widgetItem: QuestionWidgetItem
-};//
+};var WidgetControlProps$8 = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$Q = defineComponent({
   components: {
     BuilderWidgetsLayout: BuilderWidgetsLayout,
     WidgetsLayout: WidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
-  inject: ["getLocale", "setMessage"],
+  inject: ['getLocale', 'setMessage'],
+  props: WidgetControlProps$8,
   setup: function setup() {},
   computed: {
     label: function label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', this.widget.id);
     },
     childErrors: function childErrors() {
-      var _this$$props$widget$g;
+      var _this$widget$getState;
 
-      return (_this$$props$widget$g = this.$props.widget.getState()) === null || _this$$props$widget$g === void 0 ? void 0 : _this$$props$widget$g.childErrors;
+      return (_this$widget$getState = this.widget.getState()) === null || _this$widget$getState === void 0 ? void 0 : _this$widget$getState.childErrors;
     },
     hasChildErrors: function hasChildErrors() {
-      return this.$props.widget.hasChildErrors();
+      return this.widget.hasChildErrors();
     }
   },
   methods: {
     updateText: function updateText(name, text) {
       this.setMessage({
-        id: this.$props.widget.id,
+        id: this.widget.id,
         locale: this.getLocale(),
         key: "__".concat(name),
-        value: text.replaceAll(/\n|\r/g, "")
+        value: text.replaceAll(/\n|\r/g, '')
       });
     },
     isShowLabel: function isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      return this.widget.properties.hasLabel && this.widget.properties.labelPosition === pos;
     }
   }
 });/* script */
@@ -9727,11 +11755,11 @@ var __vue_render__$Q = function __vue_render__() {
     class: {
       errors: _vm.hasChildErrors
     }
-  }, [_vm._ssrNode("<label data-v-4a65cc6a><input type=\"text\"" + _vm._ssrAttr("value", _vm.label) + " class=\"text-input\" data-v-4a65cc6a></label> "), _c('builder-widgets-layout', {
+  }, [_vm._ssrNode("<label data-v-47295f4d><input type=\"text\"" + _vm._ssrAttr("value", _vm.label) + " class=\"text-input\" data-v-47295f4d></label> "), _c('builder-widgets-layout', {
     attrs: {
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "forParent": _vm.widget.id
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "for-parent": _vm.widget.id
     }
   })], 2);
 };
@@ -9741,8 +11769,8 @@ var __vue_staticRenderFns__$Q = [];
 
 var __vue_inject_styles__$Q = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-4a65cc6a_0", {
-    source: ".section-wrapper[data-v-4a65cc6a]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-4a65cc6a]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:1px 10px;z-index:10}.section-wrapper.errors[data-v-4a65cc6a]{border-color:red}.text-input[data-v-4a65cc6a]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
+  inject("data-v-47295f4d_0", {
+    source: ".section-wrapper[data-v-47295f4d]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-47295f4d]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:1px 10px;z-index:10}.section-wrapper.errors[data-v-47295f4d]{border-color:red}.text-input[data-v-47295f4d]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
     map: undefined,
     media: undefined
   });
@@ -9750,10 +11778,10 @@ var __vue_inject_styles__$Q = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$Q = "data-v-4a65cc6a";
+var __vue_scope_id__$Q = "data-v-47295f4d";
 /* module identifier */
 
-var __vue_module_identifier__$Q = "data-v-4a65cc6a";
+var __vue_module_identifier__$Q = "data-v-47295f4d";
 /* functional template */
 
 var __vue_is_functional_template__$Q = false;
@@ -9765,10 +11793,10 @@ var __vue_component__$S = /*#__PURE__*/normalizeComponent({
 }, __vue_inject_styles__$Q, __vue_script__$Q, __vue_scope_id__$Q, __vue_is_functional_template__$Q, __vue_module_identifier__$Q, false, undefined, createInjectorSSR, undefined);
 
 var Builder$3 = __vue_component__$S;var script$P = defineComponent({
+  inject: ['updateWidget'],
   props: {
     widget: Object
-  },
-  inject: ["updateWidget"]
+  }
 });/* script */
 var __vue_script__$P = script$P;
 /* template */
@@ -9792,7 +11820,7 @@ var __vue_inject_styles__$P = undefined;
 var __vue_scope_id__$P = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$P = "data-v-4fdf6ef4";
+var __vue_module_identifier__$P = "data-v-4e2ffa74";
 /* functional template */
 
 var __vue_is_functional_template__$P = false;
@@ -9807,39 +11835,71 @@ var __vue_component__$R = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$P
 }, __vue_inject_styles__$P, __vue_script__$P, __vue_scope_id__$P, __vue_is_functional_template__$P, __vue_module_identifier__$P, false, undefined, undefined, undefined);
 
-var BuilderForm$1 = __vue_component__$R;//
+var BuilderForm$1 = __vue_component__$R;var WidgetControlProps$7 = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$O = defineComponent({
   components: {
     WidgetsLayout: WidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
+  props: WidgetControlProps$7,
   setup: function setup() {},
   computed: {
     label: function label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', this.widget.id);
     },
     childErrors: function childErrors() {
-      var _this$$props$widget$g;
+      var _this$widget$getState;
 
-      return (_this$$props$widget$g = this.$props.widget.getState()) === null || _this$$props$widget$g === void 0 ? void 0 : _this$$props$widget$g.childErrors;
+      return (_this$widget$getState = this.widget.getState()) === null || _this$widget$getState === void 0 ? void 0 : _this$widget$getState.childErrors;
     },
     hasChildErrors: function hasChildErrors() {
-      return this.$props.widget.hasChildErrors();
+      return this.widget.hasChildErrors();
     }
   },
   methods: {
     isShowLabel: function isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      return this.widget.properties.hasLabel && this.widget.properties.labelPosition === pos;
     }
   }
 });/* script */
@@ -9858,11 +11918,11 @@ var __vue_render__$O = function __vue_render__() {
     class: {
       errors: _vm.hasChildErrors
     }
-  }, [_vm._ssrNode((!!_vm.label ? "<label data-v-fc5d7d18>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " "), _c('widgets-layout', {
+  }, [_vm._ssrNode((!!_vm.label ? "<label data-v-cc68ccc6>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " "), _c('widgets-layout', {
     attrs: {
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "forParent": _vm.widget.id
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "for-parent": _vm.widget.id
     }
   })], 2);
 };
@@ -9872,8 +11932,8 @@ var __vue_staticRenderFns__$O = [];
 
 var __vue_inject_styles__$O = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-fc5d7d18_0", {
-    source: ".section-wrapper[data-v-fc5d7d18]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-fc5d7d18]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}.section-wrapper.errors[data-v-fc5d7d18]{border-color:red}@media only screen and (max-width:600px){.section-wrapper label[data-v-fc5d7d18]{font-size:10pt}}",
+  inject("data-v-cc68ccc6_0", {
+    source: ".section-wrapper[data-v-cc68ccc6]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-cc68ccc6]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}.section-wrapper.errors[data-v-cc68ccc6]{border-color:red}@media only screen and (max-width:600px){.section-wrapper label[data-v-cc68ccc6]{font-size:10pt}}",
     map: undefined,
     media: undefined
   });
@@ -9881,10 +11941,10 @@ var __vue_inject_styles__$O = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$O = "data-v-fc5d7d18";
+var __vue_scope_id__$O = "data-v-cc68ccc6";
 /* module identifier */
 
-var __vue_module_identifier__$O = "data-v-fc5d7d18";
+var __vue_module_identifier__$O = "data-v-cc68ccc6";
 /* functional template */
 
 var __vue_is_functional_template__$O = false;
@@ -9895,31 +11955,65 @@ var __vue_component__$Q = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$O
 }, __vue_inject_styles__$O, __vue_script__$O, __vue_scope_id__$O, __vue_is_functional_template__$O, __vue_module_identifier__$O, false, undefined, createInjectorSSR, undefined);
 
-var Display$9 = __vue_component__$Q;//
+var Display$9 = __vue_component__$Q;var WidgetControlProps$6 = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$N = defineComponent({
   components: {
     WidgetsLayout: WidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
+  props: WidgetControlProps$6,
   setup: function setup() {},
   computed: {
     label: function label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t, _this$widget;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.id);
     }
   },
   methods: {
     isShowLabel: function isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      var _this$widget2, _this$widget3;
+
+      return ((_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.properties.hasLabel) && ((_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.properties.labelPosition) === pos;
     }
   }
 });/* script */
@@ -9935,11 +12029,11 @@ var __vue_render__$N = function __vue_render__() {
 
   return _c('section', {
     staticClass: "section-wrapper"
-  }, [_vm._ssrNode((!!_vm.label ? "<label data-v-1110d5b7>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " "), _c('widgets-layout', {
+  }, [_vm._ssrNode((!!_vm.label ? "<label data-v-b08fbba2>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " "), _c('widgets-layout', {
     attrs: {
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "forParent": _vm.widget.id
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "for-parent": _vm.widget.id
     }
   })], 2);
 };
@@ -9949,8 +12043,8 @@ var __vue_staticRenderFns__$N = [];
 
 var __vue_inject_styles__$N = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-1110d5b7_0", {
-    source: ".section-wrapper[data-v-1110d5b7]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px;border-radius:8px}.section-wrapper>label[data-v-1110d5b7]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}",
+  inject("data-v-b08fbba2_0", {
+    source: ".section-wrapper[data-v-b08fbba2]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px;border-radius:8px}.section-wrapper>label[data-v-b08fbba2]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}",
     map: undefined,
     media: undefined
   });
@@ -9958,10 +12052,10 @@ var __vue_inject_styles__$N = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$N = "data-v-1110d5b7";
+var __vue_scope_id__$N = "data-v-b08fbba2";
 /* module identifier */
 
-var __vue_module_identifier__$N = "data-v-1110d5b7";
+var __vue_module_identifier__$N = "data-v-b08fbba2";
 /* functional template */
 
 var __vue_is_functional_template__$N = false;
@@ -10013,7 +12107,7 @@ var ReadOnly$9 = __vue_component__$P;var SectionWidgetItem = /*#__PURE__*/functi
   create: function create(props) {
     return {
       id: v4(),
-      type: "section",
+      type: 'section',
       properties: _objectSpread2({
         children: []
       }, props)
@@ -10024,24 +12118,56 @@ var ReadOnly$9 = __vue_component__$P;var SectionWidgetItem = /*#__PURE__*/functi
   builderForm: BuilderForm$1,
   readOnly: ReadOnly$9,
   widgetItem: SectionWidgetItem
-};//
-var script$M = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+};var WidgetControlProps$5 = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["getLocale", "setMessage"],
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$M = defineComponent({
+  inject: ['getLocale', 'setMessage'],
+  props: WidgetControlProps$5,
   setup: function setup() {},
   computed: {
     label: function label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', this.widget.id);
     }
   },
   methods: {
@@ -10050,7 +12176,7 @@ var script$M = defineComponent({
         id: this.$props.widget.id,
         locale: this.getLocale(),
         key: "__".concat(name),
-        value: text.replaceAll(/\n|\r/g, "")
+        value: text.replaceAll(/\n|\r/g, '')
       });
     },
     isShowLabel: function isShowLabel(pos) {
@@ -10075,7 +12201,7 @@ var __vue_render__$M = function __vue_render__() {
     class: {
       vertical: _vm.widget.properties.dir === 'vertical'
     }
-  }, [_vm._ssrNode((_vm.isShowLabel('start') ? "<label" + _vm._ssrClass(null, (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)) + " data-v-468e5b4b><input type=\"text\"" + _vm._ssrAttr("value", _vm.label) + " class=\"text-input\" data-v-468e5b4b></label>" : "<!---->") + " <div class=\"line\" data-v-468e5b4b></div> " + (_vm.isShowLabel('center') ? "<label" + _vm._ssrClass(null, (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)) + " data-v-468e5b4b><input type=\"text\"" + _vm._ssrAttr("value", _vm.label) + " class=\"text-input\" data-v-468e5b4b></label>" : "<!---->") + " <div class=\"line\" data-v-468e5b4b></div> " + (_vm.isShowLabel('end') ? "<label" + _vm._ssrClass(null, (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)) + " data-v-468e5b4b><input type=\"text\"" + _vm._ssrAttr("value", _vm.label) + " class=\"text-input\" data-v-468e5b4b></label>" : "<!---->"))]);
+  }, [_vm._ssrNode((_vm.isShowLabel('start') ? "<label" + _vm._ssrClass(null, (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)) + " data-v-bba692ee><input type=\"text\"" + _vm._ssrAttr("value", _vm.label) + " class=\"text-input\" data-v-bba692ee></label>" : "<!---->") + " <div class=\"line\" data-v-bba692ee></div> " + (_vm.isShowLabel('center') ? "<label" + _vm._ssrClass(null, (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)) + " data-v-bba692ee><input type=\"text\"" + _vm._ssrAttr("value", _vm.label) + " class=\"text-input\" data-v-bba692ee></label>" : "<!---->") + " <div class=\"line\" data-v-bba692ee></div> " + (_vm.isShowLabel('end') ? "<label" + _vm._ssrClass(null, (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)) + " data-v-bba692ee><input type=\"text\"" + _vm._ssrAttr("value", _vm.label) + " class=\"text-input\" data-v-bba692ee></label>" : "<!---->"))]);
 };
 
 var __vue_staticRenderFns__$M = [];
@@ -10083,8 +12209,8 @@ var __vue_staticRenderFns__$M = [];
 
 var __vue_inject_styles__$M = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-468e5b4b_0", {
-    source: ".line-wrapper[data-v-468e5b4b]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-468e5b4b]{flex-direction:column}.line-wrapper .line[data-v-468e5b4b]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-468e5b4b]{width:1px}.line-wrapper label[data-v-468e5b4b]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-468e5b4b]{padding-left:0}.line-wrapper label.end[data-v-468e5b4b]{padding-right:0}.text-input[data-v-468e5b4b]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}.start .text-input[data-v-468e5b4b]{text-align:left}.center .text-input[data-v-468e5b4b]{text-align:center}.end .text-input[data-v-468e5b4b]{text-align:right}.line-wrapper.vertical .text-input[data-v-468e5b4b]{text-align:center}",
+  inject("data-v-bba692ee_0", {
+    source: ".line-wrapper[data-v-bba692ee]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-bba692ee]{flex-direction:column}.line-wrapper .line[data-v-bba692ee]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-bba692ee]{width:1px}.line-wrapper label[data-v-bba692ee]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-bba692ee]{padding-left:0}.line-wrapper label.end[data-v-bba692ee]{padding-right:0}.text-input[data-v-bba692ee]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}.start .text-input[data-v-bba692ee]{text-align:left}.center .text-input[data-v-bba692ee]{text-align:center}.end .text-input[data-v-bba692ee]{text-align:right}.line-wrapper.vertical .text-input[data-v-bba692ee]{text-align:center}",
     map: undefined,
     media: undefined
   });
@@ -10092,10 +12218,10 @@ var __vue_inject_styles__$M = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$M = "data-v-468e5b4b";
+var __vue_scope_id__$M = "data-v-bba692ee";
 /* module identifier */
 
-var __vue_module_identifier__$M = "data-v-468e5b4b";
+var __vue_module_identifier__$M = "data-v-bba692ee";
 /* functional template */
 
 var __vue_is_functional_template__$M = false;
@@ -10113,7 +12239,7 @@ var Builder$2 = __vue_component__$O;var script$L = defineComponent({
       required: true
     }
   },
-  inject: ["updateWidget"],
+  inject: ['updateWidget'],
   methods: {
     setLabelPosition: function setLabelPosition(labelPosition) {
       this.$props.widget.properties.labelPosition = labelPosition;
@@ -10131,13 +12257,13 @@ var __vue_render__$L = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<div class=\"fieldItem\" data-v-73701104><label class=\"label\" data-v-73701104>Label Position</label> <div class=\"button-group\" data-v-73701104><button" + _vm._ssrClass("button-item", {
+  return _c('div', [_vm._ssrNode("<div class=\"fieldItem\" data-v-423a58fa><label class=\"label\" data-v-423a58fa>Label Position</label> <div class=\"button-group\" data-v-423a58fa><button" + _vm._ssrClass("button-item", {
     active: _vm.widget.properties.labelPosition === 'start'
-  }) + " data-v-73701104>\n        start\n      </button> <button" + _vm._ssrClass("button-item", {
+  }) + " data-v-423a58fa>\n        start\n      </button> <button" + _vm._ssrClass("button-item", {
     active: _vm.widget.properties.labelPosition === 'center'
-  }) + " data-v-73701104>\n        center\n      </button> <button" + _vm._ssrClass("button-item", {
+  }) + " data-v-423a58fa>\n        center\n      </button> <button" + _vm._ssrClass("button-item", {
     active: _vm.widget.properties.labelPosition === 'end'
-  }) + " data-v-73701104>\n        end\n      </button></div></div>")]);
+  }) + " data-v-423a58fa>\n        end\n      </button></div></div>")]);
 };
 
 var __vue_staticRenderFns__$L = [];
@@ -10145,8 +12271,8 @@ var __vue_staticRenderFns__$L = [];
 
 var __vue_inject_styles__$L = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-73701104_0", {
-    source: ".fieldItem[data-v-73701104]{padding:10px}.fieldItem>.label[data-v-73701104]{display:block;padding:10px 0}.button-group[data-v-73701104]{position:relative;display:flex;flex-direction:row;border-radius:4px;overflow:hidden;width:100%;max-width:300px}.button-item[data-v-73701104]{padding:5px 10px;border:none;flex:1;cursor:pointer}.button-item.active[data-v-73701104]{background-color:#03a9f4;color:#fff}",
+  inject("data-v-423a58fa_0", {
+    source: ".fieldItem[data-v-423a58fa]{padding:10px}.fieldItem>.label[data-v-423a58fa]{display:block;padding:10px 0}.button-group[data-v-423a58fa]{position:relative;display:flex;flex-direction:row;border-radius:4px;overflow:hidden;width:100%;max-width:300px}.button-item[data-v-423a58fa]{padding:5px 10px;border:none;flex:1;cursor:pointer}.button-item.active[data-v-423a58fa]{background-color:#03a9f4;color:#fff}",
     map: undefined,
     media: undefined
   });
@@ -10154,10 +12280,10 @@ var __vue_inject_styles__$L = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$L = "data-v-73701104";
+var __vue_scope_id__$L = "data-v-423a58fa";
 /* module identifier */
 
-var __vue_module_identifier__$L = "data-v-73701104";
+var __vue_module_identifier__$L = "data-v-423a58fa";
 /* functional template */
 
 var __vue_is_functional_template__$L = false;
@@ -10168,28 +12294,60 @@ var __vue_component__$N = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$L
 }, __vue_inject_styles__$L, __vue_script__$L, __vue_scope_id__$L, __vue_is_functional_template__$L, __vue_module_identifier__$L, false, undefined, createInjectorSSR, undefined);
 
-var BuilderForm = __vue_component__$N;//
-var script$K = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+var BuilderForm = __vue_component__$N;var WidgetControlProps$4 = {
+  widget: {
+    type: Object,
+    required: true
   },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$K = defineComponent({
+  props: WidgetControlProps$4,
   setup: function setup() {},
   computed: {
     label: function label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', this.widget.id);
     }
   },
   methods: {
     isShowLabel: function isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      return this.widget.properties.hasLabel && this.widget.properties.labelPosition === pos;
     }
   }
 });/* script */
@@ -10210,7 +12368,7 @@ var __vue_render__$K = function __vue_render__() {
     class: {
       vertical: _vm.widget.properties.dir === 'vertical'
     }
-  }, [_vm._ssrNode((_vm.isShowLabel('start') ? "<label" + _vm._ssrClass(null, (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)) + " data-v-badef04e>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " <div class=\"line\" data-v-badef04e></div> " + (_vm.isShowLabel('center') ? "<label" + _vm._ssrClass(null, (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)) + " data-v-badef04e>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " <div class=\"line\" data-v-badef04e></div> " + (_vm.isShowLabel('end') ? "<label" + _vm._ssrClass(null, (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)) + " data-v-badef04e>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->"))]);
+  }, [_vm._ssrNode((_vm.isShowLabel('start') ? "<label" + _vm._ssrClass(null, (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)) + " data-v-84f25dd2>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " <div class=\"line\" data-v-84f25dd2></div> " + (_vm.isShowLabel('center') ? "<label" + _vm._ssrClass(null, (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)) + " data-v-84f25dd2>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " <div class=\"line\" data-v-84f25dd2></div> " + (_vm.isShowLabel('end') ? "<label" + _vm._ssrClass(null, (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)) + " data-v-84f25dd2>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->"))]);
 };
 
 var __vue_staticRenderFns__$K = [];
@@ -10218,8 +12376,8 @@ var __vue_staticRenderFns__$K = [];
 
 var __vue_inject_styles__$K = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-badef04e_0", {
-    source: ".line-wrapper[data-v-badef04e]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-badef04e]{flex-direction:column}.line-wrapper .line[data-v-badef04e]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-badef04e]{width:1px}.line-wrapper label[data-v-badef04e]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-badef04e]{padding-left:0}.line-wrapper label.end[data-v-badef04e]{padding-right:0}@media only screen and (max-width:600px){.line-wrapper label[data-v-badef04e]{font-size:10pt}}",
+  inject("data-v-84f25dd2_0", {
+    source: ".line-wrapper[data-v-84f25dd2]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-84f25dd2]{flex-direction:column}.line-wrapper .line[data-v-84f25dd2]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-84f25dd2]{width:1px}.line-wrapper label[data-v-84f25dd2]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-84f25dd2]{padding-left:0}.line-wrapper label.end[data-v-84f25dd2]{padding-right:0}@media only screen and (max-width:600px){.line-wrapper label[data-v-84f25dd2]{font-size:10pt}}",
     map: undefined,
     media: undefined
   });
@@ -10227,10 +12385,10 @@ var __vue_inject_styles__$K = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$K = "data-v-badef04e";
+var __vue_scope_id__$K = "data-v-84f25dd2";
 /* module identifier */
 
-var __vue_module_identifier__$K = "data-v-badef04e";
+var __vue_module_identifier__$K = "data-v-84f25dd2";
 /* functional template */
 
 var __vue_is_functional_template__$K = false;
@@ -10241,28 +12399,62 @@ var __vue_component__$M = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$K
 }, __vue_inject_styles__$K, __vue_script__$K, __vue_scope_id__$K, __vue_is_functional_template__$K, __vue_module_identifier__$K, false, undefined, createInjectorSSR, undefined);
 
-var Display$8 = __vue_component__$M;//
-var script$J = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+var Display$8 = __vue_component__$M;var WidgetControlProps$3 = {
+  widget: {
+    type: Object,
+    required: true
   },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$J = defineComponent({
+  props: WidgetControlProps$3,
   setup: function setup() {},
   computed: {
     label: function label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t, _this$widget;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.id);
     }
   },
   methods: {
     isShowLabel: function isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      var _this$widget2, _this$widget3;
+
+      return ((_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.properties.hasLabel) && ((_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.properties.labelPosition) === pos;
     }
   }
 });/* script */
@@ -10283,7 +12475,7 @@ var __vue_render__$J = function __vue_render__() {
     class: {
       vertical: _vm.widget.properties.dir === 'vertical'
     }
-  }, [_vm._ssrNode((_vm.isShowLabel('start') ? "<label" + _vm._ssrClass(null, (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)) + " data-v-3d962365>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " <div class=\"line\" data-v-3d962365></div> " + (_vm.isShowLabel('center') ? "<label" + _vm._ssrClass(null, (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)) + " data-v-3d962365>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " <div class=\"line\" data-v-3d962365></div> " + (_vm.isShowLabel('end') ? "<label" + _vm._ssrClass(null, (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)) + " data-v-3d962365>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->"))]);
+  }, [_vm._ssrNode((_vm.isShowLabel('start') ? "<label" + _vm._ssrClass(null, (_obj = {}, _obj[_vm.widget.properties.labelPosition || 'start'] = true, _obj)) + " data-v-5fb0eccc>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " <div class=\"line\" data-v-5fb0eccc></div> " + (_vm.isShowLabel('center') ? "<label" + _vm._ssrClass(null, (_obj$1 = {}, _obj$1[_vm.widget.properties.labelPosition || 'start'] = true, _obj$1)) + " data-v-5fb0eccc>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->") + " <div class=\"line\" data-v-5fb0eccc></div> " + (_vm.isShowLabel('end') ? "<label" + _vm._ssrClass(null, (_obj$2 = {}, _obj$2[_vm.widget.properties.labelPosition || 'start'] = true, _obj$2)) + " data-v-5fb0eccc>" + _vm._ssrEscape(_vm._s(_vm.label)) + "</label>" : "<!---->"))]);
 };
 
 var __vue_staticRenderFns__$J = [];
@@ -10291,8 +12483,8 @@ var __vue_staticRenderFns__$J = [];
 
 var __vue_inject_styles__$J = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-3d962365_0", {
-    source: ".line-wrapper[data-v-3d962365]{display:flex;flex-direction:row;align-items:center;padding:10px}.line-wrapper.vertical[data-v-3d962365]{flex-direction:column}.line-wrapper .line[data-v-3d962365]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-3d962365]{width:1px}.line-wrapper label[data-v-3d962365]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-3d962365]{padding-left:0}.line-wrapper label.end[data-v-3d962365]{padding-right:0}",
+  inject("data-v-5fb0eccc_0", {
+    source: ".line-wrapper[data-v-5fb0eccc]{display:flex;flex-direction:row;align-items:center;padding:10px}.line-wrapper.vertical[data-v-5fb0eccc]{flex-direction:column}.line-wrapper .line[data-v-5fb0eccc]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-5fb0eccc]{width:1px}.line-wrapper label[data-v-5fb0eccc]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-5fb0eccc]{padding-left:0}.line-wrapper label.end[data-v-5fb0eccc]{padding-right:0}",
     map: undefined,
     media: undefined
   });
@@ -10300,10 +12492,10 @@ var __vue_inject_styles__$J = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$J = "data-v-3d962365";
+var __vue_scope_id__$J = "data-v-5fb0eccc";
 /* module identifier */
 
-var __vue_module_identifier__$J = "data-v-3d962365";
+var __vue_module_identifier__$J = "data-v-5fb0eccc";
 /* functional template */
 
 var __vue_is_functional_template__$J = false;
@@ -10318,11 +12510,11 @@ var ReadOnly$8 = __vue_component__$L;var separator = {
   create: function create(props) {
     return {
       id: v4(),
-      type: "separator",
+      type: 'separator',
       properties: _objectSpread2({
-        dir: "horizontal",
+        dir: 'horizontal',
         hasLabel: true,
-        labelPosition: "start"
+        labelPosition: 'start'
       }, props)
     };
   },
@@ -10330,25 +12522,56 @@ var ReadOnly$8 = __vue_component__$L;var separator = {
   builder: Builder$2,
   builderForm: BuilderForm,
   readOnly: ReadOnly$8
-};var script$I = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+};var WidgetControlProps$2 = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["getLocale", "setMessage"],
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$I = defineComponent({
+  props: WidgetControlProps$2,
+  inject: ['getLocale', 'setMessage'],
   methods: {
     onTextChange: function onTextChange(val) {
       this.setMessage({
         id: this.$props.widget.id,
         locale: this.getLocale(),
-        key: "__label",
+        key: '__label',
         value: val.target.value
       });
     }
@@ -10386,8 +12609,8 @@ var __vue_staticRenderFns__$I = [];
 
 var __vue_inject_styles__$I = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-15c1b313_0", {
-    source: ".text-input[data-v-15c1b313]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
+  inject("data-v-016e0c50_0", {
+    source: ".text-input[data-v-016e0c50]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
     map: undefined,
     media: undefined
   });
@@ -10395,10 +12618,10 @@ var __vue_inject_styles__$I = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$I = "data-v-15c1b313";
+var __vue_scope_id__$I = "data-v-016e0c50";
 /* module identifier */
 
-var __vue_module_identifier__$I = "data-v-15c1b313";
+var __vue_module_identifier__$I = "data-v-016e0c50";
 /* functional template */
 
 var __vue_is_functional_template__$I = false;
@@ -10409,15 +12632,46 @@ var __vue_component__$K = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$I
 }, __vue_inject_styles__$I, __vue_script__$I, __vue_scope_id__$I, __vue_is_functional_template__$I, __vue_module_identifier__$I, false, undefined, createInjectorSSR, undefined);
 
-var Builder$1 = __vue_component__$K;var script$H = defineComponent({
-  props: {
-    widget: Object,
-    widgets: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function
+var Builder$1 = __vue_component__$K;var WidgetControlProps$1 = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["updateWidget"],
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$H = defineComponent({
+  props: WidgetControlProps$1,
+  inject: ['updateWidget'],
   methods: {
     setTagType: function setTagType(type) {
       this.widget.properties.tagType = type;
@@ -10439,21 +12693,21 @@ var __vue_render__$H = function __vue_render__() {
     staticClass: "control-wrapper"
   }, [_vm._ssrNode("<a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h1'
-  }) + " data-v-07c4de14>H1</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-f76b79c0>H1</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h2'
-  }) + " data-v-07c4de14>H2</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-f76b79c0>H2</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h3'
-  }) + " data-v-07c4de14>H3</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-f76b79c0>H3</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h4'
-  }) + " data-v-07c4de14>H4</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-f76b79c0>H4</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h5'
-  }) + " data-v-07c4de14>H5</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-f76b79c0>H5</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'h6'
-  }) + " data-v-07c4de14>H6</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-f76b79c0>H6</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'p'
-  }) + " data-v-07c4de14>Paragraph</a> <a" + _vm._ssrClass("tag-selection", {
+  }) + " data-v-f76b79c0>Paragraph</a> <a" + _vm._ssrClass("tag-selection", {
     selected: _vm.widget.properties.tagType === 'small'
-  }) + " data-v-07c4de14>Small</a>")]);
+  }) + " data-v-f76b79c0>Small</a>")]);
 };
 
 var __vue_staticRenderFns__$H = [];
@@ -10461,8 +12715,8 @@ var __vue_staticRenderFns__$H = [];
 
 var __vue_inject_styles__$H = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-07c4de14_0", {
-    source: ".control-wrapper[data-v-07c4de14]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-07c4de14]{height:30px;min-width:40px;padding:0 5px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-07c4de14]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-07c4de14]{background-color:#03a9f4;color:#fff}",
+  inject("data-v-f76b79c0_0", {
+    source: ".control-wrapper[data-v-f76b79c0]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-f76b79c0]{height:30px;min-width:40px;padding:0 5px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-f76b79c0]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-f76b79c0]{background-color:#03a9f4;color:#fff}",
     map: undefined,
     media: undefined
   });
@@ -10470,10 +12724,10 @@ var __vue_inject_styles__$H = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$H = "data-v-07c4de14";
+var __vue_scope_id__$H = "data-v-f76b79c0";
 /* module identifier */
 
-var __vue_module_identifier__$H = "data-v-07c4de14";
+var __vue_module_identifier__$H = "data-v-f76b79c0";
 /* functional template */
 
 var __vue_is_functional_template__$H = false;
@@ -10484,14 +12738,34 @@ var __vue_component__$J = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$H
 }, __vue_inject_styles__$H, __vue_script__$H, __vue_scope_id__$H, __vue_is_functional_template__$H, __vue_module_identifier__$H, false, undefined, createInjectorSSR, undefined);
 
-var BuilderControl = __vue_component__$J;//
-var script$G = defineComponent({
+var BuilderControl = __vue_component__$J;var script$G = defineComponent({
   props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    t: Function
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
+    t: Function,
+    view: String
   }
 });/* script */
 var __vue_script__$G = script$G;
@@ -10506,8 +12780,11 @@ var __vue_render__$G = function __vue_render__() {
 
   return _c(_vm.widget.properties.tagType, {
     tag: "component",
-    staticClass: "text"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+    staticClass: "text",
+    attrs: {
+      "maxlength": _vm.widget.properties.maxLength
+    }
+  }, [_vm._v("\n  " + _vm._s(_vm.t('__label', _vm.widget.id)) + "\n")]);
 };
 
 var __vue_staticRenderFns__$G = [];
@@ -10516,10 +12793,10 @@ var __vue_staticRenderFns__$G = [];
 var __vue_inject_styles__$G = undefined;
 /* scoped */
 
-var __vue_scope_id__$G = "data-v-21b106bc";
+var __vue_scope_id__$G = "data-v-33c0476c";
 /* module identifier */
 
-var __vue_module_identifier__$G = "data-v-21b106bc";
+var __vue_module_identifier__$G = "data-v-33c0476c";
 /* functional template */
 
 var __vue_is_functional_template__$G = false;
@@ -10534,8 +12811,50 @@ var __vue_component__$I = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$G
 }, __vue_inject_styles__$G, __vue_script__$G, __vue_scope_id__$G, __vue_is_functional_template__$G, __vue_module_identifier__$G, false, undefined, undefined, undefined);
 
-var Display$7 = __vue_component__$I;//
-var script$F = defineComponent({});/* script */
+var Display$7 = __vue_component__$I;var WidgetControlProps = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$F = defineComponent({
+  props: WidgetControlProps
+});/* script */
 var __vue_script__$F = script$F;
 /* template */
 
@@ -10548,45 +12867,42 @@ var __vue_render__$F = function __vue_render__() {
 
   return _c(_vm.widget.properties.tagType, {
     tag: "component",
-    staticClass: "text"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+    staticClass: "text",
+    class: [_vm.widget.properties.tagType]
+  }, [_vm._v("\n  " + _vm._s(_vm.t('__label')) + "\n")]);
 };
 
 var __vue_staticRenderFns__$F = [];
 /* style */
 
-var __vue_inject_styles__$F = function __vue_inject_styles__(inject) {
-  if (!inject) return;
-  inject("data-v-2400e2ea_0", {
-    source: ".text[data-v-2400e2ea]{padding:0 10px}",
-    map: undefined,
-    media: undefined
-  });
-};
+var __vue_inject_styles__$F = undefined;
 /* scoped */
 
-
-var __vue_scope_id__$F = "data-v-2400e2ea";
+var __vue_scope_id__$F = "data-v-e1dae31a";
 /* module identifier */
 
-var __vue_module_identifier__$F = "data-v-2400e2ea";
+var __vue_module_identifier__$F = "data-v-e1dae31a";
 /* functional template */
 
 var __vue_is_functional_template__$F = false;
+/* style inject */
+
+/* style inject SSR */
+
 /* style inject shadow dom */
 
 var __vue_component__$H = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$F,
   staticRenderFns: __vue_staticRenderFns__$F
-}, __vue_inject_styles__$F, __vue_script__$F, __vue_scope_id__$F, __vue_is_functional_template__$F, __vue_module_identifier__$F, false, undefined, createInjectorSSR, undefined);
+}, __vue_inject_styles__$F, __vue_script__$F, __vue_scope_id__$F, __vue_is_functional_template__$F, __vue_module_identifier__$F, false, undefined, undefined, undefined);
 
 var ReadOnly$7 = __vue_component__$H;var text$1 = {
   create: function create(props) {
     return {
       id: v4(),
-      type: "text",
+      type: 'text',
       properties: _objectSpread2({
-        tagType: "p"
+        tagType: 'p'
       }, props)
     };
   },
@@ -10681,7 +12997,7 @@ var __vue_render__$E = function __vue_render__() {
       top: (_vm.properties.top || 0) + 'px'
     },
     attrs: {
-      "id": this.$props.properties.id
+      "id": _vm.$props.properties.id
     }
   }, []);
 };
@@ -10691,8 +13007,8 @@ var __vue_staticRenderFns__$E = [];
 
 var __vue_inject_styles__$E = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-4044acf0_0", {
-    source: "a.anchor[data-v-4044acf0]{position:absolute;top:0;left:0}",
+  inject("data-v-6d640e86_0", {
+    source: "a.anchor[data-v-6d640e86]{position:absolute;top:0;left:0}",
     map: undefined,
     media: undefined
   });
@@ -10700,10 +13016,10 @@ var __vue_inject_styles__$E = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$E = "data-v-4044acf0";
+var __vue_scope_id__$E = "data-v-6d640e86";
 /* module identifier */
 
-var __vue_module_identifier__$E = "data-v-4044acf0";
+var __vue_module_identifier__$E = "data-v-6d640e86";
 /* functional template */
 
 var __vue_is_functional_template__$E = false;
@@ -10722,7 +13038,7 @@ var display$1 = __vue_component__$G;var script$D = defineComponent({
   },
   methods: {
     onChange: function onChange(key, value) {
-      this.$emit("onPropertiesChange", _objectSpread2(_objectSpread2({}, this.$props.properties), {}, _defineProperty({}, key, value)));
+      this.$emit('onPropertiesChange', _objectSpread2(_objectSpread2({}, this.$props.properties), {}, _defineProperty({}, key, value)));
     }
   }
 });/* script */
@@ -10736,7 +13052,7 @@ var __vue_render__$D = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<div class=\"field-wrapper\" data-v-a38cb820><label for=\"id\" data-v-a38cb820>ID</label> <input id=\"id\" type=\"text\"" + _vm._ssrAttr("value", _vm.properties.id) + " data-v-a38cb820></div> <div class=\"field-wrapper\" data-v-a38cb820><label for=\"top\" data-v-a38cb820>Position from top (px)</label> <input id=\"top\" type=\"number\"" + _vm._ssrAttr("value", _vm.properties.top) + " data-v-a38cb820></div>")]);
+  return _c('div', [_vm._ssrNode("<div class=\"field-wrapper\" data-v-34f2b220><label for=\"id\" data-v-34f2b220>ID</label> <input id=\"id\" type=\"text\"" + _vm._ssrAttr("value", _vm.properties.id) + " data-v-34f2b220></div> <div class=\"field-wrapper\" data-v-34f2b220><label for=\"top\" data-v-34f2b220>Position from top (px)</label> <input id=\"top\" type=\"number\"" + _vm._ssrAttr("value", _vm.properties.top) + " data-v-34f2b220></div>")]);
 };
 
 var __vue_staticRenderFns__$D = [];
@@ -10744,8 +13060,8 @@ var __vue_staticRenderFns__$D = [];
 
 var __vue_inject_styles__$D = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-a38cb820_0", {
-    source: ".field-wrapper[data-v-a38cb820]{padding:5px 0 15px 0}.field-wrapper.row[data-v-a38cb820]{display:flex;flex-direction:row;align-items:center}.field-wrapper>label[data-v-a38cb820]{display:block;margin-bottom:3px;font-size:9pt}.field-wrapper.row>label[data-v-a38cb820]{margin-right:5px}.field-wrapper select[data-v-a38cb820]{padding:5px;border-width:0 0 1px 0}.field-wrapper input[data-v-a38cb820]{padding:5px;border-width:0 0 1px 0}.field-row[data-v-a38cb820]{display:flex;flex-direction:row}",
+  inject("data-v-34f2b220_0", {
+    source: ".field-wrapper[data-v-34f2b220]{padding:5px 0 15px 0}.field-wrapper.row[data-v-34f2b220]{display:flex;flex-direction:row;align-items:center}.field-wrapper>label[data-v-34f2b220]{display:block;margin-bottom:3px;font-size:9pt}.field-wrapper.row>label[data-v-34f2b220]{margin-right:5px}.field-wrapper select[data-v-34f2b220]{padding:5px;border-width:0 0 1px 0}.field-wrapper input[data-v-34f2b220]{padding:5px;border-width:0 0 1px 0}.field-row[data-v-34f2b220]{display:flex;flex-direction:row}",
     map: undefined,
     media: undefined
   });
@@ -10753,10 +13069,10 @@ var __vue_inject_styles__$D = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$D = "data-v-a38cb820";
+var __vue_scope_id__$D = "data-v-34f2b220";
 /* module identifier */
 
-var __vue_module_identifier__$D = "data-v-a38cb820";
+var __vue_module_identifier__$D = "data-v-34f2b220";
 /* functional template */
 
 var __vue_is_functional_template__$D = false;
@@ -10768,13 +13084,13 @@ var __vue_component__$F = /*#__PURE__*/normalizeComponent({
 }, __vue_inject_styles__$D, __vue_script__$D, __vue_scope_id__$D, __vue_is_functional_template__$D, __vue_module_identifier__$D, false, undefined, createInjectorSSR, undefined);
 
 var form$1 = __vue_component__$F;var anchor = new WidgetEffectControl({
-  key: "anchor",
-  name: "Anchor",
+  key: 'anchor',
+  name: 'Anchor',
   create: function create(props) {
     return {
       type: this.key,
       properties: _objectSpread2({
-        id: "",
+        id: '',
         top: 0
       }, props)
     };
@@ -12336,16 +14652,11 @@ var script$C = defineComponent({
       initialized: false
     };
   },
-  unmounted: function unmounted() {
-    if (this.$props.wrapperRef) {
-      ScrollReveal().clean(this.$props.wrapperRef);
-    }
-  },
   computed: {
     watchWrapperPropsChange: function watchWrapperPropsChange() {
       return {
-        properties: this.$props.properties,
-        wrapperRef: this.$props.wrapperRef
+        properties: this.properties,
+        wrapperRef: this.wrapperRef
       };
     }
   },
@@ -12361,6 +14672,11 @@ var script$C = defineComponent({
         sr.reveal(wrapperRef);
       },
       immediate: true
+    }
+  },
+  unmounted: function unmounted() {
+    if (this.wrapperRef) {
+      ScrollReveal().clean(this.wrapperRef);
     }
   }
 });/* script */
@@ -12386,7 +14702,7 @@ var __vue_inject_styles__$C = undefined;
 var __vue_scope_id__$C = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$C = "data-v-4189cbc4";
+var __vue_module_identifier__$C = "data-v-5acd62ca";
 /* functional template */
 
 var __vue_is_functional_template__$C = false;
@@ -12409,7 +14725,7 @@ var display = __vue_component__$E;var script$B = defineComponent({
   },
   methods: {
     onChange: function onChange(key, value) {
-      this.$emit("onPropertiesChange", _objectSpread2(_objectSpread2({}, this.$props.properties), {}, _defineProperty({}, key, value)));
+      this.$emit('onPropertiesChange', _objectSpread2(_objectSpread2({}, this.$props.properties), {}, _defineProperty({}, key, value)));
     }
   }
 });/* script */
@@ -12423,7 +14739,7 @@ var __vue_render__$B = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<div class=\"field-wrapper row\" data-v-3e4d4309><label for=\"origin\" data-v-3e4d4309>Origin</label> <select id=\"origin\" data-v-3e4d4309><option value=\"left\"" + _vm._ssrAttr("selected", _vm.properties.origin === 'left') + " data-v-3e4d4309>\n        left\n      </option> <option value=\"right\"" + _vm._ssrAttr("selected", _vm.properties.origin === 'right') + " data-v-3e4d4309>\n        right\n      </option> <option value=\"top\"" + _vm._ssrAttr("selected", _vm.properties.origin === 'top') + " data-v-3e4d4309>top</option> <option value=\"bottom\"" + _vm._ssrAttr("selected", _vm.properties.origin === 'bottom') + " data-v-3e4d4309>\n        bottom\n      </option></select></div> <div class=\"field-wrapper\" data-v-3e4d4309><label for=\"delay\" data-v-3e4d4309>Delay (ms)</label> <input id=\"delay\" type=\"number\"" + _vm._ssrAttr("value", _vm.properties.delay) + " data-v-3e4d4309></div> <div class=\"field-wrapper\" data-v-3e4d4309><label for=\"duration\" data-v-3e4d4309>Duration (ms)</label> <input id=\"duration\" type=\"number\"" + _vm._ssrAttr("value", _vm.properties.duration) + " data-v-3e4d4309></div> <div class=\"field-wrapper\" data-v-3e4d4309><label for=\"distance\" data-v-3e4d4309>Distance</label> <div class=\"field-row\" data-v-3e4d4309><input id=\"distance\" type=\"number\"" + _vm._ssrAttr("value", _vm.properties.distance.replace(/%|px/, '')) + " data-v-3e4d4309> <select data-v-3e4d4309><option value=\"%\"" + _vm._ssrAttr("selected", /%$/.test(_vm.properties.distance)) + " data-v-3e4d4309>\n          %\n        </option> <option value=\"px\"" + _vm._ssrAttr("selected", /px$/.test(_vm.properties.distance)) + " data-v-3e4d4309>\n          px\n        </option></select></div></div>")]);
+  return _c('div', [_vm._ssrNode("<div class=\"field-wrapper row\" data-v-250ce009><label for=\"origin\" data-v-250ce009>Origin</label> <select id=\"origin\" data-v-250ce009><option value=\"left\"" + _vm._ssrAttr("selected", _vm.properties.origin === 'left') + " data-v-250ce009>\n        left\n      </option> <option value=\"right\"" + _vm._ssrAttr("selected", _vm.properties.origin === 'right') + " data-v-250ce009>\n        right\n      </option> <option value=\"top\"" + _vm._ssrAttr("selected", _vm.properties.origin === 'top') + " data-v-250ce009>top</option> <option value=\"bottom\"" + _vm._ssrAttr("selected", _vm.properties.origin === 'bottom') + " data-v-250ce009>\n        bottom\n      </option></select></div> <div class=\"field-wrapper\" data-v-250ce009><label for=\"delay\" data-v-250ce009>Delay (ms)</label> <input id=\"delay\" type=\"number\"" + _vm._ssrAttr("value", _vm.properties.delay) + " data-v-250ce009></div> <div class=\"field-wrapper\" data-v-250ce009><label for=\"duration\" data-v-250ce009>Duration (ms)</label> <input id=\"duration\" type=\"number\"" + _vm._ssrAttr("value", _vm.properties.duration) + " data-v-250ce009></div> <div class=\"field-wrapper\" data-v-250ce009><label for=\"distance\" data-v-250ce009>Distance</label> <div class=\"field-row\" data-v-250ce009><input id=\"distance\" type=\"number\"" + _vm._ssrAttr("value", _vm.properties.distance.replace(/%|px/, '')) + " data-v-250ce009> <select data-v-250ce009><option value=\"%\"" + _vm._ssrAttr("selected", /%$/.test(_vm.properties.distance)) + " data-v-250ce009>\n          %\n        </option> <option value=\"px\"" + _vm._ssrAttr("selected", /px$/.test(_vm.properties.distance)) + " data-v-250ce009>\n          px\n        </option></select></div></div>")]);
 };
 
 var __vue_staticRenderFns__$B = [];
@@ -12431,8 +14747,8 @@ var __vue_staticRenderFns__$B = [];
 
 var __vue_inject_styles__$B = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-3e4d4309_0", {
-    source: ".field-wrapper[data-v-3e4d4309]{padding:5px 0 15px 0}.field-wrapper.row[data-v-3e4d4309]{display:flex;flex-direction:row;align-items:center}.field-wrapper>label[data-v-3e4d4309]{display:block;margin-bottom:3px;font-size:9pt}.field-wrapper.row>label[data-v-3e4d4309]{margin-right:5px}.field-wrapper select[data-v-3e4d4309]{padding:5px;border-width:0 0 1px 0}.field-wrapper input[data-v-3e4d4309]{padding:5px;border-width:0 0 1px 0}.field-row[data-v-3e4d4309]{display:flex;flex-direction:row}.flex-1[data-v-3e4d4309]{flex:1}",
+  inject("data-v-250ce009_0", {
+    source: ".field-wrapper[data-v-250ce009]{padding:5px 0 15px 0}.field-wrapper.row[data-v-250ce009]{display:flex;flex-direction:row;align-items:center}.field-wrapper>label[data-v-250ce009]{display:block;margin-bottom:3px;font-size:9pt}.field-wrapper.row>label[data-v-250ce009]{margin-right:5px}.field-wrapper select[data-v-250ce009]{padding:5px;border-width:0 0 1px 0}.field-wrapper input[data-v-250ce009]{padding:5px;border-width:0 0 1px 0}.field-row[data-v-250ce009]{display:flex;flex-direction:row}.flex-1[data-v-250ce009]{flex:1}",
     map: undefined,
     media: undefined
   });
@@ -12440,10 +14756,10 @@ var __vue_inject_styles__$B = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$B = "data-v-3e4d4309";
+var __vue_scope_id__$B = "data-v-250ce009";
 /* module identifier */
 
-var __vue_module_identifier__$B = "data-v-3e4d4309";
+var __vue_module_identifier__$B = "data-v-250ce009";
 /* functional template */
 
 var __vue_is_functional_template__$B = false;
@@ -12455,16 +14771,16 @@ var __vue_component__$D = /*#__PURE__*/normalizeComponent({
 }, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, undefined, createInjectorSSR, undefined);
 
 var form = __vue_component__$D;var reveal = new WidgetEffectControl({
-  key: "reveal",
-  name: "Reveal",
+  key: 'reveal',
+  name: 'Reveal',
   create: function create(props) {
     return {
       type: this.key,
       properties: _objectSpread2({
         delay: 100,
         duration: 300,
-        distance: "300px",
-        origin: "left"
+        distance: '300px',
+        origin: 'left'
       }, props)
     };
   },
@@ -12477,7 +14793,9 @@ var form = __vue_component__$D;var reveal = new WidgetEffectControl({
 function QuestionControl(_ref) {
   var builder = _ref.builder,
       display = _ref.display,
-      readOnly = _ref.readOnly;
+      readOnly = _ref.readOnly,
+      _ref$questionItem = _ref.questionItem,
+      questionItem = _ref$questionItem === void 0 ? QuestionItem : _ref$questionItem;
 
   _classCallCheck(this, QuestionControl);
 
@@ -12487,38 +14805,68 @@ function QuestionControl(_ref) {
 
   _defineProperty(this, "readOnly", void 0);
 
+  _defineProperty(this, "questionItem", void 0);
+
   _defineProperty(this, "tags", void 0);
 
   this.builder = builder;
   this.display = display;
   this.readOnly = readOnly;
   this.tags = [];
-});var script$A = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  this.questionItem = questionItem;
+});var QuestionControlProps$a = {
+  properties: {
+    type: Object,
+    required: true
   },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$A = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps$a), {}, {
+    properties: {
+      type: Object,
+      required: true
+    },
+    value: {
+      type: String
+    }
+  }),
   data: function data() {
     return {
       options: []
     };
   },
-  watch: _defineProperty({}, "properties.options", {
+  watch: _defineProperty({}, 'properties.options', {
     handler: function handler() {
       var _this = this;
 
       // FIXME: need to handle on locale switch as well
-      this.$data.options = this.$props.properties.options.map(function (opt) {
+      this.options = this.properties.options.map(function (opt) {
         return {
           value: opt.value,
-          label: _this.t(opt.labelKey, _this.$props.widget.id)
+          label: _this.t(opt.labelKey, _this.widget.id)
         };
       });
     },
@@ -12528,14 +14876,16 @@ function QuestionControl(_ref) {
     selectedValue: function selectedValue() {
       var _this2 = this;
 
-      return this.$data.options.find(function (o) {
-        return o.value === _this2.$props.value;
+      return this.options.find(function (o) {
+        return o.value === _this2.value;
       });
     }
   },
   methods: {
     onSelectChange: function onSelectChange(value) {
-      this.$props.onChange(value);
+      var _this$onChange;
+
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, value);
     }
   }
 });/* script */
@@ -12555,7 +14905,7 @@ var __vue_render__$A = function __vue_render__() {
     return "<button" + _vm._ssrClass(null, {
       isLast: index === _vm.options.length - 1,
       selected: _vm.value === option.value
-    }) + " data-v-0ad7d30f>" + _vm._ssrEscape("\n    " + _vm._s(option.label) + "\n  ") + "</button>";
+    }) + " data-v-15bad84e>" + _vm._ssrEscape("\n    " + _vm._s(option.label) + "\n  ") + "</button>";
   }))]);
 };
 
@@ -12564,8 +14914,8 @@ var __vue_staticRenderFns__$A = [];
 
 var __vue_inject_styles__$A = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-0ad7d30f_0", {
-    source: ".button-group-wrapper[data-v-0ad7d30f]{display:inline-flex;flex-direction:row;border:1px solid #000;border-radius:8px;overflow:hidden}button[data-v-0ad7d30f]{border:1px solid transparent;cursor:pointer;background-color:#fff}button[data-v-0ad7d30f]:not(.isLast){border-right-color:#000}button.selected[data-v-0ad7d30f]{background-color:#03a9f4;color:#fff}",
+  inject("data-v-15bad84e_0", {
+    source: ".button-group-wrapper[data-v-15bad84e]{display:inline-flex;flex-direction:row;border:1px solid #000;border-radius:8px;overflow:hidden}button[data-v-15bad84e]{border:1px solid transparent;cursor:pointer;background-color:#fff}button[data-v-15bad84e]:not(.isLast){border-right-color:#000}button.selected[data-v-15bad84e]{background-color:#03a9f4;color:#fff}",
     map: undefined,
     media: undefined
   });
@@ -12573,10 +14923,10 @@ var __vue_inject_styles__$A = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$A = "data-v-0ad7d30f";
+var __vue_scope_id__$A = "data-v-15bad84e";
 /* module identifier */
 
-var __vue_module_identifier__$A = "data-v-0ad7d30f";
+var __vue_module_identifier__$A = "data-v-15bad84e";
 /* functional template */
 
 var __vue_is_functional_template__$A = false;
@@ -12601,7 +14951,7 @@ var Display$6 = __vue_component__$C;var script$z = defineComponent({
   },
   data: function data() {
     return {
-      translatedLabel: ""
+      translatedLabel: ''
     };
   },
   methods: {
@@ -12610,7 +14960,7 @@ var Display$6 = __vue_component__$C;var script$z = defineComponent({
 
       return this.t(((_options$find = this.$props.properties.options.find(function (o) {
         return o.value === value;
-      })) === null || _options$find === void 0 ? void 0 : _options$find.labelKey) || "", this.$props.widget.id);
+      })) === null || _options$find === void 0 ? void 0 : _options$find.labelKey) || '', this.$props.widget.id);
     }
   },
   watch: {
@@ -12644,7 +14994,7 @@ var __vue_inject_styles__$z = undefined;
 var __vue_scope_id__$z = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$z = "data-v-3342eddc";
+var __vue_module_identifier__$z = "data-v-623a5852";
 /* functional template */
 
 var __vue_is_functional_template__$z = false;
@@ -12692,7 +15042,7 @@ var __vue_render__$y = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ") + "</label>")]);
+  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t('__checkboxLabel', _vm.widget.id)) + "\n  ") + "</label>")]);
 };
 
 var __vue_staticRenderFns__$y = [];
@@ -12704,7 +15054,7 @@ var __vue_inject_styles__$y = undefined;
 var __vue_scope_id__$y = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$y = "data-v-81a7b070";
+var __vue_module_identifier__$y = "data-v-6413a1de";
 /* functional template */
 
 var __vue_is_functional_template__$y = false;
@@ -12719,18 +15069,38 @@ var __vue_component__$A = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$y
 }, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, undefined, undefined, undefined);
 
-var Builder = __vue_component__$A;var script$x = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: Boolean,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+var Builder = __vue_component__$A;var QuestionControlProps$9 = {
+  properties: {
+    type: Object,
+    required: true
   },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$x = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps$9), {}, {
+    properties: Object
+  }),
   methods: {
     onToggle: function onToggle(ev) {
       var _this$$props$onChange, _this$$props;
@@ -12749,7 +15119,7 @@ var __vue_render__$x = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t("__checkboxLabel")) + "\n  ") + "</label>")]);
+  return _c('div', [_vm._ssrNode("<label><input type=\"checkbox\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value) + ">" + _vm._ssrEscape("\n    " + _vm._s(_vm.t('__checkboxLabel')) + "\n  ") + "</label>")]);
 };
 
 var __vue_staticRenderFns__$x = [];
@@ -12761,7 +15131,7 @@ var __vue_inject_styles__$x = undefined;
 var __vue_scope_id__$x = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$x = "data-v-cf951f32";
+var __vue_module_identifier__$x = "data-v-924cec66";
 /* functional template */
 
 var __vue_is_functional_template__$x = false;
@@ -12811,7 +15181,7 @@ var __vue_inject_styles__$w = undefined;
 var __vue_scope_id__$w = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$w = "data-v-a2e04ea2";
+var __vue_module_identifier__$w = "data-v-0fa2bf8f";
 /* functional template */
 
 var __vue_is_functional_template__$w = false;
@@ -12830,90 +15200,59 @@ var ReadOnly$5 = __vue_component__$y;var checkbox = new QuestionControl({
   builder: Builder,
   display: Display$5,
   readOnly: ReadOnly$5
-});var dayjs_min = createCommonjsModule(function (module, exports) {
-!function(t,e){module.exports=e();}(commonjsGlobal,(function(){var t=1e3,e=6e4,n=36e5,r="millisecond",i="second",s="minute",u="hour",a="day",o="week",f="month",h="quarter",c="year",d="date",$="Invalid Date",l=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,y=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,M={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},m=function(t,e,n){var r=String(t);return !r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},g={s:m,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return (e<=0?"+":"-")+m(r,2,"0")+":"+m(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return -t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,f),s=n-i<0,u=e.clone().add(r+(s?-1:1),f);return +(-(r+(n-i)/(s?i-u:u-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(t){return {M:f,y:c,w:o,d:a,D:d,h:u,m:s,s:i,ms:r,Q:h}[t]||String(t||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},v="en",D={};D[v]=M;var p=function(t){return t instanceof _},S=function t(e,n,r){var i;if(!e)return v;if("string"==typeof e){var s=e.toLowerCase();D[s]&&(i=s),n&&(D[s]=n,i=s);var u=e.split("-");if(!i&&u.length>1)return t(u[0])}else {var a=e.name;D[a]=e,i=a;}return !r&&i&&(v=i),i||!r&&v},w=function(t,e){if(p(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new _(n)},O=g;O.l=S,O.i=p,O.w=function(t,e){return w(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var _=function(){function M(t){this.$L=S(t.locale,null,!0),this.parse(t);}var m=M.prototype;return m.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(O.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(l);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init();},m.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds();},m.$utils=function(){return O},m.isValid=function(){return !(this.$d.toString()===$)},m.isSame=function(t,e){var n=w(t);return this.startOf(e)<=n&&n<=this.endOf(e)},m.isAfter=function(t,e){return w(t)<this.startOf(e)},m.isBefore=function(t,e){return this.endOf(e)<w(t)},m.$g=function(t,e,n){return O.u(t)?this[e]:this.set(n,t)},m.unix=function(){return Math.floor(this.valueOf()/1e3)},m.valueOf=function(){return this.$d.getTime()},m.startOf=function(t,e){var n=this,r=!!O.u(e)||e,h=O.p(t),$=function(t,e){var i=O.w(n.$u?Date.UTC(n.$y,e,t):new Date(n.$y,e,t),n);return r?i:i.endOf(a)},l=function(t,e){return O.w(n.toDate()[t].apply(n.toDate("s"),(r?[0,0,0,0]:[23,59,59,999]).slice(e)),n)},y=this.$W,M=this.$M,m=this.$D,g="set"+(this.$u?"UTC":"");switch(h){case c:return r?$(1,0):$(31,11);case f:return r?$(1,M):$(0,M+1);case o:var v=this.$locale().weekStart||0,D=(y<v?y+7:y)-v;return $(r?m-D:m+(6-D),M);case a:case d:return l(g+"Hours",0);case u:return l(g+"Minutes",1);case s:return l(g+"Seconds",2);case i:return l(g+"Milliseconds",3);default:return this.clone()}},m.endOf=function(t){return this.startOf(t,!1)},m.$set=function(t,e){var n,o=O.p(t),h="set"+(this.$u?"UTC":""),$=(n={},n[a]=h+"Date",n[d]=h+"Date",n[f]=h+"Month",n[c]=h+"FullYear",n[u]=h+"Hours",n[s]=h+"Minutes",n[i]=h+"Seconds",n[r]=h+"Milliseconds",n)[o],l=o===a?this.$D+(e-this.$W):e;if(o===f||o===c){var y=this.clone().set(d,1);y.$d[$](l),y.init(),this.$d=y.set(d,Math.min(this.$D,y.daysInMonth())).$d;}else $&&this.$d[$](l);return this.init(),this},m.set=function(t,e){return this.clone().$set(t,e)},m.get=function(t){return this[O.p(t)]()},m.add=function(r,h){var d,$=this;r=Number(r);var l=O.p(h),y=function(t){var e=w($);return O.w(e.date(e.date()+Math.round(t*r)),$)};if(l===f)return this.set(f,this.$M+r);if(l===c)return this.set(c,this.$y+r);if(l===a)return y(1);if(l===o)return y(7);var M=(d={},d[s]=e,d[u]=n,d[i]=t,d)[l]||1,m=this.$d.getTime()+r*M;return O.w(m,this)},m.subtract=function(t,e){return this.add(-1*t,e)},m.format=function(t){var e=this,n=this.$locale();if(!this.isValid())return n.invalidDate||$;var r=t||"YYYY-MM-DDTHH:mm:ssZ",i=O.z(this),s=this.$H,u=this.$m,a=this.$M,o=n.weekdays,f=n.months,h=function(t,n,i,s){return t&&(t[n]||t(e,r))||i[n].substr(0,s)},c=function(t){return O.s(s%12||12,t,"0")},d=n.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:O.s(a+1,2,"0"),MMM:h(n.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:O.s(this.$D,2,"0"),d:String(this.$W),dd:h(n.weekdaysMin,this.$W,o,2),ddd:h(n.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:O.s(s,2,"0"),h:c(1),hh:c(2),a:d(s,u,!0),A:d(s,u,!1),m:String(u),mm:O.s(u,2,"0"),s:String(this.$s),ss:O.s(this.$s,2,"0"),SSS:O.s(this.$ms,3,"0"),Z:i};return r.replace(y,(function(t,e){return e||l[t]||i.replace(":","")}))},m.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},m.diff=function(r,d,$){var l,y=O.p(d),M=w(r),m=(M.utcOffset()-this.utcOffset())*e,g=this-M,v=O.m(this,M);return v=(l={},l[c]=v/12,l[f]=v,l[h]=v/3,l[o]=(g-m)/6048e5,l[a]=(g-m)/864e5,l[u]=g/n,l[s]=g/e,l[i]=g/t,l)[y]||g,$?v:O.a(v)},m.daysInMonth=function(){return this.endOf(f).$D},m.$locale=function(){return D[this.$L]},m.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=S(t,e,!0);return r&&(n.$L=r),n},m.clone=function(){return O.w(this.$d,this)},m.toDate=function(){return new Date(this.valueOf())},m.toJSON=function(){return this.isValid()?this.toISOString():null},m.toISOString=function(){return this.$d.toISOString()},m.toString=function(){return this.$d.toUTCString()},M}(),b=_.prototype;return w.prototype=b,[["$ms",r],["$s",i],["$m",s],["$H",u],["$W",a],["$M",f],["$y",c],["$D",d]].forEach((function(t){b[t[1]]=function(e){return this.$g(e,t[0],t[1])};})),w.extend=function(t,e){return t.$i||(t(e,_,w),t.$i=!0),w},w.locale=S,w.isDayjs=p,w.unix=function(t){return w(1e3*t)},w.en=D[v],w.Ls=D,w.p={},w}));
-});var formatDateString = function formatDateString(date) {
-  if (!date) return undefined;
-  return date.toLocaleString("en-CA", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  });
-};
-var getDateByPropertyValue = function getDateByPropertyValue(date) {
-  if (!date) {
-    return undefined;
-  }
-
-  if (date instanceof Date) {
-    return date;
-  }
-
-  var parsedDate = Date.parse(date);
-
-  if (!isNaN(parsedDate)) {
-    // is a proper date timestamp, return date with it
-    return new Date(parsedDate);
-  } // if date string === Date.now or new Date, return current date
-
-
-  if (/^Date.now(\(\))*$/.test(date) || /^new Date(\(\))*$/.test(date)) {
-    return new Date();
-  } // if it is a dayjs handling, run it through dayjs
-
-
-  if (/(^dayjs|^[\w]+\([^\)]*\))/.test(date)) {
-    return date.split(".").reduce(function (accDate, part) {
-      var _ref;
-
-      var parts = part.match(/([\w]+)\(([^\)]*)\)/);
-      if (!parts) return accDate;
-
-      switch (parts[1]) {
-        case "dayjs":
-          if (parts[2]) return dayjs_min(parts[2]);
-          return accDate;
-
-        default:
-          return (_ref = accDate)[parts[1]].apply(_ref, _toConsumableArray(parts[2].split(/\s*,\s*/).map(function (a) {
-            var parsedNum = parseFloat(a);
-
-            if (isNaN(parsedNum)) {
-              return a.replaceAll(/[\'\"]+/g, "");
-            } else {
-              return parsedNum;
-            }
-          })));
-      }
-    }, dayjs_min()).toDate();
-  }
-
-  return undefined;
-};var script$v = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+});var QuestionControlProps$8 = {
+  properties: {
+    type: Object,
+    required: true
   },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$v = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps$8), {}, {
+    value: {
+      type: String
+    }
+  }),
   created: function created() {
-    if (!this.$props.value) this.$props.onChange(this.$data.defaultDate);
+    var _this$onChange;
+
+    if (!this.value) (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, this.$data.defaultDate);
   },
   data: function data() {
+    var _this$properties, _this$properties2, _this$properties3;
+
     return {
-      defaultDate: formatDateString(getDateByPropertyValue(this.$props.properties.defaultDate)),
-      minDate: formatDateString(getDateByPropertyValue(this.$props.properties.minDate)),
-      maxDate: formatDateString(getDateByPropertyValue(this.$props.properties.maxDate))
+      defaultDate: formatDateString(getDateByPropertyValue((_this$properties = this.properties) === null || _this$properties === void 0 ? void 0 : _this$properties.defaultDate)),
+      minDate: formatDateString(getDateByPropertyValue((_this$properties2 = this.properties) === null || _this$properties2 === void 0 ? void 0 : _this$properties2.minDate)),
+      maxDate: formatDateString(getDateByPropertyValue((_this$properties3 = this.properties) === null || _this$properties3 === void 0 ? void 0 : _this$properties3.maxDate))
     };
   },
   methods: {
     onDateChange: function onDateChange(newDate) {
-      this.$props.onChange(newDate.target.value);
+      var _this$onChange2;
+
+      (_this$onChange2 = this.onChange) === null || _this$onChange2 === void 0 ? void 0 : _this$onChange2.call(this, newDate.target.value);
     }
   }
 });/* script */
@@ -12927,7 +15266,7 @@ var __vue_render__$v = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<input type=\"date\"" + _vm._ssrAttr("min", _vm.minDate) + _vm._ssrAttr("max", _vm.maxDate) + _vm._ssrAttr("value", _vm.value || _vm.defaultDate) + " data-v-6c12e245>")]);
+  return _c('div', [_vm._ssrNode("<input type=\"date\"" + _vm._ssrAttr("min", _vm.minDate) + _vm._ssrAttr("max", _vm.maxDate) + _vm._ssrAttr("value", _vm.value || _vm.defaultDate) + " data-v-9982ab16>")]);
 };
 
 var __vue_staticRenderFns__$v = [];
@@ -12935,8 +15274,8 @@ var __vue_staticRenderFns__$v = [];
 
 var __vue_inject_styles__$v = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-6c12e245_0", {
-    source: ".radio-item[data-v-6c12e245]{margin-right:10px}",
+  inject("data-v-9982ab16_0", {
+    source: ".radio-item[data-v-9982ab16]{margin-right:10px}",
     map: undefined,
     media: undefined
   });
@@ -12944,10 +15283,10 @@ var __vue_inject_styles__$v = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$v = "data-v-6c12e245";
+var __vue_scope_id__$v = "data-v-9982ab16";
 /* module identifier */
 
-var __vue_module_identifier__$v = "data-v-6c12e245";
+var __vue_module_identifier__$v = "data-v-9982ab16";
 /* functional template */
 
 var __vue_is_functional_template__$v = false;
@@ -12958,26 +15297,47 @@ var __vue_component__$x = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$v
 }, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, undefined, createInjectorSSR, undefined);
 
-var Display$4 = __vue_component__$x;var script$u = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+var Display$4 = __vue_component__$x;var QuestionControlProps$7 = {
+  properties: {
+    type: Object,
+    required: true
   },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$u = defineComponent({
+  props: _objectSpread2({}, QuestionControlProps$7),
   computed: {
     label: function label() {
-      var _this = this;
+      var _this$widget,
+          _this = this,
+          _this$widget2;
 
-      var selectedOption = this.$props.widget.properties.controlProperties.options.find(function (f) {
-        return f.value === _this.$props.value;
+      var selectedOption = (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.controlProperties.options.find(function (f) {
+        return f.value === _this.value;
       });
-      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, this.$props.widget.id) : "";
+      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.id) : '';
     }
   }
 });/* script */
@@ -13003,7 +15363,7 @@ var __vue_inject_styles__$u = undefined;
 var __vue_scope_id__$u = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$u = "data-v-11af9ccd";
+var __vue_module_identifier__$u = "data-v-4c197364";
 /* functional template */
 
 var __vue_is_functional_template__$u = false;
@@ -13021,47 +15381,78 @@ var __vue_component__$w = /*#__PURE__*/normalizeComponent({
 var ReadOnly$4 = __vue_component__$w;var datePicker = new QuestionControl({
   display: Display$4,
   readOnly: ReadOnly$4
-});// import Multiselect from "vue-multiselect";
-// import "vue-multiselect/dist/vue-multiselect.min.css";
-var script$t = defineComponent({
-  // components: { Multiselect },
-  props: {
-    properties: Object,
-    widget: Object,
-    widgetItems: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+});var QuestionControlProps$6 = {
+  properties: {
+    type: Object,
+    required: true
   },
-  inject: ["pageEventListener", "getPageState"],
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$t = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps$6), {}, {
+    widgetItem: Object,
+    properties: Object,
+    value: String
+  }),
+  inject: ['pageEventListener', 'getPageState'],
   data: function data() {
     return {
       options: [],
       attachedDependentCodeListeners: []
     };
   },
-  created: function created() {},
+  created: function created() {
+    var _this$properties;
+
+    if (!this.value && (_this$properties = this.properties) !== null && _this$properties !== void 0 && _this$properties.defaultValue) {
+      var _this$onChange;
+
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, this.properties.defaultValue);
+    }
+  },
   unmounted: function unmounted() {
     var _this = this;
 
     // remove conditional listeners
     this.attachedDependentCodeListeners.forEach(function (_ref) {
+      var _this$pageEventListen;
+
       var _ref2 = _slicedToArray(_ref, 2),
           name = _ref2[0],
           fn = _ref2[1];
 
-      _this.pageEventListener.remove(name, fn);
+      (_this$pageEventListen = _this.pageEventListener) === null || _this$pageEventListen === void 0 ? void 0 : _this$pageEventListen.remove(name, fn);
     });
   },
-  watch: _defineProperty({}, "properties.options", {
+  watch: _defineProperty({}, 'properties.options', {
     handler: function handler() {
       var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var _this2$widget, _this2$widget2;
+
         var getConditionFacts, allDependentCodes;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -13081,18 +15472,17 @@ var script$t = defineComponent({
                 }; // go through each option and extract condition fact names
 
 
-                allDependentCodes = _toConsumableArray(new Set(_this2.$props.widget.properties.controlProperties.options.reduce(function (arr, option) {
+                allDependentCodes = _toConsumableArray(new Set(((_this2$widget = _this2.widget) === null || _this2$widget === void 0 ? void 0 : _this2$widget.properties.controlProperties).options.reduce(function (arr, option) {
                   var _option$conditions;
 
                   return [].concat(_toConsumableArray(arr), _toConsumableArray((_option$conditions = option.conditions) !== null && _option$conditions !== void 0 && _option$conditions.length ? getConditionFacts(option.conditions) : []));
                 }, []))); // sync listeners for filtering options
 
-                _this2.widget.setListenerSet("options", allDependentCodes.map(function (c) {
+                (_this2$widget2 = _this2.widget) === null || _this2$widget2 === void 0 ? void 0 : _this2$widget2.setListenerSet('options', allDependentCodes.map(function (c) {
                   return "".concat(c, "_change");
                 }), function () {
                   return _this2.setFilteredOptions();
                 }); // set initial filtered options
-
 
                 _this2.setFilteredOptions();
 
@@ -13111,7 +15501,7 @@ var script$t = defineComponent({
       var _this3 = this;
 
       return this.$data.options.find(function (o) {
-        return o.value === _this3.$props.value;
+        return o.value === _this3.value;
       });
     }
   },
@@ -13147,6 +15537,8 @@ var script$t = defineComponent({
       var _this5 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+        var _this5$widget;
+
         var validateData;
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
@@ -13154,16 +15546,16 @@ var script$t = defineComponent({
               case 0:
                 // build facts data into:
                 // { [idOrCode: string]: response }
-                validateData = Object.keys(_this5.$props.widgetItems).reduce(function (obj, widgetItemId) {
-                  var _this5$getPageState, _this5$getPageState$w;
+                validateData = Object.keys(_this5.widgetItems || {}).reduce(function (obj, widgetItemId) {
+                  var _ref3, _ref3$widgetState$wid;
 
-                  var response = (_this5$getPageState = _this5.getPageState()) === null || _this5$getPageState === void 0 ? void 0 : (_this5$getPageState$w = _this5$getPageState.widgetState[widgetItemId]) === null || _this5$getPageState$w === void 0 ? void 0 : _this5$getPageState$w.response;
+                  var response = (_ref3 = _this5.getPageState()) === null || _ref3 === void 0 ? void 0 : (_ref3$widgetState$wid = _ref3.widgetState[widgetItemId]) === null || _ref3$widgetState$wid === void 0 ? void 0 : _ref3$widgetState$wid.response;
 
                   if (response) {
                     obj[widgetItemId] = response;
 
-                    if (_this5.$props.widgetItems[widgetItemId].code) {
-                      obj[_this5.$props.widgetItems[widgetItemId].code || ""] = response;
+                    if (_this5.widgetItems[widgetItemId].code) {
+                      obj[_this5.widgetItems[widgetItemId].code || ''] = response;
                     }
                   }
 
@@ -13173,9 +15565,9 @@ var script$t = defineComponent({
                 // Only return ones that meets validate() or does not have conditions at all
 
                 _context4.next = 3;
-                return Promise.all(_this5.$props.widget.properties.controlProperties.options.map( /*#__PURE__*/function () {
-                  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(opt) {
-                    var _opt$conditions;
+                return Promise.all(((_this5$widget = _this5.widget) === null || _this5$widget === void 0 ? void 0 : _this5$widget.properties.controlProperties).options.map( /*#__PURE__*/function () {
+                  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(opt) {
+                    var _opt$conditions, _this5$widget2;
 
                     return regeneratorRuntime.wrap(function _callee3$(_context3) {
                       while (1) {
@@ -13189,7 +15581,7 @@ var script$t = defineComponent({
                             }
 
                             _context3.next = 4;
-                            return _this5.$props.widget.validate(opt.conditions, validateData);
+                            return (_this5$widget2 = _this5.widget) === null || _this5$widget2 === void 0 ? void 0 : _this5$widget2.validator.validate(opt.conditions, validateData);
 
                           case 4:
                             _context3.t0 = _context3.sent;
@@ -13219,7 +15611,7 @@ var script$t = defineComponent({
                   }));
 
                   return function (_x) {
-                    return _ref3.apply(this, arguments);
+                    return _ref4.apply(this, arguments);
                   };
                 }()));
 
@@ -13237,7 +15629,9 @@ var script$t = defineComponent({
       }))();
     },
     onSelectChange: function onSelectChange(ev) {
-      this.$props.onChange(ev.target.value);
+      var _this$onChange2;
+
+      (_this$onChange2 = this.onChange) === null || _this$onChange2 === void 0 ? void 0 : _this$onChange2.call(this, ev.target.value);
     }
   }
 });/* script */
@@ -13251,8 +15645,8 @@ var __vue_render__$t = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<select" + _vm._ssrAttr("value", _vm.value || '') + " data-v-2cf26aaa><option value disabled=\"disabled\" data-v-2cf26aaa>" + _vm._ssrEscape(_vm._s(_vm.t("__placeholder"))) + "</option> " + _vm._ssrList(_vm.options, function (option) {
-    return "<option" + _vm._ssrAttr("value", option.value) + _vm._ssrAttr("selected", _vm.value === option.value) + " data-v-2cf26aaa>" + _vm._ssrEscape("\n      " + _vm._s(option.label) + "\n    ") + "</option>";
+  return _c('div', [_vm._ssrNode("<select" + _vm._ssrAttr("value", _vm.value || '') + " data-v-8ab8e6c2><option value disabled=\"disabled\" data-v-8ab8e6c2>" + _vm._ssrEscape(_vm._s(_vm.t('__placeholder'))) + "</option> " + _vm._ssrList(_vm.options, function (option) {
+    return "<option" + _vm._ssrAttr("value", option.value) + _vm._ssrAttr("selected", _vm.value === option.value) + " data-v-8ab8e6c2>" + _vm._ssrEscape("\n      " + _vm._s(option.label) + "\n    ") + "</option>";
   }) + "</select>")]);
 };
 
@@ -13261,8 +15655,8 @@ var __vue_staticRenderFns__$t = [];
 
 var __vue_inject_styles__$t = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-2cf26aaa_0", {
-    source: ".radio-item[data-v-2cf26aaa]{margin-right:10px}",
+  inject("data-v-8ab8e6c2_0", {
+    source: ".radio-item[data-v-8ab8e6c2]{margin-right:10px}",
     map: undefined,
     media: undefined
   });
@@ -13270,10 +15664,10 @@ var __vue_inject_styles__$t = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$t = "data-v-2cf26aaa";
+var __vue_scope_id__$t = "data-v-8ab8e6c2";
 /* module identifier */
 
-var __vue_module_identifier__$t = "data-v-2cf26aaa";
+var __vue_module_identifier__$t = "data-v-8ab8e6c2";
 /* functional template */
 
 var __vue_is_functional_template__$t = false;
@@ -13298,7 +15692,7 @@ var Display$3 = __vue_component__$v;var script$s = defineComponent({
   },
   data: function data() {
     return {
-      translatedLabel: ""
+      translatedLabel: ''
     };
   },
   methods: {
@@ -13307,7 +15701,7 @@ var Display$3 = __vue_component__$v;var script$s = defineComponent({
 
       return this.t(((_options$find = this.$props.properties.options.find(function (o) {
         return o.value === value;
-      })) === null || _options$find === void 0 ? void 0 : _options$find.labelKey) || "", this.$props.widget.id);
+      })) === null || _options$find === void 0 ? void 0 : _options$find.labelKey) || '', this.$props.widget.id);
     }
   },
   watch: {
@@ -13341,7 +15735,7 @@ var __vue_inject_styles__$s = undefined;
 var __vue_scope_id__$s = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$s = "data-v-a33c830c";
+var __vue_module_identifier__$s = "data-v-60953304";
 /* functional template */
 
 var __vue_is_functional_template__$s = false;
@@ -13359,48 +15753,71 @@ var __vue_component__$u = /*#__PURE__*/normalizeComponent({
 var ReadOnly$3 = __vue_component__$u;var dropdown = new QuestionControl({
   display: Display$3,
   readOnly: ReadOnly$3
-});var script$r = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: Number,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+});var QuestionControlProps$5 = {
+  properties: {
+    type: Object,
+    required: true
   },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$r = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps$5), {}, {
+    value: Number
+  }),
   created: function created() {
-    var _this$$props$properti;
+    var _this$properties;
 
     // if value has not been set and default is set, set value to default
-    if (this.$props.value === undefined && ((_this$$props$properti = this.$props.properties) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.default) !== undefined) this.changeValue(this.$props.properties.default, true);
+    if (this.value === undefined && ((_this$properties = this.properties) === null || _this$properties === void 0 ? void 0 : _this$properties.default) !== undefined) this.changeValue(this.properties.default, true);
   },
   computed: {
     step: function step() {
-      return this.$props.properties.step || 1;
+      var _this$properties2;
+
+      return ((_this$properties2 = this.properties) === null || _this$properties2 === void 0 ? void 0 : _this$properties2.step) || 1;
     },
     numValue: function numValue() {
-      var _this$$props$properti2, _this$$props$properti3;
+      var _this$properties3, _this$properties4;
 
-      if (this.$props.value !== undefined) return this.$props.value;
-      if (((_this$$props$properti2 = this.$props.properties) === null || _this$$props$properti2 === void 0 ? void 0 : _this$$props$properti2.default) !== undefined) return this.$props.properties.default;
-      if (((_this$$props$properti3 = this.$props.properties) === null || _this$$props$properti3 === void 0 ? void 0 : _this$$props$properti3.min) !== undefined) return this.$props.properties.min;
+      if (this.value !== undefined) return this.value;
+      if (((_this$properties3 = this.properties) === null || _this$properties3 === void 0 ? void 0 : _this$properties3.default) !== undefined) return this.properties.default;
+      if (((_this$properties4 = this.properties) === null || _this$properties4 === void 0 ? void 0 : _this$properties4.min) !== undefined) return this.properties.min;
       return 0;
     }
   },
   methods: {
     changeValue: function changeValue(newNum, ignoreChecks) {
-      var _this$$props$properti4, _this$$props$properti5, _this$$props$properti6, _this$$props$properti7, _this$$props$onChange, _this$$props;
+      var _this$properties5, _this$properties6, _this$properties7, _this$properties8, _this$onChange;
 
       if (/^[^0-9]+$/.test(newNum.toString())) return;
 
       var _newNum = parseInt(newNum.toString(), 10);
 
-      if (((_this$$props$properti4 = this.$props.properties) === null || _this$$props$properti4 === void 0 ? void 0 : _this$$props$properti4.min) !== undefined && _newNum < ((_this$$props$properti5 = this.$props.properties) === null || _this$$props$properti5 === void 0 ? void 0 : _this$$props$properti5.min)) _newNum = this.$props.properties.min;
-      if (((_this$$props$properti6 = this.$props.properties) === null || _this$$props$properti6 === void 0 ? void 0 : _this$$props$properti6.max) !== undefined && _newNum > ((_this$$props$properti7 = this.$props.properties) === null || _this$$props$properti7 === void 0 ? void 0 : _this$$props$properti7.max)) _newNum = this.$props.properties.max;
-      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, _newNum, ignoreChecks);
+      if (((_this$properties5 = this.properties) === null || _this$properties5 === void 0 ? void 0 : _this$properties5.min) !== undefined && _newNum < ((_this$properties6 = this.properties) === null || _this$properties6 === void 0 ? void 0 : _this$properties6.min)) _newNum = this.properties.min;
+      if (((_this$properties7 = this.properties) === null || _this$properties7 === void 0 ? void 0 : _this$properties7.max) !== undefined && _newNum > ((_this$properties8 = this.properties) === null || _this$properties8 === void 0 ? void 0 : _this$properties8.max)) _newNum = this.properties.max;
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, _newNum, ignoreChecks);
     }
   }
 });/* script */
@@ -13414,7 +15831,7 @@ var __vue_render__$r = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode("<button data-v-2d5d2b73>-</button> <input type=\"number\"" + _vm._ssrAttr("step", _vm.step) + _vm._ssrAttr("value", _vm.numValue) + " data-v-2d5d2b73> <button data-v-2d5d2b73>+</button>")]);
+  return _c('div', [_vm._ssrNode("<button data-v-30f5c940>-</button> <input type=\"number\"" + _vm._ssrAttr("step", _vm.step) + _vm._ssrAttr("value", _vm.numValue) + " data-v-30f5c940> <button data-v-30f5c940>+</button>")]);
 };
 
 var __vue_staticRenderFns__$r = [];
@@ -13422,8 +15839,8 @@ var __vue_staticRenderFns__$r = [];
 
 var __vue_inject_styles__$r = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-2d5d2b73_0", {
-    source: "input[data-v-2d5d2b73]::-webkit-inner-spin-button,input[data-v-2d5d2b73]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
+  inject("data-v-30f5c940_0", {
+    source: "input[data-v-30f5c940]::-webkit-inner-spin-button,input[data-v-30f5c940]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
     map: undefined,
     media: undefined
   });
@@ -13431,10 +15848,10 @@ var __vue_inject_styles__$r = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$r = "data-v-2d5d2b73";
+var __vue_scope_id__$r = "data-v-30f5c940";
 /* module identifier */
 
-var __vue_module_identifier__$r = "data-v-2d5d2b73";
+var __vue_module_identifier__$r = "data-v-30f5c940";
 /* functional template */
 
 var __vue_is_functional_template__$r = false;
@@ -13445,18 +15862,39 @@ var __vue_component__$t = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$r
 }, __vue_inject_styles__$r, __vue_script__$r, __vue_scope_id__$r, __vue_is_functional_template__$r, __vue_module_identifier__$r, false, undefined, createInjectorSSR, undefined);
 
-var Display$2 = __vue_component__$t;var script$q = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+var Display$2 = __vue_component__$t;var QuestionControlProps$4 = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
   }
+};
+var script$q = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps$4), {}, {
+    value: Number
+  })
 });/* script */
 var __vue_script__$q = script$q;
 /* template */
@@ -13480,7 +15918,7 @@ var __vue_inject_styles__$q = undefined;
 var __vue_scope_id__$q = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$q = "data-v-e0599184";
+var __vue_module_identifier__$q = "data-v-77da2236";
 /* functional template */
 
 var __vue_is_functional_template__$q = false;
@@ -13499,21 +15937,44 @@ var ReadOnly$2 = __vue_component__$s;var numberPicker = new QuestionControl({
   builder: Display$2,
   display: Display$2,
   readOnly: ReadOnly$2
-});var script$p = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+});var QuestionControlProps$3 = {
+  properties: {
+    type: Object,
+    required: true
   },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$p = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps$3), {}, {
+    value: String
+  }),
   methods: {
     onSelect: function onSelect(ev) {
-      this.$props.onChange(ev.target.value);
+      var _this$onChange;
+
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, ev.target.value);
     }
   }
 });/* script */
@@ -13528,7 +15989,7 @@ var __vue_render__$p = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _c('div', [_vm._ssrNode(_vm._ssrList(_vm.properties.options, function (option) {
-    return "<label class=\"radio-item\" data-v-5d95758c><input type=\"radio\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value === option.value) + _vm._ssrAttr("value", option.value) + " data-v-5d95758c>" + _vm._ssrEscape("\n    " + _vm._s(_vm.t(option.labelKey, _vm.widget.id)) + "\n  ") + "</label>";
+    return "<label class=\"radio-item\" data-v-0fd43287><input type=\"radio\"" + _vm._ssrAttr("name", _vm.widget.id) + _vm._ssrAttr("checked", _vm.value === option.value) + _vm._ssrAttr("value", option.value) + " data-v-0fd43287>" + _vm._ssrEscape("\n    " + _vm._s(_vm.t(option.labelKey, _vm.widget.id)) + "\n  ") + "</label>";
   }))]);
 };
 
@@ -13537,8 +15998,8 @@ var __vue_staticRenderFns__$p = [];
 
 var __vue_inject_styles__$p = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-5d95758c_0", {
-    source: ".radio-item[data-v-5d95758c]{margin-right:10px}",
+  inject("data-v-0fd43287_0", {
+    source: ".radio-item[data-v-0fd43287]{margin-right:10px}",
     map: undefined,
     media: undefined
   });
@@ -13546,10 +16007,10 @@ var __vue_inject_styles__$p = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$p = "data-v-5d95758c";
+var __vue_scope_id__$p = "data-v-0fd43287";
 /* module identifier */
 
-var __vue_module_identifier__$p = "data-v-5d95758c";
+var __vue_module_identifier__$p = "data-v-0fd43287";
 /* functional template */
 
 var __vue_is_functional_template__$p = false;
@@ -13560,26 +16021,49 @@ var __vue_component__$r = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$p
 }, __vue_inject_styles__$p, __vue_script__$p, __vue_scope_id__$p, __vue_is_functional_template__$p, __vue_module_identifier__$p, false, undefined, createInjectorSSR, undefined);
 
-var Display$1 = __vue_component__$r;var script$o = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+var Display$1 = __vue_component__$r;var QuestionControlProps$2 = {
+  properties: {
+    type: Object,
+    required: true
   },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$o = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps$2), {}, {
+    value: String
+  }),
   computed: {
     label: function label() {
-      var _this = this;
+      var _this$widget,
+          _this = this,
+          _this$widget2;
 
-      var selectedOption = this.$props.widget.properties.controlProperties.options.find(function (f) {
-        return f.value === _this.$props.value;
+      var selectedOption = (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.controlProperties.options.find(function (f) {
+        return f.value === _this.value;
       });
-      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, this.$props.widget.id) : "";
+      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.id) : '';
     }
   }
 });/* script */
@@ -13605,7 +16089,7 @@ var __vue_inject_styles__$o = undefined;
 var __vue_scope_id__$o = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$o = "data-v-01a4bc90";
+var __vue_module_identifier__$o = "data-v-5e8ccac1";
 /* functional template */
 
 var __vue_is_functional_template__$o = false;
@@ -13624,21 +16108,44 @@ var ReadOnly$1 = __vue_component__$q;var radio = new QuestionControl({
   builder: Display$1,
   display: Display$1,
   readOnly: ReadOnly$1
-});var script$n = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+});var QuestionControlProps$1 = {
+  properties: {
+    type: Object,
+    required: true
   },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$n = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps$1), {}, {
+    value: String
+  }),
   methods: {
     onTextChange: function onTextChange(ev) {
-      this.$props.onChange(ev.target.value);
+      var _this$onChange;
+
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, ev.target.value);
     }
   }
 });/* script */
@@ -13652,7 +16159,7 @@ var __vue_render__$n = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm._ssrNode((!_vm.properties.multiline ? "<input type=\"text\"" + _vm._ssrAttr("value", _vm.value) + " class=\"textInput\" data-v-e3a99f28>" : "<!---->") + " " + (_vm.properties.multiline ? "<textarea" + _vm._ssrAttr("value", _vm.value) + " class=\"textInput\" data-v-e3a99f28></textarea>" : "<!---->"))]);
+  return _c('div', [_vm._ssrNode((!_vm.properties.multiline ? "<input type=\"text\"" + _vm._ssrAttr("value", _vm.value) + " class=\"textInput\" data-v-5fb44e31>" : "<!---->") + " " + (_vm.properties.multiline ? "<textarea" + _vm._ssrAttr("value", _vm.value) + " class=\"textInput\" data-v-5fb44e31></textarea>" : "<!---->"))]);
 };
 
 var __vue_staticRenderFns__$n = [];
@@ -13660,8 +16167,8 @@ var __vue_staticRenderFns__$n = [];
 
 var __vue_inject_styles__$n = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-e3a99f28_0", {
-    source: ".textInput[data-v-e3a99f28]::-webkit-inner-spin-button,.textInput[data-v-e3a99f28]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}.textInput[data-v-e3a99f28]{min-height:42px}",
+  inject("data-v-5fb44e31_0", {
+    source: ".textInput[data-v-5fb44e31]::-webkit-inner-spin-button,.textInput[data-v-5fb44e31]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}.textInput[data-v-5fb44e31]{min-height:42px}",
     map: undefined,
     media: undefined
   });
@@ -13669,10 +16176,10 @@ var __vue_inject_styles__$n = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$n = "data-v-e3a99f28";
+var __vue_scope_id__$n = "data-v-5fb44e31";
 /* module identifier */
 
-var __vue_module_identifier__$n = "data-v-e3a99f28";
+var __vue_module_identifier__$n = "data-v-5fb44e31";
 /* functional template */
 
 var __vue_is_functional_template__$n = false;
@@ -13683,18 +16190,39 @@ var __vue_component__$p = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$n
 }, __vue_inject_styles__$n, __vue_script__$n, __vue_scope_id__$n, __vue_is_functional_template__$n, __vue_module_identifier__$n, false, undefined, createInjectorSSR, undefined);
 
-var Display = __vue_component__$p;var script$m = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+var Display = __vue_component__$p;var QuestionControlProps = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
   }
+};
+var script$m = defineComponent({
+  props: _objectSpread2(_objectSpread2({}, QuestionControlProps), {}, {
+    value: String
+  })
 });/* script */
 var __vue_script__$m = script$m;
 /* template */
@@ -13718,7 +16246,7 @@ var __vue_inject_styles__$m = undefined;
 var __vue_scope_id__$m = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$m = "data-v-e0599184";
+var __vue_module_identifier__$m = "data-v-3cdc2b24";
 /* functional template */
 
 var __vue_is_functional_template__$m = false;
@@ -13744,155 +16272,6 @@ var ReadOnly = __vue_component__$o;var text = new QuestionControl({
   numberPicker: numberPicker,
   radio: radio,
   text: text
-};var PageState = /*#__PURE__*/function () {
-  function PageState(_ref) {
-    var widgetState = _ref.widgetState,
-        interactiveState = _ref.interactiveState,
-        widgetCodeToIdMap = _ref.widgetCodeToIdMap,
-        widgetIdToCodeMap = _ref.widgetIdToCodeMap;
-
-    _classCallCheck(this, PageState);
-
-    _defineProperty(this, "_widgetState", void 0);
-
-    _defineProperty(this, "_interactiveState", void 0);
-
-    _defineProperty(this, "_widgetCodeToIdMap", void 0);
-
-    _defineProperty(this, "_widgetIdToCodeMap", void 0);
-
-    this._widgetState = widgetState || {};
-    this._interactiveState = interactiveState || {};
-    this._widgetCodeToIdMap = widgetCodeToIdMap || {};
-    this._widgetIdToCodeMap = widgetIdToCodeMap || {};
-  }
-
-  _createClass(PageState, [{
-    key: "interactiveState",
-    get: function get() {
-      return this._interactiveState;
-    }
-  }, {
-    key: "widgetState",
-    get: function get() {
-      return this._widgetState;
-    }
-  }, {
-    key: "widgetCodeToIdMap",
-    get: function get() {
-      return this._widgetCodeToIdMap;
-    }
-  }, {
-    key: "widgetIdToCodeMap",
-    get: function get() {
-      return this._widgetIdToCodeMap;
-    }
-  }, {
-    key: "getWidgetIdByCode",
-    value: function getWidgetIdByCode(code) {
-      return this._widgetCodeToIdMap[code];
-    }
-  }, {
-    key: "getWidgetCodeById",
-    value: function getWidgetCodeById(widgetId) {
-      return this._widgetIdToCodeMap[widgetId];
-    }
-  }, {
-    key: "onUpdate",
-    value: function onUpdate() {}
-  }, {
-    key: "getWidgetState",
-    value: function getWidgetState(widgetId, key) {
-      var _this$_widgetState$wi;
-
-      return key ? (_this$_widgetState$wi = this._widgetState[widgetId]) === null || _this$_widgetState$wi === void 0 ? void 0 : _this$_widgetState$wi[key] : this._widgetState[widgetId];
-    }
-  }, {
-    key: "setWidgetState",
-    value: function setWidgetState(widgetId, key, value) {
-      if (!this._widgetState[widgetId]) this._widgetState[widgetId] = {};
-
-      if (value === undefined) {
-        var _this$_widgetState$wi2;
-
-        (_this$_widgetState$wi2 = this._widgetState[widgetId]) === null || _this$_widgetState$wi2 === void 0 ? true : delete _this$_widgetState$wi2[key];
-      } else {
-        this._widgetState[widgetId][key] = value;
-      } // FIXME: this is not updating parent in App.vue
-
-    }
-  }, {
-    key: "clearWidgetState",
-    value: function clearWidgetState(widgetId, key) {
-      this.setWidgetState(widgetId, key);
-    }
-  }, {
-    key: "registerWidgetCode",
-    value: function registerWidgetCode(widgetCode, widgetId) {
-      this._widgetCodeToIdMap[widgetCode] = widgetId;
-      this._widgetIdToCodeMap[widgetId] = widgetCode;
-      this.setWidgetState(widgetId, "code", widgetCode);
-    }
-  }, {
-    key: "unregisterWidgetCode",
-    value: function unregisterWidgetCode(widgetCode) {
-      delete this._widgetCodeToIdMap[widgetCode];
-    }
-  }], [{
-    key: "from",
-    value: function from(pageState) {
-      if (pageState instanceof PageState) {
-        // from an object, use their public getters
-        return new PageState({
-          widgetState: pageState.widgetState,
-          interactiveState: pageState.interactiveState,
-          widgetCodeToIdMap: pageState.widgetCodeToIdMap,
-          widgetIdToCodeMap: pageState.widgetIdToCodeMap
-        });
-      } else {
-        // assume it is just a plain object, fetch its protected
-        // field
-        return new PageState({
-          widgetState: pageState._widgetState,
-          interactiveState: pageState._interactiveState,
-          widgetCodeToIdMap: pageState._widgetCodeToIdMap,
-          widgetIdToCodeMap: pageState._widgetIdToCodeMap
-        });
-      }
-    }
-  }]);
-
-  return PageState;
-}();var cachedArgs = {};
-var cachedMerge = function cachedMerge(key) {
-  if (!cachedArgs[key]) cachedArgs[key] = {
-    cached: [],
-    result: null
-  };
-
-  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    args[_key - 1] = arguments[_key];
-  }
-
-  if (!args.length) return null;
-
-  if (args.length !== cachedArgs[key].cached.length || args.some(function (a, aIndex) {
-    return a !== cachedArgs[key].cached[aIndex];
-  })) {
-    cachedArgs[key].cached = args; // cached not matched, update cache args and result
-
-    if (Array.isArray(args[0])) {
-      cachedArgs[key].result = args.reduce(function (arr, arg) {
-        return [].concat(_toConsumableArray(arr), _toConsumableArray(arg));
-      }, []);
-    } else {
-      cachedArgs[key].result = args.reduce(function (obj, argObj) {
-        return _objectSpread2(_objectSpread2({}, obj), argObj);
-      }, {});
-    }
-  }
-
-  return cachedArgs[key].result;
 };var PageEventListener = /*#__PURE__*/function () {
   function PageEventListener(opts) {
     _classCallCheck(this, PageEventListener);
@@ -13942,43 +16321,38 @@ var cachedMerge = function cachedMerge(key) {
   components: {
     WidgetsLayout: WidgetsLayout
   },
+  emits: {
+    event: function event(_options) {
+      return true;
+    },
+    onStateChange: function onStateChange(_newState) {
+      return true;
+    },
+    onPageChange: function onPageChange(_newPage) {
+      return true;
+    }
+  },
   props: {
-    languages: Object,
-    page: Object,
-    // eslint-disable-next-line no-unused-vars
+    languages: {
+      type: Object,
+      required: true
+    },
+    page: {
+      type: Object,
+      required: true
+    },
     onPageChange: Function,
-    // func<(page: Page) => void>().isRequired,
-    state: $(PageState).isRequired,
-    // eslint-disable-next-line no-unused-vars
-    onStateChange: Function,
-    // func<(state: PageState) => void>().isRequired,
+    state: {
+      type: Object,
+      required: true
+    },
     widgetControls: Object,
-    // shape(QuestionControl),
     questionControls: Object,
-    plugins: R(C({
-      widgetControls: Object,
-      widgetEffectControls: Object,
-      questionControls: Object
-    })),
+    widgetEffectControls: Object,
+    plugins: Array,
     // display | page | readOnly
     view: String,
-    configs: C({
-      widgets: C({
-        // whether or not to use controls
-        disableInternalControls: V(),
-        blacklist: R(S()),
-        whitelist: R(S()),
-        filters: Object
-      }),
-      questionControls: C({
-        // whether or not to use controls
-        //
-        disableInternalControls: V(),
-        blacklist: R(S()),
-        whitelist: R(S()),
-        filters: Object
-      })
-    })
+    config: Object
   },
   data: function data() {
     return {
@@ -13990,39 +16364,54 @@ var cachedMerge = function cachedMerge(key) {
   },
   computed: {
     widgetItemsArr: function widgetItemsArr() {
-      return this.$props.page.widgets;
+      return this.page.widgets;
     },
     combWidgetControls: function combWidgetControls() {
-      var _this$$props$configs, _ref;
+      var _this$config, _this$config$widgetCo, _ref;
 
-      return cachedMerge.apply(void 0, ["widgetControls", (_this$$props$configs = this.$props.configs) !== null && _this$$props$configs !== void 0 && _this$$props$configs.widgets.disableInternalControls ? {} : widgets].concat(_toConsumableArray((_ref = this.$props.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(function (p) {
+      return cachedMerge.apply(void 0, ['widgetControls', (_this$config = this.config) !== null && _this$config !== void 0 && (_this$config$widgetCo = _this$config.widgetControls) !== null && _this$config$widgetCo !== void 0 && _this$config$widgetCo.disableInternalControls ? {} : widgets].concat(_toConsumableArray((_ref = this.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(function (p) {
         return p.widgetControls;
-      })), [this.$props.widgetControls]));
+      })), [this.widgetControls]));
     },
     combWidgetEffectControls: function combWidgetEffectControls() {
-      var _this$$props$configs2, _ref2;
+      var _this$config2, _this$config2$widgetE, _ref2;
 
-      return cachedMerge.apply(void 0, ["widgetEffectControls", (_this$$props$configs2 = this.$props.configs) !== null && _this$$props$configs2 !== void 0 && _this$$props$configs2.widgetEffectControls.disableInternalControls ? {} : widgetEffects].concat(_toConsumableArray((_ref2 = this.$props.plugins || []) === null || _ref2 === void 0 ? void 0 : _ref2.map(function (p) {
+      return cachedMerge.apply(void 0, ['widgetEffectControls', (_this$config2 = this.config) !== null && _this$config2 !== void 0 && (_this$config2$widgetE = _this$config2.widgetEffectControls) !== null && _this$config2$widgetE !== void 0 && _this$config2$widgetE.disableInternalControls ? {} : widgetEffects].concat(_toConsumableArray((_ref2 = this.plugins || []) === null || _ref2 === void 0 ? void 0 : _ref2.map(function (p) {
         return p.widgetEffectControls;
-      })), [this.$props.widgetEffectControls]));
+      })), [this.widgetEffectControls]));
     },
     combQuestionControls: function combQuestionControls() {
-      var _this$$props$configs3, _ref3;
+      var _this$config3, _this$config3$questio, _ref3;
 
-      return cachedMerge.apply(void 0, ["questionControls", (_this$$props$configs3 = this.$props.configs) !== null && _this$$props$configs3 !== void 0 && _this$$props$configs3.questionControls.disableInternalControls ? {} : questionControls].concat(_toConsumableArray((_ref3 = this.$props.plugins || []) === null || _ref3 === void 0 ? void 0 : _ref3.map(function (p) {
+      return cachedMerge.apply(void 0, ['questionControls', (_this$config3 = this.config) !== null && _this$config3 !== void 0 && (_this$config3$questio = _this$config3.questionControls) !== null && _this$config3$questio !== void 0 && _this$config3$questio.disableInternalControls ? {} : questionControls].concat(_toConsumableArray((_ref3 = this.plugins || []) === null || _ref3 === void 0 ? void 0 : _ref3.map(function (p) {
         return p.questionControls;
-      })), [this.$props.questionControls]));
+      })), [this.questionControls]));
+    },
+    validations: function validations() {
+      var _this$config4, _this$config4$validat, _this$config5, _this$config5$validat;
+
+      return {
+        rules: _objectSpread2(_objectSpread2({}, validationRules), (_this$config4 = this.config) === null || _this$config4 === void 0 ? void 0 : (_this$config4$validat = _this$config4.validations) === null || _this$config4$validat === void 0 ? void 0 : _this$config4$validat.rules),
+        facts: _objectSpread2({}, (_this$config5 = this.config) === null || _this$config5 === void 0 ? void 0 : (_this$config5$validat = _this$config5.validations) === null || _this$config5$validat === void 0 ? void 0 : _this$config5$validat.facts)
+      };
     },
     pageState: function pageState() {
-      return this.$props.state;
+      return this.state;
     }
   },
   watch: {
-    "page.widgets": {
+    languages: {
+      handler: function handler() {
+        this.pageEventListener.emit('languages_changed', {});
+      }
+    },
+    'page.widgets': {
       handler: function handler(newPageWidgetArr) {
-        var _this = this;
+        var _this = this,
+            _this$config6,
+            _this$config6$widgets;
 
-        this.$data.widgetItems = newPageWidgetArr.reduce(function (obj, widget) {
+        this.widgetItems = newPageWidgetArr.reduce(function (obj, widget) {
           var _this$combWidgetContr;
 
           var WidgetItemClass = ((_this$combWidgetContr = _this.combWidgetControls[widget.type]) === null || _this$combWidgetContr === void 0 ? void 0 : _this$combWidgetContr.widgetItem) || WidgetItem;
@@ -14031,65 +16420,134 @@ var cachedMerge = function cachedMerge(key) {
             pageEventListener: _this.pageEventListener,
             emitEvent: _this.emitEvent,
             t: function t(key, data) {
-              return _this.t("".concat(widget.id, ".").concat(key), data);
+              return _this.t([widget.id, key], data);
             },
             getState: function getState() {
-              return _this.$props.state;
+              return _this.state;
             },
             setState: function setState(newPageState) {
-              _this.$emit("onStateChange", newPageState);
+              _this.$emit('onStateChange', newPageState);
             },
             onUpdate: function onUpdate(newWidget) {
-              var _this$$props$onPageCh, _this$$props;
-
-              (_this$$props$onPageCh = (_this$$props = _this.$props).onPageChange) === null || _this$$props$onPageCh === void 0 ? void 0 : _this$$props$onPageCh.call(_this$$props, _objectSpread2(_objectSpread2({}, _this.$props.page), {}, {
-                widgets: Object.values(_objectSpread2(_objectSpread2({}, _this.$data.widgetItems), {}, _defineProperty({}, newWidget.id, newWidget)))
+              _this._onPageChange(_objectSpread2(_objectSpread2({}, _this.page), {}, {
+                widgets: Object.values(_objectSpread2(_objectSpread2({}, _this.widgetItems), {}, _defineProperty({}, newWidget.id, Object.assign(Object.create(Object.getPrototypeOf(newWidget)), newWidget))))
               }));
-            }
+            },
+            getQuestionControls: function getQuestionControls() {
+              return _this.combQuestionControls;
+            },
+            getConfig: _this.getConfig,
+            getWidgetMeta: function getWidgetMeta() {
+              var _this$getConfig, _this$getConfig$meta;
+
+              return (_this$getConfig = _this.getConfig()) === null || _this$getConfig === void 0 ? void 0 : (_this$getConfig$meta = _this$getConfig.meta) === null || _this$getConfig$meta === void 0 ? void 0 : _this$getConfig$meta[widget.type];
+            },
+            getValidator: _this.getValidator
           });
           return obj;
         }, {});
-        Object.values(this.$data.widgetItems).forEach(function (widgetItem) {
-          widgetItem.setWidgetItems(_this.$data.widgetItems);
+        Object.values(this.widgetItems).forEach(function (widgetItem) {
+          widgetItem.setWidgetItems(_this.widgetItems);
         });
+
+        if ((_this$config6 = this.config) !== null && _this$config6 !== void 0 && (_this$config6$widgets = _this$config6.widgetsToExclude) !== null && _this$config6$widgets !== void 0 && _this$config6$widgets.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
       },
-      immediate: true,
+      immediate: true // deep: true,
+
+    },
+    'config.widgetsToExclude': {
+      handler: function handler() {
+        var _this$config7, _this$config7$widgets;
+
+        if ((_this$config7 = this.config) !== null && _this$config7 !== void 0 && (_this$config7$widgets = _this$config7.widgetsToExclude) !== null && _this$config7$widgets !== void 0 && _this$config7$widgets.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
+      },
       deep: true
     }
   },
   methods: {
+    _onPageChange: function _onPageChange(newPage) {
+      var _this$onPageChange;
+
+      (_this$onPageChange = this.onPageChange) === null || _this$onPageChange === void 0 ? void 0 : _this$onPageChange.call(this, newPage);
+      this.$emit('onPageChange', newPage);
+    },
     t: function t(key, data) {
-      var lang = (typeof key === "string" ? key.split(".") : key).reduce(function (obj, g) {
-        if (typeof obj === "string") return obj;
-        return obj === null || obj === void 0 ? void 0 : obj[g];
-      }, this.languages);
-      return lang === null || lang === void 0 ? void 0 : lang.replace(/(\{(\w+)\})/g, function (_orig, _outer, inner) {
-        return (data || {})[inner];
+      return translate(this.languages, key, data);
+    },
+    getConfig: function getConfig() {
+      return _objectSpread2(_objectSpread2({}, this.config), {}, {
+        validations: this.validations
+      });
+    },
+    getValidator: function getValidator() {
+      var validator = new Validator(this.validations);
+      return validator;
+    },
+    getRuleEngine: function getRuleEngine() {
+      return this.getValidator().getRuleEngine();
+    },
+    excludeWidgets: function excludeWidgets(widgetIdsOrCodes) {
+      var _this2 = this;
+
+      // map and ensure a list of ids (config.widgetsToExclude can be code or id)
+      var excludedWidgetIds = Object.values(this.widgetItems).filter(function (w) {
+        return widgetIdsOrCodes.includes(w.id) || widgetIdsOrCodes.includes(w.code || '');
+      }).map(function (w) {
+        return w.id;
+      }); // go through widgets and remove all widgets
+
+      excludedWidgetIds.forEach(function (widgetId) {
+        delete _this2.widgetItems[widgetId];
+      }); // go through all pages and remove all pages that only holds excluded widgets
+
+      Object.values(this.widgetItems).forEach(function (widget) {
+        if (widget.type === 'pages') {
+          var pages = widget.properties.pages; // go through each page from the end to start, and remove any
+          // children excluded. If pages is empty after, remove it as well
+
+          for (var p = pages.length - 1; p >= 0; p--) {
+            var children = pages[p].children;
+
+            for (var c = children.length - 1; c >= 0; c--) {
+              if (excludedWidgetIds.includes(children[c])) {
+                children.splice(c, 1);
+              }
+            }
+
+            if (!children.length) {
+              pages.splice(p, 1);
+            }
+          }
+        }
       });
     },
     emitEvent: function emitEvent(name, value, widget) {
-      var _this2 = this;
+      var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this2$$listeners$eve, _this2$$listeners;
+        var _this3$$listeners$eve, _this3$$listeners;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!Array.isArray(_this2.$listeners.event)) {
+                if (!Array.isArray(_this3.$listeners.event)) {
                   _context.next = 5;
                   break;
                 }
 
                 _context.next = 3;
-                return Promise.all(_this2.$listeners.event.map(function (evFn) {
+                return Promise.all(_this3.$listeners.event.map(function (evFn) {
                   return evFn({
                     name: name,
                     value: value,
                     widget: widget,
-                    pageState: _this2.pageState,
-                    widgetItems: _this2.$data.widgetItems
+                    pageState: _this3.pageState,
+                    widgetItems: _this3.widgetItems
                   });
                 }));
 
@@ -14099,12 +16557,12 @@ var cachedMerge = function cachedMerge(key) {
 
               case 5:
                 _context.next = 7;
-                return (_this2$$listeners$eve = (_this2$$listeners = _this2.$listeners).event) === null || _this2$$listeners$eve === void 0 ? void 0 : _this2$$listeners$eve.call(_this2$$listeners, {
+                return (_this3$$listeners$eve = (_this3$$listeners = _this3.$listeners).event) === null || _this3$$listeners$eve === void 0 ? void 0 : _this3$$listeners$eve.call(_this3$$listeners, {
                   name: name,
                   value: value,
                   widget: widget,
-                  pageState: _this2.pageState,
-                  widgetItems: _this2.$data.widgetItems
+                  pageState: _this3.pageState,
+                  widgetItems: _this3.widgetItems
                 });
 
               case 7:
@@ -14114,30 +16572,105 @@ var cachedMerge = function cachedMerge(key) {
           }
         }, _callee);
       }))();
+    },
+    validateAll: function validateAll(opts) {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+        var validationResults;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.next = 2;
+                return Object.values(_this4.widgetItems).reduce( /*#__PURE__*/function () {
+                  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(obj, wi) {
+                    var _obj, result;
+
+                    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                      while (1) {
+                        switch (_context2.prev = _context2.next) {
+                          case 0:
+                            _context2.next = 2;
+                            return obj;
+
+                          case 2:
+                            _obj = _context2.sent;
+                            _context2.next = 5;
+                            return wi.runValidations({
+                              setDirty: (opts === null || opts === void 0 ? void 0 : opts.setDirty) || false
+                            });
+
+                          case 5:
+                            result = _context2.sent;
+
+                            if (!(!result || (result || []).every(function (e) {
+                              return e.isWarning;
+                            }))) {
+                              _context2.next = 8;
+                              break;
+                            }
+
+                            return _context2.abrupt("return", _obj);
+
+                          case 8:
+                            _obj[wi.code || wi.id] = result;
+                            return _context2.abrupt("return", _obj);
+
+                          case 10:
+                          case "end":
+                            return _context2.stop();
+                        }
+                      }
+                    }, _callee2);
+                  }));
+
+                  return function (_x, _x2) {
+                    return _ref4.apply(this, arguments);
+                  };
+                }(), Promise.resolve({}));
+
+              case 2:
+                validationResults = _context3.sent;
+                return _context3.abrupt("return", validationResults);
+
+              case 4:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
     }
   },
   provide: function provide() {
-    var _this3 = this;
+    var _this5 = this;
 
     return {
+      getConfig: this.getConfig,
       getView: function getView() {
-        return _this3.$props.view;
+        return _this5.view;
       },
       t: this.t,
       pageEventListener: this.pageEventListener,
-      languages: this.$props.languages,
+      languages: this.languages,
       getPageState: function getPageState() {
-        return _this3.$props.state;
+        return _this5.state;
       },
       setPageState: function setPageState(newPageState) {
-        _this3.$emit("onStateChange", newPageState);
+        _this5.$emit('onStateChange', newPageState);
       },
       emitEvent: this.emitEvent,
       widgetEffectControls: this.combWidgetEffectControls,
       widgetControls: this.combWidgetControls,
-      questionControls: this.combQuestionControls
+      questionControls: this.combQuestionControls,
+      validateAll: this.validateAll,
+      validations: this.validations,
+      getRuleEngine: this.getRuleEngine,
+      getValidator: this.getValidator
     };
-  }
+  },
+  expose: ['validateAll']
 });/* script */
 var __vue_script__$l = script$l;
 /* template */
@@ -14164,8 +16697,8 @@ var __vue_staticRenderFns__$l = [];
 
 var __vue_inject_styles__$l = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-62e300fa_0", {
-    source: ".main-wrapper[data-v-62e300fa]{font-family:Arial,Helvetica,sans-serif}",
+  inject("data-v-4d51478b_0", {
+    source: ".main-wrapper[data-v-4d51478b]{font-family:Arial,Helvetica,sans-serif}",
     map: undefined,
     media: undefined
   });
@@ -14173,10 +16706,10 @@ var __vue_inject_styles__$l = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$l = "data-v-62e300fa";
+var __vue_scope_id__$l = "data-v-4d51478b";
 /* module identifier */
 
-var __vue_module_identifier__$l = "data-v-62e300fa";
+var __vue_module_identifier__$l = "data-v-4d51478b";
 /* functional template */
 
 var __vue_is_functional_template__$l = false;
@@ -14191,7 +16724,7 @@ var __vue_component__$n = __vue_component__$m;var script$k = defineComponent({
   props: {
     position: {
       type: String,
-      default: "left"
+      default: 'left'
     },
     isOpen: {
       type: Boolean,
@@ -14222,9 +16755,9 @@ var __vue_render__$k = function __vue_render__() {
     }
   }, [_vm.position === 'left' ? _vm._ssrNode("<div class=\"pane-content-wrapper left\"" + _vm._ssrStyle(null, {
     width: _vm.paneWidth + 'px'
-  }, null) + " data-v-105a3195>", "</div>", [_vm._t("pane-content")], 2) : _vm._e(), _vm._ssrNode(" "), _vm._ssrNode("<div class=\"pane-outside-wrapper\"" + _vm._ssrStyle(null, (_obj = {}, _obj[_vm.position === 'left' ? 'marginLeft' : 'marginRight'] = _vm.paneWidth + 'px', _obj), null) + " data-v-105a3195>", "</div>", [_vm._t("default")], 2), _vm._ssrNode(" "), _vm.position === 'right' ? _vm._ssrNode("<div class=\"pane-content-wrapper right\"" + _vm._ssrStyle(null, {
+  }, null) + " data-v-81b41c56>", "</div>", [_vm._t("pane-content")], 2) : _vm._e(), _vm._ssrNode(" "), _vm._ssrNode("<div class=\"pane-outside-wrapper\"" + _vm._ssrStyle(null, (_obj = {}, _obj[_vm.position === 'left' ? 'marginLeft' : 'marginRight'] = _vm.paneWidth + 'px', _obj), null) + " data-v-81b41c56>", "</div>", [_vm._t("default")], 2), _vm._ssrNode(" "), _vm.position === 'right' ? _vm._ssrNode("<div class=\"pane-content-wrapper right\"" + _vm._ssrStyle(null, {
     width: _vm.paneWidth + 'px'
-  }, null) + " data-v-105a3195>", "</div>", [_vm._t("pane-content")], 2) : _vm._e()], 2);
+  }, null) + " data-v-81b41c56>", "</div>", [_vm._t("pane-content")], 2) : _vm._e()], 2);
 };
 
 var __vue_staticRenderFns__$k = [];
@@ -14232,8 +16765,8 @@ var __vue_staticRenderFns__$k = [];
 
 var __vue_inject_styles__$k = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-105a3195_0", {
-    source: ".pane-wrapper[data-v-105a3195]{display:flex;flex-direction:row;align-items:stretch;height:100%;position:relative}.pane-outside-wrapper[data-v-105a3195]{flex:1;position:relative}.pane-content-wrapper[data-v-105a3195]{position:absolute;top:0;height:100%;z-index:10;background-color:#fff;box-shadow:0 0 4px -2px #000;overflow:hidden;display:flex;flex-direction:column}.pane-content-wrapper.left[data-v-105a3195]{left:0}.pane-content-wrapper.right[data-v-105a3195]{right:0}",
+  inject("data-v-81b41c56_0", {
+    source: ".pane-wrapper[data-v-81b41c56]{display:flex;flex-direction:row;align-items:stretch;height:100%;position:relative}.pane-outside-wrapper[data-v-81b41c56]{flex:1;position:relative}.pane-content-wrapper[data-v-81b41c56]{position:absolute;top:0;height:100%;z-index:10;background-color:#fff;box-shadow:0 0 4px -2px #000;overflow:hidden;display:flex;flex-direction:column}.pane-content-wrapper.left[data-v-81b41c56]{left:0}.pane-content-wrapper.right[data-v-81b41c56]{right:0}",
     map: undefined,
     media: undefined
   });
@@ -14241,10 +16774,10 @@ var __vue_inject_styles__$k = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$k = "data-v-105a3195";
+var __vue_scope_id__$k = "data-v-81b41c56";
 /* module identifier */
 
-var __vue_module_identifier__$k = "data-v-105a3195";
+var __vue_module_identifier__$k = "data-v-81b41c56";
 /* functional template */
 
 var __vue_is_functional_template__$k = false;
@@ -14255,105 +16788,7 @@ var __vue_component__$l = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$k
 }, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, false, undefined, createInjectorSSR, undefined);
 
-var Pane = __vue_component__$l;var script$j = defineComponent({
-  components: {
-    BuilderWidgetTree: BuilderWidgetTree
-  },
-  props: {
-    widgetItems: Object,
-    selectedWidgetItem: Object
-  },
-  inject: ["widgetControls"]
-});/* script */
-var __vue_script__$j = script$j;
-/* template */
-
-var __vue_render__$j = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', {
-    staticClass: "wrapper"
-  }, [_vm._ssrNode(_vm._ssrList(_vm.widgetControls, function (widgetControl, widgetControlKey) {
-    return "<a class=\"widget-item\" data-v-5b86d73a>" + _vm._ssrEscape("\n      " + _vm._s(widgetControlKey) + "\n    ") + "</a>";
-  }))]);
-};
-
-var __vue_staticRenderFns__$j = [];
-/* style */
-
-var __vue_inject_styles__$j = function __vue_inject_styles__(inject) {
-  if (!inject) return;
-  inject("data-v-5b86d73a_0", {
-    source: ".wrapper[data-v-5b86d73a]{display:flex;flex-direction:row;flex-wrap:wrap;height:auto}.widget-item[data-v-5b86d73a]{display:block;width:33%;border:1px solid #f2f2f2;border-radius:4px;padding:5px;box-sizing:border-box}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-var __vue_scope_id__$j = "data-v-5b86d73a";
-/* module identifier */
-
-var __vue_module_identifier__$j = "data-v-5b86d73a";
-/* functional template */
-
-var __vue_is_functional_template__$j = false;
-/* style inject shadow dom */
-
-var __vue_component__$k = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$j,
-  staticRenderFns: __vue_staticRenderFns__$j
-}, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, false, undefined, createInjectorSSR, undefined);
-
-var Form$5 = __vue_component__$k;var script$i = defineComponent({
-  props: {
-    panelType: String,
-    widgetItems: Object
-  }
-});/* script */
-var __vue_script__$i = script$i;
-/* template */
-
-var __vue_render__$i = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', []);
-};
-
-var __vue_staticRenderFns__$i = [];
-/* style */
-
-var __vue_inject_styles__$i = undefined;
-/* scoped */
-
-var __vue_scope_id__$i = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$i = "data-v-5161d195";
-/* functional template */
-
-var __vue_is_functional_template__$i = false;
-/* style inject */
-
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-var __vue_component__$j = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$i,
-  staticRenderFns: __vue_staticRenderFns__$i
-}, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, false, undefined, undefined, undefined);
-
-var Header$5 = __vue_component__$j;var PanelSection = /*#__PURE__*/function () {
+var Pane = __vue_component__$l;var PanelSection = /*#__PURE__*/function () {
   function PanelSection(_ref) {
     var form = _ref.form,
         header = _ref.header,
@@ -14399,9 +16834,107 @@ var Header$5 = __vue_component__$j;var PanelSection = /*#__PURE__*/function () {
   }]);
 
   return PanelSection;
-}();var addWidget = new PanelSection({
-  key: "addWidget",
-  name: "Add Widget",
+}();var script$j = defineComponent({
+  components: {
+    BuilderWidgetTree: BuilderWidgetTree
+  },
+  inject: ['widgetControls'],
+  props: {
+    widgetItems: Object,
+    selectedWidgetItem: Object
+  }
+});/* script */
+var __vue_script__$j = script$j;
+/* template */
+
+var __vue_render__$j = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "wrapper"
+  }, [_vm._ssrNode(_vm._ssrList(_vm.widgetControls, function (widgetControl, widgetControlKey) {
+    return "<a class=\"widget-item\" data-v-7f636591>" + _vm._ssrEscape("\n        " + _vm._s(widgetControlKey) + "\n      ") + "</a>";
+  }))]);
+};
+
+var __vue_staticRenderFns__$j = [];
+/* style */
+
+var __vue_inject_styles__$j = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-7f636591_0", {
+    source: ".wrapper[data-v-7f636591]{display:flex;flex-direction:row;flex-wrap:wrap;height:auto}.widget-item[data-v-7f636591]{display:block;width:33%;border:1px solid #f2f2f2;border-radius:4px;padding:5px;box-sizing:border-box}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$j = "data-v-7f636591";
+/* module identifier */
+
+var __vue_module_identifier__$j = "data-v-7f636591";
+/* functional template */
+
+var __vue_is_functional_template__$j = false;
+/* style inject shadow dom */
+
+var __vue_component__$k = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$j,
+  staticRenderFns: __vue_staticRenderFns__$j
+}, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, false, undefined, createInjectorSSR, undefined);
+
+var Form$5 = __vue_component__$k;var script$i = defineComponent({
+  props: {
+    panelType: String,
+    widgetItems: Object
+  }
+});/* script */
+var __vue_script__$i = script$i;
+/* template */
+
+var __vue_render__$i = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', []);
+};
+
+var __vue_staticRenderFns__$i = [];
+/* style */
+
+var __vue_inject_styles__$i = undefined;
+/* scoped */
+
+var __vue_scope_id__$i = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$i = "data-v-35cb9744";
+/* functional template */
+
+var __vue_is_functional_template__$i = false;
+/* style inject */
+
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+var __vue_component__$j = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$i,
+  staticRenderFns: __vue_staticRenderFns__$i
+}, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, false, undefined, undefined, undefined);
+
+var Header$5 = __vue_component__$j;var addWidget = new PanelSection({
+  key: 'addWidget',
+  name: 'Add Widget',
   form: Form$5,
   header: Header$5
 });var script$h = defineComponent({
@@ -14409,7 +16942,7 @@ var Header$5 = __vue_component__$j;var PanelSection = /*#__PURE__*/function () {
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
   methods: {
     onPropertiesChange: function onPropertiesChange(type, props) {
       this.$props.selectedWidgetItem.setEffectProperties(type, props);
@@ -14429,8 +16962,8 @@ var __vue_render__$h = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_vm.selectedWidgetItem ? _vm._ssrNode("<div class=\"existing-effects-wrapper\" data-v-36bbc32a>", "</div>", _vm._l(_vm.selectedWidgetItem.effects, function (effect) {
-    return _vm._ssrNode("<div class=\"effect-wrapper\" data-v-36bbc32a>", "</div>", [_vm._ssrNode("<a class=\"remove-effect-button\" data-v-36bbc32a>🗑</a> <h6 class=\"effect-header\" data-v-36bbc32a>" + _vm._ssrEscape("\n        " + _vm._s(_vm.widgetEffectControls[effect.type].name) + "\n      ") + "</h6> "), _c(_vm.widgetEffectControls[effect.type].form, {
+  return _c('div', [_vm.selectedWidgetItem ? _vm._ssrNode("<div class=\"existing-effects-wrapper\" data-v-77374f20>", "</div>", _vm._l(_vm.selectedWidgetItem.effects, function (effect) {
+    return _vm._ssrNode("<div class=\"effect-wrapper\" data-v-77374f20>", "</div>", [_vm._ssrNode("<a class=\"remove-effect-button\" data-v-77374f20>🗑</a> <h6 class=\"effect-header\" data-v-77374f20>" + _vm._ssrEscape("\n        " + _vm._s(_vm.widgetEffectControls[effect.type].name) + "\n      ") + "</h6> "), _c(_vm.widgetEffectControls[effect.type].form, {
       tag: "component",
       attrs: {
         "effect": effect,
@@ -14451,8 +16984,8 @@ var __vue_staticRenderFns__$h = [];
 
 var __vue_inject_styles__$h = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-36bbc32a_0", {
-    source: ".effect-wrapper[data-v-36bbc32a]{position:relative;background-color:#fdfdfd;padding:0 5px 10px 5px}.effect-wrapper[data-v-36bbc32a]:not(:last-child){margin-bottom:1px}.remove-effect-button[data-v-36bbc32a]{position:absolute;top:0;right:0;padding:1px 10px;cursor:pointer;font-size:9pt}.effect-header[data-v-36bbc32a]{margin:0 -5px 0 -5px;padding:5px;background-color:#bcdff0}",
+  inject("data-v-77374f20_0", {
+    source: ".effect-wrapper[data-v-77374f20]{position:relative;background-color:#fdfdfd;padding:0 5px 10px 5px}.effect-wrapper[data-v-77374f20]:not(:last-child){margin-bottom:1px}.remove-effect-button[data-v-77374f20]{position:absolute;top:0;right:0;padding:1px 10px;cursor:pointer;font-size:9pt}.effect-header[data-v-77374f20]{margin:0 -5px 0 -5px;padding:5px;background-color:#bcdff0}",
     map: undefined,
     media: undefined
   });
@@ -14460,10 +16993,10 @@ var __vue_inject_styles__$h = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$h = "data-v-36bbc32a";
+var __vue_scope_id__$h = "data-v-77374f20";
 /* module identifier */
 
-var __vue_module_identifier__$h = "data-v-36bbc32a";
+var __vue_module_identifier__$h = "data-v-77374f20";
 /* functional template */
 
 var __vue_is_functional_template__$h = false;
@@ -14480,7 +17013,7 @@ var Form$4 = __vue_component__$i;var script$g = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
   data: function data() {
     return {
       panelSections: panelSections
@@ -14508,7 +17041,7 @@ var Form$4 = __vue_component__$i;var script$g = defineComponent({
   methods: {
     onAddEffect: function onAddEffect(ev) {
       var selectedEffectKey = ev.target.value;
-      ev.target.value = "";
+      ev.target.value = '';
 
       if (!this.widgetEffectControls[selectedEffectKey]) {
         // effect key does not exist?? skip for now
@@ -14529,8 +17062,8 @@ var __vue_render__$g = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _vm.selectedWidgetItem ? _c('div', [_vm._ssrNode("<select data-v-801e96fe><option value disabled=\"disabled\" selected=\"selected\" class=\"default\" data-v-801e96fe>+</option> " + _vm._ssrList(_vm.panelSectionsAvailable, function (panelSection) {
-    return "<option" + _vm._ssrAttr("value", panelSection.key) + " data-v-801e96fe>" + _vm._ssrEscape("\n      " + _vm._s(panelSection.name) + "\n    ") + "</option>";
+  return _vm.selectedWidgetItem ? _c('div', [_vm._ssrNode("<select data-v-2421d1ea><option value disabled=\"disabled\" selected=\"selected\" class=\"default\" data-v-2421d1ea>+</option> " + _vm._ssrList(_vm.panelSectionsAvailable, function (panelSection) {
+    return "<option" + _vm._ssrAttr("value", panelSection.key) + " data-v-2421d1ea>" + _vm._ssrEscape("\n      " + _vm._s(panelSection.name) + "\n    ") + "</option>";
   }) + "</select>")]) : _vm._e();
 };
 
@@ -14539,8 +17072,8 @@ var __vue_staticRenderFns__$g = [];
 
 var __vue_inject_styles__$g = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-801e96fe_0", {
-    source: "select[data-v-801e96fe]{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding:1px 6px;border-radius:4px;border:none;background-color:transparent;cursor:pointer}select option.default[data-v-801e96fe]{text-align:right}",
+  inject("data-v-2421d1ea_0", {
+    source: "select[data-v-2421d1ea]{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding:1px 6px;border-radius:4px;border:none;background-color:transparent;cursor:pointer}select option.default[data-v-2421d1ea]{text-align:right}",
     map: undefined,
     media: undefined
   });
@@ -14548,10 +17081,10 @@ var __vue_inject_styles__$g = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$g = "data-v-801e96fe";
+var __vue_scope_id__$g = "data-v-2421d1ea";
 /* module identifier */
 
-var __vue_module_identifier__$g = "data-v-801e96fe";
+var __vue_module_identifier__$g = "data-v-2421d1ea";
 /* functional template */
 
 var __vue_is_functional_template__$g = false;
@@ -14563,8 +17096,8 @@ var __vue_component__$h = /*#__PURE__*/normalizeComponent({
 }, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, false, undefined, createInjectorSSR, undefined);
 
 var Header$4 = __vue_component__$h;var effects = new PanelSection({
-  key: "effects",
-  name: "Effects",
+  key: 'effects',
+  name: 'Effects',
   form: Form$4,
   header: Header$4
 });var script$f = defineComponent({
@@ -14572,15 +17105,15 @@ var Header$4 = __vue_component__$h;var effects = new PanelSection({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["t", "widgetEffectControls"],
+  inject: ['t', 'widgetEffectControls'],
   methods: {
     conditionValue: function conditionValue(value) {
       if (Array.isArray(value)) {
-        return value.join(", ");
+        return value.join(', ');
       } else if (value === null) {
-        return "null";
+        return 'null';
       } else if (value === undefined) {
-        return "undefined";
+        return 'undefined';
       } else {
         return value;
       }
@@ -14604,7 +17137,7 @@ var __vue_render__$f = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _vm.selectedWidgetItem ? _c('div', [_vm._ssrNode(_vm._ssrList(_vm.selectedWidgetItem.reflexiveRules, function (condition, conditionIndex) {
-    return "<div class=\"condition-wrapper\" data-v-5a3c7b40><label data-v-5a3c7b40>" + _vm._ssrEscape("condition " + _vm._s(conditionIndex + 1)) + "</label> <div class=\"condition-fields-wrapper\" data-v-5a3c7b40><input type=\"text\"" + _vm._ssrAttr("value", condition.fact) + " data-v-5a3c7b40> <select data-v-5a3c7b40><option value=\"in\"" + _vm._ssrAttr("selected", condition.operator === 'in') + " data-v-5a3c7b40>in</option> <option value=\"equal\"" + _vm._ssrAttr("selected", condition.operator === 'equal') + " data-v-5a3c7b40>\n          equals\n        </option> <option value=\"notEqual\"" + _vm._ssrAttr("selected", condition.operator === 'notEqual') + " data-v-5a3c7b40>\n          not equal\n        </option> <option value=\"greaterThanInclusive\"" + _vm._ssrAttr("selected", condition.operator === 'greaterThanInclusive') + " data-v-5a3c7b40>\n          &gt;=\n        </option> <option value=\"lessThanInclusive\"" + _vm._ssrAttr("selected", condition.operator === 'lessThanInclusive') + " data-v-5a3c7b40>" + _vm._ssrEscape("\n          " + _vm._s("<=") + "\n        ") + "</option></select> <input type=\"text\"" + _vm._ssrAttr("value", _vm.conditionValue(condition.value)) + " data-v-5a3c7b40></div></div>";
+    return "<div class=\"condition-wrapper\" data-v-163cdc56><label data-v-163cdc56>" + _vm._ssrEscape("condition " + _vm._s(conditionIndex + 1)) + "</label> <div class=\"condition-fields-wrapper\" data-v-163cdc56><input type=\"text\"" + _vm._ssrAttr("value", condition.fact) + " data-v-163cdc56> <select data-v-163cdc56><option value=\"in\"" + _vm._ssrAttr("selected", condition.operator === 'in') + " data-v-163cdc56>in</option> <option value=\"equal\"" + _vm._ssrAttr("selected", condition.operator === 'equal') + " data-v-163cdc56>\n          equals\n        </option> <option value=\"notEqual\"" + _vm._ssrAttr("selected", condition.operator === 'notEqual') + " data-v-163cdc56>\n          not equal\n        </option> <option value=\"greaterThanInclusive\"" + _vm._ssrAttr("selected", condition.operator === 'greaterThanInclusive') + " data-v-163cdc56>\n          &gt;=\n        </option> <option value=\"lessThanInclusive\"" + _vm._ssrAttr("selected", condition.operator === 'lessThanInclusive') + " data-v-163cdc56>" + _vm._ssrEscape("\n          " + _vm._s('<=') + "\n        ") + "</option></select> <input type=\"text\"" + _vm._ssrAttr("value", _vm.conditionValue(condition.value)) + " data-v-163cdc56></div></div>";
   }))]) : _vm._e();
 };
 
@@ -14613,8 +17146,8 @@ var __vue_staticRenderFns__$f = [];
 
 var __vue_inject_styles__$f = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-5a3c7b40_0", {
-    source: "input[data-v-5a3c7b40],select[data-v-5a3c7b40],textarea[data-v-5a3c7b40]{border-width:0 0 1px 0}.sub-header[data-v-5a3c7b40]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-5a3c7b40]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-5a3c7b40]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-5a3c7b40]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-5a3c7b40]{width:0}.condition-fields-wrapper>*[data-v-5a3c7b40]{flex:1}.error-message-wrapper[data-v-5a3c7b40]{padding:10px 5px}.error-message-wrapper label[data-v-5a3c7b40]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-5a3c7b40]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
+  inject("data-v-163cdc56_0", {
+    source: "input[data-v-163cdc56],select[data-v-163cdc56],textarea[data-v-163cdc56]{border-width:0 0 1px 0}.sub-header[data-v-163cdc56]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-163cdc56]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-163cdc56]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-163cdc56]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-163cdc56]{width:0}.condition-fields-wrapper>*[data-v-163cdc56]{flex:1}.error-message-wrapper[data-v-163cdc56]{padding:10px 5px}.error-message-wrapper label[data-v-163cdc56]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-163cdc56]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
     map: undefined,
     media: undefined
   });
@@ -14622,10 +17155,10 @@ var __vue_inject_styles__$f = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$f = "data-v-5a3c7b40";
+var __vue_scope_id__$f = "data-v-163cdc56";
 /* module identifier */
 
-var __vue_module_identifier__$f = "data-v-5a3c7b40";
+var __vue_module_identifier__$f = "data-v-163cdc56";
 /* functional template */
 
 var __vue_is_functional_template__$f = false;
@@ -14642,7 +17175,7 @@ var Form$3 = __vue_component__$g;var script$e = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
   data: function data() {
     return {
       panelSections: panelSections
@@ -14689,7 +17222,7 @@ var __vue_render__$e = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _vm.selectedWidgetItem ? _c('div', [_vm._ssrNode("<button class=\"add-button\" data-v-33573df1>+</button>")]) : _vm._e();
+  return _vm.selectedWidgetItem ? _c('div', [_vm._ssrNode("<button class=\"add-button\" data-v-11ce21ca>+</button>")]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$e = [];
@@ -14697,8 +17230,8 @@ var __vue_staticRenderFns__$e = [];
 
 var __vue_inject_styles__$e = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-33573df1_0", {
-    source: ".add-button[data-v-33573df1]{background-color:transparent;border:none}",
+  inject("data-v-11ce21ca_0", {
+    source: ".add-button[data-v-11ce21ca]{background-color:transparent;border:none}",
     map: undefined,
     media: undefined
   });
@@ -14706,10 +17239,10 @@ var __vue_inject_styles__$e = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$e = "data-v-33573df1";
+var __vue_scope_id__$e = "data-v-11ce21ca";
 /* module identifier */
 
-var __vue_module_identifier__$e = "data-v-33573df1";
+var __vue_module_identifier__$e = "data-v-11ce21ca";
 /* functional template */
 
 var __vue_is_functional_template__$e = false;
@@ -14721,8 +17254,8 @@ var __vue_component__$f = /*#__PURE__*/normalizeComponent({
 }, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, false, undefined, createInjectorSSR, undefined);
 
 var Header$3 = __vue_component__$f;var reflexives = new PanelSection({
-  key: "reflexives",
-  name: "Reflexives",
+  key: 'reflexives',
+  name: 'Reflexives',
   form: Form$3,
   header: Header$3
 });var script$d = defineComponent({
@@ -14730,15 +17263,15 @@ var Header$3 = __vue_component__$f;var reflexives = new PanelSection({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["t", "widgetEffectControls"],
+  inject: ['t', 'widgetEffectControls'],
   methods: {
     conditionValue: function conditionValue(value) {
       if (Array.isArray(value)) {
-        return value.join(", ");
+        return value.join(', ');
       } else if (value === null) {
-        return "null";
+        return 'null';
       } else if (value === undefined) {
-        return "undefined";
+        return 'undefined';
       } else {
         return value;
       }
@@ -14762,9 +17295,9 @@ var __vue_render__$d = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _vm.selectedWidgetItem ? _c('div', [_vm._ssrNode(_vm._ssrList(_vm.selectedWidgetItem.validationRules, function (rule, ruleIndex) {
-    return "<div data-v-2ba92f94><h6 class=\"sub-header\" data-v-2ba92f94>" + _vm._ssrEscape("rule " + _vm._s(ruleIndex + 1)) + "</h6> " + _vm._ssrList(rule.conditions, function (condition, conditionIndex) {
-      return "<div class=\"condition-wrapper\" data-v-2ba92f94><label data-v-2ba92f94>" + _vm._ssrEscape("condition " + _vm._s(conditionIndex + 1)) + "</label> <div class=\"condition-fields-wrapper\" data-v-2ba92f94><input type=\"text\"" + _vm._ssrAttr("value", condition.fact) + " data-v-2ba92f94> <select data-v-2ba92f94><option value=\"in\"" + _vm._ssrAttr("selected", condition.operator === 'in') + " data-v-2ba92f94>\n            in\n          </option> <option value=\"equal\"" + _vm._ssrAttr("selected", condition.operator === 'equal') + " data-v-2ba92f94>\n            equals\n          </option> <option value=\"notEqual\"" + _vm._ssrAttr("selected", condition.operator === 'notEqual') + " data-v-2ba92f94>\n            not equal\n          </option> <option value=\"greaterThanInclusive\"" + _vm._ssrAttr("selected", condition.operator === 'greaterThanInclusive') + " data-v-2ba92f94>\n            &gt;=\n          </option> <option value=\"lessThanInclusive\"" + _vm._ssrAttr("selected", condition.operator === 'lessThanInclusive') + " data-v-2ba92f94>" + _vm._ssrEscape("\n            " + _vm._s("<=") + "\n          ") + "</option></select> <input type=\"text\"" + _vm._ssrAttr("value", _vm.conditionValue(condition.value)) + " data-v-2ba92f94></div></div>";
-    }) + " <div class=\"error-message-wrapper\" data-v-2ba92f94><label data-v-2ba92f94>(conditions not met) error message</label> <textarea" + _vm._ssrAttr("value", _vm.t(_vm.selectedWidgetItem.id + "." + rule.error)) + " data-v-2ba92f94></textarea></div></div>";
+    return "<div data-v-0544d0aa><h6 class=\"sub-header\" data-v-0544d0aa>" + _vm._ssrEscape("rule " + _vm._s(ruleIndex + 1)) + "</h6> " + _vm._ssrList(rule.conditions, function (condition, conditionIndex) {
+      return "<div class=\"condition-wrapper\" data-v-0544d0aa><label data-v-0544d0aa>" + _vm._ssrEscape("condition " + _vm._s(conditionIndex + 1)) + "</label> <div class=\"condition-fields-wrapper\" data-v-0544d0aa><input type=\"text\"" + _vm._ssrAttr("value", condition.fact) + " data-v-0544d0aa> <select data-v-0544d0aa><option value=\"in\"" + _vm._ssrAttr("selected", condition.operator === 'in') + " data-v-0544d0aa>\n            in\n          </option> <option value=\"equal\"" + _vm._ssrAttr("selected", condition.operator === 'equal') + " data-v-0544d0aa>\n            equals\n          </option> <option value=\"notEqual\"" + _vm._ssrAttr("selected", condition.operator === 'notEqual') + " data-v-0544d0aa>\n            not equal\n          </option> <option value=\"greaterThanInclusive\"" + _vm._ssrAttr("selected", condition.operator === 'greaterThanInclusive') + " data-v-0544d0aa>\n            &gt;=\n          </option> <option value=\"lessThanInclusive\"" + _vm._ssrAttr("selected", condition.operator === 'lessThanInclusive') + " data-v-0544d0aa>" + _vm._ssrEscape("\n            " + _vm._s('<=') + "\n          ") + "</option></select> <input type=\"text\"" + _vm._ssrAttr("value", _vm.conditionValue(condition.value)) + " data-v-0544d0aa></div></div>";
+    }) + " <div class=\"error-message-wrapper\" data-v-0544d0aa><label data-v-0544d0aa>(conditions not met) error message</label> <textarea" + _vm._ssrAttr("value", _vm.t(_vm.selectedWidgetItem.id + "." + rule.error)) + " data-v-0544d0aa></textarea></div></div>";
   }))]) : _vm._e();
 };
 
@@ -14773,8 +17306,8 @@ var __vue_staticRenderFns__$d = [];
 
 var __vue_inject_styles__$d = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-2ba92f94_0", {
-    source: "input[data-v-2ba92f94],select[data-v-2ba92f94],textarea[data-v-2ba92f94]{border-width:0 0 1px 0}.sub-header[data-v-2ba92f94]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-2ba92f94]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-2ba92f94]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-2ba92f94]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-2ba92f94]{width:0}.condition-fields-wrapper>*[data-v-2ba92f94]{flex:1}.error-message-wrapper[data-v-2ba92f94]{padding:10px 5px}.error-message-wrapper label[data-v-2ba92f94]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-2ba92f94]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
+  inject("data-v-0544d0aa_0", {
+    source: "input[data-v-0544d0aa],select[data-v-0544d0aa],textarea[data-v-0544d0aa]{border-width:0 0 1px 0}.sub-header[data-v-0544d0aa]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-0544d0aa]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-0544d0aa]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-0544d0aa]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-0544d0aa]{width:0}.condition-fields-wrapper>*[data-v-0544d0aa]{flex:1}.error-message-wrapper[data-v-0544d0aa]{padding:10px 5px}.error-message-wrapper label[data-v-0544d0aa]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-0544d0aa]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
     map: undefined,
     media: undefined
   });
@@ -14782,10 +17315,10 @@ var __vue_inject_styles__$d = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$d = "data-v-2ba92f94";
+var __vue_scope_id__$d = "data-v-0544d0aa";
 /* module identifier */
 
-var __vue_module_identifier__$d = "data-v-2ba92f94";
+var __vue_module_identifier__$d = "data-v-0544d0aa";
 /* functional template */
 
 var __vue_is_functional_template__$d = false;
@@ -14802,7 +17335,7 @@ var Form$2 = __vue_component__$e;var script$c = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
   data: function data() {
     return {
       panelSections: panelSections
@@ -14849,7 +17382,7 @@ var __vue_render__$c = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _vm.selectedWidgetItem ? _c('div', [_vm._ssrNode("<button class=\"add-button\" data-v-33573df1>+</button>")]) : _vm._e();
+  return _vm.selectedWidgetItem ? _c('div', [_vm._ssrNode("<button class=\"add-button\" data-v-11ce21ca>+</button>")]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$c = [];
@@ -14857,8 +17390,8 @@ var __vue_staticRenderFns__$c = [];
 
 var __vue_inject_styles__$c = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-33573df1_0", {
-    source: ".add-button[data-v-33573df1]{background-color:transparent;border:none}",
+  inject("data-v-11ce21ca_0", {
+    source: ".add-button[data-v-11ce21ca]{background-color:transparent;border:none}",
     map: undefined,
     media: undefined
   });
@@ -14866,10 +17399,10 @@ var __vue_inject_styles__$c = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$c = "data-v-33573df1";
+var __vue_scope_id__$c = "data-v-11ce21ca";
 /* module identifier */
 
-var __vue_module_identifier__$c = "data-v-33573df1";
+var __vue_module_identifier__$c = "data-v-11ce21ca";
 /* functional template */
 
 var __vue_is_functional_template__$c = false;
@@ -14881,8 +17414,8 @@ var __vue_component__$d = /*#__PURE__*/normalizeComponent({
 }, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, false, undefined, createInjectorSSR, undefined);
 
 var Header$2 = __vue_component__$d;var validations = new PanelSection({
-  key: "validations",
-  name: "Validations",
+  key: 'validations',
+  name: 'Validations',
   form: Form$2,
   header: Header$2
 });var script$b = defineComponent({
@@ -14890,15 +17423,15 @@ var Header$2 = __vue_component__$d;var validations = new PanelSection({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetControls"],
+  inject: ['widgetControls'],
   methods: {
     conditionValue: function conditionValue(value) {
       if (Array.isArray(value)) {
-        return value.join(", ");
+        return value.join(', ');
       } else if (value === null) {
-        return "null";
+        return 'null';
       } else if (value === undefined) {
-        return "undefined";
+        return 'undefined';
       } else {
         return value;
       }
@@ -14935,8 +17468,8 @@ var __vue_staticRenderFns__$b = [];
 
 var __vue_inject_styles__$b = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-4ea14602_0", {
-    source: "input[data-v-4ea14602],select[data-v-4ea14602],textarea[data-v-4ea14602]{border-width:0 0 1px 0}.sub-header[data-v-4ea14602]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-4ea14602]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-4ea14602]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-4ea14602]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-4ea14602]{width:0}.condition-fields-wrapper>*[data-v-4ea14602]{flex:1}.error-message-wrapper[data-v-4ea14602]{padding:10px 5px}.error-message-wrapper label[data-v-4ea14602]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-4ea14602]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
+  inject("data-v-1e69f12a_0", {
+    source: "input[data-v-1e69f12a],select[data-v-1e69f12a],textarea[data-v-1e69f12a]{border-width:0 0 1px 0}.sub-header[data-v-1e69f12a]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-1e69f12a]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-1e69f12a]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-1e69f12a]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-1e69f12a]{width:0}.condition-fields-wrapper>*[data-v-1e69f12a]{flex:1}.error-message-wrapper[data-v-1e69f12a]{padding:10px 5px}.error-message-wrapper label[data-v-1e69f12a]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-1e69f12a]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
     map: undefined,
     media: undefined
   });
@@ -14944,10 +17477,10 @@ var __vue_inject_styles__$b = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$b = "data-v-4ea14602";
+var __vue_scope_id__$b = "data-v-1e69f12a";
 /* module identifier */
 
-var __vue_module_identifier__$b = "data-v-4ea14602";
+var __vue_module_identifier__$b = "data-v-1e69f12a";
 /* functional template */
 
 var __vue_is_functional_template__$b = false;
@@ -14964,7 +17497,7 @@ var Form$1 = __vue_component__$c;var script$a = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
   data: function data() {
     return {
       panelSections: panelSections
@@ -15019,8 +17552,8 @@ var __vue_staticRenderFns__$a = [];
 
 var __vue_inject_styles__$a = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-7acdc771_0", {
-    source: ".add-button[data-v-7acdc771]{background-color:transparent;border:none}",
+  inject("data-v-3e8f789b_0", {
+    source: ".add-button[data-v-3e8f789b]{background-color:transparent;border:none}",
     map: undefined,
     media: undefined
   });
@@ -15028,10 +17561,10 @@ var __vue_inject_styles__$a = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$a = "data-v-7acdc771";
+var __vue_scope_id__$a = "data-v-3e8f789b";
 /* module identifier */
 
-var __vue_module_identifier__$a = "data-v-7acdc771";
+var __vue_module_identifier__$a = "data-v-3e8f789b";
 /* functional template */
 
 var __vue_is_functional_template__$a = false;
@@ -15043,8 +17576,8 @@ var __vue_component__$b = /*#__PURE__*/normalizeComponent({
 }, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, false, undefined, createInjectorSSR, undefined);
 
 var Header$1 = __vue_component__$b;var widget = new PanelSection({
-  key: "widget",
-  name: "Widget",
+  key: 'widget',
+  name: 'Widget',
   form: Form$1,
   header: Header$1
 });var script$9 = defineComponent({
@@ -15068,8 +17601,8 @@ var __vue_render__$9 = function __vue_render__() {
 
   return _c('builder-widget-tree', {
     attrs: {
-      "widgetItems": _vm.widgetItems,
-      "selectedWidgetItem": _vm.selectedWidgetItem
+      "widget-items": _vm.widgetItems,
+      "selected-widget-item": _vm.selectedWidgetItem
     }
   });
 };
@@ -15083,7 +17616,7 @@ var __vue_inject_styles__$9 = undefined;
 var __vue_scope_id__$9 = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$9 = "data-v-2fc422bc";
+var __vue_module_identifier__$9 = "data-v-d61271de";
 /* functional template */
 
 var __vue_is_functional_template__$9 = false;
@@ -15126,7 +17659,7 @@ var __vue_inject_styles__$8 = undefined;
 var __vue_scope_id__$8 = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$8 = "data-v-5161d195";
+var __vue_module_identifier__$8 = "data-v-35cb9744";
 /* functional template */
 
 var __vue_is_functional_template__$8 = false;
@@ -15142,8 +17675,8 @@ var __vue_component__$9 = /*#__PURE__*/normalizeComponent({
 }, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, false, undefined, undefined, undefined);
 
 var Header = __vue_component__$9;var widgetTree = new PanelSection({
-  key: "widgetTree",
-  name: "Widget Tree",
+  key: 'widgetTree',
+  name: 'Widget Tree',
   form: Form,
   header: Header
 });var _panelSections;
@@ -15161,7 +17694,7 @@ var panelSections = (_panelSections = {}, _defineProperty(_panelSections, addWid
   },
   methods: {
     onToggleCollapse: function onToggleCollapse() {
-      this.$emit("onToggleCollapse", !this.$props.isCollapsed);
+      this.$emit('onToggleCollapse', !this.$props.isCollapsed);
     }
   }
 });/* script */
@@ -15180,17 +17713,17 @@ var __vue_render__$7 = function __vue_render__() {
     class: {
       isCollapsed: _vm.isCollapsed
     }
-  }, [_vm._ssrNode("<div class=\"panel-header\" data-v-895253ee>", "</div>", [_vm._ssrNode("<div class=\"collapse-arrow\" data-v-895253ee>›</div> <h5 class=\"panel-title\" data-v-895253ee>" + _vm._ssrEscape("\n      " + _vm._s(_vm.panelSections[_vm.panelType].name) + "\n    ") + "</h5> "), _c(_vm.panelSections[_vm.panelType].header, {
+  }, [_vm._ssrNode("<div class=\"panel-header\" data-v-5958104d>", "</div>", [_vm._ssrNode("<div class=\"collapse-arrow\" data-v-5958104d>›</div> <h5 class=\"panel-title\" data-v-5958104d>" + _vm._ssrEscape("\n        " + _vm._s(_vm.panelSections[_vm.panelType].name) + "\n      ") + "</h5> "), _c(_vm.panelSections[_vm.panelType].header, {
     tag: "component",
     attrs: {
-      "widgetItems": _vm.widgetItems,
-      "selectedWidgetItem": _vm.selectedWidgetItem
+      "widget-items": _vm.widgetItems,
+      "selected-widget-item": _vm.selectedWidgetItem
     }
-  })], 2), _vm._ssrNode(" "), _vm._ssrNode("<div class=\"panel-content\" data-v-895253ee>", "</div>", [_c(_vm.panelSections[_vm.panelType].form, {
+  })], 2), _vm._ssrNode(" "), _vm._ssrNode("<div class=\"panel-content\" data-v-5958104d>", "</div>", [_c(_vm.panelSections[_vm.panelType].form, {
     tag: "component",
     attrs: {
-      "widgetItems": _vm.widgetItems,
-      "selectedWidgetItem": _vm.selectedWidgetItem
+      "widget-items": _vm.widgetItems,
+      "selected-widget-item": _vm.selectedWidgetItem
     }
   })], 1)], 2);
 };
@@ -15200,8 +17733,8 @@ var __vue_staticRenderFns__$7 = [];
 
 var __vue_inject_styles__$7 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-895253ee_0", {
-    source: ".panel-header[data-v-895253ee]{padding:5px 5px;background-color:#cbf3f0;color:#3a3a3a;display:flex;flex-direction:row;justify-content:space-between;align-items:center;box-shadow:0 3px 10px #a7a7a73b;z-index:10;position:relative}.panel-title[data-v-895253ee]{margin:0;margin-left:5px;flex:1;cursor:pointer}.panel-section-wrapper[data-v-895253ee]:not(.isCollapsed){flex:1;display:flex;flex-direction:column}.panel-section-wrapper.isCollapsed .panel-content[data-v-895253ee]{display:none}.collapse-arrow[data-v-895253ee]{cursor:pointer}.panel-section-wrapper:not(.isCollapsed) .collapse-arrow[data-v-895253ee]{transform:rotate(90deg)}.panel-section-wrapper:not(.isCollapsed) .panel-content[data-v-895253ee]{overflow:auto;flex:1}",
+  inject("data-v-5958104d_0", {
+    source: ".panel-header[data-v-5958104d]{padding:5px 5px;background-color:#cbf3f0;color:#3a3a3a;display:flex;flex-direction:row;justify-content:space-between;align-items:center;box-shadow:0 3px 10px #a7a7a73b;z-index:10;position:relative}.panel-title[data-v-5958104d]{margin:0;margin-left:5px;flex:1;cursor:pointer}.panel-section-wrapper[data-v-5958104d]:not(.isCollapsed){flex:1;display:flex;flex-direction:column}.panel-section-wrapper.isCollapsed .panel-content[data-v-5958104d]{display:none}.collapse-arrow[data-v-5958104d]{cursor:pointer}.panel-section-wrapper:not(.isCollapsed) .collapse-arrow[data-v-5958104d]{transform:rotate(90deg)}.panel-section-wrapper:not(.isCollapsed) .panel-content[data-v-5958104d]{overflow:auto;flex:1}",
     map: undefined,
     media: undefined
   });
@@ -15209,10 +17742,10 @@ var __vue_inject_styles__$7 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$7 = "data-v-895253ee";
+var __vue_scope_id__$7 = "data-v-5958104d";
 /* module identifier */
 
-var __vue_module_identifier__$7 = "data-v-895253ee";
+var __vue_module_identifier__$7 = "data-v-5958104d";
 /* functional template */
 
 var __vue_is_functional_template__$7 = false;
@@ -15284,8 +17817,8 @@ var __vue_staticRenderFns__$6 = [];
 
 var __vue_inject_styles__$6 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-5e02ddd6_0", {
-    source: ".wrapper[data-v-5e02ddd6]{position:relative;display:flex;flex-direction:column;flex:1}",
+  inject("data-v-0357272b_0", {
+    source: ".wrapper[data-v-0357272b]{position:relative;display:flex;flex-direction:column;flex:1}",
     map: undefined,
     media: undefined
   });
@@ -15293,10 +17826,10 @@ var __vue_inject_styles__$6 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$6 = "data-v-5e02ddd6";
+var __vue_scope_id__$6 = "data-v-0357272b";
 /* module identifier */
 
-var __vue_module_identifier__$6 = "data-v-5e02ddd6";
+var __vue_module_identifier__$6 = "data-v-0357272b";
 /* functional template */
 
 var __vue_is_functional_template__$6 = false;
@@ -15315,7 +17848,7 @@ var BuilderPanelSectionListView = __vue_component__$7;var script$5 = defineCompo
   props: {
     widgetItems: Object
   },
-  inject: ["widgetControls", "widgetEffectControls", "getPageState"],
+  inject: ['widgetControls', 'widgetEffectControls', 'getPageState'],
   data: function data() {
     return {
       panelSections: panelSections
@@ -15364,30 +17897,26 @@ var __vue_render__$5 = function __vue_render__() {
 var __vue_staticRenderFns__$5 = [];
 /* style */
 
-var __vue_inject_styles__$5 = function __vue_inject_styles__(inject) {
-  if (!inject) return;
-  inject("data-v-2cea4340_0", {
-    source: ".pane-wrapper[data-v-2cea4340]{background-color:#00f}",
-    map: undefined,
-    media: undefined
-  });
-};
+var __vue_inject_styles__$5 = undefined;
 /* scoped */
 
-
-var __vue_scope_id__$5 = "data-v-2cea4340";
+var __vue_scope_id__$5 = "data-v-1e19a752";
 /* module identifier */
 
-var __vue_module_identifier__$5 = "data-v-2cea4340";
+var __vue_module_identifier__$5 = "data-v-1e19a752";
 /* functional template */
 
 var __vue_is_functional_template__$5 = false;
+/* style inject */
+
+/* style inject SSR */
+
 /* style inject shadow dom */
 
 var __vue_component__$6 = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$5,
   staticRenderFns: __vue_staticRenderFns__$5
-}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, undefined, createInjectorSSR, undefined);
+}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, undefined, undefined, undefined);
 
 var BuilderRightPane = __vue_component__$6;var script$4 = defineComponent({
   components: {
@@ -15397,12 +17926,12 @@ var BuilderRightPane = __vue_component__$6;var script$4 = defineComponent({
   props: {
     widgetItems: Object
   },
-  inject: ["getPageState"],
+  inject: ['getPageState'],
   data: function data() {
     return {
       panelSections: panelSections,
-      sections: ["widgetTree", "addWidget"],
-      selectedSection: "widgetTree"
+      sections: ['widgetTree', 'addWidget'],
+      selectedSection: 'widgetTree'
     };
   },
   computed: {
@@ -15469,8 +17998,8 @@ var __vue_staticRenderFns__$4 = [];
 
 var __vue_inject_styles__$4 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-25d138b0_0", {
-    source: ".button-group[data-v-25d138b0]{display:flex;flex-direction:row;width:100%}.button-group button[data-v-25d138b0]{flex:1;background-color:#fff;padding:10px 5px;border-width:0 0 4px 0;border-color:transparent;position:relative}.button-group button.active[data-v-25d138b0]::before{content:\"\";position:absolute;bottom:0;left:0;width:100%;height:4px;background-color:#cbf3f0}",
+  inject("data-v-43275984_0", {
+    source: ".button-group[data-v-43275984]{display:flex;flex-direction:row;width:100%}.button-group button[data-v-43275984]{flex:1;background-color:#fff;padding:10px 5px;border-width:0 0 4px 0;border-color:transparent;position:relative}.button-group button.active[data-v-43275984]::before{content:'';position:absolute;bottom:0;left:0;width:100%;height:4px;background-color:#cbf3f0}",
     map: undefined,
     media: undefined
   });
@@ -15478,10 +18007,10 @@ var __vue_inject_styles__$4 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$4 = "data-v-25d138b0";
+var __vue_scope_id__$4 = "data-v-43275984";
 /* module identifier */
 
-var __vue_module_identifier__$4 = "data-v-25d138b0";
+var __vue_module_identifier__$4 = "data-v-43275984";
 /* functional template */
 
 var __vue_is_functional_template__$4 = false;
@@ -15497,7 +18026,7 @@ var BuilderLeftPane = __vue_component__$5;var script$3 = defineComponent({
     widget: Object,
     widgetItems: Object
   },
-  inject: ["getPageState", "setPageState"],
+  inject: ['getPageState', 'setPageState'],
   methods: {
     setSelectWidget: function setSelectWidget(widget) {
       var currentState = this.getPageState();
@@ -15519,8 +18048,8 @@ var __vue_render__$3 = function __vue_render__() {
   return !!_vm.widget ? _c('div', {
     staticClass: "widget-breadcrumb-wrapper"
   }, [_vm._ssrNode(_vm._ssrList(_vm.widget.getParents().reverse(), function (parent) {
-    return "<div class=\"widget-breadcrumb-item\" data-v-9289bfd8><p data-v-9289bfd8>" + _vm._ssrEscape(_vm._s(parent.type)) + "</p> " + (parent.code ? "<small data-v-9289bfd8>" + _vm._ssrEscape("(" + _vm._s(parent.code) + ")") + "</small>" : "<!---->") + "</div>";
-  }) + " <div class=\"widget-breadcrumb-item\" data-v-9289bfd8><p data-v-9289bfd8>" + _vm._ssrEscape(_vm._s(_vm.widget.type)) + "</p> " + (_vm.widget.code ? "<small data-v-9289bfd8>" + _vm._ssrEscape("(" + _vm._s(_vm.widget.code) + ")") + "</small>" : "<!---->") + "</div>")]) : _vm._e();
+    return "<div class=\"widget-breadcrumb-item\" data-v-34434a74><p data-v-34434a74>" + _vm._ssrEscape(_vm._s(parent.type)) + "</p> " + (parent.code ? "<small data-v-34434a74>" + _vm._ssrEscape("(" + _vm._s(parent.code) + ")") + "</small>" : "<!---->") + "</div>";
+  }) + " <div class=\"widget-breadcrumb-item\" data-v-34434a74><p data-v-34434a74>" + _vm._ssrEscape(_vm._s(_vm.widget.type)) + "</p> " + (_vm.widget.code ? "<small data-v-34434a74>" + _vm._ssrEscape("(" + _vm._s(_vm.widget.code) + ")") + "</small>" : "<!---->") + "</div>")]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$3 = [];
@@ -15528,8 +18057,8 @@ var __vue_staticRenderFns__$3 = [];
 
 var __vue_inject_styles__$3 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-9289bfd8_0", {
-    source: ".widget-breadcrumb-wrapper[data-v-9289bfd8]{display:flex;flex-direction:row;align-items:center}.widget-breadcrumb-item[data-v-9289bfd8]{position:relative;display:flex;flex-direction:row;padding:5px 10px 5px 20px;margin-top:5px;align-items:center;cursor:pointer}.widget-breadcrumb-item[data-v-9289bfd8]:not(:first-child)::before{content:\">\";position:absolute;top:6px;left:0;font-size:12pt}.widget-breadcrumb-item p[data-v-9289bfd8]{margin:0}.widget-breadcrumb-item small[data-v-9289bfd8]{margin-left:5px;color:#a1a1a1}",
+  inject("data-v-34434a74_0", {
+    source: ".widget-breadcrumb-wrapper[data-v-34434a74]{display:flex;flex-direction:row;align-items:center}.widget-breadcrumb-item[data-v-34434a74]{position:relative;display:flex;flex-direction:row;padding:5px 10px 5px 20px;margin-top:5px;align-items:center;cursor:pointer}.widget-breadcrumb-item[data-v-34434a74]:not(:first-child)::before{content:'>';position:absolute;top:6px;left:0;font-size:12pt}.widget-breadcrumb-item p[data-v-34434a74]{margin:0}.widget-breadcrumb-item small[data-v-34434a74]{margin-left:5px;color:#a1a1a1}",
     map: undefined,
     media: undefined
   });
@@ -15537,10 +18066,10 @@ var __vue_inject_styles__$3 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$3 = "data-v-9289bfd8";
+var __vue_scope_id__$3 = "data-v-34434a74";
 /* module identifier */
 
-var __vue_module_identifier__$3 = "data-v-9289bfd8";
+var __vue_module_identifier__$3 = "data-v-34434a74";
 /* functional template */
 
 var __vue_is_functional_template__$3 = false;
@@ -15558,7 +18087,7 @@ var WidgetBreadcrumb = __vue_component__$4;var script$2 = defineComponent({
   props: {
     widgetItems: Object
   },
-  inject: ["getPageState"],
+  inject: ['getPageState'],
   computed: {
     selectedWidgetItem: function selectedWidgetItem() {
       var _this$widgetItems;
@@ -15579,13 +18108,13 @@ var __vue_render__$2 = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _c('div', {
-    staticClass: "wrapper"
-  }, [_vm._ssrNode("<div class=\"left-pane\" data-v-3699a990></div> "), _vm._ssrNode("<div class=\"center\" data-v-3699a990>", "</div>", [_c('widget-breadcrumb', {
+    staticClass: "bottom-pane-wrapper"
+  }, [_vm._ssrNode("<div class=\"left-pane\" data-v-7da0862a></div> "), _vm._ssrNode("<div class=\"center\" data-v-7da0862a>", "</div>", [_c('widget-breadcrumb', {
     attrs: {
       "widget": _vm.selectedWidgetItem,
       "widgetItems": _vm.widgetItems
     }
-  })], 1), _vm._ssrNode(" <div class=\"right-pane\" data-v-3699a990></div>")], 2);
+  })], 1), _vm._ssrNode(" <div class=\"right-pane\" data-v-7da0862a></div>")], 2);
 };
 
 var __vue_staticRenderFns__$2 = [];
@@ -15593,8 +18122,8 @@ var __vue_staticRenderFns__$2 = [];
 
 var __vue_inject_styles__$2 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-3699a990_0", {
-    source: ".wrapper[data-v-3699a990]{height:40px;z-index:1000;box-shadow:0 0 4px -2px #000;display:flex;flex-direction:row}.center[data-v-3699a990]{flex:1}.left-pane[data-v-3699a990],.right-pane[data-v-3699a990]{width:300px}",
+  inject("data-v-7da0862a_0", {
+    source: ".bottom-pane-wrapper[data-v-7da0862a]{height:40px;z-index:1000;box-shadow:0 0 4px -2px #000;display:flex;flex-direction:row}.center[data-v-7da0862a]{flex:1}.left-pane[data-v-7da0862a],.right-pane[data-v-7da0862a]{width:300px}",
     map: undefined,
     media: undefined
   });
@@ -15602,10 +18131,10 @@ var __vue_inject_styles__$2 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$2 = "data-v-3699a990";
+var __vue_scope_id__$2 = "data-v-7da0862a";
 /* module identifier */
 
-var __vue_module_identifier__$2 = "data-v-3699a990";
+var __vue_module_identifier__$2 = "data-v-7da0862a";
 /* functional template */
 
 var __vue_is_functional_template__$2 = false;
@@ -15619,8 +18148,8 @@ var __vue_component__$3 = /*#__PURE__*/normalizeComponent({
 var BuilderBottomPane = __vue_component__$3;var script$1 = defineComponent({
   data: function data() {
     return {
-      width: "100%",
-      height: "100%"
+      width: '100%',
+      height: '100%'
     };
   },
   computed: {
@@ -15633,7 +18162,7 @@ var BuilderBottomPane = __vue_component__$3;var script$1 = defineComponent({
   },
   methods: {
     setWidthHeight: function setWidthHeight(ev) {
-      var _value$split = ev.target.value.split("_"),
+      var _value$split = ev.target.value.split('_'),
           _value$split2 = _slicedToArray(_value$split, 2),
           w = _value$split2[0],
           h = _value$split2[1];
@@ -15655,7 +18184,11 @@ var __vue_render__$1 = function __vue_render__() {
 
   return _c('div', {
     staticClass: "wrapper"
-  }, [_vm._ssrNode("<select class=\"simulation-device-select\" data-v-719a43da><option value=\"375px_667px\"" + _vm._ssrAttr("selected", _vm.width === '375px' && _vm.height === '667px') + " data-v-719a43da>\n      iPhone SE\n    </option> <option value=\"414px_896px\"" + _vm._ssrAttr("selected", _vm.width === '414px' && _vm.height === '896px') + " data-v-719a43da>\n      iPhone XR\n    </option> <option value=\"390px_844px\"" + _vm._ssrAttr("selected", _vm.width === '390px' && _vm.height === '844px') + " data-v-719a43da>\n      iPhone 12 Pro\n    </option> <option value=\"100%_100%\"" + _vm._ssrAttr("selected", _vm.width === '100%' && _vm.height === '100%') + " data-v-719a43da>\n      Full\n    </option></select> "), _vm._ssrNode("<div class=\"device-wrapper\" data-v-719a43da>", "</div>", [_vm._ssrNode("<div class=\"device-inner-wrapper\"" + _vm._ssrStyle(null, _vm.deviceStyles, null) + " data-v-719a43da>", "</div>", [_vm._ssrNode("<div class=\"device-background\" data-v-719a43da>", "</div>", [_vm._t("default")], 2)])])], 2);
+  }, [_vm._ssrNode("<select class=\"simulation-device-select\" data-v-ce061fc0><option value=\"375px_667px\"" + _vm._ssrAttr("selected", _vm.width === '375px' && _vm.height === '667px') + " data-v-ce061fc0>\n      iPhone SE\n    </option> <option value=\"414px_896px\"" + _vm._ssrAttr("selected", _vm.width === '414px' && _vm.height === '896px') + " data-v-ce061fc0>\n      iPhone XR\n    </option> <option value=\"390px_844px\"" + _vm._ssrAttr("selected", _vm.width === '390px' && _vm.height === '844px') + " data-v-ce061fc0>\n      iPhone 12 Pro\n    </option> <option value=\"100%_100%\"" + _vm._ssrAttr("selected", _vm.width === '100%' && _vm.height === '100%') + " data-v-ce061fc0>\n      Full\n    </option></select> "), _vm._ssrNode("<div class=\"device-wrapper\"" + _vm._ssrStyle(null, {
+    height: _vm.deviceStyles.height
+  }, null) + " data-v-ce061fc0>", "</div>", [_vm._ssrNode("<div class=\"device-background\"" + _vm._ssrStyle(null, _vm.deviceStyles, null) + " data-v-ce061fc0></div> "), _vm._ssrNode("<div class=\"device-inner-wrapper\"" + _vm._ssrStyle(null, {
+    width: _vm.deviceStyles.width
+  }, null) + " data-v-ce061fc0>", "</div>", [_vm._t("default")], 2)], 2)], 2);
 };
 
 var __vue_staticRenderFns__$1 = [];
@@ -15663,8 +18196,8 @@ var __vue_staticRenderFns__$1 = [];
 
 var __vue_inject_styles__$1 = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-719a43da_0", {
-    source: ".wrapper[data-v-719a43da]{height:100%;overflow:hidden;background-color:#eaedf5;box-sizing:border-box;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center}.device-wrapper[data-v-719a43da]{height:100%;width:100%;padding:30px 30px 30px 30px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:auto}.device-inner-wrapper[data-v-719a43da]{min-height:100px;background-color:#fff;border-radius:8px;position:relative}.device-background[data-v-719a43da]{background-color:#fff}.simulation-device-select[data-v-719a43da]{padding:5px 10px;border-radius:4px}",
+  inject("data-v-ce061fc0_0", {
+    source: ".wrapper[data-v-ce061fc0]{height:100%;overflow:hidden;background-color:#eaedf5;box-sizing:border-box;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center}.device-wrapper[data-v-ce061fc0]{height:100%;width:100%;padding:30px 30px 30px 30px;overflow-y:auto;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;overflow:auto}.device-inner-wrapper[data-v-ce061fc0]{min-height:100px;height:100%;border-radius:8px;position:relative}.device-background[data-v-ce061fc0]{background-color:#fff;border-radius:8px;margin:-30px auto 0 auto;position:absolute}.simulation-device-select[data-v-ce061fc0]{padding:5px 10px;border-radius:4px}",
     map: undefined,
     media: undefined
   });
@@ -15672,10 +18205,10 @@ var __vue_inject_styles__$1 = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__$1 = "data-v-719a43da";
+var __vue_scope_id__$1 = "data-v-ce061fc0";
 /* module identifier */
 
-var __vue_module_identifier__$1 = "data-v-719a43da";
+var __vue_module_identifier__$1 = "data-v-ce061fc0";
 /* functional template */
 
 var __vue_is_functional_template__$1 = false;
@@ -15696,43 +18229,28 @@ var BuilderScreenSimulationView = __vue_component__$2;var script = defineCompone
   },
   // components: { DynamicPageLayout },
   props: {
-    languages: Object,
+    languages: {
+      type: Object,
+      required: true
+    },
     locale: String,
-    page: Object,
-    // eslint-disable-next-line no-unused-vars
+    page: {
+      type: Object,
+      required: true
+    },
     onPageChange: Function,
-    // func<(page: Page) => void>().isRequired,
-    state: $(PageState).isRequired,
-    // eslint-disable-next-line no-unused-vars
+    state: {
+      type: Object,
+      required: true
+    },
     onStateChange: Function,
-    // func<(state: PageState) => void>().isRequired,
     widgetControls: Object,
-    // shape(QuestionControl),
     questionControls: Object,
-    plugins: R(C({
-      widgetControls: Object,
-      widgetEffectControls: Object,
-      questionControls: Object
-    })),
+    widgetEffectControls: Object,
+    plugins: Array,
     // display | page | readOnly
     view: String,
-    configs: C({
-      widgets: C({
-        // whether or not to use controls
-        disableInternalControls: V(),
-        blacklist: R(S()),
-        whitelist: R(S()),
-        filters: Object
-      }),
-      questionControls: C({
-        // whether or not to use controls
-        //
-        disableInternalControls: V(),
-        blacklist: R(S()),
-        whitelist: R(S()),
-        filters: Object
-      })
-    })
+    config: Object
   },
   data: function data() {
     return {
@@ -15744,37 +18262,52 @@ var BuilderScreenSimulationView = __vue_component__$2;var script = defineCompone
   },
   computed: {
     widgetItemsArr: function widgetItemsArr() {
-      return this.$props.page.widgets;
+      return this.page.widgets;
     },
     combWidgetControls: function combWidgetControls() {
-      var _this$$props$configs, _ref;
+      var _this$config, _this$config$widgetCo, _ref;
 
-      return cachedMerge.apply(void 0, ["widgetControls", (_this$$props$configs = this.$props.configs) !== null && _this$$props$configs !== void 0 && _this$$props$configs.widgets.disableInternalControls ? {} : widgets].concat(_toConsumableArray((_ref = this.$props.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(function (p) {
+      return cachedMerge.apply(void 0, ['widgetControls', (_this$config = this.config) !== null && _this$config !== void 0 && (_this$config$widgetCo = _this$config.widgetControls) !== null && _this$config$widgetCo !== void 0 && _this$config$widgetCo.disableInternalControls ? {} : widgets].concat(_toConsumableArray((_ref = this.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(function (p) {
         return p.widgetControls;
-      })), [this.$props.widgetControls]));
+      })), [this.widgetControls]));
     },
     combWidgetEffectControls: function combWidgetEffectControls() {
-      var _this$$props$configs2, _ref2;
+      var _this$config2, _this$config2$widgetE, _ref2;
 
-      return cachedMerge.apply(void 0, ["widgetEffectControls", (_this$$props$configs2 = this.$props.configs) !== null && _this$$props$configs2 !== void 0 && _this$$props$configs2.widgetEffectControls.disableInternalControls ? {} : widgetEffects].concat(_toConsumableArray((_ref2 = this.$props.plugins || []) === null || _ref2 === void 0 ? void 0 : _ref2.map(function (p) {
+      return cachedMerge.apply(void 0, ['widgetEffectControls', (_this$config2 = this.config) !== null && _this$config2 !== void 0 && (_this$config2$widgetE = _this$config2.widgetEffectControls) !== null && _this$config2$widgetE !== void 0 && _this$config2$widgetE.disableInternalControls ? {} : widgetEffects].concat(_toConsumableArray((_ref2 = this.plugins || []) === null || _ref2 === void 0 ? void 0 : _ref2.map(function (p) {
         return p.widgetEffectControls;
-      })), [this.$props.widgetEffectControls]));
+      })), [this.widgetEffectControls]));
     },
     combQuestionControls: function combQuestionControls() {
-      var _this$$props$configs3, _ref3;
+      var _this$config3, _this$config3$questio, _ref3;
 
-      return cachedMerge.apply(void 0, ["questionControls", (_this$$props$configs3 = this.$props.configs) !== null && _this$$props$configs3 !== void 0 && _this$$props$configs3.questionControls.disableInternalControls ? {} : questionControls].concat(_toConsumableArray((_ref3 = this.$props.plugins || []) === null || _ref3 === void 0 ? void 0 : _ref3.map(function (p) {
+      return cachedMerge.apply(void 0, ['questionControls', (_this$config3 = this.config) !== null && _this$config3 !== void 0 && (_this$config3$questio = _this$config3.questionControls) !== null && _this$config3$questio !== void 0 && _this$config3$questio.disableInternalControls ? {} : questionControls].concat(_toConsumableArray((_ref3 = this.plugins || []) === null || _ref3 === void 0 ? void 0 : _ref3.map(function (p) {
         return p.questionControls;
-      })), [this.$props.questionControls]));
+      })), [this.questionControls]));
+    },
+    validations: function validations() {
+      var _this$config4, _this$config4$validat, _this$config5, _this$config5$validat;
+
+      return {
+        rules: _objectSpread2(_objectSpread2({}, validationRules), (_this$config4 = this.config) === null || _this$config4 === void 0 ? void 0 : (_this$config4$validat = _this$config4.validations) === null || _this$config4$validat === void 0 ? void 0 : _this$config4$validat.rules),
+        facts: _objectSpread2({}, (_this$config5 = this.config) === null || _this$config5 === void 0 ? void 0 : (_this$config5$validat = _this$config5.validations) === null || _this$config5$validat === void 0 ? void 0 : _this$config5$validat.facts)
+      };
     },
     pageState: function pageState() {
-      return this.$props.state;
+      return this.state;
     }
   },
   watch: {
-    "page.widgets": {
+    languages: {
+      handler: function handler() {
+        this.pageEventListener.emit(Event.LANGUAGE_CHANGED, {});
+      }
+    },
+    'page.widgets': {
       handler: function handler(newPageWidgetArr) {
-        var _this = this;
+        var _this = this,
+            _this$config6,
+            _this$config6$widgets;
 
         this.$data.widgetItems = newPageWidgetArr.reduce(function (obj, widget) {
           var _this$combWidgetContr;
@@ -15786,67 +18319,160 @@ var BuilderScreenSimulationView = __vue_component__$2;var script = defineCompone
             emitEvent: _this.emitEvent,
             removeWidget: _this.removeWidget,
             t: function t(key, data) {
-              return _this.t("".concat(widget.id, ".").concat(key), data);
+              return _this.t([widget.id, key], data);
             },
             getState: function getState() {
-              return _this.$props.state;
+              return _this.state;
             },
             setState: function setState(newPageState) {
-              _this.$emit("onStateChange", newPageState);
+              _this.$emit('onStateChange', newPageState);
             },
             onUpdate: function onUpdate(newWidget) {
-              var _this$$props$onPageCh, _this$$props;
-
-              (_this$$props$onPageCh = (_this$$props = _this.$props).onPageChange) === null || _this$$props$onPageCh === void 0 ? void 0 : _this$$props$onPageCh.call(_this$$props, _objectSpread2(_objectSpread2({}, _this.$props.page), {}, {
-                widgets: Object.values(_objectSpread2(_objectSpread2({}, _this.$data.widgetItems), {}, _defineProperty({}, newWidget.id, newWidget)))
+              _this._onPageChange(_objectSpread2(_objectSpread2({}, _this.page), {}, {
+                widgets: Object.values(_objectSpread2(_objectSpread2({}, _this.$data.widgetItems), {}, _defineProperty({}, newWidget.id, Object.assign(Object.create(Object.getPrototypeOf(newWidget)), newWidget))))
               }));
-            }
+            },
+            getQuestionControls: function getQuestionControls() {
+              return _this.combQuestionControls;
+            },
+            getConfig: function getConfig() {
+              return _objectSpread2(_objectSpread2({}, _this.getConfig()), {}, {
+                validations: _this.validations
+              });
+            },
+            getWidgetMeta: function getWidgetMeta() {
+              var _this$getConfig, _this$getConfig$meta;
+
+              return (_this$getConfig = _this.getConfig()) === null || _this$getConfig === void 0 ? void 0 : (_this$getConfig$meta = _this$getConfig.meta) === null || _this$getConfig$meta === void 0 ? void 0 : _this$getConfig$meta[widget.type];
+            },
+            getValidator: _this.getValidator
           });
           return obj;
         }, {});
         Object.values(this.$data.widgetItems).forEach(function (widgetItem) {
           widgetItem.setWidgetItems(_this.$data.widgetItems);
         });
+
+        if ((_this$config6 = this.config) !== null && _this$config6 !== void 0 && (_this$config6$widgets = _this$config6.widgetsToExclude) !== null && _this$config6$widgets !== void 0 && _this$config6$widgets.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
       },
       immediate: true,
+      deep: true
+    },
+    'config.validations.facts': {
+      handler: function handler(validations) {
+        var ruleEngine = new dist.Engine(undefined, {
+          allowUndefinedFacts: true
+        });
+
+        if (validations !== null && validations !== void 0 && validations.facts && Object.keys(validations === null || validations === void 0 ? void 0 : validations.facts).length) {
+          Object.keys(validations.facts).forEach(function (factKey) {
+            var _validations$facts;
+
+            ruleEngine.addFact(factKey, (_validations$facts = validations.facts) === null || _validations$facts === void 0 ? void 0 : _validations$facts[factKey]);
+          });
+        }
+
+        this.ruleEngine = ruleEngine;
+      },
+      deep: true
+    },
+    'config.widgetsToExclude': {
+      handler: function handler() {
+        var _this$config7, _this$config7$widgets;
+
+        if ((_this$config7 = this.config) !== null && _this$config7 !== void 0 && (_this$config7$widgets = _this$config7.widgetsToExclude) !== null && _this$config7$widgets !== void 0 && _this$config7$widgets.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
+      },
       deep: true
     }
   },
   methods: {
+    _onPageChange: function _onPageChange(newPage) {
+      var _this$onPageChange;
+
+      (_this$onPageChange = this.onPageChange) === null || _this$onPageChange === void 0 ? void 0 : _this$onPageChange.call(this, newPage);
+      this.$emit('onPageChange', newPage);
+    },
     t: function t(key, data) {
       var _this2 = this;
 
-      var lang = (typeof key === "string" ? key.split(".") : key).reduce(function (obj, g, gIndex) {
-        if (typeof obj === "string") return obj;
-        return gIndex > 0 ? obj === null || obj === void 0 ? void 0 : obj[g] : (obj === null || obj === void 0 ? void 0 : obj[g][_this2.$props.locale].message) || {};
+      var lang = flattenTranslateKey(key).reduce(function (obj, g, gIndex) {
+        if (typeof obj === 'string') return obj;
+        return gIndex > 0 ? obj === null || obj === void 0 ? void 0 : obj[g] : (obj === null || obj === void 0 ? void 0 : obj[g][_this2.locale || ''].message) || {};
       }, this.languages);
       return lang === null || lang === void 0 ? void 0 : lang.replace(/(\{(\w+)\})/g, function (_orig, _outer, inner) {
         return (data || {})[inner];
       });
     },
-    emitEvent: function emitEvent(name, value, widget) {
+    getConfig: function getConfig() {
+      return this.config || {};
+    },
+    getValidator: function getValidator() {
+      var validator = new Validator(this.validations);
+      return validator;
+    },
+    getRuleEngine: function getRuleEngine() {
+      return this.getValidator().getRuleEngine();
+    },
+    excludeWidgets: function excludeWidgets(widgetIdsOrCodes) {
       var _this3 = this;
 
+      // map and ensure a list of ids (config.widgetsToExclude can be code or id)
+      var excludedWidgetIds = Object.values(this.widgetItems).filter(function (w) {
+        return widgetIdsOrCodes.includes(w.id) || widgetIdsOrCodes.includes(w.code || '');
+      }).map(function (w) {
+        return w.id;
+      }); // go through widgets and remove all widgets
+
+      excludedWidgetIds.forEach(function (widgetId) {
+        delete _this3.widgetItems[widgetId];
+      }); // go through all pages and remove all pages that only holds excluded widgets
+
+      Object.values(this.widgetItems).forEach(function (widget) {
+        if (widget.type === 'pages') {
+          var pageIdxToRemove = [];
+          widget.properties.pages.forEach(function (page, pageIdx) {
+            if (page.children.every(function (c) {
+              return excludedWidgetIds.includes(c);
+            })) {
+              pageIdxToRemove.push(pageIdx);
+            }
+          });
+
+          if (pageIdxToRemove.length) {
+            pageIdxToRemove.reverse().forEach(function (idx) {
+              widget.properties.pages.splice(idx, 1);
+            });
+          }
+        }
+      });
+    },
+    emitEvent: function emitEvent(name, value, widget) {
+      var _this4 = this;
+
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this3$$listeners$eve, _this3$$listeners;
+        var _this4$$listeners$eve, _this4$$listeners;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!Array.isArray(_this3.$listeners.event)) {
+                if (!Array.isArray(_this4.$listeners.event)) {
                   _context.next = 5;
                   break;
                 }
 
                 _context.next = 3;
-                return Promise.all(_this3.$listeners.event.map(function (evFn) {
+                return Promise.all(_this4.$listeners.event.map(function (evFn) {
                   return evFn({
                     name: name,
                     value: value,
                     widget: widget,
-                    pageState: _this3.pageState,
-                    widgetItems: _this3.$data.widgetItems
+                    pageState: _this4.pageState,
+                    widgetItems: _this4.$data.widgetItems
                   });
                 }));
 
@@ -15856,12 +18482,12 @@ var BuilderScreenSimulationView = __vue_component__$2;var script = defineCompone
 
               case 5:
                 _context.next = 7;
-                return (_this3$$listeners$eve = (_this3$$listeners = _this3.$listeners).event) === null || _this3$$listeners$eve === void 0 ? void 0 : _this3$$listeners$eve.call(_this3$$listeners, {
+                return (_this4$$listeners$eve = (_this4$$listeners = _this4.$listeners).event) === null || _this4$$listeners$eve === void 0 ? void 0 : _this4$$listeners$eve.call(_this4$$listeners, {
                   name: name,
                   value: value,
                   widget: widget,
-                  pageState: _this3.pageState,
-                  widgetItems: _this3.$data.widgetItems
+                  pageState: _this4.pageState,
+                  widgetItems: _this4.$data.widgetItems
                 });
 
               case 7:
@@ -15872,19 +18498,86 @@ var BuilderScreenSimulationView = __vue_component__$2;var script = defineCompone
         }, _callee);
       }))();
     },
-    setMessage: function setMessage(_ref4) {
-      var id = _ref4.id,
-          locale = _ref4.locale,
-          key = _ref4.key,
-          value = _ref4.value,
-          _ref4$type = _ref4.type,
-          type = _ref4$type === void 0 ? "pageItem" : _ref4$type;
+    validateAll: function validateAll(opts) {
+      var _this5 = this;
 
-      var newLanguages = _objectSpread2({}, this.$props.languages);
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+        var validationResults;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.next = 2;
+                return Object.values(_this5.widgetItems).reduce( /*#__PURE__*/function () {
+                  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(obj, wi) {
+                    var _obj, result;
+
+                    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                      while (1) {
+                        switch (_context2.prev = _context2.next) {
+                          case 0:
+                            _context2.next = 2;
+                            return obj;
+
+                          case 2:
+                            _obj = _context2.sent;
+                            _context2.next = 5;
+                            return wi.runValidations({
+                              setDirty: (opts === null || opts === void 0 ? void 0 : opts.setDirty) || false
+                            });
+
+                          case 5:
+                            result = _context2.sent;
+
+                            if (result) {
+                              _context2.next = 8;
+                              break;
+                            }
+
+                            return _context2.abrupt("return", _obj);
+
+                          case 8:
+                            _obj[wi.code || wi.id] = result;
+                            return _context2.abrupt("return", _obj);
+
+                          case 10:
+                          case "end":
+                            return _context2.stop();
+                        }
+                      }
+                    }, _callee2);
+                  }));
+
+                  return function (_x, _x2) {
+                    return _ref4.apply(this, arguments);
+                  };
+                }(), Promise.resolve({}));
+
+              case 2:
+                validationResults = _context3.sent;
+                return _context3.abrupt("return", validationResults);
+
+              case 4:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+    setMessage: function setMessage(_ref5) {
+      var id = _ref5.id,
+          locale = _ref5.locale,
+          key = _ref5.key,
+          value = _ref5.value,
+          _ref5$type = _ref5.type,
+          type = _ref5$type === void 0 ? 'pageItem' : _ref5$type;
+
+      var newLanguages = _objectSpread2({}, this.languages);
 
       if (!newLanguages[id]) newLanguages[id] = {};
       if (!newLanguages[id][locale]) newLanguages[id][locale] = {
-        id: "",
+        id: '',
         refId: id,
         type: type,
         version: 1,
@@ -15892,63 +18585,70 @@ var BuilderScreenSimulationView = __vue_component__$2;var script = defineCompone
         message: {}
       };
       newLanguages[id][locale].message[key] = value;
-      this.$emit("onLanguageChange", newLanguages);
+      this.$emit('onLanguageChange', newLanguages);
     },
     updatePage: function updatePage(page) {
-      this.$emit("onPageChange", page);
+      this.$emit('onPageChange', page);
     },
     updateWidget: function updateWidget(widget) {
       this.$data.widgetItems[widget.id] = widget;
-      this.updatePage(_objectSpread2(_objectSpread2({}, this.$props.page), {}, {
+      this.updatePage(_objectSpread2(_objectSpread2({}, this.page), {}, {
         widgets: Object.values(this.$data.widgetItems).map(function (m) {
           return m.widget;
         })
       }));
     },
     removeWidget: function removeWidget(widgetId) {
-      var _this4 = this;
+      var _this6 = this;
 
-      this.updatePage(_objectSpread2(_objectSpread2({}, this.$props.page), {}, {
+      this.updatePage(_objectSpread2(_objectSpread2({}, this.page), {}, {
         widgets: Object.keys(this.$data.widgetItems).reduce(function (arr, _widgetId) {
           if (_widgetId === widgetId) return arr;
-          return [].concat(_toConsumableArray(arr), [_this4.$data.widgetItems[_widgetId].widget]);
+          return [].concat(_toConsumableArray(arr), [_this6.$data.widgetItems[_widgetId].widget]);
         }, [])
       })); // remove languages
 
-      var newLanguages = _objectSpread2({}, this.$props.languages);
+      var newLanguages = _objectSpread2({}, this.languages);
 
       delete newLanguages[widgetId];
-      this.$emit("onLanguageChange", newLanguages);
+      this.$emit('onLanguageChange', newLanguages);
     }
   },
   provide: function provide() {
-    var _this5 = this;
+    var _this7 = this;
 
     return {
+      getConfig: function getConfig() {
+        return _this7.configs;
+      },
       getView: function getView() {
-        return _this5.$props.view;
+        return _this7.view;
       },
       t: this.t,
       pageEventListener: this.pageEventListener,
       emitEvent: this.emitEvent,
       getLocale: function getLocale() {
-        return _this5.$props.locale;
+        return _this7.locale;
       },
-      languages: this.$props.languages,
+      languages: this.languages,
       setMessage: this.setMessage,
       updateWidget: this.updateWidget,
       removeWidget: this.removeWidget,
       getPageState: function getPageState() {
-        return _this5.$props.state;
+        return _this7.state;
       },
       setPageState: function setPageState(newPageState) {
-        _this5.$emit("onStateChange", newPageState);
+        _this7.$emit('onStateChange', newPageState);
       },
       widgetEffectControls: this.combWidgetEffectControls,
       widgetControls: this.combWidgetControls,
-      questionControls: this.combQuestionControls
+      questionControls: this.combQuestionControls,
+      validateAll: this.validateAll,
+      validations: this.validations,
+      getRuleEngine: this.getRuleEngine
     };
-  }
+  },
+  expose: ['validateAll']
 });/* script */
 var __vue_script__ = script;
 /* template */
@@ -15962,7 +18662,7 @@ var __vue_render__ = function __vue_render__() {
 
   return _c('div', {
     staticClass: "main-wrapper"
-  }, [_vm._ssrNode("<div class=\"pane-wrapper\" data-v-416cadb8>", "</div>", [_c('builder-left-pane', {
+  }, [_vm._ssrNode("<div class=\"main-pane-wrapper\" data-v-ecafe1d2>", "</div>", [_c('builder-left-pane', {
     attrs: {
       "widgetItems": _vm.widgetItems
     }
@@ -15987,8 +18687,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-416cadb8_0", {
-    source: ".pane-wrapper[data-v-416cadb8]{flex:1}.main-wrapper[data-v-416cadb8]{font-family:Arial,Helvetica,sans-serif;position:absolute;height:100%;width:100%;background-color:#fff;display:flex;flex-direction:column}.widgets-layout-wrapper[data-v-416cadb8]{padding:30px;background-color:#eaedf5;height:100%;box-sizing:border-box}.widgets-layout-inner-wrapper[data-v-416cadb8]{background-color:#fff;position:relative;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23)}",
+  inject("data-v-ecafe1d2_0", {
+    source: ".main-pane-wrapper[data-v-ecafe1d2]{flex:1;overflow:auto}.main-wrapper[data-v-ecafe1d2]{font-family:Arial,Helvetica,sans-serif;position:absolute;height:100%;width:100%;background-color:#fff;display:flex;flex-direction:column}.widgets-layout-wrapper[data-v-ecafe1d2]{padding:30px;background-color:#eaedf5;height:100%;box-sizing:border-box}.widgets-layout-inner-wrapper[data-v-ecafe1d2]{background-color:#fff;position:relative;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23)}",
     map: undefined,
     media: undefined
   });
@@ -15996,10 +18696,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-416cadb8";
+var __vue_scope_id__ = "data-v-ecafe1d2";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-416cadb8";
+var __vue_module_identifier__ = "data-v-ecafe1d2";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
@@ -16010,7 +18710,134 @@ var __vue_component__ = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, undefined, createInjectorSSR, undefined);
 
-var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object.freeze({__proto__:null,VuePage:__vue_component__$n,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView$1,VuePageBuilder:__vue_component__$1,PageState:PageState,WidgetItem:WidgetItem,WidgetEffectControl:WidgetEffectControl,widgets:widgets,QuestionControl:QuestionControl,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,questionControls:questionControls});var install = function installVuePage(Vue) {
+var __vue_component__$1 = __vue_component__;var PageState = /*#__PURE__*/function () {
+  function PageState(_ref) {
+    var widgetState = _ref.widgetState,
+        interactiveState = _ref.interactiveState,
+        widgetCodeToIdMap = _ref.widgetCodeToIdMap,
+        widgetIdToCodeMap = _ref.widgetIdToCodeMap;
+
+    _classCallCheck(this, PageState);
+
+    _defineProperty(this, "_widgetState", void 0);
+
+    _defineProperty(this, "_interactiveState", void 0);
+
+    _defineProperty(this, "_widgetCodeToIdMap", void 0);
+
+    _defineProperty(this, "_widgetIdToCodeMap", void 0);
+
+    this._widgetState = widgetState || {};
+    this._interactiveState = interactiveState || {};
+    this._widgetCodeToIdMap = widgetCodeToIdMap || {};
+    this._widgetIdToCodeMap = widgetIdToCodeMap || {};
+  }
+
+  _createClass(PageState, [{
+    key: "interactiveState",
+    get: function get() {
+      return this._interactiveState;
+    }
+  }, {
+    key: "widgetState",
+    get: function get() {
+      return this._widgetState;
+    }
+  }, {
+    key: "widgetCodeToIdMap",
+    get: function get() {
+      return this._widgetCodeToIdMap;
+    }
+  }, {
+    key: "widgetIdToCodeMap",
+    get: function get() {
+      return this._widgetIdToCodeMap;
+    }
+  }, {
+    key: "getWidgetIdByCode",
+    value: function getWidgetIdByCode(code) {
+      return this._widgetCodeToIdMap[code];
+    }
+  }, {
+    key: "getWidgetCodeById",
+    value: function getWidgetCodeById(widgetId) {
+      return this._widgetIdToCodeMap[widgetId];
+    }
+  }, {
+    key: "onUpdate",
+    value: function onUpdate() {}
+  }, {
+    key: "getWidgetState",
+    value: function getWidgetState(widgetId, key) {
+      var _this$_widgetState$wi;
+
+      return key ? (_this$_widgetState$wi = this._widgetState[widgetId]) === null || _this$_widgetState$wi === void 0 ? void 0 : _this$_widgetState$wi[key] : this._widgetState[widgetId];
+    }
+  }, {
+    key: "setWidgetState",
+    value: function setWidgetState(widgetId, key, value) {
+      if (!this._widgetState[widgetId]) this._widgetState[widgetId] = {};
+
+      if (typeof key === 'string') {
+        if (value === undefined) {
+          var _this$_widgetState$wi2;
+
+          (_this$_widgetState$wi2 = this._widgetState[widgetId]) === null || _this$_widgetState$wi2 === void 0 ? true : delete _this$_widgetState$wi2[key];
+        } else {
+          this._widgetState[widgetId][key] = value;
+        }
+      } else if (_typeof(key) === 'object') {
+        this._widgetState[widgetId] = _objectSpread2(_objectSpread2({}, this._widgetState[widgetId]), key);
+      } // FIXME: this is not updating parent in App.vue
+
+    }
+  }, {
+    key: "clearWidgetState",
+    value: function clearWidgetState(widgetId, key) {
+      this.setWidgetState(widgetId, key);
+    }
+  }, {
+    key: "registerWidgetCode",
+    value: function registerWidgetCode(widgetCode, widgetId) {
+      this._widgetCodeToIdMap[widgetCode] = widgetId;
+      this._widgetIdToCodeMap[widgetId] = widgetCode;
+      this.setWidgetState(widgetId, 'code', widgetCode);
+    }
+  }, {
+    key: "unregisterWidgetCode",
+    value: function unregisterWidgetCode(widgetCode) {
+      delete this._widgetCodeToIdMap[widgetCode];
+    }
+  }], [{
+    key: "from",
+    value: function from(pageState) {
+      if (pageState instanceof PageState) {
+        // from an object, use their public getters
+        return new PageState({
+          widgetState: pageState.widgetState,
+          interactiveState: pageState.interactiveState,
+          widgetCodeToIdMap: pageState.widgetCodeToIdMap,
+          widgetIdToCodeMap: pageState.widgetIdToCodeMap
+        });
+      } else {
+        // assume it is just a plain object, fetch its protected
+        // field
+        return new PageState({
+          widgetState: pageState._widgetState,
+          interactiveState: pageState._interactiveState,
+          widgetCodeToIdMap: pageState._widgetCodeToIdMap,
+          widgetIdToCodeMap: pageState._widgetIdToCodeMap
+        });
+      }
+    }
+  }]);
+
+  return PageState;
+}();var Event = {
+  LANGUAGE_CHANGED: 'language_changed'
+};var components$1=/*#__PURE__*/Object.freeze({__proto__:null,VuePage:__vue_component__$n,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,QuestionControlProps:QuestionControlProps$b,WidgetControlProps:WidgetControlProps$j,VuePageBuilder:__vue_component__$1,PageState:PageState,WidgetItem:WidgetItem,WidgetEffectControl:WidgetEffectControl,PagesWidgetItem:PagesWidgetItem,QuestionWidgetItem:QuestionWidgetItem,widgets:widgets,QuestionControl:QuestionControl,QuestionItem:QuestionItem,questionControls:questionControls,combineValidations:combineValidations,splitRootRegex:splitRootRegex,stringParser:stringParser,flatten:flatten,cachedMerge:cachedMerge,flattenTranslateKey:flattenTranslateKey,translate:translate,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,Event:Event});// Import vue components
+// install function executed by Vue.use()
+var install = function installVuePage(Vue) {
   Object.entries(components$1).forEach(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         componentName = _ref2[0],
@@ -16019,7 +18846,7 @@ var __vue_component__$1 = __vue_component__;var components$1=/*#__PURE__*/Object
     Vue.component(componentName, component);
   });
 }; // Create module definition for Vue.use()
-var components=/*#__PURE__*/Object.freeze({__proto__:null,'default':install,VuePage:__vue_component__$n,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView$1,VuePageBuilder:__vue_component__$1,PageState:PageState,WidgetItem:WidgetItem,WidgetEffectControl:WidgetEffectControl,widgets:widgets,QuestionControl:QuestionControl,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,questionControls:questionControls});// only expose one global var, with component exports exposed as properties of
+var components=/*#__PURE__*/Object.freeze({__proto__:null,'default':install,VuePage:__vue_component__$n,WidgetsLayout:WidgetsLayout,WidgetView:WidgetView,QuestionControlProps:QuestionControlProps$b,WidgetControlProps:WidgetControlProps$j,VuePageBuilder:__vue_component__$1,PageState:PageState,WidgetItem:WidgetItem,WidgetEffectControl:WidgetEffectControl,PagesWidgetItem:PagesWidgetItem,QuestionWidgetItem:QuestionWidgetItem,widgets:widgets,QuestionControl:QuestionControl,QuestionItem:QuestionItem,questionControls:questionControls,combineValidations:combineValidations,splitRootRegex:splitRootRegex,stringParser:stringParser,flatten:flatten,cachedMerge:cachedMerge,flattenTranslateKey:flattenTranslateKey,translate:translate,formatDateString:formatDateString,getDateByPropertyValue:getDateByPropertyValue,Event:Event});// only expose one global var, with component exports exposed as properties of
 // that global var (eg. plugin.component)
 
 Object.entries(components).forEach(function (_ref) {
@@ -16027,7 +18854,7 @@ Object.entries(components).forEach(function (_ref) {
       componentName = _ref2[0],
       component = _ref2[1];
 
-  if (componentName !== "default") {
+  if (componentName !== 'default') {
     var key = componentName;
     var val = component;
     install[key] = val;

@@ -1,6 +1,6 @@
-import { WidgetEffectControl } from "../../models/WidgetEffectControl";
-import display from "./Display.vue";
-import form from "./Form.vue";
+import { WidgetEffectControl } from '../../models/WidgetEffectControl';
+import display from './Display.vue';
+import form from './Form.vue';
 
 export interface RevealEffectProperties {
   // time delay before running animation
@@ -18,7 +18,7 @@ export interface RevealEffectProperties {
   // specifies the opacity they have prior to being revealed (null = skip opacity)
   opacity?: number | null;
   // direction widget comes from when revealed
-  origin?: "top" | "bottom" | "left" | "right";
+  origin?: 'top' | 'bottom' | 'left' | 'right';
   // rotation widget have prior to being revealed
   rotate?: { x: number; y: number; z: number };
   // scale widget have prior to being revealed
@@ -30,16 +30,16 @@ export interface RevealEffectProperties {
 }
 
 export default new WidgetEffectControl<RevealEffectProperties>({
-  key: "reveal",
-  name: "Reveal",
+  key: 'reveal',
+  name: 'Reveal',
   create(props: Partial<RevealEffectProperties>) {
     return {
       type: this.key,
       properties: {
         delay: 100,
         duration: 300,
-        distance: "300px",
-        origin: "left",
+        distance: '300px',
+        origin: 'left',
         ...props,
       },
     };

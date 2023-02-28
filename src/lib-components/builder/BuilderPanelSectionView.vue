@@ -1,29 +1,30 @@
 <template>
   <div class="panel-section-wrapper" :class="{ isCollapsed }">
     <div class="panel-header">
-      <div class="collapse-arrow" @click="onToggleCollapse">&#x203A;</div>
+      <div
+class="collapse-arrow" @click="onToggleCollapse">&#x203A;</div>
       <h5 class="panel-title" @click="onToggleCollapse">
         {{ panelSections[panelType].name }}
       </h5>
       <component
         :is="panelSections[panelType].header"
-        :widgetItems="widgetItems"
-        :selectedWidgetItem="selectedWidgetItem"
+        :widget-items="widgetItems"
+        :selected-widget-item="selectedWidgetItem"
       />
     </div>
     <div class="panel-content">
       <component
         :is="panelSections[panelType].form"
-        :widgetItems="widgetItems"
-        :selectedWidgetItem="selectedWidgetItem"
+        :widget-items="widgetItems"
+        :selected-widget-item="selectedWidgetItem"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import { panelSections } from "./panelSections";
+import { defineComponent } from '@vue/composition-api';
+import { panelSections } from './panelSections';
 
 export default defineComponent({
   props: {
@@ -39,7 +40,7 @@ export default defineComponent({
   },
   methods: {
     onToggleCollapse() {
-      this.$emit("onToggleCollapse", !this.$props.isCollapsed);
+      this.$emit('onToggleCollapse', !this.$props.isCollapsed);
     },
   },
 });

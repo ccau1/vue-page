@@ -1,8 +1,8 @@
-<template></template>
+<template />
 
 <script>
-import { defineComponent } from "@vue/composition-api";
-import ScrollReveal from "scrollreveal";
+import { defineComponent } from '@vue/composition-api';
+import ScrollReveal from 'scrollreveal';
 
 export default defineComponent({
   props: {
@@ -14,16 +14,11 @@ export default defineComponent({
       initialized: false,
     };
   },
-  unmounted() {
-    if (this.$props.wrapperRef) {
-      ScrollReveal().clean(this.$props.wrapperRef);
-    }
-  },
   computed: {
     watchWrapperPropsChange() {
       return {
-        properties: this.$props.properties,
-        wrapperRef: this.$props.wrapperRef,
+        properties: this.properties,
+        wrapperRef: this.wrapperRef,
       };
     },
   },
@@ -38,6 +33,11 @@ export default defineComponent({
       },
       immediate: true,
     },
+  },
+  unmounted() {
+    if (this.wrapperRef) {
+      ScrollReveal().clean(this.wrapperRef);
+    }
   },
 });
 </script>

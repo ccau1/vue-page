@@ -1,6 +1,8 @@
-import Vue, { VueConstructor } from "vue";
+import Vue, { VueConstructor } from 'vue';
 
 export class WidgetEffectControl<_Properties = any> {
+  [key: string]: string | VueConstructor<Vue> | Function;
+
   protected _display: VueConstructor<Vue>;
   protected _form: VueConstructor<Vue>;
   protected _name: string;
@@ -46,4 +48,8 @@ export class WidgetEffectControl<_Properties = any> {
   get key() {
     return this._key;
   }
+}
+
+export interface WidgetEffectControls {
+  [key: string]: WidgetEffectControl;
 }

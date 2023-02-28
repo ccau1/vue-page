@@ -1,4 +1,4 @@
-import QuestionControl from "../QuestionControl";
+import QuestionControl from '../QuestionControl';
 export interface RadioProperties {
     multiple?: boolean;
     options: Array<{

@@ -1,4 +1,4 @@
-import { WidgetItem } from "./WidgetItem";
+import { WidgetItem } from './WidgetItem';
 export declare class PageEventListener {
     protected _listenerFns: {
         [listenerKey: string]: Array<Function>;

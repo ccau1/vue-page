@@ -1,9 +1,9 @@
 import {
   WidgetItem,
   WidgetItemConstructorOptions,
-} from "../../models/WidgetItem";
+} from '../../models/WidgetItem';
 
-import { PagesProperties } from ".";
+import { PagesProperties } from '.';
 
 export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   protected isSubmitting = false;
@@ -72,13 +72,15 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     // also store widget loading by children index
 
     // get current page index loading object from state
-    const pageIndexLoadings = this.getState("pageIdxLoadings") || {};
+    const pageIndexLoadings = this.getState('pageIdxLoadings') || {};
 
     // find which index this childWidget belongs to
     const childIndex = this.getChildIndexByWidgetId(childWidgetId);
 
     if (childIndex === -1) {
-      throw new Error("child widget not in paging");
+      throw new Error(
+        `child widget [${childWidgetId}] not in paging ${this.id}`
+      );
     }
     if (!isLoading) {
       delete pageIndexLoadings[childIndex]?.[childWidgetId];
@@ -93,7 +95,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
 
     // save pageIdxErrors to state
     this.setState(
-      "pageIdxLoadings",
+      'pageIdxLoadings',
       Object.keys(pageIndexLoadings).length ? pageIndexLoadings : undefined
     );
   }
@@ -102,7 +104,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     idx: number,
     opts?: { allChildPages?: boolean }
   ): boolean {
-    const pageIdxLoadings = this.getState("pageIdxLoadings") || {};
+    const pageIdxLoadings = this.getState('pageIdxLoadings') || {};
     // if no pageIdxLoadings, just return false
     if (!Object.keys(pageIdxLoadings || []).length) return false;
     // if current index doesn't have issues, that means
@@ -120,7 +122,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     if (
       childPagesWidget &&
       !childPagesWidget?.properties.detachParentIntegration &&
-      childPagesWidget?.nextButtonType() !== "none"
+      childPagesWidget?.nextButtonType() !== 'none'
     ) {
       return opts?.allChildPages
         ? childPagesWidget.hasChildLoading()
@@ -132,26 +134,33 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     return true;
   }
 
-  currentPageIndexHasLoadings(opts?: {}): boolean {
+  currentPageIndexHasLoadings(opts?: { allChildPages?: boolean }): boolean {
     return this.pageIndexHasLoadings(this.currentPageIndex, opts);
   }
 
-  setChildErrors(childWidgetId: string, errors: any): void {
+  async setChildErrors(childWidgetId: string, errors: any): Promise<void> {
     // run original function to store the general state
     super.setChildErrors(childWidgetId, errors);
+
+    const err = (await this._widgetItems[childWidgetId].isReflexive())
+      ? errors
+      : null;
 
     // also store widget errors by children index
 
     // get current page index errors object from state
-    const pageIndexErrors = this.getState("pageIdxErrors") || {};
+    const originalPageIndexErrors = this.getState('pageIdxErrors') || {};
+    const pageIndexErrors = { ...this.getState('pageIdxErrors') } || {};
 
     // find which index this childWidget belongs to
     const childIndex = this.getChildIndexByWidgetId(childWidgetId);
 
     if (childIndex === -1) {
-      throw new Error("child widget not in paging");
+      throw new Error(
+        `child widget [${childWidgetId}] not in paging ${this.id}`
+      );
     }
-    if (!errors) {
+    if (!err) {
       delete pageIndexErrors[childIndex]?.[childWidgetId];
       if (!Object.keys(pageIndexErrors[childIndex] || {}).length)
         delete pageIndexErrors[childIndex];
@@ -159,12 +168,23 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
       if (!pageIndexErrors[childIndex]) {
         pageIndexErrors[childIndex] = {};
       }
-      pageIndexErrors[childIndex][childWidgetId] = errors;
+      pageIndexErrors[childIndex][childWidgetId] = err;
+    }
+
+    // nothing to set, just return
+    if (
+      Object.keys(pageIndexErrors).length ===
+        Object.keys(originalPageIndexErrors).length &&
+      Object.keys(pageIndexErrors).every(
+        (key) => originalPageIndexErrors[key] === pageIndexErrors[key]
+      )
+    ) {
+      return;
     }
 
     // save pageIdxErrors to state
     this.setState(
-      "pageIdxErrors",
+      'pageIdxErrors',
       Object.keys(pageIndexErrors).length ? pageIndexErrors : undefined
     );
   }
@@ -193,18 +213,18 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     const sortedPages = this.getSortedPages();
     if (toIndex < 0) return;
     if (toIndex > sortedPages.length - 1) return;
-    this.setState("currentPageIndex", toIndex);
+    this.setState('currentPageIndex', toIndex);
   }
 
   get currentPageIndex() {
-    return this.getState("currentPageIndex") || 0;
+    return this.getState('currentPageIndex') || 0;
   }
 
   getParentPagesWidgets(opts?: {
     first?: boolean;
   }): PagesWidgetItem[] | PagesWidgetItem {
     const parentPages = this.getParents().filter(
-      (w) => w.type === "pages"
+      (w) => w.type === 'pages'
     ) as PagesWidgetItem[];
     return opts?.first ? parentPages[0] : parentPages;
   }
@@ -216,15 +236,20 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     const childrenPages = this.getChildren(
       { deep: true },
       { inPageIndices: opts?.inPageIndices }
-    ).filter((w) => w.type === "pages") as PagesWidgetItem[];
+    ).filter((w) => w.type === 'pages') as PagesWidgetItem[];
     return opts?.first ? childrenPages[0] : childrenPages;
   }
 
   pageIndexHasErrors(
     idx: number,
-    opts?: { allChildPages?: boolean; skipPristine?: boolean }
+    opts?: {
+      allChildPages?: boolean;
+      skipPristine?: boolean;
+      includeWarnings?: boolean;
+    }
   ): boolean {
-    const pageIdxErrors = this.getState("pageIdxErrors") || {};
+    const pageIdxErrors = this.getState('pageIdxErrors') || {};
+
     // if no pageIdxErrors, just return false
     if (!Object.keys(pageIdxErrors || []).length) return false;
     // if current index doesn't have issues, that means
@@ -234,7 +259,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
       !Object.keys(pageIdxErrors[idx] || {}).filter(
         (widgetId) =>
           !opts?.skipPristine ||
-          !this._widgetItems[widgetId].getState("pristine")
+          !this._widgetItems[widgetId].getState('pristine')
       ).length
     )
       return false;
@@ -249,7 +274,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     if (
       childPagesWidget &&
       !childPagesWidget?.properties.detachParentIntegration &&
-      childPagesWidget?.nextButtonType() !== "none"
+      childPagesWidget?.nextButtonType() !== 'none'
     ) {
       return opts?.allChildPages
         ? childPagesWidget.hasChildErrors()
@@ -273,15 +298,17 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     const hasErrors = (
       await Promise.all(
         children.map(async (child) => {
-          if (child.getState("pristine")) {
-            child.setState("pristine", false);
-            child.setState("dirty", true);
+          if (child.getState('pristine')) {
+            child.setState({
+              pristine: false,
+              dirty: true,
+            });
             child.update();
           }
-          return child.runValidations();
+          return (await child.isReflexive()) ? child.runValidations() : null;
         })
       )
-    ).some((err) => err);
+    ).some((err) => (err || []).some((e) => !e.isWarning));
 
     if (!hasErrors) {
       // update current pages or, if
@@ -290,18 +317,21 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
 
       // get next type first to determine which to update
       const nextType = this.nextButtonType();
-      if (nextType === "complete") {
+      if (nextType === 'complete') {
         const pageErrors = this.properties.pages.map((_, pageIdx) => {
-          return this.pageIndexHasErrors(pageIdx, { allChildPages: true });
+          return this.pageIndexHasErrors(pageIdx, {
+            allChildPages: true,
+            includeWarnings: false,
+          });
         });
         this.isSubmitting = true;
-        await this.emitEvent("pages_complete", {
+        await this.emitEvent('pages_complete', {
           pageErrors,
           hasErrors: pageErrors.some((hasError) => hasError),
           pageWidget: this,
         });
         this.isSubmitting = false;
-      } else if (nextType === "none") {
+      } else if (nextType === 'none') {
         // wasn't suppose to show, just skip it
         return;
       } else {
@@ -317,11 +347,12 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
         if (
           childPagesWidget &&
           !childPagesWidget?.properties.detachParentIntegration &&
-          childPagesWidget?.nextButtonType() !== "none"
+          childPagesWidget?.nextButtonType() !== 'none'
         ) {
           childPagesWidget.toNextPage();
         } else {
           this.onChangePageIndex(this.currentPageIndex + 1);
+          this.emitEvent('pages_page_change', this.currentPageIndex);
         }
       }
     }
@@ -330,7 +361,7 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   toPreviousPage() {
     // get previous type first to determine which to update
     const previousType = this.previousButtonType();
-    if (previousType === "none") {
+    if (previousType === 'none') {
       // wasn't suppose to be clicked, so just ignore
       return;
     }
@@ -345,15 +376,16 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     if (
       childPagesWidget &&
       !childPagesWidget?.properties.detachParentIntegration &&
-      childPagesWidget?.previousButtonType() !== "none"
+      childPagesWidget?.previousButtonType() !== 'none'
     ) {
       childPagesWidget.toPreviousPage();
     } else {
       this.onChangePageIndex(this.currentPageIndex - 1);
+      this.emitEvent('pages_page_change', this.currentPageIndex);
     }
   }
 
-  previousButtonType(): "previous" | "none" {
+  previousButtonType(): 'previous' | 'none' {
     // check whether this pages widget is at its end
     const isCurrentPageAtEnd = this.currentPageIndex <= 0;
     // check if there is any parents. Just get the immediate one
@@ -370,15 +402,15 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
       !isCurrentPageAtEnd
     ) {
       if (isCurrentPageAtEnd) {
-        return "none";
+        return 'none';
       }
-      return "previous";
+      return 'previous';
     }
     // return whether parent should be at its end
     return childPages.previousButtonType();
   }
 
-  nextButtonType(): "next" | "complete" | "none" {
+  nextButtonType(): 'next' | 'complete' | 'none' {
     // check whether this pages widget is at its end
     const isCurrentPageAtEnd =
       this.currentPageIndex >= this._widget.properties.pages.length - 1;
@@ -395,14 +427,14 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
     if (
       !this.properties.navigationIntegrateChildrenPages ||
       !childPages ||
-      childPages.nextButtonType() === "none" ||
+      childPages.nextButtonType() === 'none' ||
       childPages.properties.detachParentIntegration ||
       !isCurrentPageAtEnd
     ) {
       if (isCurrentPageAtEnd) {
-        return this.properties.hasCompleteButton ? "complete" : "none";
+        return this.properties.hasCompleteButton ? 'complete' : 'none';
       }
-      return "next";
+      return 'next';
     }
     // return whether parent should be at its end
     return childPages.nextButtonType();
@@ -411,13 +443,13 @@ export default class PagesWidgetItem extends WidgetItem<PagesProperties> {
   hasPreviousButton(): boolean {
     return (
       !!this.properties.navigationVisible &&
-      this.previousButtonType() !== "none"
+      this.previousButtonType() !== 'none'
     );
   }
 
   hasNextButton(): boolean {
     return (
-      !!this.properties.navigationVisible && this.nextButtonType() !== "none"
+      !!this.properties.navigationVisible && this.nextButtonType() !== 'none'
     );
   }
 }

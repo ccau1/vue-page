@@ -2,16 +2,16 @@
   <div v-if="!widget.getState('reflexiveHide')">
     <div class="question-wrapper">
       <label
-        :for="widget.code || widget.id"
         v-if="!widget.properties.hideLabel"
+        :for="widget.code || widget.id"
         :class="{ errors: (getWidgetState('errors') || []).length }"
       >
         <textarea
           ref="labelInput"
           :value="t('__label', widget.id)"
-          @input="(ev) => updateText('label', ev.target.value)"
           class="text-input"
           oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+          @input="(ev) => updateText('label', ev.target.value)"
         />
       </label>
       <div>
@@ -19,88 +19,128 @@
           :is="questionControls[widget.properties.control].display"
           :properties="widget.properties.controlProperties"
           :widget="widget"
-          :widgetItems="widgetItems"
-          :onChange="onChange"
+          :widget-items="widgetItems"
+          :on-change="onChange"
           :value="widget.getState('response')"
-          :setWidgetState="setWidgetState"
-          :getWidgetState="getWidgetState"
+          :set-widget-state="setWidgetState"
+          :get-widget-state="getWidgetState"
           :view="view"
           :errors="getWidgetState('errors')"
           :t="(key, data) => t(`control_${key}`, data)"
         />
-        <span
-          class="error"
-          v-for="errorKey in getWidgetState('errors')"
-          :key="errorKey"
-          >{{ t(errorKey, widget.id) }}</span
-        >
+
+        <template v-if="getWidgetState('dirty') && getWidgetState('errors')">
+          <span
+            v-for="(errorKey, errorKeyIndex) in getWidgetState('errors').slice(
+              0,
+              1
+            )"
+            :key="`${errorKey.err}_${errorKeyIndex}`"
+            class="error"
+          >
+            <template v-if="t(`control_${errorKey.err}`)">{{
+              t(`control_${errorKey.err}`, errorKey.data)
+            }}</template>
+            <template v-else>{{
+              t(`${errorKey.err}`, errorKey.data)
+            }}</template>
+          </span>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import { defineComponent } from "@vue/composition-api";
+<script lang="ts">
+import {
+  WidgetItem,
+  WidgetItems,
+  WidgetControls,
+  PageState,
+} from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function,
-  },
   inject: [
-    "questionControls",
-    "widgetControls",
-    "getPageState",
-    "setPageState",
-    "getLocale",
-    "setMessage",
+    'questionControls',
+    'widgetControls',
+    'getPageState',
+    'setPageState',
+    'getLocale',
+    'setMessage',
   ],
+  props: {
+    widget: {
+      type: Object as () => WidgetItem,
+      required: true,
+    },
+    widgetControls: {
+      type: Object as () => WidgetControls,
+      required: true,
+    },
+    widgetItems: {
+      type: Object as () => WidgetItems,
+      required: true,
+    },
+    pageState: {
+      type: Object as () => PageState,
+      required: true,
+    },
+    setWidgetState: {
+      type: Function,
+      required: true,
+    },
+    getWidgetState: {
+      type: Function,
+      required: true,
+    },
+    t: Function,
+    view: String,
+  },
   created() {
-    const widgetState = { ...this.$props.widget?.getState() };
-    this.widget?.setState("type", "question");
-    if (widgetState?.touched === undefined) {
-      this.widget?.setState("touched", false);
-      this.widget?.setState("pristine", true);
-      this.widget?.setState("dirty", false);
-    }
+    this.widget.setState({
+      type: 'question',
+      ...(this.widget.getState()?.touched === undefined
+        ? {
+            touched: false,
+            pristine: true,
+            dirty: false,
+          }
+        : {}),
+    });
   },
   mounted() {
     this.$nextTick(() => {
       if (!this.$refs.labelInput) return;
-      this.$refs.labelInput.style.height = "";
+      (this.$refs.labelInput as HTMLTextAreaElement).style.height = '';
 
-      this.$refs.labelInput.style.height =
-        this.$refs.labelInput.scrollHeight + "px";
+      (this.$refs.labelInput as HTMLTextAreaElement).style.height =
+        (this.$refs.labelInput as HTMLTextAreaElement).scrollHeight + 'px';
     });
   },
   methods: {
-    updateText(name, text) {
-      this.setMessage({
+    updateText(name: string, text: string): void {
+      (this as any).setMessage({
         id: this.$props.widget.id,
-        locale: this.getLocale(),
+        locale: (this as any).getLocale(),
         key: `__${name}`,
-        value: text.replaceAll(/\n|\r/g, ""),
+        value: text.replaceAll(/\n|\r/g, ''),
       });
     },
-    onChange(response, ignoreChecks) {
-      this.widget.setState("response", response);
-      if (ignoreChecks) return;
+    onChange(response: any, ignoreChecks?: boolean) {
+      this.widget?.setState({
+        response,
+        ...(!ignoreChecks
+          ? { touched: true, pristine: false, dirty: true }
+          : {}),
+      });
 
-      this.widget.setState("touched", true);
-      this.widget.setState("pristine", false);
-      this.widget.setState("dirty", true);
+      if (ignoreChecks) return;
 
       (async () => {
         // handle validations
-        await this.$props.widget.runValidations();
-        this.$props.widget.emitListener("change");
+        await this.widget.runValidations();
+        this.widget.emitListener('change');
       })();
     },
   },

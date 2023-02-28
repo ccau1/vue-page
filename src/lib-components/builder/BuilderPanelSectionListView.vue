@@ -15,8 +15,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import BuilderPanelSectionView from "./BuilderPanelSectionView.vue";
+import { defineComponent } from '@vue/composition-api';
+import BuilderPanelSectionView from './BuilderPanelSectionView.vue';
 
 export default defineComponent({
   components: { BuilderPanelSectionView },

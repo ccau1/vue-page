@@ -5,14 +5,17 @@
         :for="widget.code || widget.id"
         v-if="!widget.properties.hideLabel"
         :class="{ errors: (getWidgetState('errors') || []).length }"
-        >{{ t("__label", widget.id) }}</label
+        >{{ t('__label', widget.id) }}</label
       >
       <div>
         <component
-          :is="questionControls[widget.properties.control].display"
+          :id="`widget_question_${widget.id}`"
+          :data-test="`widget_question_${widget.code}`"
+          :is="getQuestionControlRender(widget.properties.control)"
           :properties="widget.properties.controlProperties"
           :widget="widget"
           :widgetItems="widgetItems"
+          :questionItem="widget.questionItem"
           :onChange="onChange"
           :value="widget.getState('response')"
           :setWidgetState="setWidgetState"
@@ -20,63 +23,127 @@
           :view="view"
           :errors="getWidgetState('errors')"
           :t="(key, data) => t(`control_${key}`, data)"
+          @onChange="onChange"
+          @t="(key, data) => t(`control_${key}`, data)"
+          @setWidgetState="setWidgetState"
+          @getWidgetState="getWidgetState"
         />
-        <template v-if="getWidgetState('dirty')">
+        <template v-if="getWidgetState('dirty') && getWidgetState('errors')">
           <span
+            v-for="(errorKey, errorKeyIndex) in getWidgetState('errors').slice(
+              0,
+              1
+            )"
+            :key="`${errorKey.err}_${errorKeyIndex}`"
             class="error"
-            v-for="errorKey in getWidgetState('errors')"
-            :key="errorKey"
-            >{{ t(errorKey) }}</span
           >
+            <template v-if="t(`control_${errorKey.err}`)">{{
+              t(`control_${errorKey.err}`, errorKey.data)
+            }}</template>
+            <template v-else>{{
+              t(`${errorKey.err}`, errorKey.data)
+            }}</template>
+          </span>
         </template>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import { WidgetItem } from "@/entry.esm";
-import { defineComponent } from "@vue/composition-api";
+<script lang="ts">
+import {
+  WidgetItem,
+  WidgetControls,
+  WidgetItems,
+  PageState,
+} from '@/entry.esm';
+import { WidgetControl } from '@/lib-components/interfaces';
+import { defineComponent } from '@vue/composition-api';
+import { VueConstructor } from 'vue';
 // import { getParents } from "../../utils";
 // import { validateWidget } from "../../validateUtils";
 
 export default defineComponent({
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
+    widget: {
+      type: Object as () => WidgetItem,
+      required: true,
+    },
+    widgetControls: {
+      type: Object as () => WidgetControls,
+      required: true,
+    },
+    widgetItems: {
+      type: Object as () => WidgetItems,
+      required: true,
+    },
+    pageState: {
+      type: Object as () => PageState,
+      required: true,
+    },
+    setWidgetState: {
+      type: Function,
+      required: true,
+    },
+    getWidgetState: {
+      type: Function,
+      required: true,
+    },
     t: Function,
+    view: String,
   },
-  inject: ["questionControls", "widgetControls", "setPageState"],
+  inject: ['questionControls', 'widgetControls', 'setPageState'],
   created() {
-    const widgetState = { ...this.$props.widget.getState() };
-    this.widget.setState("type", "question");
-    if (widgetState?.touched === undefined) {
-      this.widget.setState("touched", false);
-      this.widget.setState("pristine", true);
-      this.widget.setState("dirty", false);
+    const widgetState = this.widget?.getState() || {};
+
+    if (!widgetState.type || widgetState.touched === undefined) {
+      this.widget?.setState({
+        type: 'question',
+        ...(widgetState.touched === undefined
+          ? {
+              touched: false,
+              pristine: true,
+              dirty: false,
+            }
+          : {}),
+      });
     }
   },
   unmounted() {},
   methods: {
-    onChange(response, ignoreChecks) {
-      this.widget.setState("response", response);
-      if (ignoreChecks) return;
+    onChange(response: any, ignoreChecks: boolean) {
+      this.widget?.setState({
+        response,
+        ...(!ignoreChecks
+          ? { touched: true, pristine: false, dirty: true }
+          : {}),
+      });
 
-      this.widget.setState("touched", true);
-      this.widget.setState("pristine", false);
-      this.widget.setState("dirty", true);
+      if (ignoreChecks) return;
 
       (async () => {
         // handle validations
-        await this.$props.widget.runValidations();
-        this.$props.widget.emitListener("change");
+        await this.widget?.runValidations();
+        this.widget?.emitListener('change');
       })();
+    },
+    getQuestionControlRender(type: string, view: string = 'display') {
+      const widgetType: WidgetControl | undefined = (this as any)
+        .questionControls?.[type];
+      if (!widgetType) {
+        throw new Error(
+          `question control type [${type}] from widget [${this.widget?.id}] was not found. Maybe the question control was not imported`
+        );
+      }
+
+      const widgetRender = widgetType[view] as VueConstructor<Vue>;
+      if (!widgetRender) {
+        throw new Error(
+          `widget view [${view}] does not exist for question control type [${type}]`
+        );
+      }
+
+      return widgetRender;
     },
   },
 });

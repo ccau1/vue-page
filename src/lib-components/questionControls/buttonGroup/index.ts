@@ -1,6 +1,6 @@
-import QuestionControl from "../QuestionControl";
-import Display from "./Display.vue";
-import ReadOnly from "./ReadOnly.vue";
+import QuestionControl from '../QuestionControl';
+import Display from './Display.vue';
+import ReadOnly from './ReadOnly.vue';
 
 export interface ButtonGroupPropertiesOption {
   labelKey: string;

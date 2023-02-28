@@ -1,27 +1,28 @@
 <template>
   <div>
     <div
-      class="widget-container"
       v-for="widget in filteredWidgetItemsArr"
       :key="widget.id"
+      class="widget-container"
     >
       <widget-view
+        v-if="!widget.getState('reflexiveHide')"
         :widget="widget"
-        :widgetControls="widgetControls"
-        :widgetItems="widgetItems"
-        :pageState="pageState"
-        :setWidgetState="setWidgetState"
-        :getWidgetState="getWidgetState"
-        :view="view"
+        :widget-controls="widgetControls"
+        :widget-items="widgetItems"
+        :page-state="pageState"
+        :set-widget-state="setWidgetState"
+        :get-widget-state="getWidgetState"
+        :view="widgetView"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { defineComponent } from "@vue/composition-api";
-import { arrayOf } from "vue-types";
-import WidgetView from "./WidgetView.vue";
+import { defineComponent } from '@vue/composition-api';
+import { arrayOf } from 'vue-types';
+import WidgetView from './WidgetView.vue';
 
 export default defineComponent({
   components: { WidgetView },
@@ -32,40 +33,40 @@ export default defineComponent({
     onlyIncludeWidgetIds: arrayOf(String),
     widgetsOrder: arrayOf(String),
     forParent: String,
+    view: String,
   },
-  inject: ["widgetControls", "getPageState", "getView", "setPageState"],
+  inject: ['widgetControls', 'getPageState', 'getView', 'setPageState'],
   computed: {
-    view() {
-      return this.getView();
+    widgetView() {
+      return this.view || this.getView();
     },
     pageState() {
       return this.getPageState();
     },
     widgetItemsArr() {
-      return Object.values(this.$props.widgetItems);
+      return Object.values(this.widgetItems);
     },
     filteredWidgetItemsArr() {
-      const filteredArr = this.widgetItemsArr
+      return this.widgetItemsArr
         .filter((f) => {
           return (
             ((!this.forParent && !f.parentId) ||
               f.parentId === this.forParent) &&
-            (!this.$props.onlyIncludeWidgetIds ||
-              this.$props.onlyIncludeWidgetIds.includes(f.id)) &&
+            (!this.onlyIncludeWidgetIds ||
+              this.onlyIncludeWidgetIds.includes(f.id)) &&
             (!(this.excludeWidgetIds || []).length ||
               !this.excludeWidgetIds.includes(f.id))
           );
         })
         .sort((a, b) => {
-          const aOrder = (this.$props.widgetsOrder || []).includes(a.id)
-            ? this.$props.widgetsOrder.indexOf(a.id)
+          const aOrder = (this.widgetsOrder || []).includes(a.id)
+            ? this.widgetsOrder.indexOf(a.id)
             : a.order || 0;
-          const bOrder = (this.$props.widgetsOrder || []).includes(b.id)
-            ? this.$props.widgetsOrder.indexOf(b.id)
+          const bOrder = (this.widgetsOrder || []).includes(b.id)
+            ? this.widgetsOrder.indexOf(b.id)
             : b.order || 0;
           return aOrder - bOrder;
         });
-      return filteredArr;
     },
   },
   methods: {
@@ -82,6 +83,9 @@ export default defineComponent({
       this.setPageState(pageState);
     },
     getWidgetState(key, widget) {
+      if (!key) {
+        return this.pageState.widgetState[widget.id];
+      }
       return this.pageState.widgetState[widget.id]?.[key];
     },
   },

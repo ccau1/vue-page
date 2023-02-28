@@ -1,4 +1,4 @@
-import { WidgetControl } from "../..";
+import { WidgetControl } from '../..';
 export interface SectionProperties {
     children: string[];
 }

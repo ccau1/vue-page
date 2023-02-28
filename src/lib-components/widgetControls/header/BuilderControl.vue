@@ -40,10 +40,10 @@
 </template>
 
 <script lang="ts">
-import { WidgetItem } from "@/lib-components/models/WidgetItem";
-import { defineComponent } from "@vue/composition-api";
+import { WidgetItem } from '@/lib-components/models/WidgetItem';
+import { defineComponent } from '@vue/composition-api';
 
-type TagType = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+type TagType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
 export default defineComponent({
   props: {
@@ -53,7 +53,7 @@ export default defineComponent({
     pageState: Object,
     setWidgetState: Function,
   },
-  inject: ["updateWidget"],
+  inject: ['updateWidget'],
   methods: {
     setTagType(type: TagType) {
       (this.widget as WidgetItem).properties.tagType = type;

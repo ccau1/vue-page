@@ -1,4 +1,4 @@
-import { WidgetEffectControl } from "../../models/WidgetEffectControl";
+import { WidgetEffectControl } from '../../models/WidgetEffectControl';
 export interface AnchorEffectProperties {
     id: string;
     top?: number;

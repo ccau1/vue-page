@@ -1,13 +1,13 @@
 <template>
   <a
-    :id="this.$props.properties.id"
+    :id="$props.properties.id"
     class="anchor"
     :style="{ top: (properties.top || 0) + 'px' }"
   />
 </template>
 
 <script>
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   props: {

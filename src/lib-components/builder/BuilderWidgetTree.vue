@@ -32,11 +32,11 @@
 </template>
 
 <script lang="ts">
-import { WidgetItem, WidgetItems } from "@/entry.esm";
-import { defineComponent } from "@vue/composition-api";
+import { WidgetItem, WidgetItems } from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
-  name: "BuilderWidgetTree",
+  name: 'BuilderWidgetTree',
   props: {
     widgetItems: Object,
     parentId: String,
@@ -45,7 +45,7 @@ export default defineComponent({
     listIds: Array,
     level: Number,
   },
-  inject: ["widgetControls"],
+  inject: ['widgetControls'],
   data() {
     return {
       filteredWidgetItems: [],

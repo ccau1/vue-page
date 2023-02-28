@@ -1,0 +1,35 @@
+image: node:latest
+
+stages:
+  - scan
+  - deploy
+
+deploy:
+  stage: deploy
+  only:
+    - master
+  before_script:
+    - npm config set //gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken ${CI_JOB_TOKEN}
+    - npm ci
+  script:
+    - npm run build
+    - npm publish
+
+variables:
+  SONAR_USER_HOME: '${CI_PROJECT_DIR}/.sonar' # Defines the location of the analysis task cache
+  GIT_DEPTH: '0' # Tells git to fetch all the branches of the project, required by the analysis task
+sonarcloud-check:
+  stage: scan
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: ['']
+  cache:
+    key: '${CI_JOB_NAME}'
+    paths:
+      - .sonar/cache
+  script:
+    - sonar-scanner
+  only:
+    - merge_requests
+    - master
+    - develop

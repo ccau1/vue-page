@@ -1,4 +1,4 @@
-declare type TagType = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+declare type TagType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 declare const _default: import("vue").ComponentOptions<import("vue").default, import("@vue/composition-api").ShallowUnwrapRef<import("@vue/composition-api").Data> & import("@vue/composition-api").Data, {
     setTagType(type: TagType): void;
 }, {}, {

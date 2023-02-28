@@ -1,6 +1,6 @@
-import { WidgetEffectControl } from "../../models/WidgetEffectControl";
-import display from "./Display.vue";
-import form from "./Form.vue";
+import { WidgetEffectControl } from '../../models/WidgetEffectControl';
+import display from './Display.vue';
+import form from './Form.vue';
 
 export interface AnchorEffectProperties {
   // id to navigate to
@@ -10,13 +10,13 @@ export interface AnchorEffectProperties {
 }
 
 export default new WidgetEffectControl<AnchorEffectProperties>({
-  key: "anchor",
-  name: "Anchor",
+  key: 'anchor',
+  name: 'Anchor',
   create(props: Partial<AnchorEffectProperties>) {
     return {
       type: this.key,
       properties: {
-        id: "",
+        id: '',
         top: 0,
         ...props,
       },

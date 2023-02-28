@@ -24,23 +24,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import Pane from "./components/Pane.vue";
-import BuilderWidgetTree from "./BuilderWidgetTree.vue";
-import { PageState, WidgetItem } from "@/entry.esm";
-import { panelSections } from "./panelSections";
+import { defineComponent } from '@vue/composition-api';
+import Pane from './components/Pane.vue';
+import BuilderWidgetTree from './BuilderWidgetTree.vue';
+import { PageState, WidgetItem } from '@/entry.esm';
+import { panelSections } from './panelSections';
 
 export default defineComponent({
   components: { Pane, BuilderWidgetTree },
   props: {
     widgetItems: Object,
   },
-  inject: ["getPageState"],
+  inject: ['getPageState'],
   data() {
     return {
       panelSections,
-      sections: ["widgetTree", "addWidget"],
-      selectedSection: "widgetTree",
+      sections: ['widgetTree', 'addWidget'],
+      selectedSection: 'widgetTree',
     };
   },
   computed: {
@@ -75,7 +75,7 @@ export default defineComponent({
   position: relative;
 }
 .button-group button.active::before {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 0;

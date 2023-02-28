@@ -1,13 +1,13 @@
 <template>
   <builder-widget-tree
-    :widgetItems="widgetItems"
-    :selectedWidgetItem="selectedWidgetItem"
+    :widget-items="widgetItems"
+    :selected-widget-item="selectedWidgetItem"
   />
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import BuilderWidgetTree from "../../BuilderWidgetTree.vue";
+import { defineComponent } from '@vue/composition-api';
+import BuilderWidgetTree from '../../BuilderWidgetTree.vue';
 
 export default defineComponent({
   components: { BuilderWidgetTree },

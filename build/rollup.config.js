@@ -1,26 +1,28 @@
-// rollup.config.js
-import fs from 'fs';
-import path from 'path';
-import vue from 'rollup-plugin-vue';
 import alias from '@rollup/plugin-alias';
+import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
-import babel from '@rollup/plugin-babel';
-import { terser } from 'rollup-plugin-terser';
-import ttypescript from 'ttypescript';
-import typescript from 'rollup-plugin-typescript2';
+import fs from 'fs';
 import minimist from 'minimist';
+import path from 'path';
+// rollup.config.js
+import { terser } from 'rollup-plugin-terser';
+import typescript from 'rollup-plugin-typescript2';
+import vue from 'rollup-plugin-vue';
+import ttypescript from 'ttypescript';
 
 // Get browserslist config and remove ie from es build targets
-const esbrowserslist = fs.readFileSync('./.browserslistrc')
+const esbrowserslist = fs
+  .readFileSync('./.browserslistrc')
   .toString()
   .split('\n')
   .filter((entry) => entry && entry.substring(0, 2) !== 'ie');
 
 // Extract babel preset-env config, to combine with esbrowserslist
-const babelPresetEnvConfig = require('../babel.config')
-  .presets.filter((entry) => entry[0] === '@babel/preset-env')[0][1];
+const babelPresetEnvConfig = require('../babel.config').presets.filter(
+  (entry) => entry[0] === '@babel/preset-env'
+)[0][1];
 
 const argv = minimist(process.argv.slice(2));
 
@@ -41,6 +43,7 @@ const baseConfig = {
     ],
     replace: {
       'process.env.NODE_ENV': JSON.stringify('production'),
+      preventAssignment: true,
     },
     vue: {
       css: true,

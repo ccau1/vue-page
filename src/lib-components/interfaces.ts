@@ -1,18 +1,153 @@
-import { ConditionProperties } from "json-rules-engine";
-import { VueConstructor } from "vue";
-import { WidgetItem } from "./models/WidgetItem";
+import {
+  ConditionProperties,
+  DynamicFactCallback,
+  NestedCondition,
+} from 'json-rules-engine';
+import Vue, { VueConstructor } from 'vue';
+
+import { PageState } from './models';
+import { WidgetItem } from './models/WidgetItem';
+
+export type FormValidationCondition =
+  | ConditionProperties
+  | FormValidationTopLevelCondition
+  | string;
+export type FormValidationAllConditions = {
+  all: Array<string | FormValidationCondition>;
+};
+export type FormValidationAnyConditions = {
+  any: Array<string | FormValidationCondition>;
+};
+export type FormValidationTopLevelCondition =
+  | FormValidationAllConditions
+  | FormValidationAnyConditions;
+
+export let QuestionControlProps = {
+  properties: {
+    type: Object,
+    required: true as const,
+  },
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true as const,
+  },
+  t: {
+    type: Function,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
+
+export let WidgetControlProps = {
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  widgetControls: {
+    type: Object as () => WidgetControls,
+    required: true as const,
+  },
+  widgetItems: {
+    type: Object as () => WidgetItems,
+    required: true as const,
+  },
+  pageState: {
+    type: Object as () => PageState,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true as const,
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: String,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
+
+export interface RuleEngineFactDefinitions {
+  [name: string]: DynamicFactCallback;
+}
+
+export interface RuleEngineRuleDefinitions {
+  [name: string]: NestedCondition | NestedCondition[] | Function;
+}
+
+export interface PageConfigValidations {
+  deps?: string[];
+  rules?: RuleEngineRuleDefinitions;
+  facts?: RuleEngineFactDefinitions;
+}
+
+export interface PageConfig {
+  widgetsToExclude?: string[];
+  widgetControls?: {
+    disableInternalControls: boolean;
+    blacklist: string[];
+    whitelist: string[];
+    filters: { [key: string]: any };
+  };
+  questionControls?: {
+    disableInternalControls: boolean;
+    blacklist: string[];
+    whitelist: string[];
+    filters: { [key: string]: any };
+  };
+  widgetEffectControls?: {
+    disableInternalControls: boolean;
+    blacklist: string[];
+    whitelist: string[];
+    filters: { [key: string]: any };
+  };
+  meta?: { [key: string]: any };
+  validations?: PageConfigValidations;
+}
 
 export interface WidgetError {
   err: string;
   data?: { [key: string]: any };
+  isWarning?: boolean;
 }
 
 export type FormStepperPosition =
-  | "top"
-  | "right"
-  | "bottom"
-  | "left"
-  | "center";
+  | 'top'
+  | 'right'
+  | 'bottom'
+  | 'left'
+  | 'center';
+
+export type TranslateKey = string | TranslateKey[];
+
+export type TranslateData = { [key: string]: any };
 
 export interface WidgetEffect {
   type: string;
@@ -20,7 +155,7 @@ export interface WidgetEffect {
 }
 
 export interface ValidationRule {
-  conditions: ConditionProperties[];
+  conditions: FormValidationCondition[];
   error: string;
 }
 
@@ -35,13 +170,23 @@ export interface Widget<WidgetProperties = any> {
   effects?: WidgetEffect[];
   fetchPropertiesOnWidgetsChange?: string[];
   fetchPropertiesApi?: string;
-  reflexiveRules?: ConditionProperties[];
-  validationRules?: Array<{ conditions: ConditionProperties[]; error: string }>;
+  reflexiveRules?: Array<
+    FormValidationCondition | FormValidationCondition[] | string
+  >;
+  validationRules?: Array<{
+    conditions: Array<
+      FormValidationCondition | FormValidationCondition[] | string
+    >;
+    isWarning?: boolean;
+    error: string;
+  }>;
   order?: number;
   properties: WidgetProperties;
 }
 
 export interface WidgetControl<Data = any> {
+  [key: string]: VueConstructor<Vue> | undefined | typeof WidgetItem | Function;
+
   readOnly: VueConstructor<Vue>;
   display: VueConstructor<Vue>;
   builder: VueConstructor<Vue>;
@@ -94,4 +239,8 @@ export interface WidgetLanguage {
 
 export interface BuilderWidgetLanguages {
   [widgetId: string]: { [locale: string]: WidgetLanguage };
+}
+
+export interface ValidationOptions {
+  setDirty?: boolean;
 }

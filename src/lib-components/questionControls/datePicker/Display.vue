@@ -11,41 +11,69 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import { QuestionControlProps } from "../index";
-import { formatDateString, getDateByPropertyValue } from "./utils";
+import {
+  formatDateString,
+  getDateByPropertyValue,
+  WidgetItem,
+  WidgetError,
+} from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
 
-export default defineComponent<QuestionControlProps>({
+const QuestionControlProps = {
+  properties: {
+    type: Object,
+    required: true as const,
+  },
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: String,
+  },
+  t: {
+    type: Function,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
+
+export default defineComponent({
   props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function,
+    ...QuestionControlProps,
+    value: {
+      type: String,
+    },
   },
   created() {
-    if (!this.$props.value) this.$props.onChange(this.$data.defaultDate);
+    if (!this.value) this.onChange?.(this.$data.defaultDate);
   },
   data() {
     return {
       defaultDate: formatDateString(
-        getDateByPropertyValue(this.$props.properties.defaultDate)
+        getDateByPropertyValue(this.properties?.defaultDate) as Date
       ),
       minDate: formatDateString(
-        getDateByPropertyValue(this.$props.properties.minDate)
+        getDateByPropertyValue(this.properties?.minDate) as Date
       ),
       maxDate: formatDateString(
-        getDateByPropertyValue(this.$props.properties.maxDate)
+        getDateByPropertyValue(this.properties?.maxDate) as Date
       ),
     };
   },
   methods: {
     onDateChange(newDate: Event) {
-      this.$props.onChange((newDate.target as HTMLInputElement).value);
+      this.onChange?.((newDate.target as HTMLInputElement).value);
     },
   },
 });

@@ -1,6 +1,77 @@
 import crypto from 'crypto';
 import vm from 'vm';
 
+let QuestionControlProps$b = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+let WidgetControlProps$j = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -1054,26 +1125,122 @@ if (typeof window !== 'undefined' && window.Vue) {
     window.Vue.use(Plugin);
 }
 
-var script$1b = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+const rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
+
+let poolPtr = rnds8Pool.length;
+function rng() {
+  if (poolPtr > rnds8Pool.length - 16) {
+    crypto.randomFillSync(rnds8Pool);
+    poolPtr = 0;
+  }
+
+  return rnds8Pool.slice(poolPtr, poolPtr += 16);
+}
+
+var REGEX = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+
+function validate(uuid) {
+  return typeof uuid === 'string' && REGEX.test(uuid);
+}
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+
+const byteToHex = [];
+
+for (let i = 0; i < 256; ++i) {
+  byteToHex.push((i + 0x100).toString(16).substr(1));
+}
+
+function stringify$1(arr, offset = 0) {
+  // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  // of the following:
+  // - One or more input array values don't map to a hex octet (leading to
+  // "undefined" in the uuid)
+  // - Invalid input values for the RFC `version` or `variant` fields
+
+  if (!validate(uuid)) {
+    throw TypeError('Stringified UUID is invalid');
+  }
+
+  return uuid;
+}
+
+function v4(options, buf, offset) {
+  options = options || {};
+  const rnds = options.random || (options.rng || rng)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+  rnds[6] = rnds[6] & 0x0f | 0x40;
+  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+  if (buf) {
+    offset = offset || 0;
+
+    for (let i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
+    }
+
+    return buf;
+  }
+
+  return stringify$1(rnds);
+}
+
+const WidgetControlProps$i = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["getLocale", "setMessage"],
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$1b = defineComponent({
+  props: WidgetControlProps$i,
+  inject: ['getLocale', 'setMessage'],
 
   mounted() {
     this.$nextTick(() => {
-      this.$refs.titleInput.style.height = "";
-      this.$refs.titleInput.style.height = this.$refs.titleInput.scrollHeight + "px";
-      this.$refs.textInput.style.height = "";
-      this.$refs.textInput.style.height = this.$refs.textInput.scrollHeight + "px";
+      this.$refs.titleInput.style.height = '';
+      this.$refs.titleInput.style.height = this.$refs.titleInput.scrollHeight + 'px';
+      this.$refs.textInput.style.height = '';
+      this.$refs.textInput.style.height = this.$refs.textInput.scrollHeight + 'px';
     });
   },
 
@@ -1094,7 +1261,7 @@ var script$1b = defineComponent({
         id: this.$props.widget.id,
         locale: this.getLocale(),
         key: `__${name}`,
-        value: text.replaceAll(/\n|\r/g, "")
+        value: text.replaceAll(/\n|\r/g, '')
       });
     }
 
@@ -1103,10 +1270,10 @@ var script$1b = defineComponent({
     alertStyles() {
       var _this$widget, _this$widget2;
 
-      if (((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.type) !== "custom" || (_this$widget2 = this.widget) !== null && _this$widget2 !== void 0 && _this$widget2.properties.customColor) return {};
+      if (((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.type) !== 'custom' || (_this$widget2 = this.widget) !== null && _this$widget2 !== void 0 && _this$widget2.properties.customColor) return {};
       return {
         backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent",
+        borderColor: this.widget.properties.customBorderColor || 'transparent',
         ...(this.widget.properties.customTextColor ? {
           color: this.widget.properties.customTextColor
         } : {})
@@ -1314,8 +1481,8 @@ var __vue_staticRenderFns__$1b = [];
 
 const __vue_inject_styles__$1b = function (inject) {
   if (!inject) return;
-  inject("data-v-743050cb_0", {
-    source: ".alert[data-v-743050cb]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-743050cb]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-743050cb]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-743050cb]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-743050cb]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-743050cb]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-743050cb]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}.text-input[data-v-743050cb]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
+  inject("data-v-1c7a8776_0", {
+    source: ".alert[data-v-1c7a8776]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-1c7a8776]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-1c7a8776]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-1c7a8776]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-1c7a8776]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-1c7a8776]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-1c7a8776]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}.text-input[data-v-1c7a8776]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
     map: undefined,
     media: undefined
   });
@@ -1323,7 +1490,7 @@ const __vue_inject_styles__$1b = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$1b = "data-v-743050cb";
+const __vue_scope_id__$1b = "data-v-1c7a8776";
 /* module identifier */
 
 const __vue_module_identifier__$1b = undefined;
@@ -1341,18 +1508,49 @@ const __vue_component__$1d = /*#__PURE__*/normalizeComponent({
 
 var Builder$8 = __vue_component__$1d;
 
-//
+const WidgetControlProps$h = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$1a = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+  props: { ...WidgetControlProps$h
   },
 
   data() {
@@ -1361,22 +1559,22 @@ var script$1a = defineComponent({
     };
   },
 
-  methods: {
-    onCloseAlert() {
-      this.$data.isOpen = false;
-    }
-
-  },
   computed: {
     alertStyles() {
-      if (this.widget.properties.type !== "custom" || this.widget.properties.customColor) return {};
+      if (this.widget.properties.type !== 'custom' || this.widget.properties.customColor) return {};
       return {
         backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent",
+        borderColor: this.widget.properties.customBorderColor || 'transparent',
         ...(this.widget.properties.customTextColor ? {
           color: this.widget.properties.customTextColor
         } : {})
       };
+    }
+
+  },
+  methods: {
+    onCloseAlert() {
+      this.$data.isOpen = false;
     }
 
   }
@@ -1401,7 +1599,7 @@ var __vue_render__$1a = function () {
     style: _vm.alertStyles
   }, [_c('h3', {
     staticClass: "title"
-  }, [_vm._v(_vm._s(_vm.t("__title")))]), _vm._v(" "), _c('div', {
+  }, [_vm._v("\n    " + _vm._s(_vm.t('__title')) + "\n  ")]), _vm._v(" "), _c('div', {
     domProps: {
       "innerHTML": _vm._s(_vm.t('__text'))
     }
@@ -1418,8 +1616,8 @@ var __vue_staticRenderFns__$1a = [];
 
 const __vue_inject_styles__$1a = function (inject) {
   if (!inject) return;
-  inject("data-v-54aa1783_0", {
-    source: ".alert[data-v-54aa1783]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-54aa1783]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-54aa1783]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-54aa1783]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-54aa1783]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-54aa1783]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-54aa1783]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}",
+  inject("data-v-6da03338_0", {
+    source: ".alert[data-v-6da03338]{padding:18px 18px;margin:10px 0;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-6da03338]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-6da03338]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-6da03338]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-6da03338]{background-color:#fef8ea;border-color:#f4eada}.alert .title[data-v-6da03338]{margin:0 0 10px 0;font-weight:700}.alert>.close-button[data-v-6da03338]{position:absolute;top:0;right:0;padding:18px 18px;cursor:pointer;transform:scaleX(1.2)}",
     map: undefined,
     media: undefined
   });
@@ -1427,7 +1625,7 @@ const __vue_inject_styles__$1a = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$1a = "data-v-54aa1783";
+const __vue_scope_id__$1a = "data-v-6da03338";
 /* module identifier */
 
 const __vue_module_identifier__$1a = undefined;
@@ -1445,30 +1643,74 @@ const __vue_component__$1c = /*#__PURE__*/normalizeComponent({
 
 var Display$e = __vue_component__$1c;
 
-//
+let WidgetControlProps$g = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$19 = defineComponent({
+  props: WidgetControlProps$g,
+
   data() {
     return {
       isOpen: true
     };
   },
 
-  methods: {
-    onCloseAlert() {
-      this.$data.isOpen = false;
+  computed: {
+    alertStyles() {
+      var _this$widget, _this$widget2, _this$widget3, _this$widget4, _this$widget5, _this$widget6;
+
+      if (((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.type) !== 'custom' || (_this$widget2 = this.widget) !== null && _this$widget2 !== void 0 && _this$widget2.properties.customColor) return {};
+      return {
+        backgroundColor: (_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.properties.customBackgroundColor,
+        borderColor: ((_this$widget4 = this.widget) === null || _this$widget4 === void 0 ? void 0 : _this$widget4.properties.customBorderColor) || 'transparent',
+        ...((_this$widget5 = this.widget) !== null && _this$widget5 !== void 0 && _this$widget5.properties.customTextColor ? {
+          color: (_this$widget6 = this.widget) === null || _this$widget6 === void 0 ? void 0 : _this$widget6.properties.customTextColor
+        } : {})
+      };
     }
 
   },
-  computed: {
-    alertStyles() {
-      if (this.widget.properties.type !== "custom" || this.widget.properties.customColor) return {};
-      return {
-        backgroundColor: this.widget.properties.customBackgroundColor,
-        borderColor: this.widget.properties.customBorderColor || "transparent",
-        ...(this.widget.properties.customTextColor ? {
-          color: this.widget.properties.customTextColor
-        } : {})
-      };
+  methods: {
+    onCloseAlert() {
+      this.$data.isOpen = false;
     }
 
   }
@@ -1491,7 +1733,7 @@ var __vue_render__$19 = function () {
     staticClass: "alert",
     class: (_obj = {}, _obj[_vm.widget.properties.type] = true, _obj),
     style: _vm.alertStyles
-  }, [_c('h3', [_vm._v(_vm._s(_vm.t("__title", _vm.widget.id)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.t("__text", _vm.widget.id)))]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
+  }, [_c('h3', [_vm._v(_vm._s(_vm.t('__title', _vm.widget.id)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.t('__text', _vm.widget.id)))]), _vm._v(" "), _vm.widget.properties.showCloseBtn ? _c('a', {
     staticClass: "close-button",
     on: {
       "click": _vm.onCloseAlert
@@ -1504,8 +1746,8 @@ var __vue_staticRenderFns__$19 = [];
 
 const __vue_inject_styles__$19 = function (inject) {
   if (!inject) return;
-  inject("data-v-2eec7e47_0", {
-    source: ".alert[data-v-2eec7e47]{padding:10px;margin:10px;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-2eec7e47]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-2eec7e47]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-2eec7e47]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-2eec7e47]{background-color:#fef8ea;border-color:#f4eada}.alert>.close-button[data-v-2eec7e47]{position:absolute;top:0;right:0;padding:10px 15px;cursor:pointer;transform:scaleX(1.2)}",
+  inject("data-v-20431722_0", {
+    source: ".alert[data-v-20431722]{padding:10px;margin:10px;border-radius:10px;background-color:#f4f6f8;border:1px solid #e5e9ed;position:relative}.alert.success[data-v-20431722]{background-color:#ebf7ee;border-color:#e2f1e7}.alert.info[data-v-20431722]{background-color:#e6f0f8;border-color:#cad9e7}.alert.danger[data-v-20431722]{background-color:#fdede9;border-color:#f2e1dd}.alert.warning[data-v-20431722]{background-color:#fef8ea;border-color:#f4eada}.alert>.close-button[data-v-20431722]{position:absolute;top:0;right:0;padding:10px 15px;cursor:pointer;transform:scaleX(1.2)}",
     map: undefined,
     media: undefined
   });
@@ -1513,7 +1755,7 @@ const __vue_inject_styles__$19 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$19 = "data-v-2eec7e47";
+const __vue_scope_id__$19 = "data-v-20431722";
 /* module identifier */
 
 const __vue_module_identifier__$19 = undefined;
@@ -1531,78 +1773,13 @@ const __vue_component__$1b = /*#__PURE__*/normalizeComponent({
 
 var ReadOnly$e = __vue_component__$1b;
 
-const rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
-
-let poolPtr = rnds8Pool.length;
-function rng() {
-  if (poolPtr > rnds8Pool.length - 16) {
-    crypto.randomFillSync(rnds8Pool);
-    poolPtr = 0;
-  }
-
-  return rnds8Pool.slice(poolPtr, poolPtr += 16);
-}
-
-var REGEX = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-
-function validate(uuid) {
-  return typeof uuid === 'string' && REGEX.test(uuid);
-}
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-
-const byteToHex = [];
-
-for (let i = 0; i < 256; ++i) {
-  byteToHex.push((i + 0x100).toString(16).substr(1));
-}
-
-function stringify$1(arr, offset = 0) {
-  // Note: Be careful editing this code!  It's been tuned for performance
-  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
-  // of the following:
-  // - One or more input array values don't map to a hex octet (leading to
-  // "undefined" in the uuid)
-  // - Invalid input values for the RFC `version` or `variant` fields
-
-  if (!validate(uuid)) {
-    throw TypeError('Stringified UUID is invalid');
-  }
-
-  return uuid;
-}
-
-function v4(options, buf, offset) {
-  options = options || {};
-  const rnds = options.random || (options.rng || rng)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-
-  rnds[6] = rnds[6] & 0x0f | 0x40;
-  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
-
-  if (buf) {
-    offset = offset || 0;
-
-    for (let i = 0; i < 16; ++i) {
-      buf[offset + i] = rnds[i];
-    }
-
-    return buf;
-  }
-
-  return stringify$1(rnds);
-}
-
 var alert = {
   create(props) {
     return {
       id: v4(),
-      type: "alert",
+      type: 'alert',
       properties: {
-        type: "default",
+        type: 'default',
         ...props
       }
     };
@@ -1614,24 +1791,14 @@ var alert = {
 };
 
 var script$18 = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
-  inject: ["getLocale", "setMessage"],
+  props: WidgetControlProps$j,
+  inject: ['getLocale', 'setMessage'],
   methods: {
     onTextChange(val) {
       this.setMessage({
         id: this.$props.widget.id,
         locale: this.getLocale(),
-        key: "__label",
+        key: '__label',
         value: val.target.value
       });
     }
@@ -1672,8 +1839,8 @@ var __vue_staticRenderFns__$18 = [];
 
 const __vue_inject_styles__$18 = function (inject) {
   if (!inject) return;
-  inject("data-v-1550b213_0", {
-    source: ".header-input[data-v-1550b213]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
+  inject("data-v-724eb4fb_0", {
+    source: ".header-input[data-v-724eb4fb]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
     map: undefined,
     media: undefined
   });
@@ -1681,7 +1848,7 @@ const __vue_inject_styles__$18 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$18 = "data-v-1550b213";
+const __vue_scope_id__$18 = "data-v-724eb4fb";
 /* module identifier */
 
 const __vue_module_identifier__$18 = undefined;
@@ -1707,7 +1874,7 @@ var script$17 = defineComponent({
     pageState: Object,
     setWidgetState: Function
   },
-  inject: ["updateWidget"],
+  inject: ['updateWidget'],
   methods: {
     setTagType(type) {
       this.widget.properties.tagType = type;
@@ -1798,8 +1965,8 @@ var __vue_staticRenderFns__$17 = [];
 
 const __vue_inject_styles__$17 = function (inject) {
   if (!inject) return;
-  inject("data-v-6615e780_0", {
-    source: ".control-wrapper[data-v-6615e780]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-6615e780]{height:30px;width:40px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-6615e780]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-6615e780]{background-color:#03a9f4;color:#fff}",
+  inject("data-v-04ea9b20_0", {
+    source: ".control-wrapper[data-v-04ea9b20]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-04ea9b20]{height:30px;width:40px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-04ea9b20]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-04ea9b20]{background-color:#03a9f4;color:#fff}",
     map: undefined,
     media: undefined
   });
@@ -1807,7 +1974,7 @@ const __vue_inject_styles__$17 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$17 = "data-v-6615e780";
+const __vue_scope_id__$17 = "data-v-04ea9b20";
 /* module identifier */
 
 const __vue_module_identifier__$17 = undefined;
@@ -1842,7 +2009,7 @@ var __vue_render__$16 = function () {
   return _c(_vm.widget.properties.tagType, {
     tag: "component",
     staticClass: "header"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+  }, [_vm._v("\n    " + _vm._s(_vm.t('__label', _vm.widget.id)) + "\n  ")]);
 };
 
 var __vue_staticRenderFns__$16 = [];
@@ -1851,7 +2018,7 @@ var __vue_staticRenderFns__$16 = [];
 const __vue_inject_styles__$16 = undefined;
 /* scoped */
 
-const __vue_scope_id__$16 = "data-v-3e7718be";
+const __vue_scope_id__$16 = "data-v-5a79aac4";
 /* module identifier */
 
 const __vue_module_identifier__$16 = undefined;
@@ -1888,7 +2055,7 @@ var __vue_render__$15 = function () {
   return _c(_vm.widget.properties.tagType, {
     tag: "component",
     staticClass: "header"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+  }, [_vm._v("\n    " + _vm._s(_vm.t('__label')) + "\n  ")]);
 };
 
 var __vue_staticRenderFns__$15 = [];
@@ -1896,8 +2063,8 @@ var __vue_staticRenderFns__$15 = [];
 
 const __vue_inject_styles__$15 = function (inject) {
   if (!inject) return;
-  inject("data-v-3a71698b_0", {
-    source: ".header[data-v-3a71698b]{padding:0 10px}",
+  inject("data-v-a2123f0c_0", {
+    source: ".header[data-v-a2123f0c]{padding:0 10px}",
     map: undefined,
     media: undefined
   });
@@ -1905,7 +2072,7 @@ const __vue_inject_styles__$15 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$15 = "data-v-3a71698b";
+const __vue_scope_id__$15 = "data-v-a2123f0c";
 /* module identifier */
 
 const __vue_module_identifier__$15 = undefined;
@@ -1927,9 +2094,9 @@ var header = {
   create(props) {
     return {
       id: v4(),
-      type: "header",
+      type: 'header',
       properties: {
-        tagType: "h1",
+        tagType: 'h1',
         ...props
       }
     };
@@ -1941,19 +2108,49 @@ var header = {
   readOnly: ReadOnly$d
 };
 
-//
-var script$14 = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+const WidgetControlProps$f = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
   }
+};
+var script$14 = defineComponent({
+  props: WidgetControlProps$f
 });
 
 /* script */
@@ -1981,7 +2178,7 @@ var __vue_staticRenderFns__$14 = [];
 const __vue_inject_styles__$14 = undefined;
 /* scoped */
 
-const __vue_scope_id__$14 = "data-v-01854e0d";
+const __vue_scope_id__$14 = "data-v-34dadf78";
 /* module identifier */
 
 const __vue_module_identifier__$14 = undefined;
@@ -2001,18 +2198,49 @@ const __vue_component__$16 = /*#__PURE__*/normalizeComponent({
 
 var Builder$6 = __vue_component__$16;
 
-//
+let WidgetControlProps$e = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$13 = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+  props: { ...WidgetControlProps$e
   }
 });
 
@@ -2041,7 +2269,7 @@ var __vue_staticRenderFns__$13 = [];
 const __vue_inject_styles__$13 = undefined;
 /* scoped */
 
-const __vue_scope_id__$13 = "data-v-7eacb6b9";
+const __vue_scope_id__$13 = "data-v-29b29f8c";
 /* module identifier */
 
 const __vue_module_identifier__$13 = undefined;
@@ -2061,8 +2289,50 @@ const __vue_component__$15 = /*#__PURE__*/normalizeComponent({
 
 var Display$c = __vue_component__$15;
 
-//
-var script$12 = defineComponent({});
+let WidgetControlProps$d = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$12 = defineComponent({
+  props: WidgetControlProps$d
+});
 
 /* script */
 const __vue_script__$12 = script$12;
@@ -2112,9 +2382,9 @@ var html = {
   create(props) {
     return {
       id: v4(),
-      type: "html",
+      type: 'html',
       properties: {
-        from: "default",
+        from: 'default',
         ...props
       }
     };
@@ -2158,244 +2428,7 @@ function isPlainObject(o) {
   return true;
 }
 
-var c=Object.prototype,l=c.toString,s=c.hasOwnProperty,v=/^\s*function (\w+)/;function p(e){var t,n=null!==(t=null==e?void 0:e.type)&&void 0!==t?t:e;if(n){var r=n.toString().match(v);return r?r[1]:""}return ""}var y=isPlainObject,d=function(e){return e},h=d;var g=function(e,t){return s.call(e,t)},m=Array.isArray||function(e){return "[object Array]"===l.call(e)},j=function(e){return "[object Function]"===l.call(e)},_=function(e){return y(e)&&g(e,"_vueTypes_name")},T=function(e){return y(e)&&(g(e,"type")||["_vueTypes_name","validator","default","required"].some(function(t){return g(e,t)}))};function w(e,t){return Object.defineProperty(e.bind(t),"__original",{value:e})}function k(e,t,n){var r;void 0===n&&(n=!1);var i=!0,o="";r=y(e)?e:{type:e};var u=_(r)?r._vueTypes_name+" - ":"";if(T(r)&&null!==r.type){if(void 0===r.type||!0===r.type)return i;if(!r.required&&void 0===t)return i;m(r.type)?(i=r.type.some(function(e){return !0===k(e,t,!0)}),o=r.type.map(function(e){return p(e)}).join(" or ")):i="Array"===(o=p(r))?m(t):"Object"===o?y(t):"String"===o||"Number"===o||"Boolean"===o||"Function"===o?function(e){if(null==e)return "";var t=e.constructor.toString().match(v);return t?t[1]:""}(t)===o:t instanceof r.type;}if(!i){var a=u+'value "'+t+'" should be of type "'+o+'"';return !1===n?(h(a),!1):a}if(g(r,"validator")&&j(r.validator)){var f=h,c=[];if(h=function(e){c.push(e);},i=r.validator(t),h=f,!i){var l=(c.length>1?"* ":"")+c.join("\n* ");return c.length=0,!1===n?(h(l),i):l}}return i}function P(e,t){var n=Object.defineProperties(t,{_vueTypes_name:{value:e,writable:!0},isRequired:{get:function(){return this.required=!0,this}},def:{value:function(e){return void 0===e?(g(this,"default")&&delete this.default,this):j(e)||!0===k(this,e,!0)?(this.default=m(e)?function(){return [].concat(e)}:y(e)?function(){return Object.assign({},e)}:e,this):(h(this._vueTypes_name+' - invalid default value: "'+e+'"'),this)}}}),r=n.validator;return j(r)&&(n.validator=w(r,n)),n}function x(e,t){var n=P(e,t);return Object.defineProperty(n,"validate",{value:function(e){return j(this.validator)&&h(this._vueTypes_name+" - calling .validate() will overwrite the current custom validator function. Validator info:\n"+JSON.stringify(this)),this.validator=w(e,this),this}})}function N(e){return e.replace(/^(?!\s*$)/gm,"  ")}var V=function(){return x("boolean",{type:Boolean})},S=function(){return x("string",{type:String})};function R(e){return P("arrayOf",{type:Array,validator:function(t){var n="",r=t.every(function(t){return !0===(n=k(e,t,!0))});return r||h("arrayOf - value validation error:\n"+N(n)),r}})}function $(e){return P("instanceOf",{type:e})}function C(e){var t=Object.keys(e),n=t.filter(function(t){var n;return !(null===(n=e[t])||void 0===n||!n.required)}),r=P("shape",{type:Object,validator:function(r){var i=this;if(!y(r))return !1;var o=Object.keys(r);if(n.length>0&&n.some(function(e){return -1===o.indexOf(e)})){var u=n.filter(function(e){return -1===o.indexOf(e)});return h(1===u.length?'shape - required property "'+u[0]+'" is not defined.':'shape - required properties "'+u.join('", "')+'" are not defined.'),!1}return o.every(function(n){if(-1===t.indexOf(n))return !0===i._vueTypes_isLoose||(h('shape - shape definition does not include a "'+n+'" property. Allowed keys: "'+t.join('", "')+'".'),!1);var o=k(e[n],r[n],!0);return "string"==typeof o&&h('shape - "'+n+'" property validation error:\n '+N(o)),!0===o})}});return Object.defineProperty(r,"_vueTypes_isLoose",{writable:!0,value:!1}),Object.defineProperty(r,"loose",{get:function(){return this._vueTypes_isLoose=!0,this}}),r}
-
-//
-var script$11 = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String
-  },
-  inject: ["widgetEffectControls"]
-});
-
-/* script */
-const __vue_script__$11 = script$11;
-/* template */
-
-var __vue_render__$11 = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', {
-    staticClass: "widget-wrapper"
-  }, [_vm.widget.style ? _c('style', {
-    tag: "component",
-    attrs: {
-      "scoped": ""
-    }
-  }, [_vm._v("\n    " + _vm._s(_vm.widget.style) + "\n  ")]) : _vm._e(), _vm._v(" "), _vm.view === 'builder' ? _c('div', {
-    staticClass: "widget-form-control"
-  }, [_c(_vm.widgetControls[_vm.widget.type].builderControl, {
-    tag: "component",
-    attrs: {
-      "widget": _vm.widget,
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "pageState": _vm.pageState,
-      "setWidgetState": function (key, value) {
-        return _vm.setWidgetState(key, value, _vm.widget);
-      },
-      "getWidgetState": function (key) {
-        return _vm.getWidgetState(key, _vm.widget);
-      },
-      "view": _vm.view
-    }
-  })], 1) : _vm._e(), _vm._v(" "), _c('div', {
-    ref: "widgetComponentWrapper",
-    staticClass: "widget-component-wrapper"
-  }, [_vm._l(_vm.widget.effects, function (widgetEffect) {
-    return _c(_vm.widgetEffectControls[widgetEffect.type].display, {
-      key: widgetEffect.type,
-      tag: "component",
-      attrs: {
-        "properties": widgetEffect.properties,
-        "wrapperRef": _vm.$refs.widgetComponentWrapper
-      }
-    });
-  }), _vm._v(" "), _c(_vm.widgetControls[_vm.widget.type][_vm.view || 'display'], {
-    tag: "component",
-    attrs: {
-      "widget": _vm.widget,
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "pageState": _vm.pageState,
-      "setWidgetState": function (key, value) {
-        return _vm.setWidgetState(key, value, _vm.widget);
-      },
-      "getWidgetState": function (key) {
-        return _vm.getWidgetState(key, _vm.widget);
-      },
-      "view": _vm.view,
-      "wrapperRef": _vm.$refs.widgetComponentWrapper,
-      "t": _vm.widget.t
-    }
-  })], 2)], 1);
-};
-
-var __vue_staticRenderFns__$11 = [];
-/* style */
-
-const __vue_inject_styles__$11 = function (inject) {
-  if (!inject) return;
-  inject("data-v-76487044_0", {
-    source: ".widget-component-wrapper[data-v-76487044]{position:relative}.widget-wrapper[data-v-76487044]{padding:0 10px}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-const __vue_scope_id__$11 = "data-v-76487044";
-/* module identifier */
-
-const __vue_module_identifier__$11 = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$11 = false;
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$13 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$11,
-  staticRenderFns: __vue_staticRenderFns__$11
-}, __vue_inject_styles__$11, __vue_script__$11, __vue_scope_id__$11, __vue_is_functional_template__$11, __vue_module_identifier__$11, false, createInjector, undefined, undefined);
-
-var WidgetView$1 = __vue_component__$13;
-
-//
-var script$10 = defineComponent({
-  components: {
-    WidgetView: WidgetView$1
-  },
-  props: {
-    widgetControls: Object,
-    widgetItems: Object,
-    excludeWidgetIds: R(String),
-    onlyIncludeWidgetIds: R(String),
-    widgetsOrder: R(String),
-    forParent: String
-  },
-  inject: ["widgetControls", "getPageState", "getView", "setPageState"],
-  computed: {
-    view() {
-      return this.getView();
-    },
-
-    pageState() {
-      return this.getPageState();
-    },
-
-    widgetItemsArr() {
-      return Object.values(this.$props.widgetItems);
-    },
-
-    filteredWidgetItemsArr() {
-      const filteredArr = this.widgetItemsArr.filter(f => {
-        return (!this.forParent && !f.parentId || f.parentId === this.forParent) && (!this.$props.onlyIncludeWidgetIds || this.$props.onlyIncludeWidgetIds.includes(f.id)) && (!(this.excludeWidgetIds || []).length || !this.excludeWidgetIds.includes(f.id));
-      }).sort((a, b) => {
-        const aOrder = (this.$props.widgetsOrder || []).includes(a.id) ? this.$props.widgetsOrder.indexOf(a.id) : a.order || 0;
-        const bOrder = (this.$props.widgetsOrder || []).includes(b.id) ? this.$props.widgetsOrder.indexOf(b.id) : b.order || 0;
-        return aOrder - bOrder;
-      });
-      return filteredArr;
-    }
-
-  },
-  methods: {
-    setWidgetState(key, value, widget) {
-      const pageState = this.pageState;
-
-      if (value === undefined) {
-        if (!pageState.widgetState[widget.id]) return;
-        delete pageState.widgetState[widget.id][key];
-      } else {
-        if (!pageState.widgetState[widget.id]) pageState.widgetState[widget.id] = {};
-        pageState.widgetState[widget.id][key] = value;
-      }
-
-      this.setPageState(pageState);
-    },
-
-    getWidgetState(key, widget) {
-      var _this$pageState$widge;
-
-      return (_this$pageState$widge = this.pageState.widgetState[widget.id]) === null || _this$pageState$widge === void 0 ? void 0 : _this$pageState$widge[key];
-    }
-
-  }
-});
-
-/* script */
-const __vue_script__$10 = script$10;
-/* template */
-
-var __vue_render__$10 = function () {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c('div', _vm._l(_vm.filteredWidgetItemsArr, function (widget) {
-    return _c('div', {
-      key: widget.id,
-      staticClass: "widget-container"
-    }, [_c('widget-view', {
-      attrs: {
-        "widget": widget,
-        "widgetControls": _vm.widgetControls,
-        "widgetItems": _vm.widgetItems,
-        "pageState": _vm.pageState,
-        "setWidgetState": _vm.setWidgetState,
-        "getWidgetState": _vm.getWidgetState,
-        "view": _vm.view
-      }
-    })], 1);
-  }), 0);
-};
-
-var __vue_staticRenderFns__$10 = [];
-/* style */
-
-const __vue_inject_styles__$10 = function (inject) {
-  if (!inject) return;
-  inject("data-v-301b8b22_0", {
-    source: ".widget-container[data-v-301b8b22]{position:relative}",
-    map: undefined,
-    media: undefined
-  });
-};
-/* scoped */
-
-
-const __vue_scope_id__$10 = "data-v-301b8b22";
-/* module identifier */
-
-const __vue_module_identifier__$10 = undefined;
-/* functional template */
-
-const __vue_is_functional_template__$10 = false;
-/* style inject SSR */
-
-/* style inject shadow dom */
-
-const __vue_component__$12 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$10,
-  staticRenderFns: __vue_staticRenderFns__$10
-}, __vue_inject_styles__$10, __vue_script__$10, __vue_scope_id__$10, __vue_is_functional_template__$10, __vue_module_identifier__$10, false, createInjector, undefined, undefined);
-
-var WidgetsLayout = __vue_component__$12;
+var c=Object.prototype,l=c.toString,s=c.hasOwnProperty,v=/^\s*function (\w+)/;function p(e){var t,n=null!==(t=null==e?void 0:e.type)&&void 0!==t?t:e;if(n){var r=n.toString().match(v);return r?r[1]:""}return ""}var y=isPlainObject,d=function(e){return e},h=d;var g=function(e,t){return s.call(e,t)},m=Array.isArray||function(e){return "[object Array]"===l.call(e)},j=function(e){return "[object Function]"===l.call(e)},_=function(e){return y(e)&&g(e,"_vueTypes_name")},T=function(e){return y(e)&&(g(e,"type")||["_vueTypes_name","validator","default","required"].some(function(t){return g(e,t)}))};function w(e,t){return Object.defineProperty(e.bind(t),"__original",{value:e})}function k(e,t,n){var r;void 0===n&&(n=!1);var i=!0,o="";r=y(e)?e:{type:e};var u=_(r)?r._vueTypes_name+" - ":"";if(T(r)&&null!==r.type){if(void 0===r.type||!0===r.type)return i;if(!r.required&&void 0===t)return i;m(r.type)?(i=r.type.some(function(e){return !0===k(e,t,!0)}),o=r.type.map(function(e){return p(e)}).join(" or ")):i="Array"===(o=p(r))?m(t):"Object"===o?y(t):"String"===o||"Number"===o||"Boolean"===o||"Function"===o?function(e){if(null==e)return "";var t=e.constructor.toString().match(v);return t?t[1]:""}(t)===o:t instanceof r.type;}if(!i){var a=u+'value "'+t+'" should be of type "'+o+'"';return !1===n?(h(a),!1):a}if(g(r,"validator")&&j(r.validator)){var f=h,c=[];if(h=function(e){c.push(e);},i=r.validator(t),h=f,!i){var l=(c.length>1?"* ":"")+c.join("\n* ");return c.length=0,!1===n?(h(l),i):l}}return i}function P(e,t){var n=Object.defineProperties(t,{_vueTypes_name:{value:e,writable:!0},isRequired:{get:function(){return this.required=!0,this}},def:{value:function(e){return void 0===e?(g(this,"default")&&delete this.default,this):j(e)||!0===k(this,e,!0)?(this.default=m(e)?function(){return [].concat(e)}:y(e)?function(){return Object.assign({},e)}:e,this):(h(this._vueTypes_name+' - invalid default value: "'+e+'"'),this)}}}),r=n.validator;return j(r)&&(n.validator=w(r,n)),n}function N(e){return e.replace(/^(?!\s*$)/gm,"  ")}function R(e){return P("arrayOf",{type:Array,validator:function(t){var n="",r=t.every(function(t){return !0===(n=k(e,t,!0))});return r||h("arrayOf - value validation error:\n"+N(n)),r}})}
 
 function _defineProperty(obj, key, value) {
   if (key in obj) {
@@ -6437,8 +6470,8 @@ JSONPath.toPathArray = function (expr) {
 JSONPath.prototype.vm = vm;
 
 var indexNodeEsm = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    JSONPath: JSONPath
+  __proto__: null,
+  JSONPath: JSONPath
 });
 
 var _jsonpathPlus = getCjsExportFromNamespace(indexNodeEsm);
@@ -7147,6 +7180,900 @@ exports.Engine = _engine2.default;
 
 var dist = jsonRulesEngine;
 
+var dayjs_min = createCommonjsModule(function (module, exports) {
+!function(t,e){module.exports=e();}(commonjsGlobal,(function(){var t=1e3,e=6e4,n=36e5,r="millisecond",i="second",s="minute",u="hour",a="day",o="week",f="month",h="quarter",c="year",d="date",$="Invalid Date",l=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,y=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,M={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},m=function(t,e,n){var r=String(t);return !r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},g={s:m,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return (e<=0?"+":"-")+m(r,2,"0")+":"+m(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return -t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,f),s=n-i<0,u=e.clone().add(r+(s?-1:1),f);return +(-(r+(n-i)/(s?i-u:u-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(t){return {M:f,y:c,w:o,d:a,D:d,h:u,m:s,s:i,ms:r,Q:h}[t]||String(t||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},v="en",D={};D[v]=M;var p=function(t){return t instanceof _},S=function t(e,n,r){var i;if(!e)return v;if("string"==typeof e){var s=e.toLowerCase();D[s]&&(i=s),n&&(D[s]=n,i=s);var u=e.split("-");if(!i&&u.length>1)return t(u[0])}else {var a=e.name;D[a]=e,i=a;}return !r&&i&&(v=i),i||!r&&v},w=function(t,e){if(p(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new _(n)},O=g;O.l=S,O.i=p,O.w=function(t,e){return w(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var _=function(){function M(t){this.$L=S(t.locale,null,!0),this.parse(t);}var m=M.prototype;return m.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(O.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(l);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init();},m.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds();},m.$utils=function(){return O},m.isValid=function(){return !(this.$d.toString()===$)},m.isSame=function(t,e){var n=w(t);return this.startOf(e)<=n&&n<=this.endOf(e)},m.isAfter=function(t,e){return w(t)<this.startOf(e)},m.isBefore=function(t,e){return this.endOf(e)<w(t)},m.$g=function(t,e,n){return O.u(t)?this[e]:this.set(n,t)},m.unix=function(){return Math.floor(this.valueOf()/1e3)},m.valueOf=function(){return this.$d.getTime()},m.startOf=function(t,e){var n=this,r=!!O.u(e)||e,h=O.p(t),$=function(t,e){var i=O.w(n.$u?Date.UTC(n.$y,e,t):new Date(n.$y,e,t),n);return r?i:i.endOf(a)},l=function(t,e){return O.w(n.toDate()[t].apply(n.toDate("s"),(r?[0,0,0,0]:[23,59,59,999]).slice(e)),n)},y=this.$W,M=this.$M,m=this.$D,g="set"+(this.$u?"UTC":"");switch(h){case c:return r?$(1,0):$(31,11);case f:return r?$(1,M):$(0,M+1);case o:var v=this.$locale().weekStart||0,D=(y<v?y+7:y)-v;return $(r?m-D:m+(6-D),M);case a:case d:return l(g+"Hours",0);case u:return l(g+"Minutes",1);case s:return l(g+"Seconds",2);case i:return l(g+"Milliseconds",3);default:return this.clone()}},m.endOf=function(t){return this.startOf(t,!1)},m.$set=function(t,e){var n,o=O.p(t),h="set"+(this.$u?"UTC":""),$=(n={},n[a]=h+"Date",n[d]=h+"Date",n[f]=h+"Month",n[c]=h+"FullYear",n[u]=h+"Hours",n[s]=h+"Minutes",n[i]=h+"Seconds",n[r]=h+"Milliseconds",n)[o],l=o===a?this.$D+(e-this.$W):e;if(o===f||o===c){var y=this.clone().set(d,1);y.$d[$](l),y.init(),this.$d=y.set(d,Math.min(this.$D,y.daysInMonth())).$d;}else $&&this.$d[$](l);return this.init(),this},m.set=function(t,e){return this.clone().$set(t,e)},m.get=function(t){return this[O.p(t)]()},m.add=function(r,h){var d,$=this;r=Number(r);var l=O.p(h),y=function(t){var e=w($);return O.w(e.date(e.date()+Math.round(t*r)),$)};if(l===f)return this.set(f,this.$M+r);if(l===c)return this.set(c,this.$y+r);if(l===a)return y(1);if(l===o)return y(7);var M=(d={},d[s]=e,d[u]=n,d[i]=t,d)[l]||1,m=this.$d.getTime()+r*M;return O.w(m,this)},m.subtract=function(t,e){return this.add(-1*t,e)},m.format=function(t){var e=this,n=this.$locale();if(!this.isValid())return n.invalidDate||$;var r=t||"YYYY-MM-DDTHH:mm:ssZ",i=O.z(this),s=this.$H,u=this.$m,a=this.$M,o=n.weekdays,f=n.months,h=function(t,n,i,s){return t&&(t[n]||t(e,r))||i[n].substr(0,s)},c=function(t){return O.s(s%12||12,t,"0")},d=n.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:O.s(a+1,2,"0"),MMM:h(n.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:O.s(this.$D,2,"0"),d:String(this.$W),dd:h(n.weekdaysMin,this.$W,o,2),ddd:h(n.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:O.s(s,2,"0"),h:c(1),hh:c(2),a:d(s,u,!0),A:d(s,u,!1),m:String(u),mm:O.s(u,2,"0"),s:String(this.$s),ss:O.s(this.$s,2,"0"),SSS:O.s(this.$ms,3,"0"),Z:i};return r.replace(y,(function(t,e){return e||l[t]||i.replace(":","")}))},m.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},m.diff=function(r,d,$){var l,y=O.p(d),M=w(r),m=(M.utcOffset()-this.utcOffset())*e,g=this-M,v=O.m(this,M);return v=(l={},l[c]=v/12,l[f]=v,l[h]=v/3,l[o]=(g-m)/6048e5,l[a]=(g-m)/864e5,l[u]=g/n,l[s]=g/e,l[i]=g/t,l)[y]||g,$?v:O.a(v)},m.daysInMonth=function(){return this.endOf(f).$D},m.$locale=function(){return D[this.$L]},m.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=S(t,e,!0);return r&&(n.$L=r),n},m.clone=function(){return O.w(this.$d,this)},m.toDate=function(){return new Date(this.valueOf())},m.toJSON=function(){return this.isValid()?this.toISOString():null},m.toISOString=function(){return this.$d.toISOString()},m.toString=function(){return this.$d.toUTCString()},M}(),b=_.prototype;return w.prototype=b,[["$ms",r],["$s",i],["$m",s],["$H",u],["$W",a],["$M",f],["$y",c],["$D",d]].forEach((function(t){b[t[1]]=function(e){return this.$g(e,t[0],t[1])};})),w.extend=function(t,e){return t.$i||(t(e,_,w),t.$i=!0),w},w.locale=S,w.isDayjs=p,w.unix=function(t){return w(1e3*t)},w.en=D[v],w.Ls=D,w.p={},w}));
+});
+
+const ABS = {
+  regex: /^ABS\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    const subParts = (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`));
+
+    if (subParts.length !== 1) {
+      throw new Error(`ABS() requires 1 parameter, received ${subParts.length}`);
+    }
+
+    return Math.abs(parseFloat(stringParser(subParts[0], variables, options)));
+  }
+};
+
+const AND = {
+  regex: /^AND\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    const parts = matchParts[0].split(splitRootRegex(`\\s*,\\s*`)) || [];
+
+    if (!parts.length) {
+      throw new Error(`AND() requires 1 or more parameters, received ${parts.length}`);
+    }
+
+    return parts.every(p => stringParser(p, variables, options));
+  }
+};
+
+const AVG = {
+  regex: /^AVG\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    const subParts = (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`));
+
+    if (subParts.length === 0) {
+      throw new Error('AVG() requires 1 or more parameters, received 0');
+    }
+
+    return subParts.reduce((sum, num) => sum + parseFloat(stringParser(num, variables, options)), 0) / subParts.length;
+  }
+};
+
+const DATE = {
+  regex: /^(Date.now|new Date|dayjs)/,
+  parse: (cmd, variables) => getDateByPropertyValue(cmd, variables)
+};
+
+const IF = {
+  regex: /^IF\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    const subParts = (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`));
+
+    if (subParts.length !== 3) {
+      throw new Error('IF() requires 3 parameters');
+    }
+
+    const [isTrue, trueResult, falseResult] = subParts;
+    return stringParser(stringParser(isTrue, variables, options) ? stringParser(trueResult, variables, options) : stringParser(falseResult, variables, options), variables, options);
+  }
+};
+
+const IFNA = {
+  regex: /^IFNA\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+
+    for (const subCmd of (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`))) {
+      const result = stringParser(subCmd, variables, options);
+
+      if (result) {
+        return result;
+      }
+    }
+  }
+};
+
+const LOWER = {
+  regex: /^LOWER\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    const subParts = (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`));
+
+    if (subParts.length !== 1) {
+      throw new Error(`LOWER() requires 1 parameter, received ${subParts.length}`);
+    }
+
+    return stringParser(subParts[0], variables, options).toLowerCase();
+  }
+};
+
+const MAX = {
+  regex: /^MAX\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    let max = -Infinity;
+
+    for (const subCmd of (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`))) {
+      const result = stringParser(subCmd, variables, options);
+
+      if (typeof result === 'number') {
+        if (result > max) max = result;
+      } else if (typeof result === 'string') {
+        if (result.localeCompare(max) > 0) {
+          max = result;
+        }
+      }
+    }
+
+    return max;
+  }
+};
+
+const MIN = {
+  regex: /^MIN\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    let min = Infinity;
+
+    for (const subCmd of (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`))) {
+      const result = stringParser(subCmd, variables, options);
+
+      if (typeof result === 'number') {
+        if (result < min) min = result;
+      } else if (typeof result === 'string') {
+        if (result.localeCompare(min) < 0) {
+          min = result;
+        }
+      }
+    }
+
+    return min;
+  }
+};
+
+const NOT = {
+  regex: /^NOT\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    return !stringParser(matchParts[0], variables, options);
+  }
+};
+
+const OR = {
+  regex: /^OR\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    const parts = matchParts[0].split(splitRootRegex(`\\s*,\\s*`)) || [];
+
+    if (!parts.length) {
+      throw new Error(`OR() requires 1 or more parameters, received ${parts.length}`);
+    }
+
+    return parts.some(p => stringParser(p, variables, options));
+  }
+};
+
+const SUM = {
+  regex: /^SUM\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    const subParts = (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`));
+
+    if (subParts.length === 0) {
+      throw new Error('SUM() requires 1 or more parameters');
+    }
+
+    return subParts.reduce((sum, num) => sum + parseFloat(stringParser(num, variables, options)), 0);
+  }
+};
+
+const UPPER = {
+  regex: /^UPPER\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    const subParts = (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`));
+
+    if (subParts.length !== 1) {
+      throw new Error(`UPPER() requires 1 parameter, received ${subParts.length}`);
+    }
+
+    return stringParser(subParts[0], variables, options).toUpperCase();
+  }
+};
+
+const VARIABLE = {
+  regex: /^\$(.*)$/,
+  parse: (_cmd, variables, matched, options) => {
+    return /^\$\(/.test(matched[0]) ? variables[stringParser(matched[0].replace(/^\$\((.*)\)$/, '$1'), variables, options)] : variables[matched[0]];
+  }
+};
+
+const TRIM = {
+  regex: /^TRIM\((.*)\)$/,
+  parse: function (_cmd, variables) {
+    let matchParts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let options = arguments.length > 3 ? arguments[3] : undefined;
+    const subParts = (matchParts[0] || '').split(splitRootRegex(`\\s*,\\s*`));
+
+    if (subParts.length !== 1) {
+      throw new Error(`TRIM() requires 1 parameter, received ${subParts.length}`);
+    }
+
+    return stringParser(subParts[0], variables, options).trim();
+  }
+};
+
+const parserCommands = {
+  ABS,
+  AND,
+  AVG,
+  DATE,
+  IF,
+  IFNA,
+  LOWER,
+  MAX,
+  MIN,
+  NOT,
+  OR,
+  SUM,
+  UPPER,
+  TRIM,
+  VARIABLE
+};
+
+/**
+ * split a string by a delimiter while respecting brackets and only
+ * split root delimiters
+ *
+ * @param delimiter {string} string to separate them by
+ * @returns {string[]} array of string
+ */
+
+let splitRootRegex = delimiter => {
+  return new RegExp(`${delimiter}(?![^\\(]*\\))`, 'g');
+};
+/**
+ * parse a string with commands and variable getters
+ *
+ * @param cmd {string} command string
+ * @param variables {Object} a key-value object for cmd to access
+ * @returns {string | Date | number | boolean} result of cmd parsing
+ */
+
+let stringParser = (cmd, variables, options) => {
+  const commands = (options === null || options === void 0 ? void 0 : options.commands) || parserCommands; // if it is not a string, there's nothing to parse, just return it
+
+  if (typeof cmd !== 'string') {
+    return cmd;
+  } // split command by "&" and handle each command part
+  // then merge concat them back together
+
+
+  const result = cmd.replace(/^=/, '').split(splitRootRegex(`\\s*&\\s*`)).map(splitCmd => {
+    let parserCommand = null;
+    let regexMatched = null;
+    let isFound = false; // find command by key
+
+    if (commands[splitCmd.replace(/\(.*$/, '')]) {
+      parserCommand = commands[splitCmd.replace(/\(.*$/, '')];
+      regexMatched = parserCommand.regex ? splitCmd.match(parserCommand.regex) : null;
+
+      if (regexMatched || !parserCommand.regex) {
+        // if regex has no match OR command doesn't have regex
+        isFound = true;
+      }
+    } // find command by regex
+
+
+    if (!isFound) {
+      for (const [_cmdKey, _parserCommand] of Object.entries(commands)) {
+        regexMatched = _parserCommand.regex ? splitCmd.match(_parserCommand.regex) : null;
+
+        if (regexMatched) {
+          parserCommand = _parserCommand;
+          isFound = true;
+          break;
+        }
+      }
+    } // if no command found, just return string as is
+    // if command found, parse and return result
+
+
+    return isFound && parserCommand ? parserCommand.parse(splitCmd, variables, (regexMatched || []).slice(1), options) : splitCmd;
+  }); // if result only has one (no &), do not join because it'll make
+  // the result into a string. If it has &, then join them
+
+  return result.length > 1 ? result.join('') : result[0];
+};
+
+var combineValidations = (function () {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  return args.reduce((validations, arg) => {
+    Object.keys(arg.rules || {}).forEach(rule => {
+      var _validations$rules;
+
+      if ((_validations$rules = validations.rules) !== null && _validations$rules !== void 0 && _validations$rules[rule]) {
+        console.warn(`validation rule [${rule}] has been defined more than once`);
+      }
+    });
+    Object.keys(arg.facts || {}).forEach(fact => {
+      var _validations$facts;
+
+      if ((_validations$facts = validations.facts) !== null && _validations$facts !== void 0 && _validations$facts[fact]) {
+        console.warn(`validation fact [${fact}] has been defined more than once`);
+      }
+    });
+    return {
+      rules: { ...validations.rules,
+        ...arg.rules
+      },
+      facts: { ...validations.facts,
+        ...arg.facts
+      }
+    };
+  }, {
+    rules: {},
+    facts: {}
+  });
+});
+
+let flatten = (arr, opts) => {
+  return arr.reduce((_arr, item) => {
+    if (opts !== null && opts !== void 0 && opts.deep) {
+      const newList = Array.isArray(item) ? item : [item];
+      return [..._arr, ...(newList.some(i => Array.isArray(i)) ? flatten(newList) : newList)];
+    }
+
+    return [..._arr, ...(Array.isArray(item) ? item : [item])];
+  }, []);
+};
+const cachedArgs = {};
+let cachedMerge = function (key) {
+  if (!cachedArgs[key]) cachedArgs[key] = {
+    cached: [],
+    result: null
+  };
+
+  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    args[_key - 1] = arguments[_key];
+  }
+
+  if (!args.length) return null;
+
+  if (args.length !== cachedArgs[key].cached.length || args.some((a, aIndex) => a !== cachedArgs[key].cached[aIndex])) {
+    cachedArgs[key].cached = args; // cached not matched, update cache args and result
+
+    if (Array.isArray(args[0])) {
+      cachedArgs[key].result = args.reduce((arr, arg) => [...arr, ...arg], []);
+    } else {
+      cachedArgs[key].result = args.reduce((obj, argObj) => ({ ...obj,
+        ...argObj
+      }), {});
+    }
+  }
+
+  return cachedArgs[key].result;
+};
+let flattenTranslateKey = input => {
+  if (Array.isArray(input)) {
+    return input.reduce((arr, i) => {
+      if (Array.isArray(i)) {
+        return [...arr, ...flattenTranslateKey(i)];
+      } else {
+        return [...arr, i];
+      }
+    }, []);
+  } else {
+    // it is a string, break it up now
+    return input.split('.');
+  }
+};
+let translate = (languages, key, data) => {
+  const lang = flattenTranslateKey(key).reduce((obj, g) => {
+    if (typeof obj === 'string') {
+      return obj;
+    }
+
+    return (obj === null || obj === void 0 ? void 0 : obj[g]) || (obj === null || obj === void 0 ? void 0 : obj[`control_${g}`]);
+  }, languages);
+  return lang === null || lang === void 0 ? void 0 : lang.replace(/(\{(\w+)\})/g, (_orig, outer, inner) => (data || {})[inner] || outer);
+};
+let formatDateString = date => {
+  if (!date) return undefined;
+  return new Date(date).toLocaleString('en-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+};
+/**
+ * generate a date (or number) based on the string method passed into
+ * the date param
+ *
+ * dayjs($startDate).add(2, 'day') = a date that is 2 days after startDate
+ * dayjs().diff($startDate, 'day') = day count (number) from startDate to now
+ *
+ * @param date the string or date to render
+ * @param variables object of variables used to substitute $variable
+ * @returns a date or number
+ */
+
+let getDateByPropertyValue = (date, variables) => {
+  if (!date) {
+    return undefined;
+  }
+
+  if (date instanceof Date) {
+    return date;
+  }
+
+  const parsedDate = Date.parse(date);
+
+  if (!isNaN(parsedDate)) {
+    // is a proper date timestamp, return date with it
+    return new Date(parsedDate);
+  }
+
+  if (/^Date.now(\(\))*$/.test(date) || /^new Date(\(\))*$/.test(date)) {
+    // if date string is Date.now or new Date, return current date
+    return new Date();
+  }
+
+  if (/(^dayjs|^[\w]+\([^\)]*\))/.test(date)) {
+    // if it is a dayjs handling, run it through dayjs
+    // examples:
+    // - subtract(1, 'month') (based on current date)
+    // - dayjs($incidentDate).subtract(1, 'day')
+    const dateResult = date.split('.').reduce((accDate, part) => {
+      const parts = part.match(/([\w]+)\(([^\)]*)\)/); // if part doesn't match needed format, just short circuit return
+
+      if (!parts) return accDate;
+
+      switch (parts[1]) {
+        case 'dayjs':
+          // if command is dayjs, replace current dayjs instance
+          // with this dayjs (to define specific date)
+          if (parts[2]) {
+            if (/^\$/.test(parts[2])) {
+              const responseResult = parts[2].replace(/^\$/, '').split('.').reduce((response, part) => {
+                return response[part];
+              }, variables || {});
+              return dayjs_min(responseResult);
+            } else {
+              return dayjs_min(parts[2]);
+            }
+          }
+
+          return accDate;
+
+        default:
+          return accDate[parts[1]](...parts[2].split(/\s*,\s*/).map(a => {
+            const parsedNum = parseFloat(a);
+
+            if (isNaN(parsedNum)) {
+              if (/^\$/.test(a)) {
+                // starts with a $, it is looking for a variable
+                return a.replace(/^\$/, '').split('.').reduce((response, part) => {
+                  return response[part];
+                }, variables || {});
+              } // else just return sanitised text back
+
+
+              return a.replaceAll(/[\'\"]+/g, '');
+            } else {
+              return parsedNum;
+            }
+          }));
+      }
+    }, dayjs_min()); // if date result is a dayjs, return the Date version of it,
+    // else return it as is
+
+    return dateResult instanceof dayjs_min ? dateResult.toDate() : dateResult;
+  } else if (/^\$/.test(date)) {
+    // if date field is a variable (ie. $incidentDate), we'll fetch this
+    // field from variables
+    const responseResult = date.replace(/^\$/, '').split('.').reduce((response, part) => {
+      return response[part];
+    }, variables || {}); // return date instance of drilled down field
+
+    return new Date(responseResult);
+  }
+
+  return undefined;
+};
+
+const equal = function () {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 1) {
+    throw new Error(`requires 1 argument, received ${args.length}`);
+  }
+
+  const [equal] = args;
+  return [{
+    fact: 'response',
+    operator: 'equal',
+    value: Validator.validationRuleValue(equal, {})
+  }];
+};
+
+const inRange = function () {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 2) {
+    throw new Error(`require 2 arguments, received ${args.length}`);
+  }
+
+  const [from, to] = args;
+  return [{
+    fact: 'response',
+    operator: 'greaterThanInclusive',
+    value: Validator.validationRuleValue(from, {})
+  }, {
+    fact: 'response',
+    operator: 'lessThanInclusive',
+    value: Validator.validationRuleValue(to, {})
+  }];
+};
+
+const isEmpty = [{
+  fact: 'response',
+  operator: 'equal',
+  value: null
+}];
+
+const isFalse = [{
+  fact: 'response',
+  operator: 'equal',
+  value: false
+}];
+
+const isFieldEmpty = function () {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length === 0) {
+    throw new Error(`requires 1 or more arguments, received ${args.length}`);
+  }
+
+  return args.map(field => ({
+    fact: field,
+    operator: 'equal',
+    value: null
+  }));
+};
+
+const isTrue = [{
+  fact: 'response',
+  operator: 'equal',
+  value: true
+}];
+
+const max = function () {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 1) {
+    throw new Error(`requires 1 argument, received ${args.length}`);
+  }
+
+  const [max] = args;
+  return [{
+    fact: 'response',
+    operator: 'lessThanInclusive',
+    value: Validator.validationRuleValue(max, {})
+  }];
+};
+
+const min = function () {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 1) {
+    throw new Error(`requires 1 argument, received ${args.length}`);
+  }
+
+  const [min] = args;
+  return [{
+    fact: 'response',
+    operator: 'greaterThanInclusive',
+    value: Validator.validationRuleValue(min, {})
+  }];
+};
+
+const notEqual = function () {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  if (args.length !== 1) {
+    throw new Error(`requires 1 argument, received ${args.length}`);
+  }
+
+  const [notEqual] = args;
+  return [{
+    fact: 'response',
+    operator: 'notEqual',
+    value: Validator.validationRuleValue(notEqual, {})
+  }];
+};
+
+const positiveNumber = [{
+  fact: 'response',
+  operator: 'greaterThanInclusive',
+  value: 0
+}];
+
+const required = [{
+  fact: 'response',
+  operator: 'notEqual',
+  value: null
+}];
+
+var validationRules = {
+  equal,
+  inRange,
+  isEmpty,
+  isFieldEmpty,
+  isFalse,
+  isTrue,
+  max,
+  min,
+  notEqual,
+  positiveNumber,
+  required
+};
+
+const CMD_DATE_REGEX = /^(Date.now|new Date|dayjs)/;
+class Validator {
+  get rules() {
+    return this._presetValidations.rules || {};
+  }
+
+  static getRuleConditions(rule, facts, commands) {
+    return (Array.isArray(rule) ? rule : [rule]).reduce((arr, cond) => {
+      var _cond$all, _cond$any;
+
+      if (typeof cond === 'string') {
+        const matched = cond.match(/^([^\(]+)(\((.*)\))*/);
+
+        if (!matched) {
+          throw new Error(`rule [${cond}] has incorrect format`);
+        }
+
+        const [_original, command, _paramsWithBrackets, params] = matched;
+
+        if (!(commands !== null && commands !== void 0 && commands[command])) {
+          throw new Error(`rule [${cond}] does not exist in predefined rules`);
+        }
+
+        if (params && typeof (commands === null || commands === void 0 ? void 0 : commands[command]) !== 'function') {
+          throw new Error(`rule [${cond}] expects ${command} to be a function but is not`);
+        }
+
+        try {
+          var _commands$command;
+
+          return [...arr, ...(params ? typeof (commands === null || commands === void 0 ? void 0 : commands[command]) === 'function' ? commands === null || commands === void 0 ? void 0 : (_commands$command = commands[command]) === null || _commands$command === void 0 ? void 0 : _commands$command.call(commands, ...(params || '').split(/\s*,\s*/)) : commands === null || commands === void 0 ? void 0 : commands[command] : (commands === null || commands === void 0 ? void 0 : commands[command]) || [])];
+        } catch (err) {
+          throw new Error(`rule [${command}] ${err.message}`);
+        }
+      } else if ((_cond$all = cond.all) !== null && _cond$all !== void 0 && _cond$all.length) {
+        return [...arr, {
+          all: Validator.getRuleConditions(cond.all, facts, commands)
+        }];
+      } else if ((_cond$any = cond.any) !== null && _cond$any !== void 0 && _cond$any.length) {
+        return [...arr, {
+          any: Validator.getRuleConditions(cond.any, facts, commands)
+        }];
+      } else {
+        return [...arr, { ...cond,
+          value: Validator.validationRuleValue(cond.value, facts)
+        }];
+      }
+    }, []);
+  }
+
+  static getRuleFacts(rule, facts) {
+    var _ref;
+
+    // define conditions from rule. rule can be:
+    //  - FormValidationCondition
+    //  - string that maps to rules from config
+    let conditions = Validator.getRuleConditions(rule, facts); // with each condition, extract facts into a
+    // final array
+
+    return (_ref = conditions || []) === null || _ref === void 0 ? void 0 : _ref.reduce((_arr, c) => {
+      var _c$all, _c$any;
+
+      if ((_c$all = c.all) !== null && _c$all !== void 0 && _c$all.length) {
+        // it is a AllConditions
+        return [..._arr, ...this.getRuleFacts(c.all, facts)];
+      } else if ((_c$any = c.any) !== null && _c$any !== void 0 && _c$any.length) {
+        // it is a AnyConditions
+        return [..._arr, ...this.getRuleFacts(c.any, facts)];
+      } else {
+        var _c$value;
+
+        // default to ConditionProperties
+        return [..._arr, c.fact, ...((_c$value = c.value) !== null && _c$value !== void 0 && _c$value.fact ? [c.value.fact] : [])];
+      }
+    }, []);
+  }
+
+  static validationRuleValue(value, facts) {
+    if (!value) return value;
+    const isFact = /^\$/.test(value.toString());
+
+    if (isFact) {
+      return {
+        fact: value.toString().replace(/^$/, '')
+      };
+    }
+
+    if (value.fact) {
+      return {
+        fact: Validator.validationRuleValue(value.fact, facts)
+      };
+    }
+
+    if (CMD_DATE_REGEX.test(value.toString())) {
+      return getDateByPropertyValue(value.toString(), facts);
+    }
+
+    if (value === 'false') {
+      return false;
+    } else if (value === 'true') {
+      return true;
+    } else if (!isNaN(parseFloat(value.toString()))) {
+      return parseFloat(value.toString());
+    }
+
+    return value;
+  }
+
+  static sanitizeFacts(facts) {
+    return Object.keys(facts).reduce((newObj, factKey) => {
+      if (facts[factKey] === undefined || facts[factKey] === '') {
+        newObj[factKey] = null;
+      } else if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/.test(facts[factKey]) || facts[factKey] instanceof Date) {
+        newObj[factKey] = new Date(facts[factKey]).valueOf();
+
+        if (isNaN(newObj[factKey])) {
+          newObj[factKey] = null;
+        }
+      } else if (Array.isArray(facts[factKey])) {
+        newObj[factKey] = facts[factKey].map(f => this.sanitizeFacts(f));
+      } else if (facts[factKey] instanceof Object) {
+        newObj[factKey] = this.sanitizeFacts(facts[factKey]);
+      } else if (CMD_DATE_REGEX.test(facts[factKey])) {
+        newObj[factKey] = getDateByPropertyValue(facts[factKey], facts);
+      } else {
+        newObj[factKey] = facts[factKey];
+      }
+
+      return newObj;
+    }, {});
+  }
+
+  constructor(_presetValidations) {
+    _defineProperty(this, "_presetValidations", {});
+
+    _defineProperty(this, "setPresetValidations", presetValidations => {
+      this._presetValidations = {
+        // FIXME: all validation deps mixed together
+        deps: presetValidations.deps,
+        rules: { ...validationRules,
+          ...presetValidations.rules
+        },
+        facts: { ...presetValidations.facts
+        }
+      };
+    });
+
+    _defineProperty(this, "getRuleEngine", () => {
+      const validations = this._presetValidations || {};
+      const ruleEngine = new dist.Engine(undefined, {
+        allowUndefinedFacts: true
+      });
+
+      if (validations.facts && Object.keys(validations.facts).length) {
+        Object.keys(validations.facts).forEach(factKey => {
+          var _validations$facts;
+
+          ruleEngine.addFact(factKey, (_validations$facts = validations.facts) === null || _validations$facts === void 0 ? void 0 : _validations$facts[factKey]);
+        });
+      }
+
+      return ruleEngine;
+    });
+
+    // TODO: should just pass config.validations?
+    // is this reactive? or need to recreate class
+    // with new config to be reactive???
+    // use fn getConfig() instead??
+    this.setPresetValidations(_presetValidations || {});
+  }
+
+  getRuleConditions(rule, facts) {
+    return Validator.getRuleConditions(rule, facts, this._presetValidations.rules);
+  }
+
+  getRuleFacts(rule, facts) {
+    return Validator.getRuleFacts(rule, facts);
+  }
+
+  validationRuleValue(value, facts) {
+    return Validator.validationRuleValue(value, facts);
+  }
+
+  sanitizeFacts(facts) {
+    return Validator.sanitizeFacts(facts);
+  }
+
+  generateValidateGenericData() {
+    return Validator.generateValidateGenericData();
+  }
+
+  async validateMultiple(conditions, facts) {
+    const engine = this.getRuleEngine();
+    const genericData = await Validator.generateValidateGenericData();
+    const sanitizedFacts = Validator.sanitizeFacts({ ...facts,
+      ...genericData
+    });
+    conditions.forEach(c => {
+      const validateConditions = Validator.getRuleConditions(c.conditions, sanitizedFacts);
+      engine.addRule({
+        conditions: {
+          all: validateConditions
+        },
+        event: {
+          type: c.error
+        }
+      });
+    });
+    return (await engine.run(sanitizedFacts)).failureEvents.map(e => e.type);
+  }
+
+  async validate(conditions, facts) {
+    const genericData = await Validator.generateValidateGenericData();
+    const sanitizedFacts = Validator.sanitizeFacts({ ...facts,
+      ...genericData
+    });
+    const engine = this.getRuleEngine();
+    const validateConditions = Validator.getRuleConditions(conditions, sanitizedFacts);
+    engine.addRule({
+      conditions: {
+        all: validateConditions
+      },
+      event: {
+        type: 'isTruthy'
+      }
+    });
+    const result = await engine.run(sanitizedFacts);
+    return result.events.some(e => e.type === 'isTruthy');
+  }
+
+}
+
+_defineProperty(Validator, "generateValidateGenericData", async () => {
+  return {
+    'Date.now': Date.now(),
+    currentDate: new Date(),
+    currentDateString: formatDateString(new Date())
+  };
+});
+
 class WidgetItem {
   static getParentIds(widgetId, widgetItems) {
     const widget = widgetItems[widgetId];
@@ -7218,8 +8145,17 @@ class WidgetItem {
     return this._widget.validationRules;
   }
 
+  get widgetMeta() {
+    return this._getWidgetMeta();
+  }
+
+  get validator() {
+    return this._getValidator();
+  }
+
   constructor(_ref) {
-    var _this = this;
+    var _widget$toJSON,
+        _this = this;
 
     let {
       widget,
@@ -7229,7 +8165,10 @@ class WidgetItem {
       getState,
       setState,
       onUpdate,
-      t
+      t,
+      getWidgetMeta,
+      getConfig,
+      getValidator
     } = _ref;
 
     _defineProperty(this, "_widget", void 0);
@@ -7252,14 +8191,22 @@ class WidgetItem {
 
     _defineProperty(this, "_attachedListenerSets", {});
 
+    _defineProperty(this, "_getWidgetMeta", void 0);
+
+    _defineProperty(this, "_getConfig", void 0);
+
     _defineProperty(this, "_properties", void 0);
+
+    _defineProperty(this, "_getValidator", void 0);
 
     this._t = t;
     this._pageEventListener = pageEventListener;
     this._removeWidget = removeWidget;
     this._emitEvent = emitEvent;
     this._widgetItems = {};
-    this._widget = widget;
+    this._widget = ((_widget$toJSON = widget.toJSON) === null || _widget$toJSON === void 0 ? void 0 : _widget$toJSON.call(widget)) || widget;
+    this._getWidgetMeta = getWidgetMeta;
+    this._getConfig = getConfig;
     this._getPageState = getState;
     this._setPageState = setState;
 
@@ -7269,12 +8216,15 @@ class WidgetItem {
     };
 
     this._properties = widget.properties;
+    this._getValidator = getValidator;
     if (this.code) getState().registerWidgetCode(this.code, this.id);
     this.syncReflexiveListeners();
+    this.syncValidationListeners();
     this.syncFetchPropertiesListeners();
+    this.emitListener('change');
   }
 
-  setListenerSet(setName, events, fn) {
+  removeListenerSet(setName) {
     if (this._attachedListenerSets[setName]) {
       // if setName exists, remove prior listeners
       this._attachedListenerSets[setName].events.forEach(eventName => {
@@ -7285,9 +8235,13 @@ class WidgetItem {
         events: [],
         fn: () => null
       };
-    } // if no events passed/defined, no point keeping this listener set,
-    // so remove it and skip the rest
+    }
+  }
 
+  setListenerSet(setName, events, fn) {
+    // clear previous listeners
+    this.removeListenerSet(setName); // if no events passed/defined, no point keeping this listener set,
+    // so remove it and skip the rest
 
     if (!(events !== null && events !== void 0 && events.length)) {
       delete this._attachedListenerSets[setName];
@@ -7306,15 +8260,22 @@ class WidgetItem {
   syncFetchPropertiesListeners() {
     var _this$widget$fetchPro;
 
-    this.setListenerSet("fetchProperties", ((_this$widget$fetchPro = this.widget.fetchPropertiesOnWidgetsChange) === null || _this$widget$fetchPro === void 0 ? void 0 : _this$widget$fetchPro.map(c => `${c}_change`)) || [], async () => {
+    this.setListenerSet('fetchProperties', ((_this$widget$fetchPro = this.widget.fetchPropertiesOnWidgetsChange) === null || _this$widget$fetchPro === void 0 ? void 0 : _this$widget$fetchPro.map(c => `${c}_change`)) || [], async () => {
       await this.callFetchPropertiesApi();
     });
   }
 
-  syncReflexiveListeners() {
-    var _this$reflexiveRules;
+  syncValidationListeners() {
+    var _this$validationRules;
 
-    this.setListenerSet("reflexives", ((_this$reflexiveRules = this.reflexiveRules) === null || _this$reflexiveRules === void 0 ? void 0 : _this$reflexiveRules.map(c => `${c.fact}_change`)) || [], () => this.runReflexives()); // initial run
+    this.setListenerSet('validations', ((_this$validationRules = this.validationRules) === null || _this$validationRules === void 0 ? void 0 : _this$validationRules.reduce((arr, c) => [...arr, ...(c.conditions || []).reduce((arr, cond) => [...arr, ...this.validator.getRuleFacts(this.validator.getRuleConditions([cond].flat(1), this.validationFacts), this.validationFacts).map(c => `${c}_change`)], [])], []).filter(c => c !== 'response')) || [], () => this.runValidations());
+  }
+
+  syncReflexiveListeners() {
+    var _this$validator$getRu, _this$reflexiveRules;
+
+    const reflexiveFacts = this.reflexiveRulesFacts;
+    this.setListenerSet('reflexives', ((_this$validator$getRu = this.validator.getRuleConditions(((_this$reflexiveRules = this.reflexiveRules) === null || _this$reflexiveRules === void 0 ? void 0 : _this$reflexiveRules.flat(1)) || [], reflexiveFacts)) === null || _this$validator$getRu === void 0 ? void 0 : _this$validator$getRu.reduce((arr, c) => [...arr, ...this.validator.getRuleFacts(c, reflexiveFacts).map(a => `${a}_change`)], []).filter(c => c !== 'response')) || [], () => this.runReflexives()); // initial run
 
     this.runReflexives();
   }
@@ -7330,7 +8291,7 @@ class WidgetItem {
       originalProperties: this.widget.properties
     };
     const propertiesResponse = await fetch(this.widget.fetchPropertiesApi, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(body)
     });
 
@@ -7344,20 +8305,28 @@ class WidgetItem {
 
   setProperty(field, value) {
     this._widget.properties[field] = value;
-
-    this._update(this);
+    this.update();
   }
 
   setEffectProperties(type, properties) {
-    this._widget.effects = (this.effects || []).map(eff => eff.type === type ? { ...eff,
-      properties
-    } : eff);
+    var _this$_widget$effects;
 
-    this._update(this);
+    // if effects was never instantiated, nothing to update, skip
+    if (!this._widget.effects) return; // get effect index by type
+
+    const effectIdx = (_this$_widget$effects = this._widget.effects) === null || _this$_widget$effects === void 0 ? void 0 : _this$_widget$effects.findIndex(e => e.type === type); // if no effect was found with param type, just return
+
+    if (effectIdx === -1) return; // update properties at effect idx
+
+    this._widget.effects[effectIdx] = { ...this._widget.effects[effectIdx],
+      properties
+    }; // trigger update for widget in UI
+
+    this.update();
   }
 
   update() {
-    this._update();
+    this._update(this);
   }
 
   addEffect(effect) {
@@ -7373,15 +8342,14 @@ class WidgetItem {
 
     (_this$effects2 = this.effects) === null || _this$effects2 === void 0 ? void 0 : _this$effects2.push(effect); // trigger update
 
-    this._update();
+    this.update();
   }
 
   removeEffect(effectType) {
-    var _this$_widget$effects;
+    var _this$_widget$effects2;
 
-    this._widget.effects = (_this$_widget$effects = this._widget.effects) === null || _this$_widget$effects === void 0 ? void 0 : _this$_widget$effects.filter(e => e.type !== effectType);
-
-    this._update();
+    this._widget.effects = (_this$_widget$effects2 = this._widget.effects) === null || _this$_widget$effects2 === void 0 ? void 0 : _this$_widget$effects2.filter(e => e.type !== effectType);
+    this.update();
   }
 
   emitListener(name, data) {
@@ -7396,16 +8364,20 @@ class WidgetItem {
     }
   }
 
-  destroyed() {}
+  destroy() {}
+
+  toJSON() {
+    return this._widget;
+  }
 
   removeWidget() {
     // if there is a parent, let them know to remove you
     if (this.parentId) {
       this._widgetItems[this.parentId].removeChild(this);
-    } // trigger destroyed method for clean up
+    } // trigger destroy method for clean up
 
 
-    this.destroyed(); // remove self
+    this.destroy(); // remove self
 
     this._removeWidget(this.id);
   }
@@ -7415,70 +8387,78 @@ class WidgetItem {
   }
 
   setLoading(isLoading) {
-    this.setState("loading", isLoading); // go through all parent to notify
+    this.setState('loading', isLoading);
+    this.emitEvent('isLoading', isLoading); // go through all parent to notify
 
     this.getParents().forEach(parentWidgetItem => {
       parentWidgetItem.setChildLoading(this.id, isLoading);
     });
   }
 
-  async validate(conditions, data) {
-    const engine = new dist.Engine(undefined, {
-      allowUndefinedFacts: true
+  setDirty() {
+    let dirty = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+    this.setState({
+      touched: dirty,
+      pristine: !dirty,
+      dirty
     });
-    engine.addRule({
-      conditions: {
-        all: conditions
-      },
-      event: {
-        type: "isTruthy"
-      }
-    });
-    return (await engine.run(data)).events.some(e => e.type === "isTruthy");
+    this.update();
   }
 
-  async runValidations() {
-    // get errors (or null if none)
-    const errors = await this._getValidationErrors(); // save error to widgetState
+  async runValidations(opts) {
+    var _errors;
 
-    this.setState("errors", errors); // update parent fields that they have children errors
-    // TODO
-    // return errors
+    if (opts !== null && opts !== void 0 && opts.setDirty) {
+      this.setDirty();
+    } // get errors (or null if none)
+
+
+    let errors = await this._getValidationErrors();
+    if (!((_errors = errors) !== null && _errors !== void 0 && _errors.length)) errors = null; // save error to widgetState
+
+    this.setState({
+      errors: errors || [],
+      valid: !errors,
+      hasErrors: !!errors
+    }); // update parent fields that they have children errors
+
+    const parentIds = this.getParentIds(); // go through each parent and notify them of children error changes
+
+    (parentIds || []).forEach(parentId => {
+      this._widgetItems[parentId].setChildErrors(this.id, errors);
+    });
+    this.update(); // return errors
 
     return errors;
   }
 
   async _getValidationErrors() {
-    var _this$validationRules;
+    var _this$validationRules2;
 
-    if (!((_this$validationRules = this.validationRules) !== null && _this$validationRules !== void 0 && _this$validationRules.length) || !(await this.isReflexive())) {
+    if (!((_this$validationRules2 = this.validationRules) !== null && _this$validationRules2 !== void 0 && _this$validationRules2.length) || !(await this.isReflexive())) {
       return null;
     } // get current widget's response
 
 
-    const response = this.getState("response"); // go through each validation, and return error string if
+    const response = this.getState('response'); // go through each validation, and return error string if
     // invalid, and null if valid.
     // Only store an array of errors
 
-    const widgetResponses = Object.keys(this.pageState.widgetState).reduce((responses, wStateKey) => {
-      const wState = this.pageState.widgetState[wStateKey];
-
-      if (wState.type === "question") {
-        responses[this._widgetItems[wStateKey].code || this._widgetItems[wStateKey].id] = wState.response;
-      }
-
-      return responses;
-    }, {});
+    const widgetResponses = this.responses;
+    const genericData = await this.validator.generateValidateGenericData();
     const errors = (await Promise.all(this.validationRules.map(async validation => {
-      const isValid = await this.validate(validation.conditions, {
+      const data = this.validator.sanitizeFacts({ ...genericData,
         properties: this.properties,
         // FIXME: store somewhere so doesn't need to keep computing this?
         ...widgetResponses,
-        response: response === undefined || response === "" ? null : response
-      }); // TODO: need to handle possible data to go with err message
+        response: response === undefined || response === '' ? null : response
+      });
+      const conditions = validation.conditions.map(c => this.validator.getRuleConditions(c, data)).flat(2);
+      const isValid = await this.validator.validate(conditions, data); // TODO: need to handle possible data to go with err message
 
       if (!isValid) return {
-        err: validation.error
+        err: validation.error,
+        isWarning: validation.isWarning
       };
       return null;
     }))).filter(a => a); // return error array or null
@@ -7487,15 +8467,14 @@ class WidgetItem {
   }
 
   addValidation(validation) {
-    var _this$validationRules2;
+    var _this$validationRules3;
 
-    (_this$validationRules2 = this.validationRules) === null || _this$validationRules2 === void 0 ? void 0 : _this$validationRules2.push(validation);
-
-    this._update();
+    (_this$validationRules3 = this.validationRules) === null || _this$validationRules3 === void 0 ? void 0 : _this$validationRules3.push(validation);
+    this.update();
   }
 
   setChildLoading(childWidgetId, isLoading) {
-    const currentChildLoadings = this.getState("childLoadings") || {};
+    const currentChildLoadings = this.getState('childLoadings') || {};
 
     if (!isLoading) {
       delete currentChildLoadings[childWidgetId];
@@ -7504,38 +8483,45 @@ class WidgetItem {
     }
 
     if (!Object.keys(currentChildLoadings).length) {
-      this.setState("childLoadings", undefined);
+      this.setState('childLoadings', undefined);
     } else {
-      this.setState("childLoadings", currentChildLoadings);
+      this.setState('childLoadings', currentChildLoadings);
     }
   }
 
   childLoadings() {
-    return this.getState("childLoadings");
+    return this.getState('childLoadings');
   }
 
   hasChildLoading() {
     return Object.keys(this.childLoadings() || {}).length > 0;
   }
 
-  setChildErrors(childWidgetId, errors) {
-    const currentChildErrors = this.getState("childErrors") || {};
+  async setChildErrors(childWidgetId, errors) {
+    const originalChildErrors = this.getState('childErrors') || {};
+    const currentChildErrors = { ...this.getState('childErrors')
+    } || {};
 
     if (!errors) {
       delete currentChildErrors[childWidgetId];
     } else {
       currentChildErrors[childWidgetId] = errors;
+    } // nothing to set, just return
+
+
+    if (Object.keys(currentChildErrors).length === Object.keys(originalChildErrors).length && Object.keys(currentChildErrors).every(key => originalChildErrors[key] === currentChildErrors[key])) {
+      return;
     }
 
     if (!Object.keys(currentChildErrors).length) {
-      this.setState("childErrors", undefined);
+      this.setState('childErrors', undefined);
     } else {
-      this.setState("childErrors", currentChildErrors);
+      this.setState('childErrors', currentChildErrors);
     }
   }
 
   childErrors() {
-    return this.getState("childErrors");
+    return this.getState('childErrors');
   }
 
   hasChildErrors() {
@@ -7544,13 +8530,59 @@ class WidgetItem {
 
   async runReflexives() {
     const isHide = !(await this.isReflexive());
-    const stateIsHide = !!this.getState("reflexiveHide");
+    const stateIsHide = !!this.getState('reflexiveHide');
 
     if (isHide !== stateIsHide) {
       await this.runValidations();
+      this.setState('reflexiveHide', isHide);
     }
 
-    this.setState("reflexiveHide", isHide);
+    if (isHide) {
+      this.setState({
+        response: null
+      });
+    }
+  }
+
+  getResponsesByCodesOrIds(codesOrIds) {
+    return codesOrIds.reduce((obj, codeOrId) => {
+      var _this$pageState$widge;
+
+      const widgetIdByCode = this.pageState.widgetCodeToIdMap[codeOrId]; // TODO: what if I want to be more generic
+      // and run rule by any param in widgetState and data
+
+      const response = (_this$pageState$widge = this.pageState.widgetState[widgetIdByCode]) === null || _this$pageState$widge === void 0 ? void 0 : _this$pageState$widge.response;
+      obj[codeOrId] = response;
+      return obj;
+    }, {});
+  }
+
+  get responses() {
+    if (!Object.keys(this._widgetItems).length) {
+      return {};
+    }
+
+    return Object.keys(this.pageState.widgetState).reduce((responses, wStateKey) => {
+      const wState = this.pageState.widgetState[wStateKey];
+
+      if (wState.type === 'question' && this._widgetItems[wStateKey]) {
+        var _this$_widgetItems$wS, _this$_widgetItems$wS2;
+
+        responses[((_this$_widgetItems$wS = this._widgetItems[wStateKey]) === null || _this$_widgetItems$wS === void 0 ? void 0 : _this$_widgetItems$wS.code) || ((_this$_widgetItems$wS2 = this._widgetItems[wStateKey]) === null || _this$_widgetItems$wS2 === void 0 ? void 0 : _this$_widgetItems$wS2.id)] = wState.response;
+      }
+
+      return responses;
+    }, {});
+  }
+
+  get validationFacts() {
+    return Validator.sanitizeFacts({ ...Validator.generateValidateGenericData(),
+      ...this.responses
+    });
+  }
+
+  get reflexiveRulesFacts() {
+    return this.getResponsesByCodesOrIds((this.reflexiveRules || []).reduce((arr, rule) => [...arr, ...this.validator.getRuleFacts(rule, this.responses)], []));
   }
 
   async isReflexive() {
@@ -7558,18 +8590,22 @@ class WidgetItem {
 
     if (!((_this$reflexiveRules2 = this.reflexiveRules) !== null && _this$reflexiveRules2 !== void 0 && _this$reflexiveRules2.length)) {
       return true;
+    } // extract all rules from reflexiveRules
+
+
+    const rules = this.reflexiveRules.map(r => this.validator.getRuleConditions(r, this.validationFacts)).flat(2); // go through each reflexive rule to generate
+    // a list of variable dependencies
+
+    const facts = this.reflexiveRulesFacts; // validate reflexive rules
+
+    const isReflexive = await this.validator.validate(rules, facts);
+    const stateIsHide = !!this.getState('reflexiveHide');
+
+    if (isReflexive === stateIsHide) {
+      this.setState('reflexiveHide', !isReflexive);
     }
 
-    return this.validate(this.reflexiveRules, this.reflexiveRules.reduce((obj, reflexive) => {
-      var _this$pageState$widge;
-
-      const widgetIdByCode = this.pageState.widgetCodeToIdMap[reflexive.fact]; // TODO: what if I want to be more generic
-      // and run rule by any param in widgetState and data
-
-      const response = (_this$pageState$widge = this.pageState.widgetState[widgetIdByCode]) === null || _this$pageState$widge === void 0 ? void 0 : _this$pageState$widge.response;
-      obj[reflexive.fact] = response;
-      return obj;
-    }, {}));
+    return isReflexive;
   }
 
   setState(key, value) {
@@ -7595,7 +8631,7 @@ class WidgetItem {
   }
 
   getParent() {
-    return this._widgetItems[this.parentId || ""] || null;
+    return this._widgetItems[this.parentId || ''] || null;
   }
 
   getChildrenIds(_opts, _meta) {
@@ -7619,39 +8655,104 @@ class WidgetItem {
 
 }
 
-//
-var script$$ = defineComponent({
+var script$11 = defineComponent({
+  inject: ['widgetEffectControls', 'setPageState'],
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
     view: String
   },
-  inject: ["widgetEffectControls", "setPageState"],
+
+  data() {
+    return {
+      isMounted: false
+    };
+  },
+
+  computed: {
+    widgetView() {
+      return this.view || 'display';
+    }
+
+  },
+
+  mounted() {
+    this.isMounted = true;
+  },
+
   methods: {
     onWidgetSelect() {
       // if (
-      //   this.$props.pageState.interactiveState.selectedWidgetId ===
-      //   this.$props.widget.id
+      //   this.pageState.interactiveState.selectedWidgetId ===
+      //   this.widget.id
       // ) {
-      //   this.$props.pageState.interactiveState.selectedWidgetId = "";
+      //   this.pageState.interactiveState.selectedWidgetId = "";
       // } else {
-      this.$props.pageState.interactiveState.selectedWidgetId = this.$props.widget.id; // }
+      this.pageState.interactiveState.selectedWidgetId = this.widget.id; // }
 
-      this.setPageState(this.$props.pageState);
+      this.setPageState(this.pageState);
+    },
+
+    getWidgetRender() {
+      var _this$widget;
+
+      let view = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'display';
+      let opts = arguments.length > 1 ? arguments[1] : undefined;
+      const widgetType = this.widgetControls[((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.type) || ''];
+
+      if (!widgetType) {
+        var _this$widget2;
+
+        if (opts !== null && opts !== void 0 && opts.nullable) {
+          return null;
+        }
+
+        throw new Error(`widget type [${(_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.type}] from widget [${this.widget.id}] was not found. Maybe the widget control was not imported`);
+      }
+
+      const widgetRender = widgetType[view];
+
+      if (!widgetRender) {
+        if (opts !== null && opts !== void 0 && opts.nullable) {
+          return null;
+        }
+
+        throw new Error(`widget view [${view}] does not exist for widget type [${this.widget.type}]`);
+      }
+
+      return widgetRender;
     }
 
   }
 });
 
 /* script */
-const __vue_script__$$ = script$$;
+const __vue_script__$11 = script$11;
 /* template */
 
-var __vue_render__$$ = function () {
+var __vue_render__$11 = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -7680,13 +8781,14 @@ var __vue_render__$$ = function () {
     tag: "component",
     attrs: {
       "widget": _vm.widget,
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "pageState": _vm.pageState,
-      "setWidgetState": function (key, value) {
+      "properties": _vm.widget.properties,
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "page-state": _vm.pageState,
+      "set-widget-state": function (key, value) {
         return _vm.setWidgetState(key, value, _vm.widget);
       },
-      "getWidgetState": function (key) {
+      "get-widget-state": function (key) {
         return _vm.getWidgetState(key, _vm.widget);
       },
       "view": _vm.view
@@ -7698,42 +8800,53 @@ var __vue_render__$$ = function () {
       selected: _vm.pageState.interactiveState.selectedWidgetId === _vm.widget.id,
       unselected: _vm.pageState.interactiveState.selectedWidgetId && _vm.pageState.interactiveState.selectedWidgetId !== _vm.widget.id
     }
-  }, [_vm._l(_vm.widget.effects, function (widgetEffect) {
+  }, [_vm.isMounted ? [_vm._l(_vm.widget.effects, function (widgetEffect) {
     return _c(_vm.widgetEffectControls[widgetEffect.type].display, {
       key: widgetEffect.type,
       tag: "component",
       attrs: {
         "properties": widgetEffect.properties,
-        "wrapperRef": _vm.$refs.widgetComponentWrapper
+        "wrapper-ref": _vm.$refs.widgetComponentWrapper
       }
     });
-  }), _vm._v(" "), _c(_vm.widgetControls[_vm.widget.type][_vm.view || 'display'], {
+  }), _vm._v(" "), _c(_vm.getWidgetRender(_vm.widgetView), {
     tag: "component",
     attrs: {
+      "id": "widget-" + _vm.widget.id,
+      "data-test": "widget-" + _vm.widget.code,
       "widget": _vm.widget,
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "pageState": _vm.pageState,
+      "properties": _vm.widget.properties,
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "page-state": _vm.pageState,
+      "set-widget-state": function (key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "get-widget-state": function (key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      },
+      "view": _vm.view,
+      "wrapper-ref": _vm.$refs.widgetComponentWrapper,
+      "t": _vm.widget.t
+    },
+    on: {
       "setWidgetState": function (key, value) {
         return _vm.setWidgetState(key, value, _vm.widget);
       },
       "getWidgetState": function (key) {
         return _vm.getWidgetState(key, _vm.widget);
-      },
-      "view": _vm.view,
-      "wrapperRef": _vm.$refs.widgetComponentWrapper,
-      "t": _vm.widget.t
+      }
     }
-  })], 2)], 1);
+  })] : _vm._e()], 2)], 1);
 };
 
-var __vue_staticRenderFns__$$ = [];
+var __vue_staticRenderFns__$11 = [];
 /* style */
 
-const __vue_inject_styles__$$ = function (inject) {
+const __vue_inject_styles__$11 = function (inject) {
   if (!inject) return;
-  inject("data-v-cde56c1a_0", {
-    source: ".widget-component-wrapper[data-v-cde56c1a]{position:relative}.widget-component-wrapper.selected[data-v-cde56c1a]{background-color:#fff;border:1px solid #86d5fa;border-radius:8px;padding:0 10px;margin:-1px -11px -1px -11px}.widget-wrapper[data-v-cde56c1a]{padding:0 10px}.widget-builder-control[data-v-cde56c1a]{position:absolute;top:-10px;left:10px;opacity:0;transition:opacity .2s;z-index:10}.widget-builder-control.hovered[data-v-cde56c1a]{opacity:1}",
+  inject("data-v-74e97d1a_0", {
+    source: ".widget-component-wrapper[data-v-74e97d1a]{position:relative}.widget-component-wrapper.selected[data-v-74e97d1a]{background-color:#fff;border:1px solid #86d5fa;border-radius:8px;padding:0 10px;margin:-1px -11px -1px -11px}.widget-wrapper[data-v-74e97d1a]{padding:0}.widget-builder-control[data-v-74e97d1a]{position:absolute;top:-10px;left:10px;opacity:0;transition:opacity .2s;z-index:10}.widget-builder-control.hovered[data-v-74e97d1a]{opacity:1}",
     map: undefined,
     media: undefined
   });
@@ -7741,28 +8854,28 @@ const __vue_inject_styles__$$ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$$ = "data-v-cde56c1a";
+const __vue_scope_id__$11 = "data-v-74e97d1a";
 /* module identifier */
 
-const __vue_module_identifier__$$ = undefined;
+const __vue_module_identifier__$11 = undefined;
 /* functional template */
 
-const __vue_is_functional_template__$$ = false;
+const __vue_is_functional_template__$11 = false;
 /* style inject SSR */
 
 /* style inject shadow dom */
 
-const __vue_component__$11 = /*#__PURE__*/normalizeComponent({
-  render: __vue_render__$$,
-  staticRenderFns: __vue_staticRenderFns__$$
-}, __vue_inject_styles__$$, __vue_script__$$, __vue_scope_id__$$, __vue_is_functional_template__$$, __vue_module_identifier__$$, false, createInjector, undefined, undefined);
+const __vue_component__$13 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$11,
+  staticRenderFns: __vue_staticRenderFns__$11
+}, __vue_inject_styles__$11, __vue_script__$11, __vue_scope_id__$11, __vue_is_functional_template__$11, __vue_module_identifier__$11, false, createInjector, undefined, undefined);
 
-var WidgetView = __vue_component__$11;
+var BuilderWidgetView = __vue_component__$13;
 
 //
-var script$_ = defineComponent({
+var script$10 = defineComponent({
   components: {
-    WidgetView
+    BuilderWidgetView
   },
   props: {
     widgetControls: Object,
@@ -7771,7 +8884,7 @@ var script$_ = defineComponent({
     onlyIncludeWidgetIds: R(String),
     forParent: String
   },
-  inject: ["widgetControls", "getPageState", "getView", "setPageState", "removeWidget"],
+  inject: ['widgetControls', 'getPageState', 'getView', 'setPageState', 'removeWidget'],
 
   data() {
     return {
@@ -7794,10 +8907,9 @@ var script$_ = defineComponent({
     },
 
     filteredWidgetItemsArr() {
-      const filteredArr = this.widgetItemsArr.filter(f => {
+      return this.widgetItemsArr.filter(f => {
         return (!this.forParent && !f.parentId || f.parentId === this.forParent) && (!this.$props.onlyIncludeWidgetIds || this.$props.onlyIncludeWidgetIds.includes(f.id)) && (!(this.excludeWidgetIds || []).length || !this.excludeWidgetIds.includes(f.id));
       }).sort((a, b) => (a.order || 0) - (b.order || 0));
-      return filteredArr;
     }
 
   },
@@ -7817,7 +8929,7 @@ var script$_ = defineComponent({
     },
 
     onDnDPlaceholderMouseUp(ev, widgetId) {
-      this.pageState.interactiveState.draggingWidgetId = "";
+      this.pageState.interactiveState.draggingWidgetId = '';
       this.setPageState(this.pageState);
     },
 
@@ -7831,7 +8943,7 @@ var script$_ = defineComponent({
     onMouseLeave(ev, widgetId) {
       if (this.$data.hoveredWidgetId !== widgetId) return;
       this.$data.hoveredWidgetId = -1;
-      this.pageState.interactiveState.hoveredWidgetId = "";
+      this.pageState.interactiveState.hoveredWidgetId = '';
       this.setPageState(this.pageState);
     },
 
@@ -7859,10 +8971,10 @@ var script$_ = defineComponent({
 });
 
 /* script */
-const __vue_script__$_ = script$_;
+const __vue_script__$10 = script$10;
 /* template */
 
-var __vue_render__$_ = function () {
+var __vue_render__$10 = function () {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -7904,14 +9016,14 @@ var __vue_render__$_ = function () {
           return _vm.onDnDPlaceholderMouseUp(ev, widget.id);
         }
       }
-    }, [_vm._v("\n        ↑↓\n      ")]), _vm._v(" "), _c('a', {
+    }, [_vm._v("\n          ↑↓\n        ")]), _vm._v(" "), _c('a', {
       staticClass: "delete-button",
       on: {
         "click": function () {
           return widget.removeWidget();
         }
       }
-    }, [_vm._v("\n        🗑\n      ")])]), _vm._v(" "), _c('div', {
+    }, [_vm._v("\n          🗑\n        ")])]), _vm._v(" "), _c('div', {
       staticClass: "add-line",
       class: {
         opened: _vm.openedAddOptionsIndex === widgetIndex
@@ -7951,15 +9063,15 @@ var __vue_render__$_ = function () {
             return _vm.addWidget(ev, widgetControlKey, widget, widgetIndex);
           }
         }
-      }, [_vm._v("\n            " + _vm._s(widgetControlKey) + "\n          ")]);
-    }), 0)])]), _vm._v(" "), _c('widget-view', {
+      }, [_vm._v("\n              " + _vm._s(widgetControlKey) + "\n            ")]);
+    }), 0)])]), _vm._v(" "), _c('builder-widget-view', {
       attrs: {
         "widget": widget,
-        "widgetControls": _vm.widgetControls,
-        "widgetItems": _vm.widgetItems,
-        "pageState": _vm.pageState,
-        "setWidgetState": _vm.setWidgetState,
-        "getWidgetState": _vm.getWidgetState,
+        "widget-controls": _vm.widgetControls,
+        "widget-items": _vm.widgetItems,
+        "page-state": _vm.pageState,
+        "set-widget-state": _vm.setWidgetState,
+        "get-widget-state": _vm.getWidgetState,
         "view": _vm.view
       }
     }), _vm._v(" "), widgetIndex === _vm.filteredWidgetItemsArr.length - 1 ? _c('div', {
@@ -8002,8 +9114,363 @@ var __vue_render__$_ = function () {
             return _vm.addWidget(ev, widgetControlKey, widget, widgetIndex + 1);
           }
         }
-      }, [_vm._v("\n            " + _vm._s(widgetControlKey) + "\n          ")]);
+      }, [_vm._v("\n              " + _vm._s(widgetControlKey) + "\n            ")]);
     }), 0)])]) : _vm._e()], 1);
+  }), 0);
+};
+
+var __vue_staticRenderFns__$10 = [];
+/* style */
+
+const __vue_inject_styles__$10 = function (inject) {
+  if (!inject) return;
+  inject("data-v-68166712_0", {
+    source: ".widget-container[data-v-68166712]{position:relative}.widget-container.notDragging[data-v-68166712]{opacity:.4}.widget-container.dragging[data-v-68166712]{opacity:1}.widget-form-control[data-v-68166712]{position:absolute;top:-40px;left:0}.add-line[data-v-68166712]{position:relative;padding:10px 0;margin:-10.5px 0;opacity:0;transition:opacity .2s;z-index:10}.add-line[data-v-68166712]:hover{opacity:1}.add-line .line[data-v-68166712]{width:100%;height:1px;background-color:#b5b5b5;cursor:pointer}.add-line .add-button[data-v-68166712]{position:absolute;top:-2px;left:-10px;width:20px;height:20px;background-color:#fff;border:1px solid #cdcdcd;border-radius:4px;display:flex;justify-content:center;align-items:center;padding-top:2px;box-shadow:0 0 10px 10px #fff;cursor:pointer;transition:background-color .3s}.add-line.opened .add-button[data-v-68166712]{background-color:#f71414;border:1px solid #f71414;color:#fff}.add-line.opened .add-button[data-v-68166712]:hover{background-color:#dc1212;border:1px solid #dc1212}.add-line .add-button span[data-v-68166712]{transition:all .3s}.add-line.opened .add-button span[data-v-68166712]{transform:rotate(45deg)}.add-line .add-button[data-v-68166712]:hover{background-color:#eaeaea}.add-line .add-options-wrapper[data-v-68166712]{margin-left:15px;position:absolute;top:-2px;left:0;width:100%;display:none}.add-line .add-options-wrapper.open[data-v-68166712]{display:block}.add-line .add-options-inner-wrapper[data-v-68166712]{width:100%;padding-bottom:10px;overflow-x:auto;display:flex;flex-direction:row}.add-line .add-options-wrapper a[data-v-68166712]{padding:2px 4px;cursor:pointer;background-color:#fff;border:1px solid #e8e8e8;border-radius:4px}.widget-container .dnd-placeholder[data-v-68166712]{width:20px;height:25px;padding-bottom:2px;background-color:#fafafa;border:1px dashed #dadada;cursor:grab;font-size:9pt;display:flex;justify-content:center;align-items:center;border-radius:4px}.widget-container .dnd-placeholder[data-v-68166712]:hover{background-color:#eaeaea}.left-actions-wrapper[data-v-68166712]{position:absolute;top:15px;left:-40px;padding:10px;opacity:0;transition:opacity .2s;width:25px;display:flex;flex-direction:column;align-items:center}.widget-container.hovering>.left-actions-wrapper[data-v-68166712]{opacity:1}.delete-button[data-v-68166712]{font-size:12px;margin:2px 0;padding:1px 0;cursor:pointer;color:red}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$10 = "data-v-68166712";
+/* module identifier */
+
+const __vue_module_identifier__$10 = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$10 = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$12 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$10,
+  staticRenderFns: __vue_staticRenderFns__$10
+}, __vue_inject_styles__$10, __vue_script__$10, __vue_scope_id__$10, __vue_is_functional_template__$10, __vue_module_identifier__$10, false, createInjector, undefined, undefined);
+
+var BuilderWidgetsLayout = __vue_component__$12;
+
+var script$$ = defineComponent({
+  props: {
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
+    view: String
+  },
+  inject: ['widgetEffectControls'],
+
+  data() {
+    return {
+      isMounted: false
+    };
+  },
+
+  computed: {
+    widgetView() {
+      return this.view || 'display';
+    }
+
+  },
+
+  mounted() {
+    this.isMounted = true;
+  },
+
+  methods: {
+    getWidgetEffectRender(effectType) {
+      let view = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'display';
+      const widgetEffectType = this.widgetEffectControls[effectType];
+
+      if (!widgetEffectType) {
+        throw new Error(`widget effect type [${effectType}] from widget [${this.widget.id}] was not found. Maybe the widget effect control was not imported`);
+      }
+
+      const widgetRender = widgetEffectType[view];
+
+      if (!widgetRender) {
+        throw new Error(`widget view [${view}] does not exist for widget effect type [${effectType}]`);
+      }
+
+      return widgetRender;
+    },
+
+    getWidgetRender() {
+      var _this$widget;
+
+      let view = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'display';
+      let opts = arguments.length > 1 ? arguments[1] : undefined;
+      const widgetType = this.widgetControls[((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.type) || ''];
+
+      if (!widgetType) {
+        var _this$widget2;
+
+        if (opts !== null && opts !== void 0 && opts.nullable) {
+          return null;
+        }
+
+        throw new Error(`widget type [${(_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.type}] from widget [${this.widget.id}] was not found. Maybe the widget control was not imported`);
+      }
+
+      const widgetRender = widgetType[view];
+
+      if (!widgetRender) {
+        if (opts !== null && opts !== void 0 && opts.nullable) {
+          return null;
+        }
+
+        throw new Error(`widget view [${view}] does not exist for widget type [${this.widget.type}]`);
+      }
+
+      return widgetRender;
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$$ = script$$;
+/* template */
+
+var __vue_render__$$ = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', {
+    staticClass: "widget-wrapper",
+    attrs: {
+      "widget-id": _vm.widget.id,
+      "widget-code": _vm.widget.code
+    }
+  }, [_vm.widget.style ? _c('style', {
+    tag: "component",
+    attrs: {
+      "scoped": ""
+    }
+  }, [_vm._v("\n    " + _vm._s(_vm.widget.style) + "\n  ")]) : _vm._e(), _vm._v(" "), _vm.view === 'builder' ? _c('div', {
+    staticClass: "widget-form-control"
+  }, [_c(_vm.getWidgetRender('builderControl', {
+    nullable: true
+  }), {
+    tag: "component",
+    attrs: {
+      "widget": _vm.widget,
+      "properties": _vm.widget.properties,
+      "widgetControls": _vm.widgetControls,
+      "widgetItems": _vm.widgetItems,
+      "pageState": _vm.pageState,
+      "setWidgetState": function (key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function (key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      },
+      "view": _vm.widgetView
+    },
+    on: {
+      "setWidgetState": function (key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function (key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      }
+    }
+  })], 1) : _vm._e(), _vm._v(" "), _c('div', {
+    ref: "widgetComponentWrapper",
+    class: ['widget-component-wrapper', "view-" + _vm.widgetView],
+    attrs: {
+      "id": "widget-wrapper-" + _vm.widget.id,
+      "data-test": "widget-wrapper-" + _vm.widget.code
+    }
+  }, [_vm.isMounted ? [_vm._l(_vm.widget.effects, function (widgetEffect) {
+    return _c(_vm.getWidgetEffectRender(widgetEffect.type, 'display'), {
+      key: widgetEffect.type,
+      tag: "component",
+      attrs: {
+        "properties": widgetEffect.properties,
+        "wrapperRef": _vm.$refs.widgetComponentWrapper
+      }
+    });
+  }), _vm._v(" "), _vm.widget ? _c(_vm.getWidgetRender(_vm.widgetView), {
+    tag: "component",
+    attrs: {
+      "id": "widget-" + _vm.widget.id,
+      "data-test": "widget-" + _vm.widget.code,
+      "widget": _vm.widget,
+      "properties": _vm.widget.properties,
+      "widgetControls": _vm.widgetControls,
+      "widgetItems": _vm.widgetItems,
+      "pageState": _vm.pageState,
+      "setWidgetState": function (key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function (key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      },
+      "view": _vm.widgetView,
+      "wrapperRef": _vm.$refs.widgetComponentWrapper,
+      "t": _vm.widget.t
+    },
+    on: {
+      "setWidgetState": function (key, value) {
+        return _vm.setWidgetState(key, value, _vm.widget);
+      },
+      "getWidgetState": function (key) {
+        return _vm.getWidgetState(key, _vm.widget);
+      }
+    }
+  }) : _vm._e()] : _vm._e()], 2)], 1);
+};
+
+var __vue_staticRenderFns__$$ = [];
+/* style */
+
+const __vue_inject_styles__$$ = function (inject) {
+  if (!inject) return;
+  inject("data-v-ed524fac_0", {
+    source: ".widget-component-wrapper[data-v-ed524fac]{position:relative}.widget-wrapper[data-v-ed524fac]{padding:0;scroll-margin:100px}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$$ = "data-v-ed524fac";
+/* module identifier */
+
+const __vue_module_identifier__$$ = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$$ = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$11 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$$,
+  staticRenderFns: __vue_staticRenderFns__$$
+}, __vue_inject_styles__$$, __vue_script__$$, __vue_scope_id__$$, __vue_is_functional_template__$$, __vue_module_identifier__$$, false, createInjector, undefined, undefined);
+
+var WidgetView = __vue_component__$11;
+
+//
+var script$_ = defineComponent({
+  components: {
+    WidgetView
+  },
+  props: {
+    widgetControls: Object,
+    widgetItems: Object,
+    excludeWidgetIds: R(String),
+    onlyIncludeWidgetIds: R(String),
+    widgetsOrder: R(String),
+    forParent: String,
+    view: String
+  },
+  inject: ['widgetControls', 'getPageState', 'getView', 'setPageState'],
+  computed: {
+    widgetView() {
+      return this.view || this.getView();
+    },
+
+    pageState() {
+      return this.getPageState();
+    },
+
+    widgetItemsArr() {
+      return Object.values(this.widgetItems);
+    },
+
+    filteredWidgetItemsArr() {
+      return this.widgetItemsArr.filter(f => {
+        return (!this.forParent && !f.parentId || f.parentId === this.forParent) && (!this.onlyIncludeWidgetIds || this.onlyIncludeWidgetIds.includes(f.id)) && (!(this.excludeWidgetIds || []).length || !this.excludeWidgetIds.includes(f.id));
+      }).sort((a, b) => {
+        const aOrder = (this.widgetsOrder || []).includes(a.id) ? this.widgetsOrder.indexOf(a.id) : a.order || 0;
+        const bOrder = (this.widgetsOrder || []).includes(b.id) ? this.widgetsOrder.indexOf(b.id) : b.order || 0;
+        return aOrder - bOrder;
+      });
+    }
+
+  },
+  methods: {
+    setWidgetState(key, value, widget) {
+      const pageState = this.pageState;
+
+      if (value === undefined) {
+        if (!pageState.widgetState[widget.id]) return;
+        delete pageState.widgetState[widget.id][key];
+      } else {
+        if (!pageState.widgetState[widget.id]) pageState.widgetState[widget.id] = {};
+        pageState.widgetState[widget.id][key] = value;
+      }
+
+      this.setPageState(pageState);
+    },
+
+    getWidgetState(key, widget) {
+      var _this$pageState$widge;
+
+      if (!key) {
+        return this.pageState.widgetState[widget.id];
+      }
+
+      return (_this$pageState$widge = this.pageState.widgetState[widget.id]) === null || _this$pageState$widge === void 0 ? void 0 : _this$pageState$widge[key];
+    }
+
+  }
+});
+
+/* script */
+const __vue_script__$_ = script$_;
+/* template */
+
+var __vue_render__$_ = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c('div', _vm._l(_vm.filteredWidgetItemsArr, function (widget) {
+    return _c('div', {
+      key: widget.id,
+      staticClass: "widget-container"
+    }, [!widget.getState('reflexiveHide') ? _c('widget-view', {
+      attrs: {
+        "widget": widget,
+        "widget-controls": _vm.widgetControls,
+        "widget-items": _vm.widgetItems,
+        "page-state": _vm.pageState,
+        "set-widget-state": _vm.setWidgetState,
+        "get-widget-state": _vm.getWidgetState,
+        "view": _vm.widgetView
+      }
+    }) : _vm._e()], 1);
   }), 0);
 };
 
@@ -8012,8 +9479,8 @@ var __vue_staticRenderFns__$_ = [];
 
 const __vue_inject_styles__$_ = function (inject) {
   if (!inject) return;
-  inject("data-v-1bdc9e34_0", {
-    source: ".widget-container[data-v-1bdc9e34]{position:relative}.widget-container.notDragging[data-v-1bdc9e34]{opacity:.4}.widget-container.dragging[data-v-1bdc9e34]{opacity:1}.widget-form-control[data-v-1bdc9e34]{position:absolute;top:-40px;left:0}.add-line[data-v-1bdc9e34]{position:relative;padding:10px 0;margin:-10.5px 0;opacity:0;transition:opacity .2s;z-index:10}.add-line[data-v-1bdc9e34]:hover{opacity:1}.add-line .line[data-v-1bdc9e34]{width:100%;height:1px;background-color:#b5b5b5;cursor:pointer}.add-line .add-button[data-v-1bdc9e34]{position:absolute;top:-2px;left:-10px;width:20px;height:20px;background-color:#fff;border:1px solid #cdcdcd;border-radius:4px;display:flex;justify-content:center;align-items:center;padding-top:2px;box-shadow:0 0 10px 10px #fff;cursor:pointer;transition:background-color .3s}.add-line.opened .add-button[data-v-1bdc9e34]{background-color:#f71414;border:1px solid #f71414;color:#fff}.add-line.opened .add-button[data-v-1bdc9e34]:hover{background-color:#dc1212;border:1px solid #dc1212}.add-line .add-button span[data-v-1bdc9e34]{transition:all .3s}.add-line.opened .add-button span[data-v-1bdc9e34]{transform:rotate(45deg)}.add-line .add-button[data-v-1bdc9e34]:hover{background-color:#eaeaea}.add-line .add-options-wrapper[data-v-1bdc9e34]{margin-left:15px;position:absolute;top:-2px;left:0;width:100%;display:none}.add-line .add-options-wrapper.open[data-v-1bdc9e34]{display:block}.add-line .add-options-inner-wrapper[data-v-1bdc9e34]{width:100%;padding-bottom:10px;overflow-x:auto;display:flex;flex-direction:row}.add-line .add-options-wrapper a[data-v-1bdc9e34]{padding:2px 4px;cursor:pointer;background-color:#fff;border:1px solid #e8e8e8;border-radius:4px}.widget-container .dnd-placeholder[data-v-1bdc9e34]{width:20px;height:25px;padding-bottom:2px;background-color:#fafafa;border:1px dashed #dadada;cursor:grab;font-size:9pt;display:flex;justify-content:center;align-items:center;border-radius:4px}.widget-container .dnd-placeholder[data-v-1bdc9e34]:hover{background-color:#eaeaea}.left-actions-wrapper[data-v-1bdc9e34]{position:absolute;top:15px;left:-40px;padding:10px;opacity:0;transition:opacity .2s;width:25px;display:flex;flex-direction:column;align-items:center}.widget-container.hovering>.left-actions-wrapper[data-v-1bdc9e34]{opacity:1}.delete-button[data-v-1bdc9e34]{font-size:12px;margin:2px 0;padding:1px 0;cursor:pointer;color:red}",
+  inject("data-v-68b249e9_0", {
+    source: ".widget-container[data-v-68b249e9]{position:relative}",
     map: undefined,
     media: undefined
   });
@@ -8021,7 +9488,7 @@ const __vue_inject_styles__$_ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$_ = "data-v-1bdc9e34";
+const __vue_scope_id__$_ = "data-v-68b249e9";
 /* module identifier */
 
 const __vue_module_identifier__$_ = undefined;
@@ -8037,24 +9504,401 @@ const __vue_component__$10 = /*#__PURE__*/normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$_
 }, __vue_inject_styles__$_, __vue_script__$_, __vue_scope_id__$_, __vue_is_functional_template__$_, __vue_module_identifier__$_, false, createInjector, undefined, undefined);
 
-var BuilderWidgetsLayout = __vue_component__$10;
+var WidgetsLayout = __vue_component__$10;
 
-//
+class PagesWidgetItem extends WidgetItem {
+  constructor(opts) {
+    super(opts);
+
+    _defineProperty(this, "isSubmitting", false);
+  }
+
+  getSortedPages() {
+    // FIXME: should be sorted, but this creates loop in UI
+    return this.properties.pages; // return this.properties.pages.sort((a, b) => (a.idx || 0) - (b.idx || 0));
+  }
+
+  isWidgetIdInWidgetIds(widgetId, inWidgetIds) {
+    return inWidgetIds.some(wId => {
+      return wId === widgetId || this.isWidgetIdInWidgetIds(widgetId, this._widgetItems[wId].getChildrenIds());
+    });
+  }
+
+  getChildIndexByWidgetId(widgetId) {
+    return this.getSortedPages().findIndex(page => {
+      return this.isWidgetIdInWidgetIds(widgetId, page.children);
+    });
+  }
+
+  getChildrenIds(opts, meta) {
+    return this.getSortedPages().filter((p, pIndex) => {
+      var _meta$inPageIndices;
+
+      if (meta !== null && meta !== void 0 && (_meta$inPageIndices = meta.inPageIndices) !== null && _meta$inPageIndices !== void 0 && _meta$inPageIndices.length) {
+        return meta.inPageIndices.includes(pIndex);
+      } else if (meta !== null && meta !== void 0 && meta.currentPageIndexOnly) {
+        return pIndex === this.currentPageIndex;
+      }
+
+      return p;
+    }).reduce((arr, page) => {
+      return [...arr, ...page.children, ...(opts !== null && opts !== void 0 && opts.deep ? page.children.reduce((childArr, childId) => {
+        return [...childArr, ...this._widgetItems[childId].getChildrenIds(opts, meta)];
+      }, []) : [])];
+    }, []);
+  }
+
+  setChildLoading(childWidgetId, isLoading) {
+    // run original function to store the general state
+    super.setChildLoading(childWidgetId, isLoading); // also store widget loading by children index
+    // get current page index loading object from state
+
+    const pageIndexLoadings = this.getState('pageIdxLoadings') || {}; // find which index this childWidget belongs to
+
+    const childIndex = this.getChildIndexByWidgetId(childWidgetId);
+
+    if (childIndex === -1) {
+      throw new Error(`child widget [${childWidgetId}] not in paging ${this.id}`);
+    }
+
+    if (!isLoading) {
+      var _pageIndexLoadings$ch;
+
+      (_pageIndexLoadings$ch = pageIndexLoadings[childIndex]) === null || _pageIndexLoadings$ch === void 0 ? true : delete _pageIndexLoadings$ch[childWidgetId];
+      if (!Object.keys(pageIndexLoadings[childIndex] || {}).length) delete pageIndexLoadings[childIndex];
+    } else {
+      if (!pageIndexLoadings[childIndex]) {
+        pageIndexLoadings[childIndex] = {};
+      }
+
+      pageIndexLoadings[childIndex][childWidgetId] = isLoading;
+    } // save pageIdxErrors to state
+
+
+    this.setState('pageIdxLoadings', Object.keys(pageIndexLoadings).length ? pageIndexLoadings : undefined);
+  }
+
+  pageIndexHasLoadings(idx, opts) {
+    const pageIdxLoadings = this.getState('pageIdxLoadings') || {}; // if no pageIdxLoadings, just return false
+
+    if (!Object.keys(pageIdxLoadings || []).length) return false; // if current index doesn't have issues, that means
+    // neither this page idx nor its children have any
+    // loadings, so just return false
+
+    if (!Object.keys(pageIdxLoadings[idx] || {}).length) return false; // if navigation integrate children pages, then check if
+    // child pages has loadings in its CURRENT page idx
+
+    const childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
+      first: true,
+      inPageIndices: [this.currentPageIndex]
+    }) : null;
+
+    if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== 'none') {
+      return opts !== null && opts !== void 0 && opts.allChildPages ? childPagesWidget.hasChildLoading() : childPagesWidget.currentPageIndexHasLoadings(opts);
+    } // since don't need to handle child pages widget and
+    // current page idx has errors, return true
+
+
+    return true;
+  }
+
+  currentPageIndexHasLoadings(opts) {
+    return this.pageIndexHasLoadings(this.currentPageIndex, opts);
+  }
+
+  async setChildErrors(childWidgetId, errors) {
+    // run original function to store the general state
+    super.setChildErrors(childWidgetId, errors);
+    const err = (await this._widgetItems[childWidgetId].isReflexive()) ? errors : null; // also store widget errors by children index
+    // get current page index errors object from state
+
+    const originalPageIndexErrors = this.getState('pageIdxErrors') || {};
+    const pageIndexErrors = { ...this.getState('pageIdxErrors')
+    } || {}; // find which index this childWidget belongs to
+
+    const childIndex = this.getChildIndexByWidgetId(childWidgetId);
+
+    if (childIndex === -1) {
+      throw new Error(`child widget [${childWidgetId}] not in paging ${this.id}`);
+    }
+
+    if (!err) {
+      var _pageIndexErrors$chil;
+
+      (_pageIndexErrors$chil = pageIndexErrors[childIndex]) === null || _pageIndexErrors$chil === void 0 ? true : delete _pageIndexErrors$chil[childWidgetId];
+      if (!Object.keys(pageIndexErrors[childIndex] || {}).length) delete pageIndexErrors[childIndex];
+    } else {
+      if (!pageIndexErrors[childIndex]) {
+        pageIndexErrors[childIndex] = {};
+      }
+
+      pageIndexErrors[childIndex][childWidgetId] = err;
+    } // nothing to set, just return
+
+
+    if (Object.keys(pageIndexErrors).length === Object.keys(originalPageIndexErrors).length && Object.keys(pageIndexErrors).every(key => originalPageIndexErrors[key] === pageIndexErrors[key])) {
+      return;
+    } // save pageIdxErrors to state
+
+
+    this.setState('pageIdxErrors', Object.keys(pageIndexErrors).length ? pageIndexErrors : undefined);
+  }
+
+  addChild(childWidget, meta) {
+    super.addChild(childWidget, meta);
+
+    this._widget.properties.pages[(meta === null || meta === void 0 ? void 0 : meta.pageIdx) || 0].children.splice((meta === null || meta === void 0 ? void 0 : meta.childIdx) || 0, 0, childWidget.id);
+  }
+
+  removeChild(childWidget) {
+    super.removeChild(childWidget);
+
+    this._widget.properties.pages.forEach(page => {
+      page.children = page.children.filter(c => c !== childWidget.id);
+    });
+
+    this._update(this);
+  }
+
+  onChangePageIndex(toIndex) {
+    const sortedPages = this.getSortedPages();
+    if (toIndex < 0) return;
+    if (toIndex > sortedPages.length - 1) return;
+    this.setState('currentPageIndex', toIndex);
+  }
+
+  get currentPageIndex() {
+    return this.getState('currentPageIndex') || 0;
+  }
+
+  getParentPagesWidgets(opts) {
+    const parentPages = this.getParents().filter(w => w.type === 'pages');
+    return opts !== null && opts !== void 0 && opts.first ? parentPages[0] : parentPages;
+  }
+
+  getChildrenPagesWidgets(opts) {
+    const childrenPages = this.getChildren({
+      deep: true
+    }, {
+      inPageIndices: opts === null || opts === void 0 ? void 0 : opts.inPageIndices
+    }).filter(w => w.type === 'pages');
+    return opts !== null && opts !== void 0 && opts.first ? childrenPages[0] : childrenPages;
+  }
+
+  pageIndexHasErrors(idx, opts) {
+    const pageIdxErrors = this.getState('pageIdxErrors') || {}; // if no pageIdxErrors, just return false
+
+    if (!Object.keys(pageIdxErrors || []).length) return false; // if current index doesn't have issues, that means
+    // neither this page idx nor its children have any
+    // errors, so just return false
+
+    if (!Object.keys(pageIdxErrors[idx] || {}).filter(widgetId => !(opts !== null && opts !== void 0 && opts.skipPristine) || !this._widgetItems[widgetId].getState('pristine')).length) return false; // if navigation integrate children pages, then check if
+    // child pages has error in its CURRENT page idx
+
+    const childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
+      first: true,
+      inPageIndices: [this.currentPageIndex]
+    }) : null;
+
+    if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== 'none') {
+      return opts !== null && opts !== void 0 && opts.allChildPages ? childPagesWidget.hasChildErrors() : childPagesWidget.currentPageIndexHasErrors(opts);
+    } // since don't need to handle child pages widget and
+    // current page idx has errors, return true
+
+
+    return true;
+  }
+
+  currentPageIndexHasErrors(opts) {
+    return this.pageIndexHasErrors(this.currentPageIndex, opts);
+  }
+
+  async toNextPage() {
+    const children = this.getChildren({
+      deep: true
+    }, {
+      currentPageIndexOnly: true
+    });
+    const hasErrors = (await Promise.all(children.map(async child => {
+      if (child.getState('pristine')) {
+        child.setState({
+          pristine: false,
+          dirty: true
+        });
+        child.update();
+      }
+
+      return (await child.isReflexive()) ? child.runValidations() : null;
+    }))).some(err => (err || []).some(e => !e.isWarning));
+
+    if (!hasErrors) {
+      // update current pages or, if
+      // navigationIntegrateParentPage is true,
+      // update parent's instead
+      // get next type first to determine which to update
+      const nextType = this.nextButtonType();
+
+      if (nextType === 'complete') {
+        const pageErrors = this.properties.pages.map((_, pageIdx) => {
+          return this.pageIndexHasErrors(pageIdx, {
+            allChildPages: true,
+            includeWarnings: false
+          });
+        });
+        this.isSubmitting = true;
+        await this.emitEvent('pages_complete', {
+          pageErrors,
+          hasErrors: pageErrors.some(hasError => hasError),
+          pageWidget: this
+        });
+        this.isSubmitting = false;
+      } else if (nextType === 'none') {
+        // wasn't suppose to show, just skip it
+        return;
+      } else {
+        // current pages at end, so update parent's
+        const childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
+          first: true,
+          inPageIndices: [this.currentPageIndex]
+        }) : null;
+
+        if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== 'none') {
+          childPagesWidget.toNextPage();
+        } else {
+          this.onChangePageIndex(this.currentPageIndex + 1);
+          this.emitEvent('pages_page_change', this.currentPageIndex);
+        }
+      }
+    }
+  }
+
+  toPreviousPage() {
+    // get previous type first to determine which to update
+    const previousType = this.previousButtonType();
+
+    if (previousType === 'none') {
+      // wasn't suppose to be clicked, so just ignore
+      return;
+    }
+
+    const childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
+      first: true,
+      inPageIndices: [this.currentPageIndex]
+    }) : null;
+
+    if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.previousButtonType()) !== 'none') {
+      childPagesWidget.toPreviousPage();
+    } else {
+      this.onChangePageIndex(this.currentPageIndex - 1);
+      this.emitEvent('pages_page_change', this.currentPageIndex);
+    }
+  }
+
+  previousButtonType() {
+    // check whether this pages widget is at its end
+    const isCurrentPageAtEnd = this.currentPageIndex <= 0; // check if there is any parents. Just get the immediate one
+
+    const childPages = this.getChildrenPagesWidgets({
+      first: true
+    }); // if we don't need to integrate with parent pages or
+    // current pages is not at its end yet, just return
+    // based on current pages' state
+
+    if (!this.properties.navigationIntegrateChildrenPages || !childPages || childPages.properties.detachParentIntegration || !isCurrentPageAtEnd) {
+      if (isCurrentPageAtEnd) {
+        return 'none';
+      }
+
+      return 'previous';
+    } // return whether parent should be at its end
+
+
+    return childPages.previousButtonType();
+  }
+
+  nextButtonType() {
+    // check whether this pages widget is at its end
+    const isCurrentPageAtEnd = this.currentPageIndex >= this._widget.properties.pages.length - 1; // check if there is any parents. Just get the immediate one
+
+    const childPages = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
+      first: true
+    }) : null; // if we don't need to integrate with parent pages or
+    // current pages is not at its end yet, just return
+    // based on current pages' state
+
+    if (!this.properties.navigationIntegrateChildrenPages || !childPages || childPages.nextButtonType() === 'none' || childPages.properties.detachParentIntegration || !isCurrentPageAtEnd) {
+      if (isCurrentPageAtEnd) {
+        return this.properties.hasCompleteButton ? 'complete' : 'none';
+      }
+
+      return 'next';
+    } // return whether parent should be at its end
+
+
+    return childPages.nextButtonType();
+  }
+
+  hasPreviousButton() {
+    return !!this.properties.navigationVisible && this.previousButtonType() !== 'none';
+  }
+
+  hasNextButton() {
+    return !!this.properties.navigationVisible && this.nextButtonType() !== 'none';
+  }
+
+}
+
+const WidgetControlProps$c = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$Z = defineComponent({
   components: {
     WidgetsLayout,
     BuilderWidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+  props: { ...WidgetControlProps$c,
+    widget: {
+      type: PagesWidgetItem,
+      required: true
+    }
   },
 
   data() {
@@ -8067,22 +9911,25 @@ var script$Z = defineComponent({
     currentPageIndex() {
       var _this$pageState$widge, _this$pageState$widge2;
 
-      return ((_this$pageState$widge = this.pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.$props.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
+      return ((_this$pageState$widge = this.pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
     }
 
   },
   watch: {
     currentPageIndex: {
       handler() {
-        const viewedIndices = this.$props.widget.getState("viewedIndices");
-        this.$props.widget.setState("viewedIndices", [...new Set([...(viewedIndices || []), this.currentPageIndex])]);
+        const viewedIndices = this.widget.getState('viewedIndices') || [];
+
+        if (!viewedIndices.includes(this.currentPageIndex)) {
+          this.widget.setState('viewedIndices', [...viewedIndices, this.currentPageIndex]);
+        }
       },
 
       immediate: true
     },
-    "widget.properties.pages": {
+    'widget.properties.pages': {
       handler() {
-        this.$data.sortedPages = this.$props.widget.getSortedPages();
+        this.sortedPages = this.widget.getSortedPages();
       },
 
       immediate: true
@@ -8124,10 +9971,10 @@ var __vue_render__$Z = function () {
     staticClass: "pages-content-item"
   }, [_c('builder-widgets-layout', {
     attrs: {
-      "widgetItems": _vm.widgetItems,
-      "excludeWidgetIds": [_vm.widget.id],
-      "onlyIncludeWidgetIds": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : [],
-      "forParent": _vm.widget.id
+      "widget-items": _vm.widgetItems,
+      "exclude-widget-ids": [_vm.widget.id],
+      "only-include-widget-ids": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : [],
+      "for-parent": _vm.widget.id
     }
   })], 1), _vm._v(" "), _vm.widget.properties.navigationVisible ? _c('div', {
     staticClass: "back-forward-wrapper"
@@ -8156,8 +10003,8 @@ var __vue_staticRenderFns__$Z = [];
 
 const __vue_inject_styles__$Z = function (inject) {
   if (!inject) return;
-  inject("data-v-37b95a70_0", {
-    source: ".pages-menu-wrapper[data-v-37b95a70]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-37b95a70]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-37b95a70]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-37b95a70]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-37b95a70]{border-color:red}.back-forward-wrapper[data-v-37b95a70]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-37b95a70]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-37b95a70]{background-color:red;color:#fff;opacity:.2;cursor:default}",
+  inject("data-v-6a25db02_0", {
+    source: ".pages-menu-wrapper[data-v-6a25db02]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-6a25db02]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-6a25db02]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-6a25db02]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-6a25db02]{border-color:red}.back-forward-wrapper[data-v-6a25db02]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-6a25db02]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-6a25db02]{background-color:red;color:#fff;opacity:.2;cursor:default}",
     map: undefined,
     media: undefined
   });
@@ -8165,7 +10012,7 @@ const __vue_inject_styles__$Z = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$Z = "data-v-37b95a70";
+const __vue_scope_id__$Z = "data-v-6a25db02";
 /* module identifier */
 
 const __vue_module_identifier__$Z = undefined;
@@ -8188,7 +10035,7 @@ var script$Y = defineComponent({
     widget: Object,
     t: Function
   },
-  inject: ["updateWidget", "setMessage", "getLocale"],
+  inject: ['updateWidget', 'setMessage', 'getLocale'],
   methods: {
     setPageLabel(pageIndex, label) {
       this.setMessage({
@@ -8303,8 +10150,8 @@ var __vue_staticRenderFns__$Y = [];
 
 const __vue_inject_styles__$Y = function (inject) {
   if (!inject) return;
-  inject("data-v-48a49774_0", {
-    source: ".section[data-v-48a49774]{padding:15px 5px}label[data-v-48a49774]{display:block;padding:5px 0}.page-item[data-v-48a49774]{padding:5px 0;display:flex;flex-direction:row;justify-content:space-between}.page-item input[data-v-48a49774]{flex:1;border-width:0 0 1px 0;outline:0}.page-item .delete-page-button[data-v-48a49774]{padding-right:5px;padding-left:5px}",
+  inject("data-v-47418e34_0", {
+    source: ".section[data-v-47418e34]{padding:15px 5px}label[data-v-47418e34]{display:block;padding:5px 0}.page-item[data-v-47418e34]{padding:5px 0;display:flex;flex-direction:row;justify-content:space-between}.page-item input[data-v-47418e34]{flex:1;border-width:0 0 1px 0;outline:0}.page-item .delete-page-button[data-v-47418e34]{padding-right:5px;padding-left:5px}",
     map: undefined,
     media: undefined
   });
@@ -8312,7 +10159,7 @@ const __vue_inject_styles__$Y = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$Y = "data-v-48a49774";
+const __vue_scope_id__$Y = "data-v-47418e34";
 /* module identifier */
 
 const __vue_module_identifier__$Y = undefined;
@@ -8330,20 +10177,56 @@ const __vue_component__$_ = /*#__PURE__*/normalizeComponent({
 
 var BuilderForm$2 = __vue_component__$_;
 
-//
+let WidgetControlProps$b = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$X = defineComponent({
   components: {
     WidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
+  props: { ...WidgetControlProps$b,
+    widget: {
+      type: Object,
+      required: true
+    },
     t: Function
   },
 
@@ -8355,24 +10238,27 @@ var script$X = defineComponent({
 
   computed: {
     currentPageIndex() {
-      var _this$pageState$widge, _this$pageState$widge2;
+      var _this$pageState, _this$pageState$widge, _this$pageState$widge2;
 
-      return ((_this$pageState$widge = this.pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.$props.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
+      return ((_this$pageState = this.pageState) === null || _this$pageState === void 0 ? void 0 : (_this$pageState$widge = _this$pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
     }
 
   },
   watch: {
     currentPageIndex: {
       handler() {
-        const viewedIndices = this.$props.widget.getState("viewedIndices");
-        this.$props.widget.setState("viewedIndices", [...new Set([...(viewedIndices || []), this.currentPageIndex])]);
+        const viewedIndices = this.widget.getState('viewedIndices') || [];
+
+        if (!viewedIndices.includes(this.currentPageIndex)) {
+          this.widget.setState('viewedIndices', [...viewedIndices, this.currentPageIndex]);
+        }
       },
 
       immediate: true
     },
-    "widget.properties.pages": {
+    'widget.properties.pages': {
       handler() {
-        this.$data.sortedPages = this.$props.widget.getSortedPages();
+        this.sortedPages = this.widget.getSortedPages();
       },
 
       immediate: true
@@ -8405,6 +10291,8 @@ var __vue_render__$X = function () {
         unopened: !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)
       },
       attrs: {
+        "id": "pages-" + _vm.widget.id + "-" + pageIndex,
+        "data-test": "pages-" + _vm.widget.code + "-" + pageIndex,
         "disabled": !(_vm.widget.getState('viewedIndices') || []).includes(pageIndex)
       },
       on: {
@@ -8417,11 +10305,11 @@ var __vue_render__$X = function () {
     staticClass: "pages-content-item"
   }, [_c('widgets-layout', {
     attrs: {
-      "widgetItems": _vm.widgetItems,
-      "excludeWidgetIds": [_vm.widget.id],
-      "onlyIncludeWidgetIds": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : undefined,
-      "widgetsOrder": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : undefined,
-      "forParent": _vm.widget.id
+      "widget-items": _vm.widgetItems,
+      "exclude-widget-ids": [_vm.widget.id],
+      "only-include-widget-ids": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : undefined,
+      "widgets-order": _vm.sortedPages.length && _vm.currentPageIndex > -1 ? _vm.sortedPages[_vm.currentPageIndex].children : undefined,
+      "for-parent": _vm.widget.id
     }
   })], 1), _vm._v(" "), _vm.widget.properties.navigationVisible ? _c('div', {
     staticClass: "back-forward-wrapper"
@@ -8457,8 +10345,8 @@ var __vue_staticRenderFns__$X = [];
 
 const __vue_inject_styles__$X = function (inject) {
   if (!inject) return;
-  inject("data-v-f939f234_0", {
-    source: ".pages-menu-wrapper[data-v-f939f234]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-f939f234]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-f939f234]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-f939f234]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-f939f234]{border-color:red}.back-forward-wrapper[data-v-f939f234]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-f939f234]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-f939f234]{background-color:red;color:#fff;opacity:.2;cursor:default}.back-forward-button.submitting[data-v-f939f234]{opacity:.2}",
+  inject("data-v-8d79d2a6_0", {
+    source: ".pages-menu-wrapper[data-v-8d79d2a6]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-8d79d2a6]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-8d79d2a6]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-8d79d2a6]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-8d79d2a6]{border-color:red}.back-forward-wrapper[data-v-8d79d2a6]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-8d79d2a6]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-8d79d2a6]{background-color:red;color:#fff;opacity:.2;cursor:default}.back-forward-button.submitting[data-v-8d79d2a6]{opacity:.2}",
     map: undefined,
     media: undefined
   });
@@ -8466,7 +10354,7 @@ const __vue_inject_styles__$X = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$X = "data-v-f939f234";
+const __vue_scope_id__$X = "data-v-8d79d2a6";
 /* module identifier */
 
 const __vue_module_identifier__$X = undefined;
@@ -8484,359 +10372,93 @@ const __vue_component__$Z = /*#__PURE__*/normalizeComponent({
 
 var Display$b = __vue_component__$Z;
 
-class PagesWidgetItem extends WidgetItem {
-  constructor(opts) {
-    super(opts);
-
-    _defineProperty(this, "isSubmitting", false);
+let WidgetControlProps$a = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
   }
-
-  getSortedPages() {
-    // FIXME: should be sorted, but this creates loop in UI
-    return this.properties.pages; // return this.properties.pages.sort((a, b) => (a.idx || 0) - (b.idx || 0));
-  }
-
-  isWidgetIdInWidgetIds(widgetId, inWidgetIds) {
-    return inWidgetIds.some(wId => {
-      return wId === widgetId || this.isWidgetIdInWidgetIds(widgetId, this._widgetItems[wId].getChildrenIds());
-    });
-  }
-
-  getChildIndexByWidgetId(widgetId) {
-    return this.getSortedPages().findIndex(page => {
-      return this.isWidgetIdInWidgetIds(widgetId, page.children);
-    });
-  }
-
-  getChildrenIds(opts, meta) {
-    return this.getSortedPages().filter((p, pIndex) => {
-      var _meta$inPageIndices;
-
-      if (meta !== null && meta !== void 0 && (_meta$inPageIndices = meta.inPageIndices) !== null && _meta$inPageIndices !== void 0 && _meta$inPageIndices.length) {
-        return meta.inPageIndices.includes(pIndex);
-      } else if (meta !== null && meta !== void 0 && meta.currentPageIndexOnly) {
-        return pIndex === this.currentPageIndex;
-      }
-
-      return p;
-    }).reduce((arr, page) => {
-      return [...arr, ...page.children, ...(opts !== null && opts !== void 0 && opts.deep ? page.children.reduce((childArr, childId) => {
-        return [...childArr, ...this._widgetItems[childId].getChildrenIds(opts, meta)];
-      }, []) : [])];
-    }, []);
-  }
-
-  setChildLoading(childWidgetId, isLoading) {
-    // run original function to store the general state
-    super.setChildLoading(childWidgetId, isLoading); // also store widget loading by children index
-    // get current page index loading object from state
-
-    const pageIndexLoadings = this.getState("pageIdxLoadings") || {}; // find which index this childWidget belongs to
-
-    const childIndex = this.getChildIndexByWidgetId(childWidgetId);
-
-    if (childIndex === -1) {
-      throw new Error("child widget not in paging");
-    }
-
-    if (!isLoading) {
-      var _pageIndexLoadings$ch;
-
-      (_pageIndexLoadings$ch = pageIndexLoadings[childIndex]) === null || _pageIndexLoadings$ch === void 0 ? true : delete _pageIndexLoadings$ch[childWidgetId];
-      if (!Object.keys(pageIndexLoadings[childIndex] || {}).length) delete pageIndexLoadings[childIndex];
-    } else {
-      if (!pageIndexLoadings[childIndex]) {
-        pageIndexLoadings[childIndex] = {};
-      }
-
-      pageIndexLoadings[childIndex][childWidgetId] = isLoading;
-    } // save pageIdxErrors to state
-
-
-    this.setState("pageIdxLoadings", Object.keys(pageIndexLoadings).length ? pageIndexLoadings : undefined);
-  }
-
-  pageIndexHasLoadings(idx, opts) {
-    const pageIdxLoadings = this.getState("pageIdxLoadings") || {}; // if no pageIdxLoadings, just return false
-
-    if (!Object.keys(pageIdxLoadings || []).length) return false; // if current index doesn't have issues, that means
-    // neither this page idx nor its children have any
-    // loadings, so just return false
-
-    if (!Object.keys(pageIdxLoadings[idx] || {}).length) return false; // if navigation integrate children pages, then check if
-    // child pages has loadings in its CURRENT page idx
-
-    const childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
-      first: true,
-      inPageIndices: [this.currentPageIndex]
-    }) : null;
-
-    if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
-      return opts !== null && opts !== void 0 && opts.allChildPages ? childPagesWidget.hasChildLoading() : childPagesWidget.currentPageIndexHasLoadings(opts);
-    } // since don't need to handle child pages widget and
-    // current page idx has errors, return true
-
-
-    return true;
-  }
-
-  currentPageIndexHasLoadings(opts) {
-    return this.pageIndexHasLoadings(this.currentPageIndex, opts);
-  }
-
-  setChildErrors(childWidgetId, errors) {
-    // run original function to store the general state
-    super.setChildErrors(childWidgetId, errors); // also store widget errors by children index
-    // get current page index errors object from state
-
-    const pageIndexErrors = this.getState("pageIdxErrors") || {}; // find which index this childWidget belongs to
-
-    const childIndex = this.getChildIndexByWidgetId(childWidgetId);
-
-    if (childIndex === -1) {
-      throw new Error("child widget not in paging");
-    }
-
-    if (!errors) {
-      var _pageIndexErrors$chil;
-
-      (_pageIndexErrors$chil = pageIndexErrors[childIndex]) === null || _pageIndexErrors$chil === void 0 ? true : delete _pageIndexErrors$chil[childWidgetId];
-      if (!Object.keys(pageIndexErrors[childIndex] || {}).length) delete pageIndexErrors[childIndex];
-    } else {
-      if (!pageIndexErrors[childIndex]) {
-        pageIndexErrors[childIndex] = {};
-      }
-
-      pageIndexErrors[childIndex][childWidgetId] = errors;
-    } // save pageIdxErrors to state
-
-
-    this.setState("pageIdxErrors", Object.keys(pageIndexErrors).length ? pageIndexErrors : undefined);
-  }
-
-  addChild(childWidget, meta) {
-    super.addChild(childWidget, meta);
-
-    this._widget.properties.pages[(meta === null || meta === void 0 ? void 0 : meta.pageIdx) || 0].children.splice((meta === null || meta === void 0 ? void 0 : meta.childIdx) || 0, 0, childWidget.id);
-  }
-
-  removeChild(childWidget) {
-    super.removeChild(childWidget);
-
-    this._widget.properties.pages.forEach(page => {
-      page.children = page.children.filter(c => c !== childWidget.id);
-    });
-
-    this._update(this);
-  }
-
-  onChangePageIndex(toIndex) {
-    const sortedPages = this.getSortedPages();
-    if (toIndex < 0) return;
-    if (toIndex > sortedPages.length - 1) return;
-    this.setState("currentPageIndex", toIndex);
-  }
-
-  get currentPageIndex() {
-    return this.getState("currentPageIndex") || 0;
-  }
-
-  getParentPagesWidgets(opts) {
-    const parentPages = this.getParents().filter(w => w.type === "pages");
-    return opts !== null && opts !== void 0 && opts.first ? parentPages[0] : parentPages;
-  }
-
-  getChildrenPagesWidgets(opts) {
-    const childrenPages = this.getChildren({
-      deep: true
-    }, {
-      inPageIndices: opts === null || opts === void 0 ? void 0 : opts.inPageIndices
-    }).filter(w => w.type === "pages");
-    return opts !== null && opts !== void 0 && opts.first ? childrenPages[0] : childrenPages;
-  }
-
-  pageIndexHasErrors(idx, opts) {
-    const pageIdxErrors = this.getState("pageIdxErrors") || {}; // if no pageIdxErrors, just return false
-
-    if (!Object.keys(pageIdxErrors || []).length) return false; // if current index doesn't have issues, that means
-    // neither this page idx nor its children have any
-    // errors, so just return false
-
-    if (!Object.keys(pageIdxErrors[idx] || {}).filter(widgetId => !(opts !== null && opts !== void 0 && opts.skipPristine) || !this._widgetItems[widgetId].getState("pristine")).length) return false; // if navigation integrate children pages, then check if
-    // child pages has error in its CURRENT page idx
-
-    const childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
-      first: true,
-      inPageIndices: [this.currentPageIndex]
-    }) : null;
-
-    if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
-      return opts !== null && opts !== void 0 && opts.allChildPages ? childPagesWidget.hasChildErrors() : childPagesWidget.currentPageIndexHasErrors(opts);
-    } // since don't need to handle child pages widget and
-    // current page idx has errors, return true
-
-
-    return true;
-  }
-
-  currentPageIndexHasErrors(opts) {
-    return this.pageIndexHasErrors(this.currentPageIndex, opts);
-  }
-
-  async toNextPage() {
-    const children = this.getChildren({
-      deep: true
-    }, {
-      currentPageIndexOnly: true
-    });
-    const hasErrors = (await Promise.all(children.map(async child => {
-      if (child.getState("pristine")) {
-        child.setState("pristine", false);
-        child.setState("dirty", true);
-        child.update();
-      }
-
-      return child.runValidations();
-    }))).some(err => err);
-
-    if (!hasErrors) {
-      // update current pages or, if
-      // navigationIntegrateParentPage is true,
-      // update parent's instead
-      // get next type first to determine which to update
-      const nextType = this.nextButtonType();
-
-      if (nextType === "complete") {
-        const pageErrors = this.properties.pages.map((_, pageIdx) => {
-          return this.pageIndexHasErrors(pageIdx, {
-            allChildPages: true
-          });
-        });
-        this.isSubmitting = true;
-        await this.emitEvent("pages_complete", {
-          pageErrors,
-          hasErrors: pageErrors.some(hasError => hasError),
-          pageWidget: this
-        });
-        this.isSubmitting = false;
-      } else if (nextType === "none") {
-        // wasn't suppose to show, just skip it
-        return;
-      } else {
-        // current pages at end, so update parent's
-        const childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
-          first: true,
-          inPageIndices: [this.currentPageIndex]
-        }) : null;
-
-        if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.nextButtonType()) !== "none") {
-          childPagesWidget.toNextPage();
-        } else {
-          this.onChangePageIndex(this.currentPageIndex + 1);
-        }
-      }
-    }
-  }
-
-  toPreviousPage() {
-    // get previous type first to determine which to update
-    const previousType = this.previousButtonType();
-
-    if (previousType === "none") {
-      // wasn't suppose to be clicked, so just ignore
-      return;
-    }
-
-    const childPagesWidget = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
-      first: true,
-      inPageIndices: [this.currentPageIndex]
-    }) : null;
-
-    if (childPagesWidget && !(childPagesWidget !== null && childPagesWidget !== void 0 && childPagesWidget.properties.detachParentIntegration) && (childPagesWidget === null || childPagesWidget === void 0 ? void 0 : childPagesWidget.previousButtonType()) !== "none") {
-      childPagesWidget.toPreviousPage();
-    } else {
-      this.onChangePageIndex(this.currentPageIndex - 1);
-    }
-  }
-
-  previousButtonType() {
-    // check whether this pages widget is at its end
-    const isCurrentPageAtEnd = this.currentPageIndex <= 0; // check if there is any parents. Just get the immediate one
-
-    const childPages = this.getChildrenPagesWidgets({
-      first: true
-    }); // if we don't need to integrate with parent pages or
-    // current pages is not at its end yet, just return
-    // based on current pages' state
-
-    if (!this.properties.navigationIntegrateChildrenPages || !childPages || childPages.properties.detachParentIntegration || !isCurrentPageAtEnd) {
-      if (isCurrentPageAtEnd) {
-        return "none";
-      }
-
-      return "previous";
-    } // return whether parent should be at its end
-
-
-    return childPages.previousButtonType();
-  }
-
-  nextButtonType() {
-    // check whether this pages widget is at its end
-    const isCurrentPageAtEnd = this.currentPageIndex >= this._widget.properties.pages.length - 1; // check if there is any parents. Just get the immediate one
-
-    const childPages = this.properties.navigationIntegrateChildrenPages ? this.getChildrenPagesWidgets({
-      first: true
-    }) : null; // if we don't need to integrate with parent pages or
-    // current pages is not at its end yet, just return
-    // based on current pages' state
-
-    if (!this.properties.navigationIntegrateChildrenPages || !childPages || childPages.nextButtonType() === "none" || childPages.properties.detachParentIntegration || !isCurrentPageAtEnd) {
-      if (isCurrentPageAtEnd) {
-        return this.properties.hasCompleteButton ? "complete" : "none";
-      }
-
-      return "next";
-    } // return whether parent should be at its end
-
-
-    return childPages.nextButtonType();
-  }
-
-  hasPreviousButton() {
-    return !!this.properties.navigationVisible && this.previousButtonType() !== "none";
-  }
-
-  hasNextButton() {
-    return !!this.properties.navigationVisible && this.nextButtonType() !== "none";
-  }
-
-}
-
-//
+};
 var script$W = defineComponent({
-  name: "PagesReadOnly",
   components: {
     WidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
+  props: { ...WidgetControlProps$a,
+    widget: {
+      type: Object,
+      required: true
+    },
     t: Function
   },
 
   data() {
     return {
-      sortedPages: this.$props.widget.getSortedPages()
+      sortedPages: []
     };
-  }
+  },
 
+  computed: {
+    currentPageIndex() {
+      var _this$pageState, _this$pageState$widge, _this$pageState$widge2;
+
+      return ((_this$pageState = this.pageState) === null || _this$pageState === void 0 ? void 0 : (_this$pageState$widge = _this$pageState.widgetState) === null || _this$pageState$widge === void 0 ? void 0 : (_this$pageState$widge2 = _this$pageState$widge[this.widget.id]) === null || _this$pageState$widge2 === void 0 ? void 0 : _this$pageState$widge2.currentPageIndex) || 0;
+    }
+
+  },
+  watch: {
+    currentPageIndex: {
+      handler() {
+        const viewedIndices = this.widget.getState('viewedIndices') || [];
+
+        if (!viewedIndices.includes(this.currentPageIndex)) {
+          this.widget.setState('viewedIndices', [...viewedIndices, this.currentPageIndex]);
+        }
+      },
+
+      immediate: true
+    },
+    'widget.properties.pages': {
+      handler() {
+        this.sortedPages = this.widget.getSortedPages();
+      },
+
+      immediate: true
+    }
+  }
 });
 
 /* script */
@@ -8853,36 +10475,18 @@ var __vue_render__$W = function () {
   return _c('div', _vm._l(_vm.sortedPages, function (page, pageIndex) {
     return _c('div', {
       key: pageIndex,
-      staticClass: "page-wrapper"
-    }, [!_vm.widget.getParentPagesWidgets({
-      first: true
-    }) ? _c('div', {
-      staticClass: "page-label"
-    }, [_vm._v("\n      " + _vm._s(_vm.t(page.labelKey, _vm.widget.id)) + "\n    ")]) : _vm._e(), _vm._v(" "), _c('div', [_c('div', {
-      staticClass: "questions-wrapper"
-    }, [_vm._l(page.children.filter(function (c) {
-      return ['question'].includes(_vm.widgetItems[c].type);
-    }), function (questionWidgetId) {
-      return [_vm.t('__label', questionWidgetId) ? _c('div', {
-        key: questionWidgetId,
-        staticClass: "question"
-      }, [_c('label', {
-        staticClass: "question-label"
-      }, [_vm._v(_vm._s(_vm.t("__label", questionWidgetId)))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.pageState.widgetState[questionWidgetId].response))])]) : _vm._e()];
-    })], 2), _vm._v(" "), _vm._l(page.children.filter(function (c) {
-      return ['pages'].includes(_vm.widgetItems[c].type);
-    }), function (pagesWidgetId) {
-      return _c('pages-read-only', {
-        key: pagesWidgetId,
-        attrs: {
-          "widget": _vm.widgetItems[pagesWidgetId],
-          "widgets": _vm.widgets,
-          "widgetItems": _vm.widgetItems,
-          "pageState": _vm.pageState,
-          "setWidgetState": _vm.setWidgetState
-        }
-      });
-    })], 2)]);
+      attrs: {
+        "id": "pages-" + _vm.widget.id + "-" + pageIndex
+      }
+    }, [_c('h3', [_vm._v(_vm._s(_vm.t(page.labelKey, _vm.widget.id)))]), _vm._v(" "), _c('widgets-layout', {
+      attrs: {
+        "widget-items": _vm.widgetItems,
+        "exclude-widget-ids": [_vm.widget.id],
+        "only-include-widget-ids": page.children,
+        "widgets-order": page.children,
+        "for-parent": _vm.widget.id
+      }
+    })], 1);
   }), 0);
 };
 
@@ -8891,8 +10495,8 @@ var __vue_staticRenderFns__$W = [];
 
 const __vue_inject_styles__$W = function (inject) {
   if (!inject) return;
-  inject("data-v-2b3f76d4_0", {
-    source: ".page-wrapper[data-v-2b3f76d4]{display:flex;flex-direction:row}.page-wrapper[data-v-2b3f76d4]>:last-child{flex:1}.page-label[data-v-2b3f76d4]{padding:0 10px 0 0}.question-label[data-v-2b3f76d4]{font-weight:700}.questions-wrapper[data-v-2b3f76d4]{display:flex;flex-direction:row;flex-wrap:wrap}.question[data-v-2b3f76d4]{width:33%}",
+  inject("data-v-1e28174e_0", {
+    source: ".pages-menu-wrapper[data-v-1e28174e]{display:flex;flex-direction:row;justify-content:center;margin:10px 0}.pages-menu-item[data-v-1e28174e]{display:inline-block;padding:10px 20px;cursor:pointer;text-align:center}.pages-menu-item.unopened[data-v-1e28174e]{opacity:.3;cursor:default}.pages-menu-item.active[data-v-1e28174e]{border-bottom:3px solid #03a9f4}.pages-menu-item.errors[data-v-1e28174e]{border-color:red}.back-forward-wrapper[data-v-1e28174e]{display:flex;flex-direction:row;justify-content:space-between}.back-forward-button[data-v-1e28174e]{padding:10px 20px;margin:10px;border:1px solid transparent;background-color:#03a9f4;color:#fff;cursor:pointer}.back-forward-button.errors[data-v-1e28174e]{background-color:red;color:#fff;opacity:.2;cursor:default}.back-forward-button.submitting[data-v-1e28174e]{opacity:.2}",
     map: undefined,
     media: undefined
   });
@@ -8900,7 +10504,7 @@ const __vue_inject_styles__$W = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$W = "data-v-2b3f76d4";
+const __vue_scope_id__$W = "data-v-1e28174e";
 /* module identifier */
 
 const __vue_module_identifier__$W = undefined;
@@ -8919,7 +10523,7 @@ const __vue_component__$Y = /*#__PURE__*/normalizeComponent({
 var ReadOnly$b = __vue_component__$Y;
 
 var script$V = defineComponent({
-  name: "BuilderWidgetTree",
+  name: 'BuilderWidgetTree',
   props: {
     widgetItems: Object,
     parentId: String,
@@ -8928,7 +10532,7 @@ var script$V = defineComponent({
     listIds: Array,
     level: Number
   },
-  inject: ["widgetControls"],
+  inject: ['widgetControls'],
 
   data() {
     return {
@@ -9012,8 +10616,8 @@ var __vue_staticRenderFns__$V = [];
 
 const __vue_inject_styles__$V = function (inject) {
   if (!inject) return;
-  inject("data-v-13a6db36_0", {
-    source: ".tree-item-box[data-v-13a6db36]{border:1px solid #f2f2f2;border-radius:4px;padding:5px;margin:2px 0;display:flex;flex-direction:row;align-items:center}.tree-item-box>*[data-v-13a6db36]{margin:0;margin-right:5px}.tree-item-box small[data-v-13a6db36]{color:#a1a1a1}.drag-icon[data-v-13a6db36]{cursor:grab}.drag-icon[data-v-13a6db36]:active{cursor:grabbing}",
+  inject("data-v-3c1fc8b6_0", {
+    source: ".tree-item-box[data-v-3c1fc8b6]{border:1px solid #f2f2f2;border-radius:4px;padding:5px;margin:2px 0;display:flex;flex-direction:row;align-items:center}.tree-item-box>*[data-v-3c1fc8b6]{margin:0;margin-right:5px}.tree-item-box small[data-v-3c1fc8b6]{color:#a1a1a1}.drag-icon[data-v-3c1fc8b6]{cursor:grab}.drag-icon[data-v-3c1fc8b6]:active{cursor:grabbing}",
     map: undefined,
     media: undefined
   });
@@ -9021,7 +10625,7 @@ const __vue_inject_styles__$V = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$V = "data-v-13a6db36";
+const __vue_scope_id__$V = "data-v-3c1fc8b6";
 /* module identifier */
 
 const __vue_module_identifier__$V = undefined;
@@ -9049,7 +10653,7 @@ var script$U = defineComponent({
     parentId: String,
     level: Number
   },
-  inject: ["t", "setMessage", "getLocale"],
+  inject: ['t', 'setMessage', 'getLocale'],
   methods: {
     onPageLabelChange(pageIndex, label) {
       this.setMessage({
@@ -9103,8 +10707,8 @@ var __vue_staticRenderFns__$U = [];
 
 const __vue_inject_styles__$U = function (inject) {
   if (!inject) return;
-  inject("data-v-01d02769_0", {
-    source: ".page-label[data-v-01d02769]{padding:6px}.page-label input[data-v-01d02769]{border:none;outline:0}",
+  inject("data-v-d2da775a_0", {
+    source: ".page-label[data-v-d2da775a]{padding:6px}.page-label input[data-v-d2da775a]{border:none;outline:0}",
     map: undefined,
     media: undefined
   });
@@ -9112,7 +10716,7 @@ const __vue_inject_styles__$U = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$U = "data-v-01d02769";
+const __vue_scope_id__$U = "data-v-d2da775a";
 /* module identifier */
 
 const __vue_module_identifier__$U = undefined;
@@ -9134,10 +10738,10 @@ var pages = {
   create(props) {
     return {
       id: v4(),
-      type: "pages",
+      type: 'pages',
       properties: {
         pages: [{
-          labelKey: "",
+          labelKey: '',
           children: []
         }],
         navigationVisible: true,
@@ -9158,42 +10762,55 @@ var pages = {
   widgetTree: WidgetTree
 };
 
-//
 var script$T = defineComponent({
+  inject: ['questionControls', 'widgetControls', 'getPageState', 'setPageState', 'getLocale', 'setMessage'],
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
+    t: Function,
+    view: String
   },
-  inject: ["questionControls", "widgetControls", "getPageState", "setPageState", "getLocale", "setMessage"],
 
   created() {
-    var _this$$props$widget, _this$widget;
+    var _this$widget$getState;
 
-    const widgetState = { ...((_this$$props$widget = this.$props.widget) === null || _this$$props$widget === void 0 ? void 0 : _this$$props$widget.getState())
-    };
-    (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.setState("type", "question");
-
-    if ((widgetState === null || widgetState === void 0 ? void 0 : widgetState.touched) === undefined) {
-      var _this$widget2, _this$widget3, _this$widget4;
-
-      (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.setState("touched", false);
-      (_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.setState("pristine", true);
-      (_this$widget4 = this.widget) === null || _this$widget4 === void 0 ? void 0 : _this$widget4.setState("dirty", false);
-    }
+    this.widget.setState({
+      type: 'question',
+      ...(((_this$widget$getState = this.widget.getState()) === null || _this$widget$getState === void 0 ? void 0 : _this$widget$getState.touched) === undefined ? {
+        touched: false,
+        pristine: true,
+        dirty: false
+      } : {})
+    });
   },
 
   mounted() {
     this.$nextTick(() => {
       if (!this.$refs.labelInput) return;
-      this.$refs.labelInput.style.height = "";
-      this.$refs.labelInput.style.height = this.$refs.labelInput.scrollHeight + "px";
+      this.$refs.labelInput.style.height = '';
+      this.$refs.labelInput.style.height = this.$refs.labelInput.scrollHeight + 'px';
     });
   },
 
@@ -9203,21 +10820,27 @@ var script$T = defineComponent({
         id: this.$props.widget.id,
         locale: this.getLocale(),
         key: `__${name}`,
-        value: text.replaceAll(/\n|\r/g, "")
+        value: text.replaceAll(/\n|\r/g, '')
       });
     },
 
     onChange(response, ignoreChecks) {
-      this.widget.setState("response", response);
+      var _this$widget;
+
+      (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.setState({
+        response,
+        ...(!ignoreChecks ? {
+          touched: true,
+          pristine: false,
+          dirty: true
+        } : {})
+      });
       if (ignoreChecks) return;
-      this.widget.setState("touched", true);
-      this.widget.setState("pristine", false);
-      this.widget.setState("dirty", true);
 
       (async () => {
         // handle validations
-        await this.$props.widget.runValidations();
-        this.$props.widget.emitListener("change");
+        await this.widget.runValidations();
+        this.widget.emitListener('change');
       })();
     }
 
@@ -9263,23 +10886,23 @@ var __vue_render__$T = function () {
     attrs: {
       "properties": _vm.widget.properties.controlProperties,
       "widget": _vm.widget,
-      "widgetItems": _vm.widgetItems,
-      "onChange": _vm.onChange,
+      "widget-items": _vm.widgetItems,
+      "on-change": _vm.onChange,
       "value": _vm.widget.getState('response'),
-      "setWidgetState": _vm.setWidgetState,
-      "getWidgetState": _vm.getWidgetState,
+      "set-widget-state": _vm.setWidgetState,
+      "get-widget-state": _vm.getWidgetState,
       "view": _vm.view,
       "errors": _vm.getWidgetState('errors'),
       "t": function (key, data) {
         return _vm.t("control_" + key, data);
       }
     }
-  }), _vm._v(" "), _vm._l(_vm.getWidgetState('errors'), function (errorKey) {
+  }), _vm._v(" "), _vm.getWidgetState('dirty') && _vm.getWidgetState('errors') ? _vm._l(_vm.getWidgetState('errors').slice(0, 1), function (errorKey, errorKeyIndex) {
     return _c('span', {
-      key: errorKey,
+      key: errorKey.err + "_" + errorKeyIndex,
       staticClass: "error"
-    }, [_vm._v(_vm._s(_vm.t(errorKey, _vm.widget.id)))]);
-  })], 2)])]) : _vm._e();
+    }, [_vm.t("control_" + errorKey.err) ? [_vm._v(_vm._s(_vm.t("control_" + errorKey.err, errorKey.data)))] : [_vm._v(_vm._s(_vm.t("" + errorKey.err, errorKey.data)))]], 2);
+  }) : _vm._e()], 2)])]) : _vm._e();
 };
 
 var __vue_staticRenderFns__$T = [];
@@ -9287,8 +10910,8 @@ var __vue_staticRenderFns__$T = [];
 
 const __vue_inject_styles__$T = function (inject) {
   if (!inject) return;
-  inject("data-v-2a1b7fb2_0", {
-    source: ".question-wrapper[data-v-2a1b7fb2]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-2a1b7fb2]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-2a1b7fb2]{color:red}.question-wrapper>div[data-v-2a1b7fb2]{flex:2;padding:20px 0}.error[data-v-2a1b7fb2]{display:block;color:red;margin-top:10px}.text-input[data-v-2a1b7fb2]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
+  inject("data-v-0020c860_0", {
+    source: ".question-wrapper[data-v-0020c860]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-0020c860]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-0020c860]{color:red}.question-wrapper>div[data-v-0020c860]{flex:2;padding:20px 0}.error[data-v-0020c860]{display:block;color:red;margin-top:10px}.text-input[data-v-0020c860]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
     map: undefined,
     media: undefined
   });
@@ -9296,7 +10919,7 @@ const __vue_inject_styles__$T = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$T = "data-v-2a1b7fb2";
+const __vue_scope_id__$T = "data-v-0020c860";
 /* module identifier */
 
 const __vue_module_identifier__$T = undefined;
@@ -9314,32 +10937,55 @@ const __vue_component__$V = /*#__PURE__*/normalizeComponent({
 
 var Builder$4 = __vue_component__$V;
 
-//
 // import { validateWidget } from "../../validateUtils";
 
 var script$S = defineComponent({
   props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
+    t: Function,
+    view: String
   },
-  inject: ["questionControls", "widgetControls", "setPageState"],
+  inject: ['questionControls', 'widgetControls', 'setPageState'],
 
   created() {
-    const widgetState = { ...this.$props.widget.getState()
-    };
-    this.widget.setState("type", "question");
+    var _this$widget;
 
-    if ((widgetState === null || widgetState === void 0 ? void 0 : widgetState.touched) === undefined) {
-      this.widget.setState("touched", false);
-      this.widget.setState("pristine", true);
-      this.widget.setState("dirty", false);
+    const widgetState = ((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.getState()) || {};
+
+    if (!widgetState.type || widgetState.touched === undefined) {
+      var _this$widget2;
+
+      (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.setState({
+        type: 'question',
+        ...(widgetState.touched === undefined ? {
+          touched: false,
+          pristine: true,
+          dirty: false
+        } : {})
+      });
     }
   },
 
@@ -9347,17 +10993,46 @@ var script$S = defineComponent({
 
   methods: {
     onChange(response, ignoreChecks) {
-      this.widget.setState("response", response);
+      var _this$widget3;
+
+      (_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.setState({
+        response,
+        ...(!ignoreChecks ? {
+          touched: true,
+          pristine: false,
+          dirty: true
+        } : {})
+      });
       if (ignoreChecks) return;
-      this.widget.setState("touched", true);
-      this.widget.setState("pristine", false);
-      this.widget.setState("dirty", true);
 
       (async () => {
+        var _this$widget4, _this$widget5;
+
         // handle validations
-        await this.$props.widget.runValidations();
-        this.$props.widget.emitListener("change");
+        await ((_this$widget4 = this.widget) === null || _this$widget4 === void 0 ? void 0 : _this$widget4.runValidations());
+        (_this$widget5 = this.widget) === null || _this$widget5 === void 0 ? void 0 : _this$widget5.emitListener('change');
       })();
+    },
+
+    getQuestionControlRender(type) {
+      var _this$questionControl;
+
+      let view = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'display';
+      const widgetType = (_this$questionControl = this.questionControls) === null || _this$questionControl === void 0 ? void 0 : _this$questionControl[type];
+
+      if (!widgetType) {
+        var _this$widget6;
+
+        throw new Error(`question control type [${type}] from widget [${(_this$widget6 = this.widget) === null || _this$widget6 === void 0 ? void 0 : _this$widget6.id}] was not found. Maybe the question control was not imported`);
+      }
+
+      const widgetRender = widgetType[view];
+
+      if (!widgetRender) {
+        throw new Error(`widget view [${view}] does not exist for question control type [${type}]`);
+      }
+
+      return widgetRender;
     }
 
   }
@@ -9383,12 +11058,15 @@ var __vue_render__$S = function () {
     attrs: {
       "for": _vm.widget.code || _vm.widget.id
     }
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]) : _vm._e(), _vm._v(" "), _c('div', [_c(_vm.questionControls[_vm.widget.properties.control].display, {
+  }, [_vm._v(_vm._s(_vm.t('__label', _vm.widget.id)))]) : _vm._e(), _vm._v(" "), _c('div', [_c(_vm.getQuestionControlRender(_vm.widget.properties.control), {
     tag: "component",
     attrs: {
+      "id": "widget_question_" + _vm.widget.id,
+      "data-test": "widget_question_" + _vm.widget.code,
       "properties": _vm.widget.properties.controlProperties,
       "widget": _vm.widget,
       "widgetItems": _vm.widgetItems,
+      "questionItem": _vm.widget.questionItem,
       "onChange": _vm.onChange,
       "value": _vm.widget.getState('response'),
       "setWidgetState": _vm.setWidgetState,
@@ -9398,12 +11076,20 @@ var __vue_render__$S = function () {
       "t": function (key, data) {
         return _vm.t("control_" + key, data);
       }
+    },
+    on: {
+      "onChange": _vm.onChange,
+      "t": function (key, data) {
+        return _vm.t("control_" + key, data);
+      },
+      "setWidgetState": _vm.setWidgetState,
+      "getWidgetState": _vm.getWidgetState
     }
-  }), _vm._v(" "), _vm.getWidgetState('dirty') ? _vm._l(_vm.getWidgetState('errors'), function (errorKey) {
+  }), _vm._v(" "), _vm.getWidgetState('dirty') && _vm.getWidgetState('errors') ? _vm._l(_vm.getWidgetState('errors').slice(0, 1), function (errorKey, errorKeyIndex) {
     return _c('span', {
-      key: errorKey,
+      key: errorKey.err + "_" + errorKeyIndex,
       staticClass: "error"
-    }, [_vm._v(_vm._s(_vm.t(errorKey)))]);
+    }, [_vm.t("control_" + errorKey.err) ? [_vm._v(_vm._s(_vm.t("control_" + errorKey.err, errorKey.data)))] : [_vm._v(_vm._s(_vm.t("" + errorKey.err, errorKey.data)))]], 2);
   }) : _vm._e()], 2)])]) : _vm._e();
 };
 
@@ -9412,8 +11098,8 @@ var __vue_staticRenderFns__$S = [];
 
 const __vue_inject_styles__$S = function (inject) {
   if (!inject) return;
-  inject("data-v-1c36d998_0", {
-    source: ".question-wrapper[data-v-1c36d998]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-1c36d998]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-1c36d998]{color:red}.question-wrapper>div[data-v-1c36d998]{flex:2;padding:20px 0}.error[data-v-1c36d998]{display:block;color:red}@media only screen and (max-width:600px){.question-wrapper[data-v-1c36d998]{flex-direction:column}.question-wrapper>label[data-v-1c36d998]{border-right:none;padding:10px 0 5px 0}.question-wrapper>label.errors[data-v-1c36d998]{color:#000}.question-wrapper>div[data-v-1c36d998]{padding:5px 0 10px 0}}",
+  inject("data-v-fe1414d8_0", {
+    source: ".question-wrapper[data-v-fe1414d8]{width:100%;display:flex;flex-direction:row}.question-wrapper>label[data-v-fe1414d8]{flex:1;max-width:300px;border-right:1px solid #393939;padding:20px 0;margin-right:20px}.question-wrapper>label.errors[data-v-fe1414d8]{color:red}.question-wrapper>div[data-v-fe1414d8]{flex:2;padding:20px 0}.error[data-v-fe1414d8]{display:block;color:red}@media only screen and (max-width:600px){.question-wrapper[data-v-fe1414d8]{flex-direction:column}.question-wrapper>label[data-v-fe1414d8]{border-right:none;padding:10px 0 5px 0}.question-wrapper>label.errors[data-v-fe1414d8]{color:#000}.question-wrapper>div[data-v-fe1414d8]{padding:5px 0 10px 0}}",
     map: undefined,
     media: undefined
   });
@@ -9421,7 +11107,7 @@ const __vue_inject_styles__$S = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$S = "data-v-1c36d998";
+const __vue_scope_id__$S = "data-v-fe1414d8";
 /* module identifier */
 
 const __vue_module_identifier__$S = undefined;
@@ -9439,11 +11125,41 @@ const __vue_component__$U = /*#__PURE__*/normalizeComponent({
 
 var Display$a = __vue_component__$U;
 
+class QuestionItem {
+  get widget() {
+    return this._widget;
+  }
+
+  constructor(_ref) {
+    let {
+      widget
+    } = _ref;
+
+    _defineProperty(this, "_widget", void 0);
+
+    this._widget = widget;
+  }
+
+  destroy() {}
+
+}
+
 class QuestionWidgetItem extends WidgetItem {
+  get questionItem() {
+    return this._questionItem;
+  }
+
   constructor(opts) {
     super(opts);
 
     _defineProperty(this, "questionControlErrors", []);
+
+    _defineProperty(this, "_questionItem", void 0);
+
+    const QuestionItemClass = opts.getQuestionControls()[this._widget.properties.control].questionItem || QuestionItem;
+    this._questionItem = new QuestionItemClass({
+      widget: this
+    });
   }
 
   async setQuestionErrors(errors) {
@@ -9451,17 +11167,16 @@ class QuestionWidgetItem extends WidgetItem {
     await this.runValidations();
   }
 
-  async runValidations() {
-    let errors = [...((await super.runValidations()) || []), ...this.questionControlErrors]; // FIXME: super.runValidations() also runs the following
-    // two lines. Can reduce?
+  async runValidations(opts) {
+    var _errors;
 
-    this.setState("errors", errors);
-
-    this._setPageState(this.pageState);
-
-    if (!errors.length) errors = null;
-    this.setState("valid", !errors);
-    this.setState("hasErrors", !!errors);
+    let errors = [...this.questionControlErrors, ...((await super.runValidations(opts)) || [])];
+    if (!((_errors = errors) !== null && _errors !== void 0 && _errors.length)) errors = null;
+    this.setState({
+      errors: errors || [],
+      valid: !errors,
+      hasErrors: !!errors
+    });
     const parentIds = this.getParentIds();
     (parentIds || []).forEach(parentId => {
       this._widgetItems[parentId].setChildErrors(this.id, errors);
@@ -9469,36 +11184,71 @@ class QuestionWidgetItem extends WidgetItem {
     return errors;
   }
 
+  destroy() {
+    super.destroy();
+    this.questionItem.destroy();
+  }
+
 }
 
-//
-var script$R = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+let WidgetControlProps$9 = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["questionControls", "widgetControls", "getPageState", "setPageState"],
-
-  created() {},
-
-  unmounted() {},
-
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$R = defineComponent({
+  inject: ['questionControls', 'widgetControls', 'getPageState', 'setPageState'],
+  props: WidgetControlProps$9,
   computed: {
     pageState() {
       return this.getPageState();
     }
 
   },
+
+  created() {},
+
+  unmounted() {},
+
   methods: {
     onChange(response) {
-      this.setWidgetState("response", response);
+      this.setWidgetState('response', response);
     }
 
   }
@@ -9517,15 +11267,15 @@ var __vue_render__$R = function () {
 
   return !_vm.getWidgetState('reflexiveHide') ? _c('div', [_c('div', {
     staticClass: "question-wrapper"
-  }, [!_vm.widget.properties.hideLabel ? _c('label', [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]) : _vm._e(), _vm._v(" "), _c('div', [_c(_vm.questionControls[_vm.widget.properties.control].readOnly, {
+  }, [!_vm.widget.properties.hideLabel ? _c('label', [_vm._v(_vm._s(_vm.t('__label', _vm.widget.id)))]) : _vm._e(), _vm._v(" "), _c('div', [_c(_vm.questionControls[_vm.widget.properties.control].readOnly, {
     tag: "component",
     attrs: {
       "properties": _vm.widget.properties.controlProperties,
       "widget": _vm.widget,
-      "onChange": _vm.onChange,
+      "on-change": _vm.onChange,
       "value": _vm.getWidgetState('response'),
-      "setWidgetState": _vm.setWidgetState,
-      "getWidgetState": _vm.getWidgetState,
+      "set-widget-state": _vm.setWidgetState,
+      "get-widget-state": _vm.getWidgetState,
       "view": _vm.view,
       "t": _vm.t
     }
@@ -9537,8 +11287,8 @@ var __vue_staticRenderFns__$R = [];
 
 const __vue_inject_styles__$R = function (inject) {
   if (!inject) return;
-  inject("data-v-5a073ee4_0", {
-    source: ".question-wrapper[data-v-5a073ee4]{width:100%;display:flex;flex-direction:row;padding:10px 10px}.question-wrapper>label[data-v-5a073ee4]{flex:1;max-width:300px;border-right:1px solid #393939;padding:10px 0}.question-wrapper>div[data-v-5a073ee4]{flex:2;padding:10px 20px}",
+  inject("data-v-38a5845c_0", {
+    source: ".question-wrapper[data-v-38a5845c]{width:100%;display:flex;flex-direction:row;padding:10px 10px}.question-wrapper>label[data-v-38a5845c]{flex:1;max-width:300px;border-right:1px solid #393939;padding:10px 0}.question-wrapper>div[data-v-38a5845c]{flex:2;padding:10px 20px}",
     map: undefined,
     media: undefined
   });
@@ -9546,7 +11296,7 @@ const __vue_inject_styles__$R = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$R = "data-v-5a073ee4";
+const __vue_scope_id__$R = "data-v-38a5845c";
 /* module identifier */
 
 const __vue_module_identifier__$R = undefined;
@@ -9568,11 +11318,11 @@ var question = {
   create(props) {
     return {
       id: v4(),
-      type: "question",
+      type: 'question',
       properties: {
-        responseType: "",
+        responseType: '',
         hideLabel: false,
-        control: "",
+        control: '',
         controlProperties: {},
         ...props
       }
@@ -9585,55 +11335,87 @@ var question = {
   widgetItem: QuestionWidgetItem
 };
 
-//
+const WidgetControlProps$8 = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$Q = defineComponent({
   components: {
     BuilderWidgetsLayout,
     WidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
-  inject: ["getLocale", "setMessage"],
+  inject: ['getLocale', 'setMessage'],
+  props: WidgetControlProps$8,
 
   setup() {},
 
   computed: {
     label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', this.widget.id);
     },
 
     childErrors() {
-      var _this$$props$widget$g;
+      var _this$widget$getState;
 
-      return (_this$$props$widget$g = this.$props.widget.getState()) === null || _this$$props$widget$g === void 0 ? void 0 : _this$$props$widget$g.childErrors;
+      return (_this$widget$getState = this.widget.getState()) === null || _this$widget$getState === void 0 ? void 0 : _this$widget$getState.childErrors;
     },
 
     hasChildErrors() {
-      return this.$props.widget.hasChildErrors();
+      return this.widget.hasChildErrors();
     }
 
   },
   methods: {
     updateText(name, text) {
       this.setMessage({
-        id: this.$props.widget.id,
+        id: this.widget.id,
         locale: this.getLocale(),
         key: `__${name}`,
-        value: text.replaceAll(/\n|\r/g, "")
+        value: text.replaceAll(/\n|\r/g, '')
       });
     },
 
     isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      return this.widget.properties.hasLabel && this.widget.properties.labelPosition === pos;
     }
 
   }
@@ -9670,9 +11452,9 @@ var __vue_render__$Q = function () {
     }
   })]), _vm._v(" "), _c('builder-widgets-layout', {
     attrs: {
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "forParent": _vm.widget.id
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "for-parent": _vm.widget.id
     }
   })], 1);
 };
@@ -9682,8 +11464,8 @@ var __vue_staticRenderFns__$Q = [];
 
 const __vue_inject_styles__$Q = function (inject) {
   if (!inject) return;
-  inject("data-v-4a65cc6a_0", {
-    source: ".section-wrapper[data-v-4a65cc6a]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-4a65cc6a]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:1px 10px;z-index:10}.section-wrapper.errors[data-v-4a65cc6a]{border-color:red}.text-input[data-v-4a65cc6a]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
+  inject("data-v-47295f4d_0", {
+    source: ".section-wrapper[data-v-47295f4d]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-47295f4d]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:1px 10px;z-index:10}.section-wrapper.errors[data-v-47295f4d]{border-color:red}.text-input[data-v-47295f4d]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}",
     map: undefined,
     media: undefined
   });
@@ -9691,7 +11473,7 @@ const __vue_inject_styles__$Q = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$Q = "data-v-4a65cc6a";
+const __vue_scope_id__$Q = "data-v-47295f4d";
 /* module identifier */
 
 const __vue_module_identifier__$Q = undefined;
@@ -9710,10 +11492,10 @@ const __vue_component__$S = /*#__PURE__*/normalizeComponent({
 var Builder$3 = __vue_component__$S;
 
 var script$P = defineComponent({
+  inject: ['updateWidget'],
   props: {
     widget: Object
-  },
-  inject: ["updateWidget"]
+  }
 });
 
 /* script */
@@ -9756,44 +11538,76 @@ const __vue_component__$R = /*#__PURE__*/normalizeComponent({
 
 var BuilderForm$1 = __vue_component__$R;
 
-//
+const WidgetControlProps$7 = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$O = defineComponent({
   components: {
     WidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
+  props: WidgetControlProps$7,
 
   setup() {},
 
   computed: {
     label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', this.widget.id);
     },
 
     childErrors() {
-      var _this$$props$widget$g;
+      var _this$widget$getState;
 
-      return (_this$$props$widget$g = this.$props.widget.getState()) === null || _this$$props$widget$g === void 0 ? void 0 : _this$$props$widget$g.childErrors;
+      return (_this$widget$getState = this.widget.getState()) === null || _this$widget$getState === void 0 ? void 0 : _this$widget$getState.childErrors;
     },
 
     hasChildErrors() {
-      return this.$props.widget.hasChildErrors();
+      return this.widget.hasChildErrors();
     }
 
   },
   methods: {
     isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      return this.widget.properties.hasLabel && this.widget.properties.labelPosition === pos;
     }
 
   }
@@ -9817,9 +11631,9 @@ var __vue_render__$O = function () {
     }
   }, [!!_vm.label ? _c('label', [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('widgets-layout', {
     attrs: {
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "forParent": _vm.widget.id
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "for-parent": _vm.widget.id
     }
   })], 1);
 };
@@ -9829,8 +11643,8 @@ var __vue_staticRenderFns__$O = [];
 
 const __vue_inject_styles__$O = function (inject) {
   if (!inject) return;
-  inject("data-v-fc5d7d18_0", {
-    source: ".section-wrapper[data-v-fc5d7d18]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-fc5d7d18]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}.section-wrapper.errors[data-v-fc5d7d18]{border-color:red}@media only screen and (max-width:600px){.section-wrapper label[data-v-fc5d7d18]{font-size:10pt}}",
+  inject("data-v-cc68ccc6_0", {
+    source: ".section-wrapper[data-v-cc68ccc6]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px 0;border-radius:8px}.section-wrapper>label[data-v-cc68ccc6]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}.section-wrapper.errors[data-v-cc68ccc6]{border-color:red}@media only screen and (max-width:600px){.section-wrapper label[data-v-cc68ccc6]{font-size:10pt}}",
     map: undefined,
     media: undefined
   });
@@ -9838,7 +11652,7 @@ const __vue_inject_styles__$O = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$O = "data-v-fc5d7d18";
+const __vue_scope_id__$O = "data-v-cc68ccc6";
 /* module identifier */
 
 const __vue_module_identifier__$O = undefined;
@@ -9856,34 +11670,68 @@ const __vue_component__$Q = /*#__PURE__*/normalizeComponent({
 
 var Display$9 = __vue_component__$Q;
 
-//
+let WidgetControlProps$6 = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$N = defineComponent({
   components: {
     WidgetsLayout
   },
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
-  },
+  props: WidgetControlProps$6,
 
   setup() {},
 
   computed: {
     label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t, _this$widget;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.id);
     }
 
   },
   methods: {
     isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      var _this$widget2, _this$widget3;
+
+      return ((_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.properties.hasLabel) && ((_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.properties.labelPosition) === pos;
     }
 
   }
@@ -9904,9 +11752,9 @@ var __vue_render__$N = function () {
     staticClass: "section-wrapper"
   }, [!!_vm.label ? _c('label', [_vm._v(_vm._s(_vm.label))]) : _vm._e(), _vm._v(" "), _c('widgets-layout', {
     attrs: {
-      "widgetControls": _vm.widgetControls,
-      "widgetItems": _vm.widgetItems,
-      "forParent": _vm.widget.id
+      "widget-controls": _vm.widgetControls,
+      "widget-items": _vm.widgetItems,
+      "for-parent": _vm.widget.id
     }
   })], 1);
 };
@@ -9916,8 +11764,8 @@ var __vue_staticRenderFns__$N = [];
 
 const __vue_inject_styles__$N = function (inject) {
   if (!inject) return;
-  inject("data-v-1110d5b7_0", {
-    source: ".section-wrapper[data-v-1110d5b7]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px;border-radius:8px}.section-wrapper>label[data-v-1110d5b7]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}",
+  inject("data-v-b08fbba2_0", {
+    source: ".section-wrapper[data-v-b08fbba2]{position:relative;border:1px solid #a9a9a9;min-height:30px;padding:10px;margin:10px;border-radius:8px}.section-wrapper>label[data-v-b08fbba2]{position:absolute;top:0;left:10px;transform:translateY(-50%);background-color:#fff;padding:10px}",
     map: undefined,
     media: undefined
   });
@@ -9925,7 +11773,7 @@ const __vue_inject_styles__$N = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$N = "data-v-1110d5b7";
+const __vue_scope_id__$N = "data-v-b08fbba2";
 /* module identifier */
 
 const __vue_module_identifier__$N = undefined;
@@ -9972,7 +11820,7 @@ var section = {
   create(props) {
     return {
       id: v4(),
-      type: "section",
+      type: 'section',
       properties: {
         children: [],
         ...props
@@ -9987,26 +11835,58 @@ var section = {
   widgetItem: SectionWidgetItem
 };
 
-//
-var script$M = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+const WidgetControlProps$5 = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["getLocale", "setMessage"],
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$M = defineComponent({
+  inject: ['getLocale', 'setMessage'],
+  props: WidgetControlProps$5,
 
   setup() {},
 
   computed: {
     label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', this.widget.id);
     }
 
   },
@@ -10016,7 +11896,7 @@ var script$M = defineComponent({
         id: this.$props.widget.id,
         locale: this.getLocale(),
         key: `__${name}`,
-        value: text.replaceAll(/\n|\r/g, "")
+        value: text.replaceAll(/\n|\r/g, '')
       });
     },
 
@@ -10102,8 +11982,8 @@ var __vue_staticRenderFns__$M = [];
 
 const __vue_inject_styles__$M = function (inject) {
   if (!inject) return;
-  inject("data-v-468e5b4b_0", {
-    source: ".line-wrapper[data-v-468e5b4b]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-468e5b4b]{flex-direction:column}.line-wrapper .line[data-v-468e5b4b]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-468e5b4b]{width:1px}.line-wrapper label[data-v-468e5b4b]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-468e5b4b]{padding-left:0}.line-wrapper label.end[data-v-468e5b4b]{padding-right:0}.text-input[data-v-468e5b4b]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}.start .text-input[data-v-468e5b4b]{text-align:left}.center .text-input[data-v-468e5b4b]{text-align:center}.end .text-input[data-v-468e5b4b]{text-align:right}.line-wrapper.vertical .text-input[data-v-468e5b4b]{text-align:center}",
+  inject("data-v-bba692ee_0", {
+    source: ".line-wrapper[data-v-bba692ee]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-bba692ee]{flex-direction:column}.line-wrapper .line[data-v-bba692ee]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-bba692ee]{width:1px}.line-wrapper label[data-v-bba692ee]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-bba692ee]{padding-left:0}.line-wrapper label.end[data-v-bba692ee]{padding-right:0}.text-input[data-v-bba692ee]{font-size:inherit;font-weight:inherit;font-family:inherit;border:none;outline:0;width:100%;background-color:transparent;resize:none;min-height:10px;margin-bottom:-15px}.start .text-input[data-v-bba692ee]{text-align:left}.center .text-input[data-v-bba692ee]{text-align:center}.end .text-input[data-v-bba692ee]{text-align:right}.line-wrapper.vertical .text-input[data-v-bba692ee]{text-align:center}",
     map: undefined,
     media: undefined
   });
@@ -10111,7 +11991,7 @@ const __vue_inject_styles__$M = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$M = "data-v-468e5b4b";
+const __vue_scope_id__$M = "data-v-bba692ee";
 /* module identifier */
 
 const __vue_module_identifier__$M = undefined;
@@ -10136,7 +12016,7 @@ var script$L = defineComponent({
       required: true
     }
   },
-  inject: ["updateWidget"],
+  inject: ['updateWidget'],
   methods: {
     setLabelPosition(labelPosition) {
       this.$props.widget.properties.labelPosition = labelPosition;
@@ -10201,8 +12081,8 @@ var __vue_staticRenderFns__$L = [];
 
 const __vue_inject_styles__$L = function (inject) {
   if (!inject) return;
-  inject("data-v-73701104_0", {
-    source: ".fieldItem[data-v-73701104]{padding:10px}.fieldItem>.label[data-v-73701104]{display:block;padding:10px 0}.button-group[data-v-73701104]{position:relative;display:flex;flex-direction:row;border-radius:4px;overflow:hidden;width:100%;max-width:300px}.button-item[data-v-73701104]{padding:5px 10px;border:none;flex:1;cursor:pointer}.button-item.active[data-v-73701104]{background-color:#03a9f4;color:#fff}",
+  inject("data-v-423a58fa_0", {
+    source: ".fieldItem[data-v-423a58fa]{padding:10px}.fieldItem>.label[data-v-423a58fa]{display:block;padding:10px 0}.button-group[data-v-423a58fa]{position:relative;display:flex;flex-direction:row;border-radius:4px;overflow:hidden;width:100%;max-width:300px}.button-item[data-v-423a58fa]{padding:5px 10px;border:none;flex:1;cursor:pointer}.button-item.active[data-v-423a58fa]{background-color:#03a9f4;color:#fff}",
     map: undefined,
     media: undefined
   });
@@ -10210,7 +12090,7 @@ const __vue_inject_styles__$L = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$L = "data-v-73701104";
+const __vue_scope_id__$L = "data-v-423a58fa";
 /* module identifier */
 
 const __vue_module_identifier__$L = undefined;
@@ -10228,31 +12108,63 @@ const __vue_component__$N = /*#__PURE__*/normalizeComponent({
 
 var BuilderForm = __vue_component__$N;
 
-//
-var script$K = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+const WidgetControlProps$4 = {
+  widget: {
+    type: Object,
+    required: true
   },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$K = defineComponent({
+  props: WidgetControlProps$4,
 
   setup() {},
 
   computed: {
     label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', this.widget.id);
     }
 
   },
   methods: {
     isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      return this.widget.properties.hasLabel && this.widget.properties.labelPosition === pos;
     }
 
   }
@@ -10294,8 +12206,8 @@ var __vue_staticRenderFns__$K = [];
 
 const __vue_inject_styles__$K = function (inject) {
   if (!inject) return;
-  inject("data-v-badef04e_0", {
-    source: ".line-wrapper[data-v-badef04e]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-badef04e]{flex-direction:column}.line-wrapper .line[data-v-badef04e]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-badef04e]{width:1px}.line-wrapper label[data-v-badef04e]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-badef04e]{padding-left:0}.line-wrapper label.end[data-v-badef04e]{padding-right:0}@media only screen and (max-width:600px){.line-wrapper label[data-v-badef04e]{font-size:10pt}}",
+  inject("data-v-84f25dd2_0", {
+    source: ".line-wrapper[data-v-84f25dd2]{display:flex;flex-direction:row;align-items:center;padding:10px 0}.line-wrapper.vertical[data-v-84f25dd2]{flex-direction:column}.line-wrapper .line[data-v-84f25dd2]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-84f25dd2]{width:1px}.line-wrapper label[data-v-84f25dd2]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-84f25dd2]{padding-left:0}.line-wrapper label.end[data-v-84f25dd2]{padding-right:0}@media only screen and (max-width:600px){.line-wrapper label[data-v-84f25dd2]{font-size:10pt}}",
     map: undefined,
     media: undefined
   });
@@ -10303,7 +12215,7 @@ const __vue_inject_styles__$K = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$K = "data-v-badef04e";
+const __vue_scope_id__$K = "data-v-84f25dd2";
 /* module identifier */
 
 const __vue_module_identifier__$K = undefined;
@@ -10321,31 +12233,65 @@ const __vue_component__$M = /*#__PURE__*/normalizeComponent({
 
 var Display$8 = __vue_component__$M;
 
-//
-var script$J = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+let WidgetControlProps$3 = {
+  widget: {
+    type: Object,
+    required: true
   },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$J = defineComponent({
+  props: WidgetControlProps$3,
 
   setup() {},
 
   computed: {
     label() {
-      return this.t("__label", this.$props.widget.id);
+      var _this$t, _this$widget;
+
+      return (_this$t = this.t) === null || _this$t === void 0 ? void 0 : _this$t.call(this, '__label', (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.id);
     }
 
   },
   methods: {
     isShowLabel(pos) {
-      return this.$props.widget.properties.hasLabel && this.$props.widget.properties.labelPosition === pos;
+      var _this$widget2, _this$widget3;
+
+      return ((_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.properties.hasLabel) && ((_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.properties.labelPosition) === pos;
     }
 
   }
@@ -10387,8 +12333,8 @@ var __vue_staticRenderFns__$J = [];
 
 const __vue_inject_styles__$J = function (inject) {
   if (!inject) return;
-  inject("data-v-3d962365_0", {
-    source: ".line-wrapper[data-v-3d962365]{display:flex;flex-direction:row;align-items:center;padding:10px}.line-wrapper.vertical[data-v-3d962365]{flex-direction:column}.line-wrapper .line[data-v-3d962365]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-3d962365]{width:1px}.line-wrapper label[data-v-3d962365]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-3d962365]{padding-left:0}.line-wrapper label.end[data-v-3d962365]{padding-right:0}",
+  inject("data-v-5fb0eccc_0", {
+    source: ".line-wrapper[data-v-5fb0eccc]{display:flex;flex-direction:row;align-items:center;padding:10px}.line-wrapper.vertical[data-v-5fb0eccc]{flex-direction:column}.line-wrapper .line[data-v-5fb0eccc]{flex:1;background-color:#a0a0a0;height:1px}.line-wrapper.vertical .line[data-v-5fb0eccc]{width:1px}.line-wrapper label[data-v-5fb0eccc]{padding:10px;background-color:rgba(255,255,255,.5);border-radius:10px}.line-wrapper label.start[data-v-5fb0eccc]{padding-left:0}.line-wrapper label.end[data-v-5fb0eccc]{padding-right:0}",
     map: undefined,
     media: undefined
   });
@@ -10396,7 +12342,7 @@ const __vue_inject_styles__$J = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$J = "data-v-3d962365";
+const __vue_scope_id__$J = "data-v-5fb0eccc";
 /* module identifier */
 
 const __vue_module_identifier__$J = undefined;
@@ -10418,11 +12364,11 @@ var separator = {
   create(props) {
     return {
       id: v4(),
-      type: "separator",
+      type: 'separator',
       properties: {
-        dir: "horizontal",
+        dir: 'horizontal',
         hasLabel: true,
-        labelPosition: "start",
+        labelPosition: 'start',
         ...props
       }
     };
@@ -10434,25 +12380,56 @@ var separator = {
   readOnly: ReadOnly$8
 };
 
-var script$I = defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function
+const WidgetControlProps$2 = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["getLocale", "setMessage"],
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$I = defineComponent({
+  props: WidgetControlProps$2,
+  inject: ['getLocale', 'setMessage'],
   methods: {
     onTextChange(val) {
       this.setMessage({
         id: this.$props.widget.id,
         locale: this.getLocale(),
-        key: "__label",
+        key: '__label',
         value: val.target.value
       });
     }
@@ -10493,8 +12470,8 @@ var __vue_staticRenderFns__$I = [];
 
 const __vue_inject_styles__$I = function (inject) {
   if (!inject) return;
-  inject("data-v-15c1b313_0", {
-    source: ".text-input[data-v-15c1b313]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
+  inject("data-v-016e0c50_0", {
+    source: ".text-input[data-v-016e0c50]{font-size:inherit;font-family:inherit;font-weight:inherit;outline:0;border:none;width:100%;background-color:transparent}",
     map: undefined,
     media: undefined
   });
@@ -10502,7 +12479,7 @@ const __vue_inject_styles__$I = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$I = "data-v-15c1b313";
+const __vue_scope_id__$I = "data-v-016e0c50";
 /* module identifier */
 
 const __vue_module_identifier__$I = undefined;
@@ -10520,15 +12497,46 @@ const __vue_component__$K = /*#__PURE__*/normalizeComponent({
 
 var Builder$1 = __vue_component__$K;
 
-var script$H = defineComponent({
-  props: {
-    widget: Object,
-    widgets: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function
+const WidgetControlProps$1 = {
+  widget: {
+    type: Object,
+    required: true
   },
-  inject: ["updateWidget"],
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$H = defineComponent({
+  props: WidgetControlProps$1,
+  inject: ['updateWidget'],
   methods: {
     setTagType(type) {
       this.widget.properties.tagType = type;
@@ -10639,8 +12647,8 @@ var __vue_staticRenderFns__$H = [];
 
 const __vue_inject_styles__$H = function (inject) {
   if (!inject) return;
-  inject("data-v-07c4de14_0", {
-    source: ".control-wrapper[data-v-07c4de14]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-07c4de14]{height:30px;min-width:40px;padding:0 5px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-07c4de14]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-07c4de14]{background-color:#03a9f4;color:#fff}",
+  inject("data-v-f76b79c0_0", {
+    source: ".control-wrapper[data-v-f76b79c0]{display:flex;flex-direction:row;border-radius:8px;border:1px solid #e8e8e8;background-color:#fff;overflow:hidden}.tag-selection[data-v-f76b79c0]{height:30px;min-width:40px;padding:0 5px;display:flex;align-items:center;justify-content:center;cursor:pointer}.tag-selection[data-v-f76b79c0]:hover{background-color:#e8e8e8}.tag-selection.selected[data-v-f76b79c0]{background-color:#03a9f4;color:#fff}",
     map: undefined,
     media: undefined
   });
@@ -10648,7 +12656,7 @@ const __vue_inject_styles__$H = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$H = "data-v-07c4de14";
+const __vue_scope_id__$H = "data-v-f76b79c0";
 /* module identifier */
 
 const __vue_module_identifier__$H = undefined;
@@ -10666,14 +12674,34 @@ const __vue_component__$J = /*#__PURE__*/normalizeComponent({
 
 var BuilderControl = __vue_component__$J;
 
-//
 var script$G = defineComponent({
   props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    t: Function
+    widget: {
+      type: Object,
+      required: true
+    },
+    widgetControls: {
+      type: Object,
+      required: true
+    },
+    widgetItems: {
+      type: Object,
+      required: true
+    },
+    pageState: {
+      type: Object,
+      required: true
+    },
+    setWidgetState: {
+      type: Function,
+      required: true
+    },
+    getWidgetState: {
+      type: Function,
+      required: true
+    },
+    t: Function,
+    view: String
   }
 });
 
@@ -10690,8 +12718,11 @@ var __vue_render__$G = function () {
 
   return _c(_vm.widget.properties.tagType, {
     tag: "component",
-    staticClass: "text"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+    staticClass: "text",
+    attrs: {
+      "maxlength": _vm.widget.properties.maxLength
+    }
+  }, [_vm._v("\n  " + _vm._s(_vm.t('__label', _vm.widget.id)) + "\n")]);
 };
 
 var __vue_staticRenderFns__$G = [];
@@ -10700,7 +12731,7 @@ var __vue_staticRenderFns__$G = [];
 const __vue_inject_styles__$G = undefined;
 /* scoped */
 
-const __vue_scope_id__$G = "data-v-21b106bc";
+const __vue_scope_id__$G = "data-v-33c0476c";
 /* module identifier */
 
 const __vue_module_identifier__$G = undefined;
@@ -10720,8 +12751,50 @@ const __vue_component__$I = /*#__PURE__*/normalizeComponent({
 
 var Display$7 = __vue_component__$I;
 
-//
-var script$F = defineComponent({});
+let WidgetControlProps = {
+  widget: {
+    type: Object,
+    required: true
+  },
+  widgetControls: {
+    type: Object,
+    required: true
+  },
+  widgetItems: {
+    type: Object,
+    required: true
+  },
+  pageState: {
+    type: Object,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$F = defineComponent({
+  props: WidgetControlProps
+});
 
 /* script */
 const __vue_script__$F = script$F;
@@ -10736,31 +12809,26 @@ var __vue_render__$F = function () {
 
   return _c(_vm.widget.properties.tagType, {
     tag: "component",
-    staticClass: "text"
-  }, [_vm._v(_vm._s(_vm.t("__label", _vm.widget.id)))]);
+    staticClass: "text",
+    class: [_vm.widget.properties.tagType]
+  }, [_vm._v("\n  " + _vm._s(_vm.t('__label')) + "\n")]);
 };
 
 var __vue_staticRenderFns__$F = [];
 /* style */
 
-const __vue_inject_styles__$F = function (inject) {
-  if (!inject) return;
-  inject("data-v-2400e2ea_0", {
-    source: ".text[data-v-2400e2ea]{padding:0 10px}",
-    map: undefined,
-    media: undefined
-  });
-};
+const __vue_inject_styles__$F = undefined;
 /* scoped */
 
-
-const __vue_scope_id__$F = "data-v-2400e2ea";
+const __vue_scope_id__$F = "data-v-e1dae31a";
 /* module identifier */
 
 const __vue_module_identifier__$F = undefined;
 /* functional template */
 
 const __vue_is_functional_template__$F = false;
+/* style inject */
+
 /* style inject SSR */
 
 /* style inject shadow dom */
@@ -10768,7 +12836,7 @@ const __vue_is_functional_template__$F = false;
 const __vue_component__$H = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$F,
   staticRenderFns: __vue_staticRenderFns__$F
-}, __vue_inject_styles__$F, __vue_script__$F, __vue_scope_id__$F, __vue_is_functional_template__$F, __vue_module_identifier__$F, false, createInjector, undefined, undefined);
+}, __vue_inject_styles__$F, __vue_script__$F, __vue_scope_id__$F, __vue_is_functional_template__$F, __vue_module_identifier__$F, false, undefined, undefined, undefined);
 
 var ReadOnly$7 = __vue_component__$H;
 
@@ -10776,9 +12844,9 @@ var text$1 = {
   create(props) {
     return {
       id: v4(),
-      type: "text",
+      type: 'text',
       properties: {
-        tagType: "p",
+        tagType: 'p',
         ...props
       }
     };
@@ -10790,7 +12858,7 @@ var text$1 = {
   readOnly: ReadOnly$7
 };
 
-let widgets = {
+const widgets = {
   alert,
   header,
   html,
@@ -10875,7 +12943,7 @@ var __vue_render__$E = function () {
       top: (_vm.properties.top || 0) + 'px'
     },
     attrs: {
-      "id": this.$props.properties.id
+      "id": _vm.$props.properties.id
     }
   });
 };
@@ -10885,8 +12953,8 @@ var __vue_staticRenderFns__$E = [];
 
 const __vue_inject_styles__$E = function (inject) {
   if (!inject) return;
-  inject("data-v-4044acf0_0", {
-    source: "a.anchor[data-v-4044acf0]{position:absolute;top:0;left:0}",
+  inject("data-v-6d640e86_0", {
+    source: "a.anchor[data-v-6d640e86]{position:absolute;top:0;left:0}",
     map: undefined,
     media: undefined
   });
@@ -10894,7 +12962,7 @@ const __vue_inject_styles__$E = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$E = "data-v-4044acf0";
+const __vue_scope_id__$E = "data-v-6d640e86";
 /* module identifier */
 
 const __vue_module_identifier__$E = undefined;
@@ -10920,7 +12988,7 @@ var script$D = defineComponent({
   },
   methods: {
     onChange(key, value) {
-      this.$emit("onPropertiesChange", { ...this.$props.properties,
+      this.$emit('onPropertiesChange', { ...this.$props.properties,
         [key]: value
       });
     }
@@ -10985,8 +13053,8 @@ var __vue_staticRenderFns__$D = [];
 
 const __vue_inject_styles__$D = function (inject) {
   if (!inject) return;
-  inject("data-v-a38cb820_0", {
-    source: ".field-wrapper[data-v-a38cb820]{padding:5px 0 15px 0}.field-wrapper.row[data-v-a38cb820]{display:flex;flex-direction:row;align-items:center}.field-wrapper>label[data-v-a38cb820]{display:block;margin-bottom:3px;font-size:9pt}.field-wrapper.row>label[data-v-a38cb820]{margin-right:5px}.field-wrapper select[data-v-a38cb820]{padding:5px;border-width:0 0 1px 0}.field-wrapper input[data-v-a38cb820]{padding:5px;border-width:0 0 1px 0}.field-row[data-v-a38cb820]{display:flex;flex-direction:row}",
+  inject("data-v-34f2b220_0", {
+    source: ".field-wrapper[data-v-34f2b220]{padding:5px 0 15px 0}.field-wrapper.row[data-v-34f2b220]{display:flex;flex-direction:row;align-items:center}.field-wrapper>label[data-v-34f2b220]{display:block;margin-bottom:3px;font-size:9pt}.field-wrapper.row>label[data-v-34f2b220]{margin-right:5px}.field-wrapper select[data-v-34f2b220]{padding:5px;border-width:0 0 1px 0}.field-wrapper input[data-v-34f2b220]{padding:5px;border-width:0 0 1px 0}.field-row[data-v-34f2b220]{display:flex;flex-direction:row}",
     map: undefined,
     media: undefined
   });
@@ -10994,7 +13062,7 @@ const __vue_inject_styles__$D = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$D = "data-v-a38cb820";
+const __vue_scope_id__$D = "data-v-34f2b220";
 /* module identifier */
 
 const __vue_module_identifier__$D = undefined;
@@ -11013,14 +13081,14 @@ const __vue_component__$F = /*#__PURE__*/normalizeComponent({
 var form$1 = __vue_component__$F;
 
 var anchor = new WidgetEffectControl({
-  key: "anchor",
-  name: "Anchor",
+  key: 'anchor',
+  name: 'Anchor',
 
   create(props) {
     return {
       type: this.key,
       properties: {
-        id: "",
+        id: '',
         top: 0,
         ...props
       }
@@ -12600,17 +14668,11 @@ var script$C = defineComponent({
     };
   },
 
-  unmounted() {
-    if (this.$props.wrapperRef) {
-      ScrollReveal().clean(this.$props.wrapperRef);
-    }
-  },
-
   computed: {
     watchWrapperPropsChange() {
       return {
-        properties: this.$props.properties,
-        wrapperRef: this.$props.wrapperRef
+        properties: this.properties,
+        wrapperRef: this.wrapperRef
       };
     }
 
@@ -12631,7 +14693,14 @@ var script$C = defineComponent({
 
       immediate: true
     }
+  },
+
+  unmounted() {
+    if (this.wrapperRef) {
+      ScrollReveal().clean(this.wrapperRef);
+    }
   }
+
 });
 
 /* script */
@@ -12682,7 +14751,7 @@ var script$B = defineComponent({
   },
   methods: {
     onChange(key, value) {
-      this.$emit("onPropertiesChange", { ...this.$props.properties,
+      this.$emit('onPropertiesChange', { ...this.$props.properties,
         [key]: value
       });
     }
@@ -12831,8 +14900,8 @@ var __vue_staticRenderFns__$B = [];
 
 const __vue_inject_styles__$B = function (inject) {
   if (!inject) return;
-  inject("data-v-3e4d4309_0", {
-    source: ".field-wrapper[data-v-3e4d4309]{padding:5px 0 15px 0}.field-wrapper.row[data-v-3e4d4309]{display:flex;flex-direction:row;align-items:center}.field-wrapper>label[data-v-3e4d4309]{display:block;margin-bottom:3px;font-size:9pt}.field-wrapper.row>label[data-v-3e4d4309]{margin-right:5px}.field-wrapper select[data-v-3e4d4309]{padding:5px;border-width:0 0 1px 0}.field-wrapper input[data-v-3e4d4309]{padding:5px;border-width:0 0 1px 0}.field-row[data-v-3e4d4309]{display:flex;flex-direction:row}.flex-1[data-v-3e4d4309]{flex:1}",
+  inject("data-v-250ce009_0", {
+    source: ".field-wrapper[data-v-250ce009]{padding:5px 0 15px 0}.field-wrapper.row[data-v-250ce009]{display:flex;flex-direction:row;align-items:center}.field-wrapper>label[data-v-250ce009]{display:block;margin-bottom:3px;font-size:9pt}.field-wrapper.row>label[data-v-250ce009]{margin-right:5px}.field-wrapper select[data-v-250ce009]{padding:5px;border-width:0 0 1px 0}.field-wrapper input[data-v-250ce009]{padding:5px;border-width:0 0 1px 0}.field-row[data-v-250ce009]{display:flex;flex-direction:row}.flex-1[data-v-250ce009]{flex:1}",
     map: undefined,
     media: undefined
   });
@@ -12840,7 +14909,7 @@ const __vue_inject_styles__$B = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$B = "data-v-3e4d4309";
+const __vue_scope_id__$B = "data-v-250ce009";
 /* module identifier */
 
 const __vue_module_identifier__$B = undefined;
@@ -12859,8 +14928,8 @@ const __vue_component__$D = /*#__PURE__*/normalizeComponent({
 var form = __vue_component__$D;
 
 var reveal = new WidgetEffectControl({
-  key: "reveal",
-  name: "Reveal",
+  key: 'reveal',
+  name: 'Reveal',
 
   create(props) {
     return {
@@ -12868,8 +14937,8 @@ var reveal = new WidgetEffectControl({
       properties: {
         delay: 100,
         duration: 300,
-        distance: "300px",
-        origin: "left",
+        distance: '300px',
+        origin: 'left',
         ...props
       }
     };
@@ -12890,7 +14959,8 @@ class QuestionControl {
     let {
       builder,
       display,
-      readOnly
+      readOnly,
+      questionItem = QuestionItem
     } = _ref;
 
     _defineProperty(this, "builder", void 0);
@@ -12899,27 +14969,57 @@ class QuestionControl {
 
     _defineProperty(this, "readOnly", void 0);
 
+    _defineProperty(this, "questionItem", void 0);
+
     _defineProperty(this, "tags", void 0);
 
     this.builder = builder;
     this.display = display;
     this.readOnly = readOnly;
     this.tags = [];
+    this.questionItem = questionItem;
   }
 
 }
 
+const QuestionControlProps$a = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$A = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps$a,
+    properties: {
+      type: Object,
+      required: true
+    },
+    value: {
+      type: String
+    }
   },
 
   data() {
@@ -12929,12 +15029,12 @@ var script$A = defineComponent({
   },
 
   watch: {
-    ["properties.options"]: {
+    ['properties.options']: {
       handler() {
         // FIXME: need to handle on locale switch as well
-        this.$data.options = this.$props.properties.options.map(opt => ({
+        this.options = this.properties.options.map(opt => ({
           value: opt.value,
-          label: this.t(opt.labelKey, this.$props.widget.id)
+          label: this.t(opt.labelKey, this.widget.id)
         }));
       },
 
@@ -12943,13 +15043,15 @@ var script$A = defineComponent({
   },
   computed: {
     selectedValue() {
-      return this.$data.options.find(o => o.value === this.$props.value);
+      return this.options.find(o => o.value === this.value);
     }
 
   },
   methods: {
     onSelectChange(value) {
-      this.$props.onChange(value);
+      var _this$onChange;
+
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, value);
     }
 
   }
@@ -12989,8 +15091,8 @@ var __vue_staticRenderFns__$A = [];
 
 const __vue_inject_styles__$A = function (inject) {
   if (!inject) return;
-  inject("data-v-0ad7d30f_0", {
-    source: ".button-group-wrapper[data-v-0ad7d30f]{display:inline-flex;flex-direction:row;border:1px solid #000;border-radius:8px;overflow:hidden}button[data-v-0ad7d30f]{border:1px solid transparent;cursor:pointer;background-color:#fff}button[data-v-0ad7d30f]:not(.isLast){border-right-color:#000}button.selected[data-v-0ad7d30f]{background-color:#03a9f4;color:#fff}",
+  inject("data-v-15bad84e_0", {
+    source: ".button-group-wrapper[data-v-15bad84e]{display:inline-flex;flex-direction:row;border:1px solid #000;border-radius:8px;overflow:hidden}button[data-v-15bad84e]{border:1px solid transparent;cursor:pointer;background-color:#fff}button[data-v-15bad84e]:not(.isLast){border-right-color:#000}button.selected[data-v-15bad84e]{background-color:#03a9f4;color:#fff}",
     map: undefined,
     media: undefined
   });
@@ -12998,7 +15100,7 @@ const __vue_inject_styles__$A = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$A = "data-v-0ad7d30f";
+const __vue_scope_id__$A = "data-v-15bad84e";
 /* module identifier */
 
 const __vue_module_identifier__$A = undefined;
@@ -13031,7 +15133,7 @@ var script$z = defineComponent({
 
   data() {
     return {
-      translatedLabel: ""
+      translatedLabel: ''
     };
   },
 
@@ -13039,7 +15141,7 @@ var script$z = defineComponent({
     getLabelByValue(value) {
       var _this$$props$properti;
 
-      return this.t(((_this$$props$properti = this.$props.properties.options.find(o => o.value === value)) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.labelKey) || "", this.$props.widget.id);
+      return this.t(((_this$$props$properti = this.$props.properties.options.find(o => o.value === value)) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.labelKey) || '', this.$props.widget.id);
     }
 
   },
@@ -13143,7 +15245,7 @@ var __vue_render__$y = function () {
     on: {
       "click": _vm.onToggle
     }
-  }), _vm._v("\n    " + _vm._s(_vm.t("__checkboxLabel", _vm.widget.id)) + "\n  ")])]);
+  }), _vm._v("\n    " + _vm._s(_vm.t('__checkboxLabel', _vm.widget.id)) + "\n  ")])]);
 };
 
 var __vue_staticRenderFns__$y = [];
@@ -13172,17 +15274,37 @@ const __vue_component__$A = /*#__PURE__*/normalizeComponent({
 
 var Builder = __vue_component__$A;
 
+const QuestionControlProps$9 = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$x = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: Boolean,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps$9,
+    properties: Object
   },
   methods: {
     onToggle(ev) {
@@ -13216,7 +15338,7 @@ var __vue_render__$x = function () {
     on: {
       "click": _vm.onToggle
     }
-  }), _vm._v("\n    " + _vm._s(_vm.t("__checkboxLabel")) + "\n  ")])]);
+  }), _vm._v("\n    " + _vm._s(_vm.t('__checkboxLabel')) + "\n  ")])]);
 };
 
 var __vue_staticRenderFns__$x = [];
@@ -13305,95 +15427,62 @@ var checkbox = new QuestionControl({
   readOnly: ReadOnly$5
 });
 
-var dayjs_min = createCommonjsModule(function (module, exports) {
-!function(t,e){module.exports=e();}(commonjsGlobal,(function(){var t=1e3,e=6e4,n=36e5,r="millisecond",i="second",s="minute",u="hour",a="day",o="week",f="month",h="quarter",c="year",d="date",$="Invalid Date",l=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,y=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,M={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},m=function(t,e,n){var r=String(t);return !r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},g={s:m,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return (e<=0?"+":"-")+m(r,2,"0")+":"+m(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return -t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,f),s=n-i<0,u=e.clone().add(r+(s?-1:1),f);return +(-(r+(n-i)/(s?i-u:u-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(t){return {M:f,y:c,w:o,d:a,D:d,h:u,m:s,s:i,ms:r,Q:h}[t]||String(t||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},v="en",D={};D[v]=M;var p=function(t){return t instanceof _},S=function t(e,n,r){var i;if(!e)return v;if("string"==typeof e){var s=e.toLowerCase();D[s]&&(i=s),n&&(D[s]=n,i=s);var u=e.split("-");if(!i&&u.length>1)return t(u[0])}else {var a=e.name;D[a]=e,i=a;}return !r&&i&&(v=i),i||!r&&v},w=function(t,e){if(p(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new _(n)},O=g;O.l=S,O.i=p,O.w=function(t,e){return w(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var _=function(){function M(t){this.$L=S(t.locale,null,!0),this.parse(t);}var m=M.prototype;return m.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(O.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(l);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init();},m.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds();},m.$utils=function(){return O},m.isValid=function(){return !(this.$d.toString()===$)},m.isSame=function(t,e){var n=w(t);return this.startOf(e)<=n&&n<=this.endOf(e)},m.isAfter=function(t,e){return w(t)<this.startOf(e)},m.isBefore=function(t,e){return this.endOf(e)<w(t)},m.$g=function(t,e,n){return O.u(t)?this[e]:this.set(n,t)},m.unix=function(){return Math.floor(this.valueOf()/1e3)},m.valueOf=function(){return this.$d.getTime()},m.startOf=function(t,e){var n=this,r=!!O.u(e)||e,h=O.p(t),$=function(t,e){var i=O.w(n.$u?Date.UTC(n.$y,e,t):new Date(n.$y,e,t),n);return r?i:i.endOf(a)},l=function(t,e){return O.w(n.toDate()[t].apply(n.toDate("s"),(r?[0,0,0,0]:[23,59,59,999]).slice(e)),n)},y=this.$W,M=this.$M,m=this.$D,g="set"+(this.$u?"UTC":"");switch(h){case c:return r?$(1,0):$(31,11);case f:return r?$(1,M):$(0,M+1);case o:var v=this.$locale().weekStart||0,D=(y<v?y+7:y)-v;return $(r?m-D:m+(6-D),M);case a:case d:return l(g+"Hours",0);case u:return l(g+"Minutes",1);case s:return l(g+"Seconds",2);case i:return l(g+"Milliseconds",3);default:return this.clone()}},m.endOf=function(t){return this.startOf(t,!1)},m.$set=function(t,e){var n,o=O.p(t),h="set"+(this.$u?"UTC":""),$=(n={},n[a]=h+"Date",n[d]=h+"Date",n[f]=h+"Month",n[c]=h+"FullYear",n[u]=h+"Hours",n[s]=h+"Minutes",n[i]=h+"Seconds",n[r]=h+"Milliseconds",n)[o],l=o===a?this.$D+(e-this.$W):e;if(o===f||o===c){var y=this.clone().set(d,1);y.$d[$](l),y.init(),this.$d=y.set(d,Math.min(this.$D,y.daysInMonth())).$d;}else $&&this.$d[$](l);return this.init(),this},m.set=function(t,e){return this.clone().$set(t,e)},m.get=function(t){return this[O.p(t)]()},m.add=function(r,h){var d,$=this;r=Number(r);var l=O.p(h),y=function(t){var e=w($);return O.w(e.date(e.date()+Math.round(t*r)),$)};if(l===f)return this.set(f,this.$M+r);if(l===c)return this.set(c,this.$y+r);if(l===a)return y(1);if(l===o)return y(7);var M=(d={},d[s]=e,d[u]=n,d[i]=t,d)[l]||1,m=this.$d.getTime()+r*M;return O.w(m,this)},m.subtract=function(t,e){return this.add(-1*t,e)},m.format=function(t){var e=this,n=this.$locale();if(!this.isValid())return n.invalidDate||$;var r=t||"YYYY-MM-DDTHH:mm:ssZ",i=O.z(this),s=this.$H,u=this.$m,a=this.$M,o=n.weekdays,f=n.months,h=function(t,n,i,s){return t&&(t[n]||t(e,r))||i[n].substr(0,s)},c=function(t){return O.s(s%12||12,t,"0")},d=n.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:O.s(a+1,2,"0"),MMM:h(n.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:O.s(this.$D,2,"0"),d:String(this.$W),dd:h(n.weekdaysMin,this.$W,o,2),ddd:h(n.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:O.s(s,2,"0"),h:c(1),hh:c(2),a:d(s,u,!0),A:d(s,u,!1),m:String(u),mm:O.s(u,2,"0"),s:String(this.$s),ss:O.s(this.$s,2,"0"),SSS:O.s(this.$ms,3,"0"),Z:i};return r.replace(y,(function(t,e){return e||l[t]||i.replace(":","")}))},m.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},m.diff=function(r,d,$){var l,y=O.p(d),M=w(r),m=(M.utcOffset()-this.utcOffset())*e,g=this-M,v=O.m(this,M);return v=(l={},l[c]=v/12,l[f]=v,l[h]=v/3,l[o]=(g-m)/6048e5,l[a]=(g-m)/864e5,l[u]=g/n,l[s]=g/e,l[i]=g/t,l)[y]||g,$?v:O.a(v)},m.daysInMonth=function(){return this.endOf(f).$D},m.$locale=function(){return D[this.$L]},m.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=S(t,e,!0);return r&&(n.$L=r),n},m.clone=function(){return O.w(this.$d,this)},m.toDate=function(){return new Date(this.valueOf())},m.toJSON=function(){return this.isValid()?this.toISOString():null},m.toISOString=function(){return this.$d.toISOString()},m.toString=function(){return this.$d.toUTCString()},M}(),b=_.prototype;return w.prototype=b,[["$ms",r],["$s",i],["$m",s],["$H",u],["$W",a],["$M",f],["$y",c],["$D",d]].forEach((function(t){b[t[1]]=function(e){return this.$g(e,t[0],t[1])};})),w.extend=function(t,e){return t.$i||(t(e,_,w),t.$i=!0),w},w.locale=S,w.isDayjs=p,w.unix=function(t){return w(1e3*t)},w.en=D[v],w.Ls=D,w.p={},w}));
-});
-
-let formatDateString = date => {
-  if (!date) return undefined;
-  return date.toLocaleString("en-CA", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  });
+const QuestionControlProps$8 = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: String
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
 };
-let getDateByPropertyValue = date => {
-  if (!date) {
-    return undefined;
-  }
-
-  if (date instanceof Date) {
-    return date;
-  }
-
-  const parsedDate = Date.parse(date);
-
-  if (!isNaN(parsedDate)) {
-    // is a proper date timestamp, return date with it
-    return new Date(parsedDate);
-  } // if date string === Date.now or new Date, return current date
-
-
-  if (/^Date.now(\(\))*$/.test(date) || /^new Date(\(\))*$/.test(date)) {
-    return new Date();
-  } // if it is a dayjs handling, run it through dayjs
-
-
-  if (/(^dayjs|^[\w]+\([^\)]*\))/.test(date)) {
-    return date.split(".").reduce((accDate, part) => {
-      const parts = part.match(/([\w]+)\(([^\)]*)\)/);
-      if (!parts) return accDate;
-
-      switch (parts[1]) {
-        case "dayjs":
-          if (parts[2]) return dayjs_min(parts[2]);
-          return accDate;
-
-        default:
-          return accDate[parts[1]](...parts[2].split(/\s*,\s*/).map(a => {
-            const parsedNum = parseFloat(a);
-
-            if (isNaN(parsedNum)) {
-              return a.replaceAll(/[\'\"]+/g, "");
-            } else {
-              return parsedNum;
-            }
-          }));
-      }
-    }, dayjs_min()).toDate();
-  }
-
-  return undefined;
-};
-
 var script$v = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps$8,
+    value: {
+      type: String
+    }
   },
 
   created() {
-    if (!this.$props.value) this.$props.onChange(this.$data.defaultDate);
+    var _this$onChange;
+
+    if (!this.value) (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, this.$data.defaultDate);
   },
 
   data() {
+    var _this$properties, _this$properties2, _this$properties3;
+
     return {
-      defaultDate: formatDateString(getDateByPropertyValue(this.$props.properties.defaultDate)),
-      minDate: formatDateString(getDateByPropertyValue(this.$props.properties.minDate)),
-      maxDate: formatDateString(getDateByPropertyValue(this.$props.properties.maxDate))
+      defaultDate: formatDateString(getDateByPropertyValue((_this$properties = this.properties) === null || _this$properties === void 0 ? void 0 : _this$properties.defaultDate)),
+      minDate: formatDateString(getDateByPropertyValue((_this$properties2 = this.properties) === null || _this$properties2 === void 0 ? void 0 : _this$properties2.minDate)),
+      maxDate: formatDateString(getDateByPropertyValue((_this$properties3 = this.properties) === null || _this$properties3 === void 0 ? void 0 : _this$properties3.maxDate))
     };
   },
 
   methods: {
     onDateChange(newDate) {
-      this.$props.onChange(newDate.target.value);
+      var _this$onChange2;
+
+      (_this$onChange2 = this.onChange) === null || _this$onChange2 === void 0 ? void 0 : _this$onChange2.call(this, newDate.target.value);
     }
 
   }
@@ -13430,8 +15519,8 @@ var __vue_staticRenderFns__$v = [];
 
 const __vue_inject_styles__$v = function (inject) {
   if (!inject) return;
-  inject("data-v-6c12e245_0", {
-    source: ".radio-item[data-v-6c12e245]{margin-right:10px}",
+  inject("data-v-9982ab16_0", {
+    source: ".radio-item[data-v-9982ab16]{margin-right:10px}",
     map: undefined,
     media: undefined
   });
@@ -13439,7 +15528,7 @@ const __vue_inject_styles__$v = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$v = "data-v-6c12e245";
+const __vue_scope_id__$v = "data-v-9982ab16";
 /* module identifier */
 
 const __vue_module_identifier__$v = undefined;
@@ -13457,22 +15546,44 @@ const __vue_component__$x = /*#__PURE__*/normalizeComponent({
 
 var Display$4 = __vue_component__$x;
 
+const QuestionControlProps$7 = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$u = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps$7
   },
   computed: {
     label() {
-      const selectedOption = this.$props.widget.properties.controlProperties.options.find(f => f.value === this.$props.value);
-      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, this.$props.widget.id) : "";
+      var _this$widget, _this$widget2;
+
+      const selectedOption = (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.controlProperties.options.find(f => f.value === this.value);
+      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.id) : '';
     }
 
   }
@@ -13523,23 +15634,42 @@ var datePicker = new QuestionControl({
   readOnly: ReadOnly$4
 });
 
-// import "vue-multiselect/dist/vue-multiselect.min.css";
-
-var script$t = defineComponent({
-  // components: { Multiselect },
-  props: {
-    properties: Object,
-    widget: Object,
-    widgetItems: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+const QuestionControlProps$6 = {
+  properties: {
+    type: Object,
+    required: true
   },
-  inject: ["pageEventListener", "getPageState"],
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
+var script$t = defineComponent({
+  props: { ...QuestionControlProps$6,
+    widgetItem: Object,
+    properties: Object,
+    value: String
+  },
+  inject: ['pageEventListener', 'getPageState'],
 
   data() {
     return {
@@ -13548,19 +15678,31 @@ var script$t = defineComponent({
     };
   },
 
-  created() {},
+  created() {
+    var _this$properties;
+
+    if (!this.value && (_this$properties = this.properties) !== null && _this$properties !== void 0 && _this$properties.defaultValue) {
+      var _this$onChange;
+
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, this.properties.defaultValue);
+    }
+  },
 
   unmounted() {
     // remove conditional listeners
     this.attachedDependentCodeListeners.forEach(_ref => {
+      var _this$pageEventListen;
+
       let [name, fn] = _ref;
-      this.pageEventListener.remove(name, fn);
+      (_this$pageEventListen = this.pageEventListener) === null || _this$pageEventListen === void 0 ? void 0 : _this$pageEventListen.remove(name, fn);
     });
   },
 
   watch: {
-    ["properties.options"]: {
+    ['properties.options']: {
       async handler() {
+        var _this$widget, _this$widget2;
+
         // recursively go through conditions and get all facts
         const getConditionFacts = conditions => {
           return [...new Set(conditions.reduce((arr, condition) => {
@@ -13575,13 +15717,13 @@ var script$t = defineComponent({
         }; // go through each option and extract condition fact names
 
 
-        const allDependentCodes = [...new Set(this.$props.widget.properties.controlProperties.options.reduce((arr, option) => {
+        const allDependentCodes = [...new Set((_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.controlProperties.options.reduce((arr, option) => {
           var _option$conditions;
 
           return [...arr, ...((_option$conditions = option.conditions) !== null && _option$conditions !== void 0 && _option$conditions.length ? getConditionFacts(option.conditions) : [])];
         }, []))]; // sync listeners for filtering options
 
-        this.widget.setListenerSet("options", allDependentCodes.map(c => `${c}_change`), () => this.setFilteredOptions()); // set initial filtered options
+        (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.setListenerSet('options', allDependentCodes.map(c => `${c}_change`), () => this.setFilteredOptions()); // set initial filtered options
 
         this.setFilteredOptions();
       },
@@ -13591,7 +15733,7 @@ var script$t = defineComponent({
   },
   computed: {
     selectedValue() {
-      return this.$data.options.find(o => o.value === this.$props.value);
+      return this.$data.options.find(o => o.value === this.value);
     }
 
   },
@@ -13604,9 +15746,11 @@ var script$t = defineComponent({
     },
 
     async getFilteredOptions() {
+      var _this$widget3;
+
       // build facts data into:
       // { [idOrCode: string]: response }
-      const validateData = Object.keys(this.$props.widgetItems).reduce((obj, widgetItemId) => {
+      const validateData = Object.keys(this.widgetItems || {}).reduce((obj, widgetItemId) => {
         var _this$getPageState, _this$getPageState$wi;
 
         const response = (_this$getPageState = this.getPageState()) === null || _this$getPageState === void 0 ? void 0 : (_this$getPageState$wi = _this$getPageState.widgetState[widgetItemId]) === null || _this$getPageState$wi === void 0 ? void 0 : _this$getPageState$wi.response;
@@ -13614,8 +15758,8 @@ var script$t = defineComponent({
         if (response) {
           obj[widgetItemId] = response;
 
-          if (this.$props.widgetItems[widgetItemId].code) {
-            obj[this.$props.widgetItems[widgetItemId].code || ""] = response;
+          if (this.widgetItems[widgetItemId].code) {
+            obj[this.widgetItems[widgetItemId].code || ''] = response;
           }
         }
 
@@ -13624,15 +15768,17 @@ var script$t = defineComponent({
       // (if they have any) against responses set above.
       // Only return ones that meets validate() or does not have conditions at all
 
-      return (await Promise.all(this.$props.widget.properties.controlProperties.options.map(async opt => {
-        var _opt$conditions;
+      return (await Promise.all((_this$widget3 = this.widget) === null || _this$widget3 === void 0 ? void 0 : _this$widget3.properties.controlProperties.options.map(async opt => {
+        var _opt$conditions, _this$widget4;
 
-        return !((_opt$conditions = opt.conditions) !== null && _opt$conditions !== void 0 && _opt$conditions.length) || (await this.$props.widget.validate(opt.conditions, validateData)) ? opt : null;
+        return !((_opt$conditions = opt.conditions) !== null && _opt$conditions !== void 0 && _opt$conditions.length) || (await ((_this$widget4 = this.widget) === null || _this$widget4 === void 0 ? void 0 : _this$widget4.validator.validate(opt.conditions, validateData))) ? opt : null;
       }))).filter(a => a);
     },
 
     onSelectChange(ev) {
-      this.$props.onChange(ev.target.value);
+      var _this$onChange2;
+
+      (_this$onChange2 = this.onChange) === null || _this$onChange2 === void 0 ? void 0 : _this$onChange2.call(this, ev.target.value);
     }
 
   }
@@ -13661,7 +15807,7 @@ var __vue_render__$t = function () {
       "value": "",
       "disabled": ""
     }
-  }, [_vm._v(_vm._s(_vm.t("__placeholder")))]), _vm._v(" "), _vm._l(_vm.options, function (option) {
+  }, [_vm._v(_vm._s(_vm.t('__placeholder')))]), _vm._v(" "), _vm._l(_vm.options, function (option) {
     return _c('option', {
       key: option.value,
       domProps: {
@@ -13677,8 +15823,8 @@ var __vue_staticRenderFns__$t = [];
 
 const __vue_inject_styles__$t = function (inject) {
   if (!inject) return;
-  inject("data-v-2cf26aaa_0", {
-    source: ".radio-item[data-v-2cf26aaa]{margin-right:10px}",
+  inject("data-v-8ab8e6c2_0", {
+    source: ".radio-item[data-v-8ab8e6c2]{margin-right:10px}",
     map: undefined,
     media: undefined
   });
@@ -13686,7 +15832,7 @@ const __vue_inject_styles__$t = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$t = "data-v-2cf26aaa";
+const __vue_scope_id__$t = "data-v-8ab8e6c2";
 /* module identifier */
 
 const __vue_module_identifier__$t = undefined;
@@ -13719,7 +15865,7 @@ var script$s = defineComponent({
 
   data() {
     return {
-      translatedLabel: ""
+      translatedLabel: ''
     };
   },
 
@@ -13727,7 +15873,7 @@ var script$s = defineComponent({
     getLabelByValue(value) {
       var _this$$props$properti;
 
-      return this.t(((_this$$props$properti = this.$props.properties.options.find(o => o.value === value)) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.labelKey) || "", this.$props.widget.id);
+      return this.t(((_this$$props$properti = this.$props.properties.options.find(o => o.value === value)) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.labelKey) || '', this.$props.widget.id);
     }
 
   },
@@ -13787,52 +15933,75 @@ var dropdown = new QuestionControl({
   readOnly: ReadOnly$3
 });
 
+const QuestionControlProps$5 = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$r = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: Number,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps$5,
+    value: Number
   },
 
   created() {
-    var _this$$props$properti;
+    var _this$properties;
 
     // if value has not been set and default is set, set value to default
-    if (this.$props.value === undefined && ((_this$$props$properti = this.$props.properties) === null || _this$$props$properti === void 0 ? void 0 : _this$$props$properti.default) !== undefined) this.changeValue(this.$props.properties.default, true);
+    if (this.value === undefined && ((_this$properties = this.properties) === null || _this$properties === void 0 ? void 0 : _this$properties.default) !== undefined) this.changeValue(this.properties.default, true);
   },
 
   computed: {
     step() {
-      return this.$props.properties.step || 1;
+      var _this$properties2;
+
+      return ((_this$properties2 = this.properties) === null || _this$properties2 === void 0 ? void 0 : _this$properties2.step) || 1;
     },
 
     numValue() {
-      var _this$$props$properti2, _this$$props$properti3;
+      var _this$properties3, _this$properties4;
 
-      if (this.$props.value !== undefined) return this.$props.value;
-      if (((_this$$props$properti2 = this.$props.properties) === null || _this$$props$properti2 === void 0 ? void 0 : _this$$props$properti2.default) !== undefined) return this.$props.properties.default;
-      if (((_this$$props$properti3 = this.$props.properties) === null || _this$$props$properti3 === void 0 ? void 0 : _this$$props$properti3.min) !== undefined) return this.$props.properties.min;
+      if (this.value !== undefined) return this.value;
+      if (((_this$properties3 = this.properties) === null || _this$properties3 === void 0 ? void 0 : _this$properties3.default) !== undefined) return this.properties.default;
+      if (((_this$properties4 = this.properties) === null || _this$properties4 === void 0 ? void 0 : _this$properties4.min) !== undefined) return this.properties.min;
       return 0;
     }
 
   },
   methods: {
     changeValue(newNum, ignoreChecks) {
-      var _this$$props$properti4, _this$$props$properti5, _this$$props$properti6, _this$$props$properti7, _this$$props$onChange, _this$$props;
+      var _this$properties5, _this$properties6, _this$properties7, _this$properties8, _this$onChange;
 
       if (/^[^0-9]+$/.test(newNum.toString())) return;
 
       let _newNum = parseInt(newNum.toString(), 10);
 
-      if (((_this$$props$properti4 = this.$props.properties) === null || _this$$props$properti4 === void 0 ? void 0 : _this$$props$properti4.min) !== undefined && _newNum < ((_this$$props$properti5 = this.$props.properties) === null || _this$$props$properti5 === void 0 ? void 0 : _this$$props$properti5.min)) _newNum = this.$props.properties.min;
-      if (((_this$$props$properti6 = this.$props.properties) === null || _this$$props$properti6 === void 0 ? void 0 : _this$$props$properti6.max) !== undefined && _newNum > ((_this$$props$properti7 = this.$props.properties) === null || _this$$props$properti7 === void 0 ? void 0 : _this$$props$properti7.max)) _newNum = this.$props.properties.max;
-      (_this$$props$onChange = (_this$$props = this.$props).onChange) === null || _this$$props$onChange === void 0 ? void 0 : _this$$props$onChange.call(_this$$props, _newNum, ignoreChecks);
+      if (((_this$properties5 = this.properties) === null || _this$properties5 === void 0 ? void 0 : _this$properties5.min) !== undefined && _newNum < ((_this$properties6 = this.properties) === null || _this$properties6 === void 0 ? void 0 : _this$properties6.min)) _newNum = this.properties.min;
+      if (((_this$properties7 = this.properties) === null || _this$properties7 === void 0 ? void 0 : _this$properties7.max) !== undefined && _newNum > ((_this$properties8 = this.properties) === null || _this$properties8 === void 0 ? void 0 : _this$properties8.max)) _newNum = this.properties.max;
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, _newNum, ignoreChecks);
     }
 
   }
@@ -13882,8 +16051,8 @@ var __vue_staticRenderFns__$r = [];
 
 const __vue_inject_styles__$r = function (inject) {
   if (!inject) return;
-  inject("data-v-2d5d2b73_0", {
-    source: "input[data-v-2d5d2b73]::-webkit-inner-spin-button,input[data-v-2d5d2b73]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
+  inject("data-v-30f5c940_0", {
+    source: "input[data-v-30f5c940]::-webkit-inner-spin-button,input[data-v-30f5c940]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}",
     map: undefined,
     media: undefined
   });
@@ -13891,7 +16060,7 @@ const __vue_inject_styles__$r = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$r = "data-v-2d5d2b73";
+const __vue_scope_id__$r = "data-v-30f5c940";
 /* module identifier */
 
 const __vue_module_identifier__$r = undefined;
@@ -13909,17 +16078,38 @@ const __vue_component__$t = /*#__PURE__*/normalizeComponent({
 
 var Display$2 = __vue_component__$t;
 
+const QuestionControlProps$4 = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$q = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps$4,
+    value: Number
   }
 });
 
@@ -13969,21 +16159,44 @@ var numberPicker = new QuestionControl({
   readOnly: ReadOnly$2
 });
 
+const QuestionControlProps$3 = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$p = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps$3,
+    value: String
   },
   methods: {
     onSelect(ev) {
-      this.$props.onChange(ev.target.value);
+      var _this$onChange;
+
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, ev.target.value);
     }
 
   }
@@ -14025,8 +16238,8 @@ var __vue_staticRenderFns__$p = [];
 
 const __vue_inject_styles__$p = function (inject) {
   if (!inject) return;
-  inject("data-v-5d95758c_0", {
-    source: ".radio-item[data-v-5d95758c]{margin-right:10px}",
+  inject("data-v-0fd43287_0", {
+    source: ".radio-item[data-v-0fd43287]{margin-right:10px}",
     map: undefined,
     media: undefined
   });
@@ -14034,7 +16247,7 @@ const __vue_inject_styles__$p = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$p = "data-v-5d95758c";
+const __vue_scope_id__$p = "data-v-0fd43287";
 /* module identifier */
 
 const __vue_module_identifier__$p = undefined;
@@ -14052,22 +16265,45 @@ const __vue_component__$r = /*#__PURE__*/normalizeComponent({
 
 var Display$1 = __vue_component__$r;
 
+const QuestionControlProps$2 = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$o = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps$2,
+    value: String
   },
   computed: {
     label() {
-      const selectedOption = this.$props.widget.properties.controlProperties.options.find(f => f.value === this.$props.value);
-      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, this.$props.widget.id) : "";
+      var _this$widget, _this$widget2;
+
+      const selectedOption = (_this$widget = this.widget) === null || _this$widget === void 0 ? void 0 : _this$widget.properties.controlProperties.options.find(f => f.value === this.value);
+      return selectedOption !== null && selectedOption !== void 0 && selectedOption.labelKey ? this.t(selectedOption.labelKey, (_this$widget2 = this.widget) === null || _this$widget2 === void 0 ? void 0 : _this$widget2.id) : '';
     }
 
   }
@@ -14119,21 +16355,44 @@ var radio = new QuestionControl({
   readOnly: ReadOnly$1
 });
 
+const QuestionControlProps$1 = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$n = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps$1,
+    value: String
   },
   methods: {
     onTextChange(ev) {
-      this.$props.onChange(ev.target.value);
+      var _this$onChange;
+
+      (_this$onChange = this.onChange) === null || _this$onChange === void 0 ? void 0 : _this$onChange.call(this, ev.target.value);
     }
 
   }
@@ -14177,8 +16436,8 @@ var __vue_staticRenderFns__$n = [];
 
 const __vue_inject_styles__$n = function (inject) {
   if (!inject) return;
-  inject("data-v-e3a99f28_0", {
-    source: ".textInput[data-v-e3a99f28]::-webkit-inner-spin-button,.textInput[data-v-e3a99f28]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}.textInput[data-v-e3a99f28]{min-height:42px}",
+  inject("data-v-5fb44e31_0", {
+    source: ".textInput[data-v-5fb44e31]::-webkit-inner-spin-button,.textInput[data-v-5fb44e31]::-webkit-outer-spin-button{-webkit-appearance:none;-moz-appearance:textfield;margin:0}.textInput[data-v-5fb44e31]{min-height:42px}",
     map: undefined,
     media: undefined
   });
@@ -14186,7 +16445,7 @@ const __vue_inject_styles__$n = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$n = "data-v-e3a99f28";
+const __vue_scope_id__$n = "data-v-5fb44e31";
 /* module identifier */
 
 const __vue_module_identifier__$n = undefined;
@@ -14204,17 +16463,38 @@ const __vue_component__$p = /*#__PURE__*/normalizeComponent({
 
 var Display = __vue_component__$p;
 
+const QuestionControlProps = {
+  properties: {
+    type: Object,
+    required: true
+  },
+  widget: {
+    type: Object,
+    required: true
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true
+  },
+  t: {
+    type: Function,
+    required: true
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true
+  },
+  errors: {
+    type: Array,
+    required: false
+  }
+};
 var script$m = defineComponent({
-  props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function
+  props: { ...QuestionControlProps,
+    value: String
   }
 });
 
@@ -14263,7 +16543,7 @@ var text = new QuestionControl({
   readOnly: ReadOnly
 });
 
-let questionControls = {
+const questionControls = {
   buttonGroup,
   checkbox,
   datePicker,
@@ -14271,139 +16551,6 @@ let questionControls = {
   numberPicker,
   radio,
   text
-};
-
-class PageState {
-  static from(pageState) {
-    if (pageState instanceof PageState) {
-      // from an object, use their public getters
-      return new PageState({
-        widgetState: pageState.widgetState,
-        interactiveState: pageState.interactiveState,
-        widgetCodeToIdMap: pageState.widgetCodeToIdMap,
-        widgetIdToCodeMap: pageState.widgetIdToCodeMap
-      });
-    } else {
-      // assume it is just a plain object, fetch its protected
-      // field
-      return new PageState({
-        widgetState: pageState._widgetState,
-        interactiveState: pageState._interactiveState,
-        widgetCodeToIdMap: pageState._widgetCodeToIdMap,
-        widgetIdToCodeMap: pageState._widgetIdToCodeMap
-      });
-    }
-  }
-
-  constructor(_ref) {
-    let {
-      widgetState,
-      interactiveState,
-      widgetCodeToIdMap,
-      widgetIdToCodeMap
-    } = _ref;
-
-    _defineProperty(this, "_widgetState", void 0);
-
-    _defineProperty(this, "_interactiveState", void 0);
-
-    _defineProperty(this, "_widgetCodeToIdMap", void 0);
-
-    _defineProperty(this, "_widgetIdToCodeMap", void 0);
-
-    this._widgetState = widgetState || {};
-    this._interactiveState = interactiveState || {};
-    this._widgetCodeToIdMap = widgetCodeToIdMap || {};
-    this._widgetIdToCodeMap = widgetIdToCodeMap || {};
-  }
-
-  get interactiveState() {
-    return this._interactiveState;
-  }
-
-  get widgetState() {
-    return this._widgetState;
-  }
-
-  get widgetCodeToIdMap() {
-    return this._widgetCodeToIdMap;
-  }
-
-  get widgetIdToCodeMap() {
-    return this._widgetIdToCodeMap;
-  }
-
-  getWidgetIdByCode(code) {
-    return this._widgetCodeToIdMap[code];
-  }
-
-  getWidgetCodeById(widgetId) {
-    return this._widgetIdToCodeMap[widgetId];
-  }
-
-  onUpdate() {}
-
-  getWidgetState(widgetId, key) {
-    var _this$_widgetState$wi;
-
-    return key ? (_this$_widgetState$wi = this._widgetState[widgetId]) === null || _this$_widgetState$wi === void 0 ? void 0 : _this$_widgetState$wi[key] : this._widgetState[widgetId];
-  }
-
-  setWidgetState(widgetId, key, value) {
-    if (!this._widgetState[widgetId]) this._widgetState[widgetId] = {};
-
-    if (value === undefined) {
-      var _this$_widgetState$wi2;
-
-      (_this$_widgetState$wi2 = this._widgetState[widgetId]) === null || _this$_widgetState$wi2 === void 0 ? true : delete _this$_widgetState$wi2[key];
-    } else {
-      this._widgetState[widgetId][key] = value;
-    } // FIXME: this is not updating parent in App.vue
-
-  }
-
-  clearWidgetState(widgetId, key) {
-    this.setWidgetState(widgetId, key);
-  }
-
-  registerWidgetCode(widgetCode, widgetId) {
-    this._widgetCodeToIdMap[widgetCode] = widgetId;
-    this._widgetIdToCodeMap[widgetId] = widgetCode;
-    this.setWidgetState(widgetId, "code", widgetCode);
-  }
-
-  unregisterWidgetCode(widgetCode) {
-    delete this._widgetCodeToIdMap[widgetCode];
-  }
-
-}
-
-const cachedArgs = {};
-const cachedMerge = function (key) {
-  if (!cachedArgs[key]) cachedArgs[key] = {
-    cached: [],
-    result: null
-  };
-
-  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    args[_key - 1] = arguments[_key];
-  }
-
-  if (!args.length) return null;
-
-  if (args.length !== cachedArgs[key].cached.length || args.some((a, aIndex) => a !== cachedArgs[key].cached[aIndex])) {
-    cachedArgs[key].cached = args; // cached not matched, update cache args and result
-
-    if (Array.isArray(args[0])) {
-      cachedArgs[key].result = args.reduce((arr, arg) => [...arr, ...arg], []);
-    } else {
-      cachedArgs[key].result = args.reduce((obj, argObj) => ({ ...obj,
-        ...argObj
-      }), {});
-    }
-  }
-
-  return cachedArgs[key].result;
 };
 
 class PageEventListener {
@@ -14444,40 +16591,32 @@ var script$l = defineComponent({
   components: {
     WidgetsLayout
   },
+  emits: {
+    event: _options => true,
+    onStateChange: _newState => true,
+    onPageChange: _newPage => true
+  },
   props: {
-    languages: Object,
-    page: Object,
-    // eslint-disable-next-line no-unused-vars
+    languages: {
+      type: Object,
+      required: true
+    },
+    page: {
+      type: Object,
+      required: true
+    },
     onPageChange: Function,
-    state: $(PageState).isRequired,
-    // eslint-disable-next-line no-unused-vars
-    onStateChange: Function,
+    state: {
+      type: Object,
+      required: true
+    },
     widgetControls: Object,
     questionControls: Object,
-    plugins: R(C({
-      widgetControls: Object,
-      widgetEffectControls: Object,
-      questionControls: Object
-    })),
+    widgetEffectControls: Object,
+    plugins: Array,
     // display | page | readOnly
     view: String,
-    configs: C({
-      widgets: C({
-        // whether or not to use controls
-        disableInternalControls: V(),
-        blacklist: R(S()),
-        whitelist: R(S()),
-        filters: Object
-      }),
-      questionControls: C({
-        // whether or not to use controls
-        //
-        disableInternalControls: V(),
-        blacklist: R(S()),
-        whitelist: R(S()),
-        filters: Object
-      })
-    })
+    config: Object
   },
 
   data() {
@@ -14491,36 +16630,56 @@ var script$l = defineComponent({
 
   computed: {
     widgetItemsArr() {
-      return this.$props.page.widgets;
+      return this.page.widgets;
     },
 
     combWidgetControls() {
-      var _this$$props$configs, _ref;
+      var _this$config, _this$config$widgetCo, _ref;
 
-      return cachedMerge("widgetControls", (_this$$props$configs = this.$props.configs) !== null && _this$$props$configs !== void 0 && _this$$props$configs.widgets.disableInternalControls ? {} : widgets, ...((_ref = this.$props.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(p => p.widgetControls)), this.$props.widgetControls);
+      return cachedMerge('widgetControls', (_this$config = this.config) !== null && _this$config !== void 0 && (_this$config$widgetCo = _this$config.widgetControls) !== null && _this$config$widgetCo !== void 0 && _this$config$widgetCo.disableInternalControls ? {} : widgets, ...((_ref = this.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(p => p.widgetControls)), this.widgetControls);
     },
 
     combWidgetEffectControls() {
-      var _this$$props$configs2, _ref2;
+      var _this$config2, _this$config2$widgetE, _ref2;
 
-      return cachedMerge("widgetEffectControls", (_this$$props$configs2 = this.$props.configs) !== null && _this$$props$configs2 !== void 0 && _this$$props$configs2.widgetEffectControls.disableInternalControls ? {} : widgetEffects, ...((_ref2 = this.$props.plugins || []) === null || _ref2 === void 0 ? void 0 : _ref2.map(p => p.widgetEffectControls)), this.$props.widgetEffectControls);
+      return cachedMerge('widgetEffectControls', (_this$config2 = this.config) !== null && _this$config2 !== void 0 && (_this$config2$widgetE = _this$config2.widgetEffectControls) !== null && _this$config2$widgetE !== void 0 && _this$config2$widgetE.disableInternalControls ? {} : widgetEffects, ...((_ref2 = this.plugins || []) === null || _ref2 === void 0 ? void 0 : _ref2.map(p => p.widgetEffectControls)), this.widgetEffectControls);
     },
 
     combQuestionControls() {
-      var _this$$props$configs3, _ref3;
+      var _this$config3, _this$config3$questio, _ref3;
 
-      return cachedMerge("questionControls", (_this$$props$configs3 = this.$props.configs) !== null && _this$$props$configs3 !== void 0 && _this$$props$configs3.questionControls.disableInternalControls ? {} : questionControls, ...((_ref3 = this.$props.plugins || []) === null || _ref3 === void 0 ? void 0 : _ref3.map(p => p.questionControls)), this.$props.questionControls);
+      return cachedMerge('questionControls', (_this$config3 = this.config) !== null && _this$config3 !== void 0 && (_this$config3$questio = _this$config3.questionControls) !== null && _this$config3$questio !== void 0 && _this$config3$questio.disableInternalControls ? {} : questionControls, ...((_ref3 = this.plugins || []) === null || _ref3 === void 0 ? void 0 : _ref3.map(p => p.questionControls)), this.questionControls);
+    },
+
+    validations() {
+      var _this$config4, _this$config4$validat, _this$config5, _this$config5$validat;
+
+      return {
+        rules: { ...validationRules,
+          ...((_this$config4 = this.config) === null || _this$config4 === void 0 ? void 0 : (_this$config4$validat = _this$config4.validations) === null || _this$config4$validat === void 0 ? void 0 : _this$config4$validat.rules)
+        },
+        facts: { ...((_this$config5 = this.config) === null || _this$config5 === void 0 ? void 0 : (_this$config5$validat = _this$config5.validations) === null || _this$config5$validat === void 0 ? void 0 : _this$config5$validat.facts)
+        }
+      };
     },
 
     pageState() {
-      return this.$props.state;
+      return this.state;
     }
 
   },
   watch: {
-    "page.widgets": {
+    languages: {
+      handler() {
+        this.pageEventListener.emit('languages_changed', {});
+      }
+
+    },
+    'page.widgets': {
       handler(newPageWidgetArr) {
-        this.$data.widgetItems = newPageWidgetArr.reduce((obj, widget) => {
+        var _this$config6, _this$config6$widgets;
+
+        this.widgetItems = newPageWidgetArr.reduce((obj, widget) => {
           var _this$combWidgetContr;
 
           const WidgetItemClass = ((_this$combWidgetContr = this.combWidgetControls[widget.type]) === null || _this$combWidgetContr === void 0 ? void 0 : _this$combWidgetContr.widgetItem) || WidgetItem;
@@ -14528,39 +16687,109 @@ var script$l = defineComponent({
             widget,
             pageEventListener: this.pageEventListener,
             emitEvent: this.emitEvent,
-            t: (key, data) => this.t(`${widget.id}.${key}`, data),
-            getState: () => this.$props.state,
+            t: (key, data) => this.t([widget.id, key], data),
+            getState: () => this.state,
             setState: newPageState => {
-              this.$emit("onStateChange", newPageState);
+              this.$emit('onStateChange', newPageState);
             },
             onUpdate: newWidget => {
-              var _this$$props$onPageCh, _this$$props;
-
-              (_this$$props$onPageCh = (_this$$props = this.$props).onPageChange) === null || _this$$props$onPageCh === void 0 ? void 0 : _this$$props$onPageCh.call(_this$$props, { ...this.$props.page,
-                widgets: Object.values({ ...this.$data.widgetItems,
-                  [newWidget.id]: newWidget
+              this._onPageChange({ ...this.page,
+                widgets: Object.values({ ...this.widgetItems,
+                  // clone widget object to trigger change
+                  [newWidget.id]: Object.assign(Object.create(Object.getPrototypeOf(newWidget)), newWidget)
                 })
               });
-            }
+            },
+            getQuestionControls: () => this.combQuestionControls,
+            getConfig: this.getConfig,
+            getWidgetMeta: () => {
+              var _this$getConfig, _this$getConfig$meta;
+
+              return (_this$getConfig = this.getConfig()) === null || _this$getConfig === void 0 ? void 0 : (_this$getConfig$meta = _this$getConfig.meta) === null || _this$getConfig$meta === void 0 ? void 0 : _this$getConfig$meta[widget.type];
+            },
+            getValidator: this.getValidator
           });
           return obj;
         }, {});
-        Object.values(this.$data.widgetItems).forEach(widgetItem => {
-          widgetItem.setWidgetItems(this.$data.widgetItems);
+        Object.values(this.widgetItems).forEach(widgetItem => {
+          widgetItem.setWidgetItems(this.widgetItems);
         });
+
+        if ((_this$config6 = this.config) !== null && _this$config6 !== void 0 && (_this$config6$widgets = _this$config6.widgetsToExclude) !== null && _this$config6$widgets !== void 0 && _this$config6$widgets.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
       },
 
-      immediate: true,
+      immediate: true // deep: true,
+
+    },
+    'config.widgetsToExclude': {
+      handler() {
+        var _this$config7, _this$config7$widgets;
+
+        if ((_this$config7 = this.config) !== null && _this$config7 !== void 0 && (_this$config7$widgets = _this$config7.widgetsToExclude) !== null && _this$config7$widgets !== void 0 && _this$config7$widgets.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
+      },
+
       deep: true
     }
   },
   methods: {
+    _onPageChange(newPage) {
+      var _this$onPageChange;
+
+      (_this$onPageChange = this.onPageChange) === null || _this$onPageChange === void 0 ? void 0 : _this$onPageChange.call(this, newPage);
+      this.$emit('onPageChange', newPage);
+    },
+
     t(key, data) {
-      const lang = (typeof key === "string" ? key.split(".") : key).reduce((obj, g) => {
-        if (typeof obj === "string") return obj;
-        return obj === null || obj === void 0 ? void 0 : obj[g];
-      }, this.languages);
-      return lang === null || lang === void 0 ? void 0 : lang.replace(/(\{(\w+)\})/g, (_orig, _outer, inner) => (data || {})[inner]);
+      return translate(this.languages, key, data);
+    },
+
+    getConfig() {
+      return { ...this.config,
+        validations: this.validations
+      };
+    },
+
+    getValidator() {
+      const validator = new Validator(this.validations);
+      return validator;
+    },
+
+    getRuleEngine() {
+      return this.getValidator().getRuleEngine();
+    },
+
+    excludeWidgets(widgetIdsOrCodes) {
+      // map and ensure a list of ids (config.widgetsToExclude can be code or id)
+      const excludedWidgetIds = Object.values(this.widgetItems).filter(w => widgetIdsOrCodes.includes(w.id) || widgetIdsOrCodes.includes(w.code || '')).map(w => w.id); // go through widgets and remove all widgets
+
+      excludedWidgetIds.forEach(widgetId => {
+        delete this.widgetItems[widgetId];
+      }); // go through all pages and remove all pages that only holds excluded widgets
+
+      Object.values(this.widgetItems).forEach(widget => {
+        if (widget.type === 'pages') {
+          const pages = widget.properties.pages; // go through each page from the end to start, and remove any
+          // children excluded. If pages is empty after, remove it as well
+
+          for (let p = pages.length - 1; p >= 0; p--) {
+            const children = pages[p].children;
+
+            for (let c = children.length - 1; c >= 0; c--) {
+              if (excludedWidgetIds.includes(children[c])) {
+                children.splice(c, 1);
+              }
+            }
+
+            if (!children.length) {
+              pages.splice(p, 1);
+            }
+          }
+        }
+      });
     },
 
     async emitEvent(name, value, widget) {
@@ -14570,7 +16799,7 @@ var script$l = defineComponent({
           value,
           widget,
           pageState: this.pageState,
-          widgetItems: this.$data.widgetItems
+          widgetItems: this.widgetItems
         })));
       } else {
         var _this$$listeners$even, _this$$listeners;
@@ -14580,30 +16809,55 @@ var script$l = defineComponent({
           value,
           widget,
           pageState: this.pageState,
-          widgetItems: this.$data.widgetItems
+          widgetItems: this.widgetItems
         }));
       }
+    },
+
+    async validateAll(opts) {
+      const validationResults = await Object.values(this.widgetItems).reduce(async (obj, wi) => {
+        const _obj = await obj;
+
+        const result = await wi.runValidations({
+          setDirty: (opts === null || opts === void 0 ? void 0 : opts.setDirty) || false
+        }); // if result is null or all warnings,
+        // there's no error to handle, just return
+
+        if (!result || (result || []).every(e => e.isWarning)) {
+          return _obj;
+        }
+
+        _obj[wi.code || wi.id] = result;
+        return _obj;
+      }, Promise.resolve({}));
+      return validationResults;
     }
 
   },
 
   provide() {
     return {
-      getView: () => this.$props.view,
+      getConfig: this.getConfig,
+      getView: () => this.view,
       t: this.t,
       pageEventListener: this.pageEventListener,
-      languages: this.$props.languages,
-      getPageState: () => this.$props.state,
+      languages: this.languages,
+      getPageState: () => this.state,
       setPageState: newPageState => {
-        this.$emit("onStateChange", newPageState);
+        this.$emit('onStateChange', newPageState);
       },
       emitEvent: this.emitEvent,
       widgetEffectControls: this.combWidgetEffectControls,
       widgetControls: this.combWidgetControls,
-      questionControls: this.combQuestionControls
+      questionControls: this.combQuestionControls,
+      validateAll: this.validateAll,
+      validations: this.validations,
+      getRuleEngine: this.getRuleEngine,
+      getValidator: this.getValidator
     };
-  }
+  },
 
+  expose: ['validateAll']
 });
 
 /* script */
@@ -14632,8 +16886,8 @@ var __vue_staticRenderFns__$l = [];
 
 const __vue_inject_styles__$l = function (inject) {
   if (!inject) return;
-  inject("data-v-62e300fa_0", {
-    source: ".main-wrapper[data-v-62e300fa]{font-family:Arial,Helvetica,sans-serif}",
+  inject("data-v-4d51478b_0", {
+    source: ".main-wrapper[data-v-4d51478b]{font-family:Arial,Helvetica,sans-serif}",
     map: undefined,
     media: undefined
   });
@@ -14641,7 +16895,7 @@ const __vue_inject_styles__$l = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$l = "data-v-62e300fa";
+const __vue_scope_id__$l = "data-v-4d51478b";
 /* module identifier */
 
 const __vue_module_identifier__$l = undefined;
@@ -14663,7 +16917,7 @@ var script$k = defineComponent({
   props: {
     position: {
       type: String,
-      default: "left"
+      default: 'left'
     },
     isOpen: {
       type: Boolean,
@@ -14715,8 +16969,8 @@ var __vue_staticRenderFns__$k = [];
 
 const __vue_inject_styles__$k = function (inject) {
   if (!inject) return;
-  inject("data-v-105a3195_0", {
-    source: ".pane-wrapper[data-v-105a3195]{display:flex;flex-direction:row;align-items:stretch;height:100%;position:relative}.pane-outside-wrapper[data-v-105a3195]{flex:1;position:relative}.pane-content-wrapper[data-v-105a3195]{position:absolute;top:0;height:100%;z-index:10;background-color:#fff;box-shadow:0 0 4px -2px #000;overflow:hidden;display:flex;flex-direction:column}.pane-content-wrapper.left[data-v-105a3195]{left:0}.pane-content-wrapper.right[data-v-105a3195]{right:0}",
+  inject("data-v-81b41c56_0", {
+    source: ".pane-wrapper[data-v-81b41c56]{display:flex;flex-direction:row;align-items:stretch;height:100%;position:relative}.pane-outside-wrapper[data-v-81b41c56]{flex:1;position:relative}.pane-content-wrapper[data-v-81b41c56]{position:absolute;top:0;height:100%;z-index:10;background-color:#fff;box-shadow:0 0 4px -2px #000;overflow:hidden;display:flex;flex-direction:column}.pane-content-wrapper.left[data-v-81b41c56]{left:0}.pane-content-wrapper.right[data-v-81b41c56]{right:0}",
     map: undefined,
     media: undefined
   });
@@ -14724,7 +16978,7 @@ const __vue_inject_styles__$k = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$k = "data-v-105a3195";
+const __vue_scope_id__$k = "data-v-81b41c56";
 /* module identifier */
 
 const __vue_module_identifier__$k = undefined;
@@ -14742,15 +16996,56 @@ const __vue_component__$l = /*#__PURE__*/normalizeComponent({
 
 var Pane = __vue_component__$l;
 
+class PanelSection {
+  constructor(_ref) {
+    let {
+      form,
+      header,
+      name,
+      key
+    } = _ref;
+
+    _defineProperty(this, "_form", void 0);
+
+    _defineProperty(this, "_header", void 0);
+
+    _defineProperty(this, "_name", void 0);
+
+    _defineProperty(this, "_key", void 0);
+
+    this._form = form;
+    this._header = header;
+    this._name = name;
+    this._key = key;
+  }
+
+  get form() {
+    return this._form;
+  }
+
+  get header() {
+    return this._header;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  get key() {
+    return this._key;
+  }
+
+}
+
 var script$j = defineComponent({
   components: {
     BuilderWidgetTree
   },
+  inject: ['widgetControls'],
   props: {
     widgetItems: Object,
     selectedWidgetItem: Object
-  },
-  inject: ["widgetControls"]
+  }
 });
 
 /* script */
@@ -14770,7 +17065,7 @@ var __vue_render__$j = function () {
     return [_c('a', {
       key: widgetControlKey,
       staticClass: "widget-item"
-    }, [_vm._v("\n      " + _vm._s(widgetControlKey) + "\n    ")])];
+    }, [_vm._v("\n        " + _vm._s(widgetControlKey) + "\n      ")])];
   })], 2);
 };
 
@@ -14779,8 +17074,8 @@ var __vue_staticRenderFns__$j = [];
 
 const __vue_inject_styles__$j = function (inject) {
   if (!inject) return;
-  inject("data-v-5b86d73a_0", {
-    source: ".wrapper[data-v-5b86d73a]{display:flex;flex-direction:row;flex-wrap:wrap;height:auto}.widget-item[data-v-5b86d73a]{display:block;width:33%;border:1px solid #f2f2f2;border-radius:4px;padding:5px;box-sizing:border-box}",
+  inject("data-v-7f636591_0", {
+    source: ".wrapper[data-v-7f636591]{display:flex;flex-direction:row;flex-wrap:wrap;height:auto}.widget-item[data-v-7f636591]{display:block;width:33%;border:1px solid #f2f2f2;border-radius:4px;padding:5px;box-sizing:border-box}",
     map: undefined,
     media: undefined
   });
@@ -14788,7 +17083,7 @@ const __vue_inject_styles__$j = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$j = "data-v-5b86d73a";
+const __vue_scope_id__$j = "data-v-7f636591";
 /* module identifier */
 
 const __vue_module_identifier__$j = undefined;
@@ -14853,50 +17148,9 @@ const __vue_component__$j = /*#__PURE__*/normalizeComponent({
 
 var Header$5 = __vue_component__$j;
 
-class PanelSection {
-  constructor(_ref) {
-    let {
-      form,
-      header,
-      name,
-      key
-    } = _ref;
-
-    _defineProperty(this, "_form", void 0);
-
-    _defineProperty(this, "_header", void 0);
-
-    _defineProperty(this, "_name", void 0);
-
-    _defineProperty(this, "_key", void 0);
-
-    this._form = form;
-    this._header = header;
-    this._name = name;
-    this._key = key;
-  }
-
-  get form() {
-    return this._form;
-  }
-
-  get header() {
-    return this._header;
-  }
-
-  get name() {
-    return this._name;
-  }
-
-  get key() {
-    return this._key;
-  }
-
-}
-
 var addWidget = new PanelSection({
-  key: "addWidget",
-  name: "Add Widget",
+  key: 'addWidget',
+  name: 'Add Widget',
   form: Form$5,
   header: Header$5
 });
@@ -14906,7 +17160,7 @@ var script$h = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
   methods: {
     onPropertiesChange(type, props) {
       this.$props.selectedWidgetItem.setEffectProperties(type, props);
@@ -14966,8 +17220,8 @@ var __vue_staticRenderFns__$h = [];
 
 const __vue_inject_styles__$h = function (inject) {
   if (!inject) return;
-  inject("data-v-36bbc32a_0", {
-    source: ".effect-wrapper[data-v-36bbc32a]{position:relative;background-color:#fdfdfd;padding:0 5px 10px 5px}.effect-wrapper[data-v-36bbc32a]:not(:last-child){margin-bottom:1px}.remove-effect-button[data-v-36bbc32a]{position:absolute;top:0;right:0;padding:1px 10px;cursor:pointer;font-size:9pt}.effect-header[data-v-36bbc32a]{margin:0 -5px 0 -5px;padding:5px;background-color:#bcdff0}",
+  inject("data-v-77374f20_0", {
+    source: ".effect-wrapper[data-v-77374f20]{position:relative;background-color:#fdfdfd;padding:0 5px 10px 5px}.effect-wrapper[data-v-77374f20]:not(:last-child){margin-bottom:1px}.remove-effect-button[data-v-77374f20]{position:absolute;top:0;right:0;padding:1px 10px;cursor:pointer;font-size:9pt}.effect-header[data-v-77374f20]{margin:0 -5px 0 -5px;padding:5px;background-color:#bcdff0}",
     map: undefined,
     media: undefined
   });
@@ -14975,7 +17229,7 @@ const __vue_inject_styles__$h = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$h = "data-v-36bbc32a";
+const __vue_scope_id__$h = "data-v-77374f20";
 /* module identifier */
 
 const __vue_module_identifier__$h = undefined;
@@ -14999,7 +17253,7 @@ var script$g = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
 
   data() {
     return {
@@ -15026,7 +17280,7 @@ var script$g = defineComponent({
   methods: {
     onAddEffect(ev) {
       const selectedEffectKey = ev.target.value;
-      ev.target.value = "";
+      ev.target.value = '';
 
       if (!this.widgetEffectControls[selectedEffectKey]) {
         // effect key does not exist?? skip for now
@@ -15076,8 +17330,8 @@ var __vue_staticRenderFns__$g = [];
 
 const __vue_inject_styles__$g = function (inject) {
   if (!inject) return;
-  inject("data-v-801e96fe_0", {
-    source: "select[data-v-801e96fe]{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding:1px 6px;border-radius:4px;border:none;background-color:transparent;cursor:pointer}select option.default[data-v-801e96fe]{text-align:right}",
+  inject("data-v-2421d1ea_0", {
+    source: "select[data-v-2421d1ea]{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding:1px 6px;border-radius:4px;border:none;background-color:transparent;cursor:pointer}select option.default[data-v-2421d1ea]{text-align:right}",
     map: undefined,
     media: undefined
   });
@@ -15085,7 +17339,7 @@ const __vue_inject_styles__$g = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$g = "data-v-801e96fe";
+const __vue_scope_id__$g = "data-v-2421d1ea";
 /* module identifier */
 
 const __vue_module_identifier__$g = undefined;
@@ -15104,8 +17358,8 @@ const __vue_component__$h = /*#__PURE__*/normalizeComponent({
 var Header$4 = __vue_component__$h;
 
 var effects = new PanelSection({
-  key: "effects",
-  name: "Effects",
+  key: 'effects',
+  name: 'Effects',
   form: Form$4,
   header: Header$4
 });
@@ -15115,15 +17369,15 @@ var script$f = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["t", "widgetEffectControls"],
+  inject: ['t', 'widgetEffectControls'],
   methods: {
     conditionValue(value) {
       if (Array.isArray(value)) {
-        return value.join(", ");
+        return value.join(', ');
       } else if (value === null) {
-        return "null";
+        return 'null';
       } else if (value === undefined) {
-        return "undefined";
+        return 'undefined';
       } else {
         return value;
       }
@@ -15199,7 +17453,7 @@ var __vue_render__$f = function () {
       domProps: {
         "selected": condition.operator === 'lessThanInclusive'
       }
-    }, [_vm._v("\n          " + _vm._s("<=") + "\n        ")])]), _vm._v(" "), _c('input', {
+    }, [_vm._v("\n          " + _vm._s('<=') + "\n        ")])]), _vm._v(" "), _c('input', {
       attrs: {
         "type": "text"
       },
@@ -15215,8 +17469,8 @@ var __vue_staticRenderFns__$f = [];
 
 const __vue_inject_styles__$f = function (inject) {
   if (!inject) return;
-  inject("data-v-5a3c7b40_0", {
-    source: "input[data-v-5a3c7b40],select[data-v-5a3c7b40],textarea[data-v-5a3c7b40]{border-width:0 0 1px 0}.sub-header[data-v-5a3c7b40]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-5a3c7b40]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-5a3c7b40]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-5a3c7b40]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-5a3c7b40]{width:0}.condition-fields-wrapper>*[data-v-5a3c7b40]{flex:1}.error-message-wrapper[data-v-5a3c7b40]{padding:10px 5px}.error-message-wrapper label[data-v-5a3c7b40]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-5a3c7b40]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
+  inject("data-v-163cdc56_0", {
+    source: "input[data-v-163cdc56],select[data-v-163cdc56],textarea[data-v-163cdc56]{border-width:0 0 1px 0}.sub-header[data-v-163cdc56]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-163cdc56]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-163cdc56]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-163cdc56]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-163cdc56]{width:0}.condition-fields-wrapper>*[data-v-163cdc56]{flex:1}.error-message-wrapper[data-v-163cdc56]{padding:10px 5px}.error-message-wrapper label[data-v-163cdc56]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-163cdc56]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
     map: undefined,
     media: undefined
   });
@@ -15224,7 +17478,7 @@ const __vue_inject_styles__$f = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$f = "data-v-5a3c7b40";
+const __vue_scope_id__$f = "data-v-163cdc56";
 /* module identifier */
 
 const __vue_module_identifier__$f = undefined;
@@ -15248,7 +17502,7 @@ var script$e = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
 
   data() {
     return {
@@ -15310,8 +17564,8 @@ var __vue_staticRenderFns__$e = [];
 
 const __vue_inject_styles__$e = function (inject) {
   if (!inject) return;
-  inject("data-v-33573df1_0", {
-    source: ".add-button[data-v-33573df1]{background-color:transparent;border:none}",
+  inject("data-v-11ce21ca_0", {
+    source: ".add-button[data-v-11ce21ca]{background-color:transparent;border:none}",
     map: undefined,
     media: undefined
   });
@@ -15319,7 +17573,7 @@ const __vue_inject_styles__$e = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$e = "data-v-33573df1";
+const __vue_scope_id__$e = "data-v-11ce21ca";
 /* module identifier */
 
 const __vue_module_identifier__$e = undefined;
@@ -15338,8 +17592,8 @@ const __vue_component__$f = /*#__PURE__*/normalizeComponent({
 var Header$3 = __vue_component__$f;
 
 var reflexives = new PanelSection({
-  key: "reflexives",
-  name: "Reflexives",
+  key: 'reflexives',
+  name: 'Reflexives',
   form: Form$3,
   header: Header$3
 });
@@ -15349,15 +17603,15 @@ var script$d = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["t", "widgetEffectControls"],
+  inject: ['t', 'widgetEffectControls'],
   methods: {
     conditionValue(value) {
       if (Array.isArray(value)) {
-        return value.join(", ");
+        return value.join(', ');
       } else if (value === null) {
-        return "null";
+        return 'null';
       } else if (value === undefined) {
-        return "undefined";
+        return 'undefined';
       } else {
         return value;
       }
@@ -15438,7 +17692,7 @@ var __vue_render__$d = function () {
         domProps: {
           "selected": condition.operator === 'lessThanInclusive'
         }
-      }, [_vm._v("\n            " + _vm._s("<=") + "\n          ")])]), _vm._v(" "), _c('input', {
+      }, [_vm._v("\n            " + _vm._s('<=') + "\n          ")])]), _vm._v(" "), _c('input', {
         attrs: {
           "type": "text"
         },
@@ -15461,8 +17715,8 @@ var __vue_staticRenderFns__$d = [];
 
 const __vue_inject_styles__$d = function (inject) {
   if (!inject) return;
-  inject("data-v-2ba92f94_0", {
-    source: "input[data-v-2ba92f94],select[data-v-2ba92f94],textarea[data-v-2ba92f94]{border-width:0 0 1px 0}.sub-header[data-v-2ba92f94]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-2ba92f94]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-2ba92f94]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-2ba92f94]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-2ba92f94]{width:0}.condition-fields-wrapper>*[data-v-2ba92f94]{flex:1}.error-message-wrapper[data-v-2ba92f94]{padding:10px 5px}.error-message-wrapper label[data-v-2ba92f94]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-2ba92f94]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
+  inject("data-v-0544d0aa_0", {
+    source: "input[data-v-0544d0aa],select[data-v-0544d0aa],textarea[data-v-0544d0aa]{border-width:0 0 1px 0}.sub-header[data-v-0544d0aa]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-0544d0aa]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-0544d0aa]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-0544d0aa]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-0544d0aa]{width:0}.condition-fields-wrapper>*[data-v-0544d0aa]{flex:1}.error-message-wrapper[data-v-0544d0aa]{padding:10px 5px}.error-message-wrapper label[data-v-0544d0aa]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-0544d0aa]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
     map: undefined,
     media: undefined
   });
@@ -15470,7 +17724,7 @@ const __vue_inject_styles__$d = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$d = "data-v-2ba92f94";
+const __vue_scope_id__$d = "data-v-0544d0aa";
 /* module identifier */
 
 const __vue_module_identifier__$d = undefined;
@@ -15494,7 +17748,7 @@ var script$c = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
 
   data() {
     return {
@@ -15556,8 +17810,8 @@ var __vue_staticRenderFns__$c = [];
 
 const __vue_inject_styles__$c = function (inject) {
   if (!inject) return;
-  inject("data-v-33573df1_0", {
-    source: ".add-button[data-v-33573df1]{background-color:transparent;border:none}",
+  inject("data-v-11ce21ca_0", {
+    source: ".add-button[data-v-11ce21ca]{background-color:transparent;border:none}",
     map: undefined,
     media: undefined
   });
@@ -15565,7 +17819,7 @@ const __vue_inject_styles__$c = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$c = "data-v-33573df1";
+const __vue_scope_id__$c = "data-v-11ce21ca";
 /* module identifier */
 
 const __vue_module_identifier__$c = undefined;
@@ -15584,8 +17838,8 @@ const __vue_component__$d = /*#__PURE__*/normalizeComponent({
 var Header$2 = __vue_component__$d;
 
 var validations = new PanelSection({
-  key: "validations",
-  name: "Validations",
+  key: 'validations',
+  name: 'Validations',
   form: Form$2,
   header: Header$2
 });
@@ -15595,15 +17849,15 @@ var script$b = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetControls"],
+  inject: ['widgetControls'],
   methods: {
     conditionValue(value) {
       if (Array.isArray(value)) {
-        return value.join(", ");
+        return value.join(', ');
       } else if (value === null) {
-        return "null";
+        return 'null';
       } else if (value === undefined) {
-        return "undefined";
+        return 'undefined';
       } else {
         return value;
       }
@@ -15645,8 +17899,8 @@ var __vue_staticRenderFns__$b = [];
 
 const __vue_inject_styles__$b = function (inject) {
   if (!inject) return;
-  inject("data-v-4ea14602_0", {
-    source: "input[data-v-4ea14602],select[data-v-4ea14602],textarea[data-v-4ea14602]{border-width:0 0 1px 0}.sub-header[data-v-4ea14602]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-4ea14602]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-4ea14602]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-4ea14602]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-4ea14602]{width:0}.condition-fields-wrapper>*[data-v-4ea14602]{flex:1}.error-message-wrapper[data-v-4ea14602]{padding:10px 5px}.error-message-wrapper label[data-v-4ea14602]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-4ea14602]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
+  inject("data-v-1e69f12a_0", {
+    source: "input[data-v-1e69f12a],select[data-v-1e69f12a],textarea[data-v-1e69f12a]{border-width:0 0 1px 0}.sub-header[data-v-1e69f12a]{margin:0;padding:5px;background-color:#bcdff0}.condition-wrapper[data-v-1e69f12a]{padding:10px 5px;margin-bottom:10px}.condition-wrapper>label[data-v-1e69f12a]{display:block;margin-bottom:5px;font-size:9pt}.condition-fields-wrapper[data-v-1e69f12a]{display:flex;flex-direction:row}.condition-fields-wrapper>input[data-v-1e69f12a]{width:0}.condition-fields-wrapper>*[data-v-1e69f12a]{flex:1}.error-message-wrapper[data-v-1e69f12a]{padding:10px 5px}.error-message-wrapper label[data-v-1e69f12a]{display:block;font-size:9pt;margin-bottom:5px}.error-message-wrapper textarea[data-v-1e69f12a]{box-sizing:border-box;width:100%;max-width:100%;min-width:100%;min-height:40px;color:red}",
     map: undefined,
     media: undefined
   });
@@ -15654,7 +17908,7 @@ const __vue_inject_styles__$b = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$b = "data-v-4ea14602";
+const __vue_scope_id__$b = "data-v-1e69f12a";
 /* module identifier */
 
 const __vue_module_identifier__$b = undefined;
@@ -15678,7 +17932,7 @@ var script$a = defineComponent({
     widgetItems: Object,
     selectedWidgetItem: Object
   },
-  inject: ["widgetEffectControls"],
+  inject: ['widgetEffectControls'],
 
   data() {
     return {
@@ -15735,8 +17989,8 @@ var __vue_staticRenderFns__$a = [];
 
 const __vue_inject_styles__$a = function (inject) {
   if (!inject) return;
-  inject("data-v-7acdc771_0", {
-    source: ".add-button[data-v-7acdc771]{background-color:transparent;border:none}",
+  inject("data-v-3e8f789b_0", {
+    source: ".add-button[data-v-3e8f789b]{background-color:transparent;border:none}",
     map: undefined,
     media: undefined
   });
@@ -15744,7 +17998,7 @@ const __vue_inject_styles__$a = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$a = "data-v-7acdc771";
+const __vue_scope_id__$a = "data-v-3e8f789b";
 /* module identifier */
 
 const __vue_module_identifier__$a = undefined;
@@ -15763,8 +18017,8 @@ const __vue_component__$b = /*#__PURE__*/normalizeComponent({
 var Header$1 = __vue_component__$b;
 
 var widget = new PanelSection({
-  key: "widget",
-  name: "Widget",
+  key: 'widget',
+  name: 'Widget',
   form: Form$1,
   header: Header$1
 });
@@ -15792,8 +18046,8 @@ var __vue_render__$9 = function () {
 
   return _c('builder-widget-tree', {
     attrs: {
-      "widgetItems": _vm.widgetItems,
-      "selectedWidgetItem": _vm.selectedWidgetItem
+      "widget-items": _vm.widgetItems,
+      "selected-widget-item": _vm.selectedWidgetItem
     }
   });
 };
@@ -15872,8 +18126,8 @@ const __vue_component__$9 = /*#__PURE__*/normalizeComponent({
 var Header = __vue_component__$9;
 
 var widgetTree = new PanelSection({
-  key: "widgetTree",
-  name: "Widget Tree",
+  key: 'widgetTree',
+  name: 'Widget Tree',
   form: Form,
   header: Header
 });
@@ -15903,7 +18157,7 @@ var script$7 = defineComponent({
 
   methods: {
     onToggleCollapse() {
-      this.$emit("onToggleCollapse", !this.$props.isCollapsed);
+      this.$emit('onToggleCollapse', !this.$props.isCollapsed);
     }
 
   }
@@ -15937,19 +18191,19 @@ var __vue_render__$7 = function () {
     on: {
       "click": _vm.onToggleCollapse
     }
-  }, [_vm._v("\n      " + _vm._s(_vm.panelSections[_vm.panelType].name) + "\n    ")]), _vm._v(" "), _c(_vm.panelSections[_vm.panelType].header, {
+  }, [_vm._v("\n        " + _vm._s(_vm.panelSections[_vm.panelType].name) + "\n      ")]), _vm._v(" "), _c(_vm.panelSections[_vm.panelType].header, {
     tag: "component",
     attrs: {
-      "widgetItems": _vm.widgetItems,
-      "selectedWidgetItem": _vm.selectedWidgetItem
+      "widget-items": _vm.widgetItems,
+      "selected-widget-item": _vm.selectedWidgetItem
     }
   })], 1), _vm._v(" "), _c('div', {
     staticClass: "panel-content"
   }, [_c(_vm.panelSections[_vm.panelType].form, {
     tag: "component",
     attrs: {
-      "widgetItems": _vm.widgetItems,
-      "selectedWidgetItem": _vm.selectedWidgetItem
+      "widget-items": _vm.widgetItems,
+      "selected-widget-item": _vm.selectedWidgetItem
     }
   })], 1)]);
 };
@@ -15959,8 +18213,8 @@ var __vue_staticRenderFns__$7 = [];
 
 const __vue_inject_styles__$7 = function (inject) {
   if (!inject) return;
-  inject("data-v-895253ee_0", {
-    source: ".panel-header[data-v-895253ee]{padding:5px 5px;background-color:#cbf3f0;color:#3a3a3a;display:flex;flex-direction:row;justify-content:space-between;align-items:center;box-shadow:0 3px 10px #a7a7a73b;z-index:10;position:relative}.panel-title[data-v-895253ee]{margin:0;margin-left:5px;flex:1;cursor:pointer}.panel-section-wrapper[data-v-895253ee]:not(.isCollapsed){flex:1;display:flex;flex-direction:column}.panel-section-wrapper.isCollapsed .panel-content[data-v-895253ee]{display:none}.collapse-arrow[data-v-895253ee]{cursor:pointer}.panel-section-wrapper:not(.isCollapsed) .collapse-arrow[data-v-895253ee]{transform:rotate(90deg)}.panel-section-wrapper:not(.isCollapsed) .panel-content[data-v-895253ee]{overflow:auto;flex:1}",
+  inject("data-v-5958104d_0", {
+    source: ".panel-header[data-v-5958104d]{padding:5px 5px;background-color:#cbf3f0;color:#3a3a3a;display:flex;flex-direction:row;justify-content:space-between;align-items:center;box-shadow:0 3px 10px #a7a7a73b;z-index:10;position:relative}.panel-title[data-v-5958104d]{margin:0;margin-left:5px;flex:1;cursor:pointer}.panel-section-wrapper[data-v-5958104d]:not(.isCollapsed){flex:1;display:flex;flex-direction:column}.panel-section-wrapper.isCollapsed .panel-content[data-v-5958104d]{display:none}.collapse-arrow[data-v-5958104d]{cursor:pointer}.panel-section-wrapper:not(.isCollapsed) .collapse-arrow[data-v-5958104d]{transform:rotate(90deg)}.panel-section-wrapper:not(.isCollapsed) .panel-content[data-v-5958104d]{overflow:auto;flex:1}",
     map: undefined,
     media: undefined
   });
@@ -15968,7 +18222,7 @@ const __vue_inject_styles__$7 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$7 = "data-v-895253ee";
+const __vue_scope_id__$7 = "data-v-5958104d";
 /* module identifier */
 
 const __vue_module_identifier__$7 = undefined;
@@ -16053,8 +18307,8 @@ var __vue_staticRenderFns__$6 = [];
 
 const __vue_inject_styles__$6 = function (inject) {
   if (!inject) return;
-  inject("data-v-5e02ddd6_0", {
-    source: ".wrapper[data-v-5e02ddd6]{position:relative;display:flex;flex-direction:column;flex:1}",
+  inject("data-v-0357272b_0", {
+    source: ".wrapper[data-v-0357272b]{position:relative;display:flex;flex-direction:column;flex:1}",
     map: undefined,
     media: undefined
   });
@@ -16062,7 +18316,7 @@ const __vue_inject_styles__$6 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$6 = "data-v-5e02ddd6";
+const __vue_scope_id__$6 = "data-v-0357272b";
 /* module identifier */
 
 const __vue_module_identifier__$6 = undefined;
@@ -16088,7 +18342,7 @@ var script$5 = defineComponent({
   props: {
     widgetItems: Object
   },
-  inject: ["widgetControls", "widgetEffectControls", "getPageState"],
+  inject: ['widgetControls', 'widgetEffectControls', 'getPageState'],
 
   data() {
     return {
@@ -16142,24 +18396,18 @@ var __vue_render__$5 = function () {
 var __vue_staticRenderFns__$5 = [];
 /* style */
 
-const __vue_inject_styles__$5 = function (inject) {
-  if (!inject) return;
-  inject("data-v-2cea4340_0", {
-    source: ".pane-wrapper[data-v-2cea4340]{background-color:#00f}",
-    map: undefined,
-    media: undefined
-  });
-};
+const __vue_inject_styles__$5 = undefined;
 /* scoped */
 
-
-const __vue_scope_id__$5 = "data-v-2cea4340";
+const __vue_scope_id__$5 = "data-v-1e19a752";
 /* module identifier */
 
 const __vue_module_identifier__$5 = undefined;
 /* functional template */
 
 const __vue_is_functional_template__$5 = false;
+/* style inject */
+
 /* style inject SSR */
 
 /* style inject shadow dom */
@@ -16167,7 +18415,7 @@ const __vue_is_functional_template__$5 = false;
 const __vue_component__$6 = /*#__PURE__*/normalizeComponent({
   render: __vue_render__$5,
   staticRenderFns: __vue_staticRenderFns__$5
-}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, createInjector, undefined, undefined);
+}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, undefined, undefined, undefined);
 
 var BuilderRightPane = __vue_component__$6;
 
@@ -16179,13 +18427,13 @@ var script$4 = defineComponent({
   props: {
     widgetItems: Object
   },
-  inject: ["getPageState"],
+  inject: ['getPageState'],
 
   data() {
     return {
       panelSections,
-      sections: ["widgetTree", "addWidget"],
-      selectedSection: "widgetTree"
+      sections: ['widgetTree', 'addWidget'],
+      selectedSection: 'widgetTree'
     };
   },
 
@@ -16257,8 +18505,8 @@ var __vue_staticRenderFns__$4 = [];
 
 const __vue_inject_styles__$4 = function (inject) {
   if (!inject) return;
-  inject("data-v-25d138b0_0", {
-    source: ".button-group[data-v-25d138b0]{display:flex;flex-direction:row;width:100%}.button-group button[data-v-25d138b0]{flex:1;background-color:#fff;padding:10px 5px;border-width:0 0 4px 0;border-color:transparent;position:relative}.button-group button.active[data-v-25d138b0]::before{content:\"\";position:absolute;bottom:0;left:0;width:100%;height:4px;background-color:#cbf3f0}",
+  inject("data-v-43275984_0", {
+    source: ".button-group[data-v-43275984]{display:flex;flex-direction:row;width:100%}.button-group button[data-v-43275984]{flex:1;background-color:#fff;padding:10px 5px;border-width:0 0 4px 0;border-color:transparent;position:relative}.button-group button.active[data-v-43275984]::before{content:'';position:absolute;bottom:0;left:0;width:100%;height:4px;background-color:#cbf3f0}",
     map: undefined,
     media: undefined
   });
@@ -16266,7 +18514,7 @@ const __vue_inject_styles__$4 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$4 = "data-v-25d138b0";
+const __vue_scope_id__$4 = "data-v-43275984";
 /* module identifier */
 
 const __vue_module_identifier__$4 = undefined;
@@ -16289,7 +18537,7 @@ var script$3 = defineComponent({
     widget: Object,
     widgetItems: Object
   },
-  inject: ["getPageState", "setPageState"],
+  inject: ['getPageState', 'setPageState'],
   methods: {
     setSelectWidget(widget) {
       const currentState = this.getPageState();
@@ -16333,8 +18581,8 @@ var __vue_staticRenderFns__$3 = [];
 
 const __vue_inject_styles__$3 = function (inject) {
   if (!inject) return;
-  inject("data-v-9289bfd8_0", {
-    source: ".widget-breadcrumb-wrapper[data-v-9289bfd8]{display:flex;flex-direction:row;align-items:center}.widget-breadcrumb-item[data-v-9289bfd8]{position:relative;display:flex;flex-direction:row;padding:5px 10px 5px 20px;margin-top:5px;align-items:center;cursor:pointer}.widget-breadcrumb-item[data-v-9289bfd8]:not(:first-child)::before{content:\">\";position:absolute;top:6px;left:0;font-size:12pt}.widget-breadcrumb-item p[data-v-9289bfd8]{margin:0}.widget-breadcrumb-item small[data-v-9289bfd8]{margin-left:5px;color:#a1a1a1}",
+  inject("data-v-34434a74_0", {
+    source: ".widget-breadcrumb-wrapper[data-v-34434a74]{display:flex;flex-direction:row;align-items:center}.widget-breadcrumb-item[data-v-34434a74]{position:relative;display:flex;flex-direction:row;padding:5px 10px 5px 20px;margin-top:5px;align-items:center;cursor:pointer}.widget-breadcrumb-item[data-v-34434a74]:not(:first-child)::before{content:'>';position:absolute;top:6px;left:0;font-size:12pt}.widget-breadcrumb-item p[data-v-34434a74]{margin:0}.widget-breadcrumb-item small[data-v-34434a74]{margin-left:5px;color:#a1a1a1}",
     map: undefined,
     media: undefined
   });
@@ -16342,7 +18590,7 @@ const __vue_inject_styles__$3 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$3 = "data-v-9289bfd8";
+const __vue_scope_id__$3 = "data-v-34434a74";
 /* module identifier */
 
 const __vue_module_identifier__$3 = undefined;
@@ -16367,7 +18615,7 @@ var script$2 = defineComponent({
   props: {
     widgetItems: Object
   },
-  inject: ["getPageState"],
+  inject: ['getPageState'],
   computed: {
     selectedWidgetItem() {
       var _this$widgetItems;
@@ -16391,7 +18639,7 @@ var __vue_render__$2 = function () {
   var _c = _vm._self._c || _h;
 
   return _c('div', {
-    staticClass: "wrapper"
+    staticClass: "bottom-pane-wrapper"
   }, [_c('div', {
     staticClass: "left-pane"
   }), _vm._v(" "), _c('div', {
@@ -16411,8 +18659,8 @@ var __vue_staticRenderFns__$2 = [];
 
 const __vue_inject_styles__$2 = function (inject) {
   if (!inject) return;
-  inject("data-v-3699a990_0", {
-    source: ".wrapper[data-v-3699a990]{height:40px;z-index:1000;box-shadow:0 0 4px -2px #000;display:flex;flex-direction:row}.center[data-v-3699a990]{flex:1}.left-pane[data-v-3699a990],.right-pane[data-v-3699a990]{width:300px}",
+  inject("data-v-7da0862a_0", {
+    source: ".bottom-pane-wrapper[data-v-7da0862a]{height:40px;z-index:1000;box-shadow:0 0 4px -2px #000;display:flex;flex-direction:row}.center[data-v-7da0862a]{flex:1}.left-pane[data-v-7da0862a],.right-pane[data-v-7da0862a]{width:300px}",
     map: undefined,
     media: undefined
   });
@@ -16420,7 +18668,7 @@ const __vue_inject_styles__$2 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$2 = "data-v-3699a990";
+const __vue_scope_id__$2 = "data-v-7da0862a";
 /* module identifier */
 
 const __vue_module_identifier__$2 = undefined;
@@ -16441,8 +18689,8 @@ var BuilderBottomPane = __vue_component__$3;
 var script$1 = defineComponent({
   data() {
     return {
-      width: "100%",
-      height: "100%"
+      width: '100%',
+      height: '100%'
     };
   },
 
@@ -16457,7 +18705,7 @@ var script$1 = defineComponent({
   },
   methods: {
     setWidthHeight(ev) {
-      const [w, h] = ev.target.value.split("_");
+      const [w, h] = ev.target.value.split('_');
       this.$data.width = w;
       this.$data.height = h;
     }
@@ -16504,13 +18752,19 @@ var __vue_render__$1 = function () {
       "selected": _vm.width === '100%' && _vm.height === '100%'
     }
   }, [_vm._v("\n      Full\n    ")])]), _vm._v(" "), _c('div', {
-    staticClass: "device-wrapper"
+    staticClass: "device-wrapper",
+    style: {
+      height: _vm.deviceStyles.height
+    }
   }, [_c('div', {
-    staticClass: "device-inner-wrapper",
+    staticClass: "device-background",
     style: _vm.deviceStyles
-  }, [_c('div', {
-    staticClass: "device-background"
-  }, [_vm._t("default")], 2)])])]);
+  }), _vm._v(" "), _c('div', {
+    staticClass: "device-inner-wrapper",
+    style: {
+      width: _vm.deviceStyles.width
+    }
+  }, [_vm._t("default")], 2)])]);
 };
 
 var __vue_staticRenderFns__$1 = [];
@@ -16518,8 +18772,8 @@ var __vue_staticRenderFns__$1 = [];
 
 const __vue_inject_styles__$1 = function (inject) {
   if (!inject) return;
-  inject("data-v-719a43da_0", {
-    source: ".wrapper[data-v-719a43da]{height:100%;overflow:hidden;background-color:#eaedf5;box-sizing:border-box;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center}.device-wrapper[data-v-719a43da]{height:100%;width:100%;padding:30px 30px 30px 30px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:auto}.device-inner-wrapper[data-v-719a43da]{min-height:100px;background-color:#fff;border-radius:8px;position:relative}.device-background[data-v-719a43da]{background-color:#fff}.simulation-device-select[data-v-719a43da]{padding:5px 10px;border-radius:4px}",
+  inject("data-v-ce061fc0_0", {
+    source: ".wrapper[data-v-ce061fc0]{height:100%;overflow:hidden;background-color:#eaedf5;box-sizing:border-box;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center}.device-wrapper[data-v-ce061fc0]{height:100%;width:100%;padding:30px 30px 30px 30px;overflow-y:auto;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;overflow:auto}.device-inner-wrapper[data-v-ce061fc0]{min-height:100px;height:100%;border-radius:8px;position:relative}.device-background[data-v-ce061fc0]{background-color:#fff;border-radius:8px;margin:-30px auto 0 auto;position:absolute}.simulation-device-select[data-v-ce061fc0]{padding:5px 10px;border-radius:4px}",
     map: undefined,
     media: undefined
   });
@@ -16527,7 +18781,7 @@ const __vue_inject_styles__$1 = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__$1 = "data-v-719a43da";
+const __vue_scope_id__$1 = "data-v-ce061fc0";
 /* module identifier */
 
 const __vue_module_identifier__$1 = undefined;
@@ -16555,40 +18809,28 @@ var script = defineComponent({
   },
   // components: { DynamicPageLayout },
   props: {
-    languages: Object,
+    languages: {
+      type: Object,
+      required: true
+    },
     locale: String,
-    page: Object,
-    // eslint-disable-next-line no-unused-vars
+    page: {
+      type: Object,
+      required: true
+    },
     onPageChange: Function,
-    state: $(PageState).isRequired,
-    // eslint-disable-next-line no-unused-vars
+    state: {
+      type: Object,
+      required: true
+    },
     onStateChange: Function,
     widgetControls: Object,
     questionControls: Object,
-    plugins: R(C({
-      widgetControls: Object,
-      widgetEffectControls: Object,
-      questionControls: Object
-    })),
+    widgetEffectControls: Object,
+    plugins: Array,
     // display | page | readOnly
     view: String,
-    configs: C({
-      widgets: C({
-        // whether or not to use controls
-        disableInternalControls: V(),
-        blacklist: R(S()),
-        whitelist: R(S()),
-        filters: Object
-      }),
-      questionControls: C({
-        // whether or not to use controls
-        //
-        disableInternalControls: V(),
-        blacklist: R(S()),
-        whitelist: R(S()),
-        filters: Object
-      })
-    })
+    config: Object
   },
 
   data() {
@@ -16602,35 +18844,55 @@ var script = defineComponent({
 
   computed: {
     widgetItemsArr() {
-      return this.$props.page.widgets;
+      return this.page.widgets;
     },
 
     combWidgetControls() {
-      var _this$$props$configs, _ref;
+      var _this$config, _this$config$widgetCo, _ref;
 
-      return cachedMerge("widgetControls", (_this$$props$configs = this.$props.configs) !== null && _this$$props$configs !== void 0 && _this$$props$configs.widgets.disableInternalControls ? {} : widgets, ...((_ref = this.$props.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(p => p.widgetControls)), this.$props.widgetControls);
+      return cachedMerge('widgetControls', (_this$config = this.config) !== null && _this$config !== void 0 && (_this$config$widgetCo = _this$config.widgetControls) !== null && _this$config$widgetCo !== void 0 && _this$config$widgetCo.disableInternalControls ? {} : widgets, ...((_ref = this.plugins || []) === null || _ref === void 0 ? void 0 : _ref.map(p => p.widgetControls)), this.widgetControls);
     },
 
     combWidgetEffectControls() {
-      var _this$$props$configs2, _ref2;
+      var _this$config2, _this$config2$widgetE, _ref2;
 
-      return cachedMerge("widgetEffectControls", (_this$$props$configs2 = this.$props.configs) !== null && _this$$props$configs2 !== void 0 && _this$$props$configs2.widgetEffectControls.disableInternalControls ? {} : widgetEffects, ...((_ref2 = this.$props.plugins || []) === null || _ref2 === void 0 ? void 0 : _ref2.map(p => p.widgetEffectControls)), this.$props.widgetEffectControls);
+      return cachedMerge('widgetEffectControls', (_this$config2 = this.config) !== null && _this$config2 !== void 0 && (_this$config2$widgetE = _this$config2.widgetEffectControls) !== null && _this$config2$widgetE !== void 0 && _this$config2$widgetE.disableInternalControls ? {} : widgetEffects, ...((_ref2 = this.plugins || []) === null || _ref2 === void 0 ? void 0 : _ref2.map(p => p.widgetEffectControls)), this.widgetEffectControls);
     },
 
     combQuestionControls() {
-      var _this$$props$configs3, _ref3;
+      var _this$config3, _this$config3$questio, _ref3;
 
-      return cachedMerge("questionControls", (_this$$props$configs3 = this.$props.configs) !== null && _this$$props$configs3 !== void 0 && _this$$props$configs3.questionControls.disableInternalControls ? {} : questionControls, ...((_ref3 = this.$props.plugins || []) === null || _ref3 === void 0 ? void 0 : _ref3.map(p => p.questionControls)), this.$props.questionControls);
+      return cachedMerge('questionControls', (_this$config3 = this.config) !== null && _this$config3 !== void 0 && (_this$config3$questio = _this$config3.questionControls) !== null && _this$config3$questio !== void 0 && _this$config3$questio.disableInternalControls ? {} : questionControls, ...((_ref3 = this.plugins || []) === null || _ref3 === void 0 ? void 0 : _ref3.map(p => p.questionControls)), this.questionControls);
+    },
+
+    validations() {
+      var _this$config4, _this$config4$validat, _this$config5, _this$config5$validat;
+
+      return {
+        rules: { ...validationRules,
+          ...((_this$config4 = this.config) === null || _this$config4 === void 0 ? void 0 : (_this$config4$validat = _this$config4.validations) === null || _this$config4$validat === void 0 ? void 0 : _this$config4$validat.rules)
+        },
+        facts: { ...((_this$config5 = this.config) === null || _this$config5 === void 0 ? void 0 : (_this$config5$validat = _this$config5.validations) === null || _this$config5$validat === void 0 ? void 0 : _this$config5$validat.facts)
+        }
+      };
     },
 
     pageState() {
-      return this.$props.state;
+      return this.state;
     }
 
   },
   watch: {
-    "page.widgets": {
+    languages: {
+      handler() {
+        this.pageEventListener.emit(Event.LANGUAGE_CHANGED, {});
+      }
+
+    },
+    'page.widgets': {
       handler(newPageWidgetArr) {
+        var _this$config6, _this$config6$widgets;
+
         this.$data.widgetItems = newPageWidgetArr.reduce((obj, widget) => {
           var _this$combWidgetContr;
 
@@ -16640,39 +18902,128 @@ var script = defineComponent({
             pageEventListener: this.pageEventListener,
             emitEvent: this.emitEvent,
             removeWidget: this.removeWidget,
-            t: (key, data) => this.t(`${widget.id}.${key}`, data),
-            getState: () => this.$props.state,
+            t: (key, data) => this.t([widget.id, key], data),
+            getState: () => this.state,
             setState: newPageState => {
-              this.$emit("onStateChange", newPageState);
+              this.$emit('onStateChange', newPageState);
             },
             onUpdate: newWidget => {
-              var _this$$props$onPageCh, _this$$props;
-
-              (_this$$props$onPageCh = (_this$$props = this.$props).onPageChange) === null || _this$$props$onPageCh === void 0 ? void 0 : _this$$props$onPageCh.call(_this$$props, { ...this.$props.page,
+              this._onPageChange({ ...this.page,
                 widgets: Object.values({ ...this.$data.widgetItems,
-                  [newWidget.id]: newWidget
+                  // clone widget object to trigger change
+                  [newWidget.id]: Object.assign(Object.create(Object.getPrototypeOf(newWidget)), newWidget)
                 })
               });
-            }
+            },
+            getQuestionControls: () => this.combQuestionControls,
+            getConfig: () => ({ ...this.getConfig(),
+              validations: this.validations
+            }),
+            getWidgetMeta: () => {
+              var _this$getConfig, _this$getConfig$meta;
+
+              return (_this$getConfig = this.getConfig()) === null || _this$getConfig === void 0 ? void 0 : (_this$getConfig$meta = _this$getConfig.meta) === null || _this$getConfig$meta === void 0 ? void 0 : _this$getConfig$meta[widget.type];
+            },
+            getValidator: this.getValidator
           });
           return obj;
         }, {});
         Object.values(this.$data.widgetItems).forEach(widgetItem => {
           widgetItem.setWidgetItems(this.$data.widgetItems);
         });
+
+        if ((_this$config6 = this.config) !== null && _this$config6 !== void 0 && (_this$config6$widgets = _this$config6.widgetsToExclude) !== null && _this$config6$widgets !== void 0 && _this$config6$widgets.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
       },
 
       immediate: true,
       deep: true
+    },
+    'config.validations.facts': {
+      handler(validations) {
+        const ruleEngine = new dist.Engine(undefined, {
+          allowUndefinedFacts: true
+        });
+
+        if (validations !== null && validations !== void 0 && validations.facts && Object.keys(validations === null || validations === void 0 ? void 0 : validations.facts).length) {
+          Object.keys(validations.facts).forEach(factKey => {
+            var _validations$facts;
+
+            ruleEngine.addFact(factKey, (_validations$facts = validations.facts) === null || _validations$facts === void 0 ? void 0 : _validations$facts[factKey]);
+          });
+        }
+
+        this.ruleEngine = ruleEngine;
+      },
+
+      deep: true
+    },
+    'config.widgetsToExclude': {
+      handler() {
+        var _this$config7, _this$config7$widgets;
+
+        if ((_this$config7 = this.config) !== null && _this$config7 !== void 0 && (_this$config7$widgets = _this$config7.widgetsToExclude) !== null && _this$config7$widgets !== void 0 && _this$config7$widgets.length) {
+          this.excludeWidgets(this.config.widgetsToExclude);
+        }
+      },
+
+      deep: true
     }
   },
   methods: {
+    _onPageChange(newPage) {
+      var _this$onPageChange;
+
+      (_this$onPageChange = this.onPageChange) === null || _this$onPageChange === void 0 ? void 0 : _this$onPageChange.call(this, newPage);
+      this.$emit('onPageChange', newPage);
+    },
+
     t(key, data) {
-      const lang = (typeof key === "string" ? key.split(".") : key).reduce((obj, g, gIndex) => {
-        if (typeof obj === "string") return obj;
-        return gIndex > 0 ? obj === null || obj === void 0 ? void 0 : obj[g] : (obj === null || obj === void 0 ? void 0 : obj[g][this.$props.locale].message) || {};
+      const lang = flattenTranslateKey(key).reduce((obj, g, gIndex) => {
+        if (typeof obj === 'string') return obj;
+        return gIndex > 0 ? obj === null || obj === void 0 ? void 0 : obj[g] : (obj === null || obj === void 0 ? void 0 : obj[g][this.locale || ''].message) || {};
       }, this.languages);
       return lang === null || lang === void 0 ? void 0 : lang.replace(/(\{(\w+)\})/g, (_orig, _outer, inner) => (data || {})[inner]);
+    },
+
+    getConfig() {
+      return this.config || {};
+    },
+
+    getValidator() {
+      const validator = new Validator(this.validations);
+      return validator;
+    },
+
+    getRuleEngine() {
+      return this.getValidator().getRuleEngine();
+    },
+
+    excludeWidgets(widgetIdsOrCodes) {
+      // map and ensure a list of ids (config.widgetsToExclude can be code or id)
+      const excludedWidgetIds = Object.values(this.widgetItems).filter(w => widgetIdsOrCodes.includes(w.id) || widgetIdsOrCodes.includes(w.code || '')).map(w => w.id); // go through widgets and remove all widgets
+
+      excludedWidgetIds.forEach(widgetId => {
+        delete this.widgetItems[widgetId];
+      }); // go through all pages and remove all pages that only holds excluded widgets
+
+      Object.values(this.widgetItems).forEach(widget => {
+        if (widget.type === 'pages') {
+          const pageIdxToRemove = [];
+          widget.properties.pages.forEach((page, pageIdx) => {
+            if (page.children.every(c => excludedWidgetIds.includes(c))) {
+              pageIdxToRemove.push(pageIdx);
+            }
+          });
+
+          if (pageIdxToRemove.length) {
+            pageIdxToRemove.reverse().forEach(idx => {
+              widget.properties.pages.splice(idx, 1);
+            });
+          }
+        }
+      });
     },
 
     async emitEvent(name, value, widget) {
@@ -16697,19 +19048,37 @@ var script = defineComponent({
       }
     },
 
+    async validateAll(opts) {
+      const validationResults = await Object.values(this.widgetItems).reduce(async (obj, wi) => {
+        const _obj = await obj;
+
+        const result = await wi.runValidations({
+          setDirty: (opts === null || opts === void 0 ? void 0 : opts.setDirty) || false
+        });
+
+        if (!result) {
+          return _obj;
+        }
+
+        _obj[wi.code || wi.id] = result;
+        return _obj;
+      }, Promise.resolve({}));
+      return validationResults;
+    },
+
     setMessage(_ref4) {
       let {
         id,
         locale,
         key,
         value,
-        type = "pageItem"
+        type = 'pageItem'
       } = _ref4;
-      const newLanguages = { ...this.$props.languages
+      const newLanguages = { ...this.languages
       };
       if (!newLanguages[id]) newLanguages[id] = {};
       if (!newLanguages[id][locale]) newLanguages[id][locale] = {
-        id: "",
+        id: '',
         refId: id,
         type,
         version: 1,
@@ -16717,57 +19086,62 @@ var script = defineComponent({
         message: {}
       };
       newLanguages[id][locale].message[key] = value;
-      this.$emit("onLanguageChange", newLanguages);
+      this.$emit('onLanguageChange', newLanguages);
     },
 
     updatePage(page) {
-      this.$emit("onPageChange", page);
+      this.$emit('onPageChange', page);
     },
 
     updateWidget(widget) {
       this.$data.widgetItems[widget.id] = widget;
-      this.updatePage({ ...this.$props.page,
+      this.updatePage({ ...this.page,
         widgets: Object.values(this.$data.widgetItems).map(m => m.widget)
       });
     },
 
     removeWidget(widgetId) {
-      this.updatePage({ ...this.$props.page,
+      this.updatePage({ ...this.page,
         widgets: Object.keys(this.$data.widgetItems).reduce((arr, _widgetId) => {
           if (_widgetId === widgetId) return arr;
           return [...arr, this.$data.widgetItems[_widgetId].widget];
         }, [])
       }); // remove languages
 
-      const newLanguages = { ...this.$props.languages
+      const newLanguages = { ...this.languages
       };
       delete newLanguages[widgetId];
-      this.$emit("onLanguageChange", newLanguages);
+      this.$emit('onLanguageChange', newLanguages);
     }
 
   },
 
   provide() {
     return {
-      getView: () => this.$props.view,
+      getConfig: () => this.configs,
+      getView: () => this.view,
       t: this.t,
       pageEventListener: this.pageEventListener,
       emitEvent: this.emitEvent,
-      getLocale: () => this.$props.locale,
-      languages: this.$props.languages,
+      getLocale: () => this.locale,
+      languages: this.languages,
       setMessage: this.setMessage,
       updateWidget: this.updateWidget,
       removeWidget: this.removeWidget,
-      getPageState: () => this.$props.state,
+      getPageState: () => this.state,
       setPageState: newPageState => {
-        this.$emit("onStateChange", newPageState);
+        this.$emit('onStateChange', newPageState);
       },
       widgetEffectControls: this.combWidgetEffectControls,
       widgetControls: this.combWidgetControls,
-      questionControls: this.combQuestionControls
+      questionControls: this.combQuestionControls,
+      validateAll: this.validateAll,
+      validations: this.validations,
+      getRuleEngine: this.getRuleEngine
     };
-  }
+  },
 
+  expose: ['validateAll']
 });
 
 /* script */
@@ -16784,7 +19158,7 @@ var __vue_render__ = function () {
   return _c('div', {
     staticClass: "main-wrapper"
   }, [_c('div', {
-    staticClass: "pane-wrapper"
+    staticClass: "main-pane-wrapper"
   }, [_c('builder-left-pane', {
     attrs: {
       "widgetItems": _vm.widgetItems
@@ -16810,8 +19184,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-416cadb8_0", {
-    source: ".pane-wrapper[data-v-416cadb8]{flex:1}.main-wrapper[data-v-416cadb8]{font-family:Arial,Helvetica,sans-serif;position:absolute;height:100%;width:100%;background-color:#fff;display:flex;flex-direction:column}.widgets-layout-wrapper[data-v-416cadb8]{padding:30px;background-color:#eaedf5;height:100%;box-sizing:border-box}.widgets-layout-inner-wrapper[data-v-416cadb8]{background-color:#fff;position:relative;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23)}",
+  inject("data-v-ecafe1d2_0", {
+    source: ".main-pane-wrapper[data-v-ecafe1d2]{flex:1;overflow:auto}.main-wrapper[data-v-ecafe1d2]{font-family:Arial,Helvetica,sans-serif;position:absolute;height:100%;width:100%;background-color:#fff;display:flex;flex-direction:column}.widgets-layout-wrapper[data-v-ecafe1d2]{padding:30px;background-color:#eaedf5;height:100%;box-sizing:border-box}.widgets-layout-inner-wrapper[data-v-ecafe1d2]{background-color:#fff;position:relative;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23)}",
     map: undefined,
     media: undefined
   });
@@ -16819,7 +19193,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-416cadb8";
+const __vue_scope_id__ = "data-v-ecafe1d2";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
@@ -16837,23 +19211,151 @@ const __vue_component__ = /*#__PURE__*/normalizeComponent({
 
 var __vue_component__$1 = __vue_component__;
 
+class PageState {
+  static from(pageState) {
+    if (pageState instanceof PageState) {
+      // from an object, use their public getters
+      return new PageState({
+        widgetState: pageState.widgetState,
+        interactiveState: pageState.interactiveState,
+        widgetCodeToIdMap: pageState.widgetCodeToIdMap,
+        widgetIdToCodeMap: pageState.widgetIdToCodeMap
+      });
+    } else {
+      // assume it is just a plain object, fetch its protected
+      // field
+      return new PageState({
+        widgetState: pageState._widgetState,
+        interactiveState: pageState._interactiveState,
+        widgetCodeToIdMap: pageState._widgetCodeToIdMap,
+        widgetIdToCodeMap: pageState._widgetIdToCodeMap
+      });
+    }
+  }
+
+  constructor(_ref) {
+    let {
+      widgetState,
+      interactiveState,
+      widgetCodeToIdMap,
+      widgetIdToCodeMap
+    } = _ref;
+
+    _defineProperty(this, "_widgetState", void 0);
+
+    _defineProperty(this, "_interactiveState", void 0);
+
+    _defineProperty(this, "_widgetCodeToIdMap", void 0);
+
+    _defineProperty(this, "_widgetIdToCodeMap", void 0);
+
+    this._widgetState = widgetState || {};
+    this._interactiveState = interactiveState || {};
+    this._widgetCodeToIdMap = widgetCodeToIdMap || {};
+    this._widgetIdToCodeMap = widgetIdToCodeMap || {};
+  }
+
+  get interactiveState() {
+    return this._interactiveState;
+  }
+
+  get widgetState() {
+    return this._widgetState;
+  }
+
+  get widgetCodeToIdMap() {
+    return this._widgetCodeToIdMap;
+  }
+
+  get widgetIdToCodeMap() {
+    return this._widgetIdToCodeMap;
+  }
+
+  getWidgetIdByCode(code) {
+    return this._widgetCodeToIdMap[code];
+  }
+
+  getWidgetCodeById(widgetId) {
+    return this._widgetIdToCodeMap[widgetId];
+  }
+
+  onUpdate() {}
+
+  getWidgetState(widgetId, key) {
+    var _this$_widgetState$wi;
+
+    return key ? (_this$_widgetState$wi = this._widgetState[widgetId]) === null || _this$_widgetState$wi === void 0 ? void 0 : _this$_widgetState$wi[key] : this._widgetState[widgetId];
+  }
+
+  setWidgetState(widgetId, key, value) {
+    if (!this._widgetState[widgetId]) this._widgetState[widgetId] = {};
+
+    if (typeof key === 'string') {
+      if (value === undefined) {
+        var _this$_widgetState$wi2;
+
+        (_this$_widgetState$wi2 = this._widgetState[widgetId]) === null || _this$_widgetState$wi2 === void 0 ? true : delete _this$_widgetState$wi2[key];
+      } else {
+        this._widgetState[widgetId][key] = value;
+      }
+    } else if (typeof key === 'object') {
+      this._widgetState[widgetId] = { ...this._widgetState[widgetId],
+        ...key
+      };
+    } // FIXME: this is not updating parent in App.vue
+
+  }
+
+  clearWidgetState(widgetId, key) {
+    this.setWidgetState(widgetId, key);
+  }
+
+  registerWidgetCode(widgetCode, widgetId) {
+    this._widgetCodeToIdMap[widgetCode] = widgetId;
+    this._widgetIdToCodeMap[widgetId] = widgetCode;
+    this.setWidgetState(widgetId, 'code', widgetCode);
+  }
+
+  unregisterWidgetCode(widgetCode) {
+    delete this._widgetCodeToIdMap[widgetCode];
+  }
+
+}
+
+const Event = {
+  LANGUAGE_CHANGED: 'language_changed'
+};
+
 var components = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    VuePage: __vue_component__$n,
-    WidgetsLayout: WidgetsLayout,
-    WidgetView: WidgetView$1,
-    VuePageBuilder: __vue_component__$1,
-    PageState: PageState,
-    WidgetItem: WidgetItem,
-    WidgetEffectControl: WidgetEffectControl,
-    widgets: widgets,
-    QuestionControl: QuestionControl,
-    formatDateString: formatDateString,
-    getDateByPropertyValue: getDateByPropertyValue,
-    questionControls: questionControls
+  __proto__: null,
+  VuePage: __vue_component__$n,
+  WidgetsLayout: WidgetsLayout,
+  WidgetView: WidgetView,
+  QuestionControlProps: QuestionControlProps$b,
+  WidgetControlProps: WidgetControlProps$j,
+  VuePageBuilder: __vue_component__$1,
+  PageState: PageState,
+  WidgetItem: WidgetItem,
+  WidgetEffectControl: WidgetEffectControl,
+  PagesWidgetItem: PagesWidgetItem,
+  QuestionWidgetItem: QuestionWidgetItem,
+  widgets: widgets,
+  QuestionControl: QuestionControl,
+  QuestionItem: QuestionItem,
+  questionControls: questionControls,
+  combineValidations: combineValidations,
+  splitRootRegex: splitRootRegex,
+  stringParser: stringParser,
+  flatten: flatten,
+  cachedMerge: cachedMerge,
+  flattenTranslateKey: flattenTranslateKey,
+  translate: translate,
+  formatDateString: formatDateString,
+  getDateByPropertyValue: getDateByPropertyValue,
+  Event: Event
 });
 
-// Import vue components
+// install function executed by Vue.use()
 
 const install = function installVuePage(Vue) {
   Object.entries(components).forEach(_ref => {
@@ -16862,4 +19364,4 @@ const install = function installVuePage(Vue) {
   });
 }; // Create module definition for Vue.use()
 
-export { PageState, QuestionControl, __vue_component__$n as VuePage, __vue_component__$1 as VuePageBuilder, WidgetEffectControl, WidgetItem, WidgetView$1 as WidgetView, WidgetsLayout, install as default, formatDateString, getDateByPropertyValue, questionControls, widgets };
+export { Event, PageState, PagesWidgetItem, QuestionControl, QuestionControlProps$b as QuestionControlProps, QuestionItem, QuestionWidgetItem, __vue_component__$n as VuePage, __vue_component__$1 as VuePageBuilder, WidgetControlProps$j as WidgetControlProps, WidgetEffectControl, WidgetItem, WidgetView, WidgetsLayout, cachedMerge, combineValidations, install as default, flatten, flattenTranslateKey, formatDateString, getDateByPropertyValue, questionControls, splitRootRegex, stringParser, translate, widgets };

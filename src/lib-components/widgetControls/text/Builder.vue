@@ -10,28 +10,67 @@
 </template>
 
 <script lang="ts">
-import { Widget } from "@/entry.esm";
-import { defineComponent } from "@vue/composition-api";
+import {
+  Widget,
+  WidgetItem,
+  WidgetControls,
+  WidgetItems,
+  PageState,
+  WidgetError,
+} from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
+
+const WidgetControlProps = {
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  widgetControls: {
+    type: Object as () => WidgetControls,
+    required: true as const,
+  },
+  widgetItems: {
+    type: Object as () => WidgetItems,
+    required: true as const,
+  },
+  pageState: {
+    type: Object as () => PageState,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  wrapperRef: {
+    type: HTMLDivElement,
+    required: true as const,
+  },
+  t: Function,
+  properties: {
+    type: Object,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: String,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
 
 export default defineComponent({
-  props: {
-    widget: Object,
-    widgetControls: Object,
-    widgetItems: Object,
-    pageState: Object,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    wrapperRef: HTMLDivElement,
-    t: Function,
-  },
-  inject: ["getLocale", "setMessage"],
+  props: WidgetControlProps,
+  inject: ['getLocale', 'setMessage'],
   methods: {
     onTextChange(val: Event) {
       (this as any).setMessage({
         id: (this.$props.widget as Widget).id,
         locale: (this as any).getLocale(),
-        key: "__label",
+        key: '__label',
         value: (val.target as HTMLInputElement).value,
       });
     },

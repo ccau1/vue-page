@@ -1,4 +1,4 @@
-import { WidgetItem } from "./WidgetItem";
+import { WidgetItem } from './WidgetItem';
 
 export class PageEventListener {
   protected _listenerFns: {

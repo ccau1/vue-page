@@ -1,12 +1,14 @@
-import { Widget, WidgetControl } from "../..";
+import { v4 as uuidv4 } from 'uuid';
+import { Widget, WidgetControl } from '../..';
 
-import Builder from "./Builder.vue";
-import BuilderForm from "./BuilderForm.vue";
-import Display from "./Display.vue";
-import PagesWidgetItem from "./PagesWidgetItem";
-import ReadOnly from "./ReadOnly.vue";
-import WidgetTree from "./WidgetTree.vue";
-import { v4 as uuidv4 } from "uuid";
+import Builder from './Builder.vue';
+import BuilderForm from './BuilderForm.vue';
+import Display from './Display.vue';
+import PagesWidgetItem from './PagesWidgetItem';
+import ReadOnly from './ReadOnly.vue';
+import WidgetTree from './WidgetTree.vue';
+
+export { default as PagesWidgetItem } from './PagesWidgetItem';
 
 export interface PagesPropertiesPage {
   labelKey: string;
@@ -37,9 +39,9 @@ export default {
   create(props: Partial<PagesProperties>): Widget<PagesProperties> {
     return {
       id: uuidv4(),
-      type: "pages",
+      type: 'pages',
       properties: {
-        pages: [{ labelKey: "", children: [] }],
+        pages: [{ labelKey: '', children: [] }],
         navigationVisible: true,
         tabsVisible: true,
         hasCompleteButton: false,

@@ -12,39 +12,58 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import { QuestionControlProps } from "../index";
+import { WidgetItem, WidgetError } from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
 
-export default defineComponent<QuestionControlProps>({
+const QuestionControlProps = {
+  properties: {
+    type: Object,
+    required: true as const,
+  },
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true as const,
+  },
+  t: {
+    type: Function,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
+
+export default defineComponent({
   props: {
-    properties: Object,
-    widget: Object,
-    onChange: Function,
+    ...QuestionControlProps,
     value: Number,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function,
   },
   created() {
     // if value has not been set and default is set, set value to default
-    if (
-      this.$props.value === undefined &&
-      this.$props.properties?.default !== undefined
-    )
-      (this as any).changeValue(this.$props.properties.default, true);
+    if (this.value === undefined && this.properties?.default !== undefined)
+      (this as any).changeValue(this.properties.default, true);
   },
   computed: {
-    step() {
-      return this.$props.properties.step || 1;
+    step(): number {
+      return this.properties?.step || 1;
     },
-    numValue() {
-      if (this.$props.value !== undefined) return this.$props.value;
-      if (this.$props.properties?.default !== undefined)
-        return this.$props.properties.default;
-      if (this.$props.properties?.min !== undefined)
-        return this.$props.properties.min;
+    numValue(): number {
+      if (this.value !== undefined) return this.value;
+      if (this.properties?.default !== undefined)
+        return this.properties.default;
+      if (this.properties?.min !== undefined) return this.properties.min;
       return 0;
     },
   },
@@ -54,18 +73,12 @@ export default defineComponent<QuestionControlProps>({
 
       let _newNum = parseInt(newNum.toString(), 10);
 
-      if (
-        this.$props.properties?.min !== undefined &&
-        _newNum < this.$props.properties?.min
-      )
-        _newNum = this.$props.properties.min;
-      if (
-        this.$props.properties?.max !== undefined &&
-        _newNum > this.$props.properties?.max
-      )
-        _newNum = this.$props.properties.max;
+      if (this.properties?.min !== undefined && _newNum < this.properties?.min)
+        _newNum = this.properties.min;
+      if (this.properties?.max !== undefined && _newNum > this.properties?.max)
+        _newNum = this.properties.max;
 
-      this.$props.onChange?.(_newNum, ignoreChecks);
+      this.onChange?.(_newNum, ignoreChecks);
     },
   },
 });

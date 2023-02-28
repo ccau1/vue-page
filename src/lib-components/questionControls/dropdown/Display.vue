@@ -13,7 +13,7 @@
       @input="onSelectChange"
     /> -->
     <select :value="value || ''" @change="onSelectChange">
-      <option value="" disabled>{{ t("__placeholder") }}</option>
+      <option value="" disabled>{{ t('__placeholder') }}</option>
       <option
         v-for="option in options"
         :value="option.value"
@@ -27,62 +27,89 @@
 </template>
 
 <script lang="ts">
-import { DropdownProperties, PageState, WidgetItems } from "@/entry.esm";
-import { PageEventListener } from "@/lib-components/models/PageEventListener";
-import QuestionWidgetItem from "@/lib-components/widgetControls/question/QuestionWidgetItem";
-import { defineComponent } from "@vue/composition-api";
+import {
+  DropdownProperties,
+  DropdownPropertiesOption,
+  PageState,
+  WidgetItems,
+  WidgetItem,
+  WidgetError,
+} from '@/entry.esm';
+import { PageEventListener } from '@/lib-components/models/PageEventListener';
+import QuestionWidgetItem from '@/lib-components/widgetControls/question/QuestionWidgetItem';
+import { defineComponent } from '@vue/composition-api';
 import {
   AllConditions,
   AnyConditions,
   ConditionProperties,
   NestedCondition,
-} from "json-rules-engine";
-import { QuestionControlProps } from "../index";
-// import Multiselect from "vue-multiselect";
-// import "vue-multiselect/dist/vue-multiselect.min.css";
+} from 'json-rules-engine';
 
-export default defineComponent<
-  QuestionControlProps<DropdownProperties, string, QuestionWidgetItem>,
-  {
-    options: Array<{ label: string; value: string }>;
-    attachedDependentCodeListeners: [name: string, fn: () => void][];
-    pageEventListener: PageEventListener;
-    setFilteredOptions: () => void;
-    getPageState: () => PageState;
-  }
->({
-  // components: { Multiselect },
-  props: {
-    properties: Object,
-    widget: Object,
-    widgetItems: Object,
-    onChange: Function,
-    value: String,
-    setWidgetState: Function,
-    getWidgetState: Function,
-    view: String,
-    errors: Array,
-    t: Function,
+const QuestionControlProps = {
+  properties: {
+    type: Object,
+    required: true as const,
   },
-  inject: ["pageEventListener", "getPageState"],
+  widget: {
+    type: Object as () => WidgetItem,
+    required: true as const,
+  },
+  onChange: Function,
+  value: {
+    type: Boolean,
+    required: true as const,
+  },
+  t: {
+    type: Function,
+    required: true as const,
+  },
+  setWidgetState: Function,
+  getWidgetState: Function,
+  view: {
+    type: String,
+    required: true as const,
+  },
+  errors: {
+    type: Array as () => WidgetError[],
+    required: false as const,
+  },
+};
+
+interface Option {
+  label: string;
+  value: string;
+}
+
+export default defineComponent({
+  props: {
+    ...QuestionControlProps,
+    widgetItem: Object as () => QuestionWidgetItem,
+    properties: Object as () => DropdownProperties,
+    value: String,
+  },
+  inject: ['pageEventListener', 'getPageState'],
   data() {
     return {
       options: [],
       attachedDependentCodeListeners: [],
     } as {
-      options: Array<{ label: string; value: string }>;
+      options: Array<Option>;
       attachedDependentCodeListeners: [name: string, fn: () => void][];
     };
   },
-  created() {},
+  created() {
+    if (!this.value && this.properties?.defaultValue) {
+      this.onChange?.(this.properties.defaultValue);
+    }
+  },
   unmounted() {
     // remove conditional listeners
     this.attachedDependentCodeListeners.forEach(([name, fn]) => {
-      this.pageEventListener.remove(name, fn);
+      (this.pageEventListener as PageEventListener)?.remove(name, fn);
     });
   },
   watch: {
-    ["properties.options"]: {
+    ['properties.options']: {
       async handler() {
         // recursively go through conditions and get all facts
         const getConditionFacts = (conditions: NestedCondition[]): string[] => {
@@ -111,8 +138,7 @@ export default defineComponent<
         const allDependentCodes = [
           ...new Set(
             (
-              this.$props.widget.properties
-                .controlProperties as DropdownProperties
+              this.widget?.properties.controlProperties as DropdownProperties
             ).options.reduce<string[]>((arr, option) => {
               return [
                 ...arr,
@@ -125,8 +151,8 @@ export default defineComponent<
         ];
 
         // sync listeners for filtering options
-        this.widget.setListenerSet(
-          "options",
+        this.widget?.setListenerSet(
+          'options',
           allDependentCodes.map((c) => `${c}_change`),
           () => this.setFilteredOptions()
         );
@@ -138,10 +164,10 @@ export default defineComponent<
     },
   },
   computed: {
-    selectedValue() {
-      return (
-        this.$data.options as Array<{ label: string; value: string }>
-      ).find((o) => o.value === this.$props.value);
+    selectedValue(): Option | undefined {
+      return (this.$data.options as Array<Option>).find(
+        (o) => o.value === this.value
+      );
     },
   },
   methods: {
@@ -153,20 +179,22 @@ export default defineComponent<
         })
       );
     },
-    async getFilteredOptions() {
+    async getFilteredOptions(): Promise<DropdownPropertiesOption[]> {
       // build facts data into:
       // { [idOrCode: string]: response }
-      const validateData = Object.keys(this.$props.widgetItems).reduce<{
+      const validateData = Object.keys(
+        (this.widgetItems as WidgetItems) || {}
+      ).reduce<{
         [idOrCode: string]: any;
       }>((obj, widgetItemId: string) => {
-        const response =
-          this.getPageState()?.widgetState[widgetItemId]?.response;
+        const response = (this.getPageState as () => PageState)()?.widgetState[
+          widgetItemId
+        ]?.response;
         if (response) {
           obj[widgetItemId] = response;
-          if ((this.$props.widgetItems as WidgetItems)[widgetItemId].code) {
-            obj[
-              (this.$props.widgetItems as WidgetItems)[widgetItemId].code || ""
-            ] = response;
+          if ((this.widgetItems as WidgetItems)[widgetItemId].code) {
+            obj[(this.widgetItems as WidgetItems)[widgetItemId].code || ''] =
+              response;
           }
         }
         return obj;
@@ -178,19 +206,21 @@ export default defineComponent<
       return (
         await Promise.all(
           (
-            this.$props.widget.properties
-              .controlProperties as DropdownProperties
+            this.widget?.properties.controlProperties as DropdownProperties
           ).options.map(async (opt) => {
             return !opt.conditions?.length ||
-              (await this.$props.widget.validate(opt.conditions, validateData))
+              (await this.widget?.validator.validate(
+                opt.conditions,
+                validateData
+              ))
               ? opt
               : null;
           })
         )
-      ).filter((a) => a);
+      ).filter((a) => a) as DropdownPropertiesOption[];
     },
     onSelectChange(ev: Event) {
-      this.$props.onChange((ev.target as HTMLSelectElement).value);
+      this.onChange?.((ev.target as HTMLSelectElement).value);
     },
   },
 });

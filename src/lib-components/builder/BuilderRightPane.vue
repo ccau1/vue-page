@@ -14,19 +14,19 @@
 </template>
 
 <script lang="ts">
-import { PageState } from "../models/PageState";
-import { defineComponent } from "@vue/composition-api";
-import { WidgetItem } from "../models/WidgetItem";
-import Pane from "./components/Pane.vue";
-import { panelSections } from "./panelSections";
-import BuilderPanelSectionListView from "./BuilderPanelSectionListView.vue";
+import { PageState } from '../models/PageState';
+import { defineComponent } from '@vue/composition-api';
+import { WidgetItem } from '../models/WidgetItem';
+import Pane from './components/Pane.vue';
+import { panelSections } from './panelSections';
+import BuilderPanelSectionListView from './BuilderPanelSectionListView.vue';
 
 export default defineComponent({
   components: { Pane, BuilderPanelSectionListView },
   props: {
     widgetItems: Object,
   },
-  inject: ["widgetControls", "widgetEffectControls", "getPageState"],
+  inject: ['widgetControls', 'widgetEffectControls', 'getPageState'],
   data() {
     return {
       panelSections,
@@ -44,8 +44,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.pane-wrapper {
-  background-color: blue;
-}
-</style>
+<style scoped></style>

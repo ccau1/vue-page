@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="bottom-pane-wrapper">
     <div class="left-pane"></div>
     <div class="center">
       <widget-breadcrumb
@@ -12,16 +12,16 @@
 </template>
 
 <script lang="ts">
-import { PageState, WidgetItem, WidgetItems } from "@/entry.esm";
-import { defineComponent } from "@vue/composition-api";
-import WidgetBreadcrumb from "./components/WidgetBreadcrumb.vue";
+import { PageState, WidgetItem, WidgetItems } from '@/entry.esm';
+import { defineComponent } from '@vue/composition-api';
+import WidgetBreadcrumb from './components/WidgetBreadcrumb.vue';
 
 export default defineComponent({
   components: { WidgetBreadcrumb },
   props: {
     widgetItems: Object,
   },
-  inject: ["getPageState"],
+  inject: ['getPageState'],
   computed: {
     selectedWidgetItem(): WidgetItem | null {
       const pageState: PageState = (this as any).getPageState();
@@ -37,7 +37,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.wrapper {
+.bottom-pane-wrapper {
   height: 40px;
   z-index: 1000;
   box-shadow: 0 0 4px -2px #000;

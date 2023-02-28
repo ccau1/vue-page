@@ -22,9 +22,9 @@
 </template>
 
 <script lang="ts">
-import { WidgetItem } from "@/entry.esm";
-import BuilderWidgetTree from "@/lib-components/builder/BuilderWidgetTree.vue";
-import { defineComponent } from "@vue/composition-api";
+import { WidgetItem } from '@/entry.esm';
+import BuilderWidgetTree from '@/lib-components/builder/BuilderWidgetTree.vue';
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   components: { BuilderWidgetTree },
@@ -34,7 +34,7 @@ export default defineComponent({
     parentId: String,
     level: Number,
   },
-  inject: ["t", "setMessage", "getLocale"],
+  inject: ['t', 'setMessage', 'getLocale'],
   methods: {
     onPageLabelChange(pageIndex: number, label: string) {
       (this as any).setMessage({

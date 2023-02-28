@@ -1,7 +1,9 @@
 <template>
   <div class="wrapper">
     <template v-for="(widgetControl, widgetControlKey) in widgetControls">
-      <a class="widget-item" :key="widgetControlKey">
+      <a
+:key="widgetControlKey" class="widget-item"
+>
         {{ widgetControlKey }}
       </a>
     </template>
@@ -9,16 +11,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import BuilderWidgetTree from "../../BuilderWidgetTree.vue";
+import { defineComponent } from '@vue/composition-api';
+import BuilderWidgetTree from '../../BuilderWidgetTree.vue';
 
 export default defineComponent({
   components: { BuilderWidgetTree },
+  inject: ['widgetControls'],
   props: {
     widgetItems: Object,
     selectedWidgetItem: Object,
   },
-  inject: ["widgetControls"],
 });
 </script>
 

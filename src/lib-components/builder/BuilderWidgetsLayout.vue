@@ -1,6 +1,8 @@
 <template>
   <div>
     <div
+      v-for="(widget, widgetIndex) in filteredWidgetItemsArr"
+      :key="widget.id"
       class="widget-container"
       :class="{
         hovering: hoveredWidgetId === widget.id,
@@ -9,8 +11,6 @@
           pageState.interactiveState.draggingWidgetId &&
           pageState.interactiveState.draggingWidgetId !== widget.id,
       }"
-      v-for="(widget, widgetIndex) in filteredWidgetItemsArr"
-      :key="widget.id"
       @mouseenter.stop="(ev) => onMouseEnter(ev, widget.id)"
       @mouseleave.stop="(ev) => onMouseLeave(ev, widget.id)"
     >
@@ -22,7 +22,8 @@
         >
           &uarr;&darr;
         </a>
-        <a class="delete-button" @click="() => widget.removeWidget()">
+        <a class="delete-button"
+@click="() => widget.removeWidget()">
           &#128465;
         </a>
       </div>
@@ -57,19 +58,19 @@
           </div>
         </div>
       </div>
-      <widget-view
+      <builder-widget-view
         :widget="widget"
-        :widgetControls="widgetControls"
-        :widgetItems="widgetItems"
-        :pageState="pageState"
-        :setWidgetState="setWidgetState"
-        :getWidgetState="getWidgetState"
+        :widget-controls="widgetControls"
+        :widget-items="widgetItems"
+        :page-state="pageState"
+        :set-widget-state="setWidgetState"
+        :get-widget-state="getWidgetState"
         :view="view"
       />
       <div
+        v-if="widgetIndex === filteredWidgetItemsArr.length - 1"
         class="add-line"
         :class="{ opened: openedAddOptionsIndex === widgetIndex + 1 }"
-        v-if="widgetIndex === filteredWidgetItemsArr.length - 1"
       >
         <div
           class="line"
@@ -107,13 +108,13 @@
 </template>
 
 <script>
-import { defineComponent } from "@vue/composition-api";
-import { arrayOf } from "vue-types";
-import { WidgetItem } from "../models/WidgetItem";
-import WidgetView from "./BuilderWidgetView.vue";
+import { defineComponent } from '@vue/composition-api';
+import { arrayOf } from 'vue-types';
+import { WidgetItem } from '../models/WidgetItem';
+import BuilderWidgetView from './BuilderWidgetView.vue';
 
 export default defineComponent({
-  components: { WidgetView },
+  components: { BuilderWidgetView },
   props: {
     widgetControls: Object,
     widgetItems: Object,
@@ -122,11 +123,11 @@ export default defineComponent({
     forParent: String,
   },
   inject: [
-    "widgetControls",
-    "getPageState",
-    "getView",
-    "setPageState",
-    "removeWidget",
+    'widgetControls',
+    'getPageState',
+    'getView',
+    'setPageState',
+    'removeWidget',
   ],
   data() {
     return { hoveredWidgetId: -1, openedAddOptionsIndex: -1 };
@@ -142,7 +143,7 @@ export default defineComponent({
       return Object.values(this.$props.widgetItems);
     },
     filteredWidgetItemsArr() {
-      const filteredArr = this.widgetItemsArr
+      return this.widgetItemsArr
         .filter((f) => {
           return (
             ((!this.forParent && !f.parentId) ||
@@ -154,7 +155,6 @@ export default defineComponent({
           );
         })
         .sort((a, b) => (a.order || 0) - (b.order || 0));
-      return filteredArr;
     },
   },
   methods: {
@@ -171,7 +171,7 @@ export default defineComponent({
       this.setPageState(this.pageState);
     },
     onDnDPlaceholderMouseUp(ev, widgetId) {
-      this.pageState.interactiveState.draggingWidgetId = "";
+      this.pageState.interactiveState.draggingWidgetId = '';
       this.setPageState(this.pageState);
     },
     onMouseEnter(ev, widgetId) {
@@ -183,7 +183,7 @@ export default defineComponent({
     onMouseLeave(ev, widgetId) {
       if (this.$data.hoveredWidgetId !== widgetId) return;
       this.$data.hoveredWidgetId = -1;
-      this.pageState.interactiveState.hoveredWidgetId = "";
+      this.pageState.interactiveState.hoveredWidgetId = '';
       this.setPageState(this.pageState);
     },
     setWidgetState(key, value, widget) {

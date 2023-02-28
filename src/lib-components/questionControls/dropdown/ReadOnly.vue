@@ -5,9 +5,9 @@
 </template>
 
 <script lang="ts">
-import { WidgetItem } from "@/lib-components/models/WidgetItem";
-import { defineComponent } from "@vue/composition-api";
-import { DropdownProperties } from ".";
+import { WidgetItem } from '@/lib-components/models/WidgetItem';
+import { defineComponent } from '@vue/composition-api';
+import { DropdownProperties } from '.';
 
 export default defineComponent({
   props: {
@@ -22,14 +22,14 @@ export default defineComponent({
     t: Function,
   },
   data() {
-    return { translatedLabel: "" };
+    return { translatedLabel: '' };
   },
   methods: {
     getLabelByValue(value: string) {
       return (this as any).t(
         (this.$props.properties as DropdownProperties).options.find(
           (o) => o.value === value
-        )?.labelKey || "",
+        )?.labelKey || '',
         (this.$props.widget as WidgetItem).id
       );
     },
